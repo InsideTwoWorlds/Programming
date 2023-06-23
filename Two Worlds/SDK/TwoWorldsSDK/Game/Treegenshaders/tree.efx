@@ -1,0 +1,242 @@
+#include "config.efh"
+
+#define CLIP_EPS   0.75
+#define TRESS_EPS  0.90
+#define ATEST_EPS  0.50
+
+//#define BUMPED_BILLBOARD
+
+matrix  IN_WorldViewProj;
+matrix  IN_InversedCameraMatrix;
+
+float4  IN_SunDirection;
+float4  IN_SunAmbient;
+float4  IN_SunDiffuse;
+float4  IN_ObserverPosition;
+float   IN_Time;
+float   IN_TimeNM;
+float4  IN_Wind;
+texture IN_TreeTexture;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// App vertex format
+//
+struct appdata 
+{
+    float3 Position		  : POSITION;
+    float4 Color		  : COLOR0;     // Random color modifier
+    float2 UV			  : TEXCOORD0;  // 0, 1
+    float4 Data			  : TEXCOORD1;  // SizeX, SizeY, LocalFogA, LocalFogB
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct vertexOutput
+{
+    float4 HPosition	: POSITION;
+    
+    half4  Color        : COLOR0;
+    
+    half2  UV		    : TEXCOORD0;
+#ifdef BUMPED_BILLBOARD    
+    half2  UVBump	    : TEXCOORD1;
+#endif    
+	
+	half3  LVec         : TEXCOORD3;
+	
+#ifdef BUMPED_BILLBOARD	
+	half3  HVec         : TEXCOORD4;
+#endif	
+	
+	float  Fog          : FOG;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct pixelOutput
+{
+    float4 Color : COLOR;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct pixelOutputH
+{
+    half4 Color : COLOR;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+sampler2D TreeSampler = sampler_state
+{
+	Texture   = <IN_TreeTexture>;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU  = Clamp;
+	AddressV  = Clamp;
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertexOutput VertexShader(appdata IN)
+{
+ vertexOutput OUT;
+
+ float3 Pw = IN.Position.xyz;
+
+ float3 UpVec   = float3(0, 1, 0);
+ float3 LeftVec = float3(1, 0, 0);
+ 
+ UpVec   = mul(UpVec,   IN_InversedCameraMatrix);
+ LeftVec = mul(LeftVec, IN_InversedCameraMatrix);
+ 
+ UpVec  *=  IN.UV.x        * IN.Data.y;
+ LeftVec*= (IN.UV.y - 0.5) * IN.Data.x;
+ Pw     += UpVec + LeftVec;
+ 
+ //
+ // Wind
+ // 
+ // IN_Wind.x = WindForce (range 5.0 - 15.0)
+ // IN_Wind.y = WindForce * Time * 0.16
+ // IN_Wind.z = WindForce * Time * 0.12
+ //
+ float sinA = sin((IN.Position.x * 0.11) + IN_Wind.y*0.7);
+ float cosA = cos((IN.Position.y * 0.07) + IN_Wind.z*0.7);
+ float2 Modifier = float2(((sinA * IN_Wind.x*7) * IN.UV.x) * 0.04, ((cosA * IN_Wind.x*7) * IN.UV.x) * 0.05);
+ 
+ Pw.xy += Modifier;
+ 
+ //
+ // UV
+ //
+#ifdef BUMPED_BILLBOARD  
+ OUT.UV    = (IN.UV.yx * float2(0.5, -1.0)) + float2(0.0, 1.0);
+ OUT.UVBump= (IN.UV.yx * float2(0.5, -1.0)) + float2(0.5, 1.0);
+#else
+ OUT.UV    = (IN.UV.yx * float2(1.0, -1.0)) + float2(0.0, 1.0);
+#endif 
+ 
+ 
+ //
+ // Position and color
+ //
+ OUT.HPosition = mul(float4(Pw.xyz, 1.0), IN_WorldViewProj); 
+ 
+ //
+ // Color fade
+ //
+ OUT.Color.rgb = lerp(IN.Color.rgb, float3(1.0, 1.0, 1.0), IN.UV.x);
+ 
+ //
+ // Calculate bump's
+ //
+ float3 Tn = float3(1, 0, 0);
+ float3 Bn = float3(0, 1, 0);
+ float3 Nn = float3(0, 0, 1);
+ 
+ Nn = mul(Nn, IN_InversedCameraMatrix);
+ Tn = mul(Tn, IN_InversedCameraMatrix);
+ Bn = mul(Bn, IN_InversedCameraMatrix);
+
+ Nn = normalize(Nn);
+ Tn = normalize(Tn);
+ Bn = normalize(Bn);
+ 
+ //
+ // Calculate L & H vectors
+ // Fake sun direction to make softer lights
+ //
+ float3 Ln = IN_SunDirection.xyz;
+
+ float3 Vn = normalize(IN_ObserverPosition.xyz - Pw);
+ float3 Hn = normalize(Vn + Ln);
+
+ //
+ // Transform to tangent space
+ //
+ OUT.LVec.xyz = float3(dot(Ln.xyz, Tn.xyz), dot(Ln.xyz, Bn.xyz), dot(Ln.xyz, Nn.xyz)).xyz;
+#ifdef BUMPED_BILLBOARD 
+ OUT.HVec.xyz = float3(dot(Hn.xyz, Tn.xyz), dot(Hn.xyz, Bn.xyz), dot(Hn.xyz, Nn.xyz)).xyz;
+#endif 
+ 
+ //
+ // Calculate fog and alphafading
+ //
+ OUT.Fog	 = 1.0;
+ OUT.Color.a = 1.0;
+ 
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+pixelOutputH PixelShader(vertexOutput IN)
+{
+ pixelOutputH OUT;
+ 
+ half4 BaseTex = tex2D(TreeSampler, IN.UV.xy);
+ 
+ half ResAlpha = BaseTex.a * IN.Color.a;
+ if (ResAlpha < (IN.Color.a * CLIP_EPS))
+     clip(-1.0);
+ if (IN.Color.a > TRESS_EPS && BaseTex.a > ATEST_EPS)
+     ResAlpha = 1.0;
+     
+#ifdef BUMPED_BILLBOARD     
+ half4 BumpTex = tex2D(TreeSampler, IN.UVBump);
+#endif
+ 
+ BaseTex.rgb   *= IN.Color.rgb;
+
+#ifdef BUMPED_BILLBOARD
+ half3 Normal  = normalize((BumpTex.rgb * 2.0) - 1.0);
+
+ half  diff = saturate(dot(Normal.xyz, IN.LVec.xyz));
+ half  spec = saturate(dot(Normal.xyz, IN.HVec.xyz));
+#else
+ half  diff = saturate(IN.LVec.z);
+#endif 
+
+ half3 DiffuseC  = half3(IN_SunAmbient.rgb) + (diff * half3(IN_SunDiffuse.rgb));
+ 
+#ifdef BUMPED_BILLBOARD
+ half3 SpecularC = float3(1.0, 1.0, 1.0) * (pow(spec, 16.0) * BumpTex.a);
+ half3 FinalTex  = (saturate(DiffuseC.rgb) * BaseTex.rgb) + SpecularC;
+#else
+ half3 FinalTex  = (saturate(DiffuseC.rgb) * BaseTex.rgb);
+#endif
+
+ OUT.Color.rgb = FinalTex.rgb;
+ 
+ if (IN.Color.a > 0.95)
+	 ResAlpha = 1.0;
+	 
+ OUT.Color.a = ResAlpha;
+
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+technique RenderMain
+{	
+	pass p0
+	{
+		VertexShader	 = compile vs_2_0 VertexShader();
+		PixelShader		 = compile ps_2_0 PixelShader();
+
+		AlphaBlendEnable = True;
+		SrcBlend		 = SrcAlpha;
+        DestBlend		 = InvSrcAlpha;
+
+		ZEnable          = True;
+		ZWriteEnable     = True;
+		ZFunc			 = Less;
+		
+		CullMode         = None;
+		
+		FogEnable		 = False;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+technique RenderMainRestore
+{	
+	pass p0
+	{
+		ZWriteEnable     = True;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

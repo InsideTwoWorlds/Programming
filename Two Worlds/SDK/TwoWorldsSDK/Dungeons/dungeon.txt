@@ -1,0 +1,105 @@
+Addons Group1 {
+    Obiekt1 TORCH_DUN_01 0 data\a.bmp
+}
+
+Addons Group2 {
+    Obiekt2 TORCH_DUN_01 0 data\a.bmp
+}
+
+Lights Lights1 {
+    Cave_torch1 Torch_CAVE_01 1 data\torch_W.bmp 4 255 173 0
+    Cave_torch1 CAVE_TORCH_02 01 data\torch_W.bmp 4 255 173 0
+    Cave_torch1 CAVE_TORCH_02 02 data\torch_W.bmp 4 255 173 0
+    Cave_torch1 CAVE_TORCH_02 03 data\torch_W.bmp 4 255 173 0
+
+}
+
+Lights Lights2 {
+    TORCH_DUN1 TORCH_DUN_01 1 data\torch_W.bmp 4 255 173 0
+    TORCH_DUN2 TORCH_DUN_01 2 data\torch_W.bmp 4 255 173 0
+    TORCH_DUN3 TORCH_DUN_01 3 data\torch_W.bmp 4 188 255 0
+    TORCH_DUN4 TORCH_DUN_01 4 data\torch_F.bmp 8 188 255 0
+    TORCH_DUN5 TORCH_DUN_01 5 data\torch_W.bmp 4 87 173 255
+    TORCH_DUN6 TORCH_DUN_01 6 data\torch_W.bmp 4 255 173 0
+    TORCH_DUN7 TORCH_DUN_01 7 data\torch_W.bmp 4 255 90 110
+    TORCH_DUN8 TORCH_DUN_01 8 data\torch_F.bmp 4 255 125 34
+    TORCH_DUN9 TORCH_DUN_01 9 data\torch_W.bmp 4 214 35 0
+    TORCH_DUN10 TORCH_DUN_01 10 data\torch_F.bmp 8 90 163 250
+    TORCH_DUN11 TORCH_DUN_01 11 data\torch_F.bmp 4 90 163 250
+    TORCH_DUN12 TORCH_DUN_01 12 data\torch_F.bmp 8 199 15 204
+    TORCH_DUN13 TORCH_DUN_01 13 data\torch_F.bmp 4 199 15 204
+}
+
+Lights Lights3 {
+    LIGHT_D_S_1 LIGHT_D_S_1 0 data\light.bmp 4 102 128 153
+    LIGHT_D_S_2 LIGHT_D_S_2 0 data\light.bmp 4 46 102 153
+    LIGHT_D_S_3 LIGHT_D_S_3 0 data\light.bmp 4 153 0 0
+    LIGHT_D_S_4 LIGHT_D_S_4 0 data\light.bmp 4 77 113 51
+    LIGHT_D_S_5 LIGHT_D_S_5 0 data\light.bmp 4 110 173 18
+    LIGHT_D_B_1 LIGHT_D_B_1 0 data\light.bmp 8 102 153 153
+    LIGHT_D_B_2 LIGHT_D_B_2 0 data\light.bmp 8 46 102 153
+    LIGHT_D_B_3 LIGHT_D_B_3 0 data\light.bmp 8 153 0 0
+    LIGHT_D_B_4 LIGHT_D_B_4 0 data\light.bmp 8 77 113 51
+    LIGHT_D_B_5 LIGHT_D_B_5 0 data\light.bmp 8 110 173 18
+}
+
+Dungeon Dungeons1 DUN 01 255 255 255
+{
+    Addons Group1
+    Addons Group2
+    Lights Lights1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Dungeons2 DUN 02 255 255 0
+{
+    Addons Group1
+    Lights Lights1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Dungeons3 DUN 03 255 0 255
+{
+    Addons Group1
+    Lights Lights1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Dungeons4 DUN 04 0 255 255
+{
+    Addons Group1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Dungeons7 DUN 07 255 128 0
+{
+    Addons Group1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Dungeons7b DUN 07b 255 0 128
+{
+    Addons Group1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Cave Cave 01 128 255 0
+{
+    Addons Group1
+    Lights Lights1
+    Lights Lights2
+    Lights Lights3
+}
+
+Dungeon Mine Mine 01 128 0 255
+{
+    Addons Group1
+    Lights Lights2
+    Lights Lights3
+}

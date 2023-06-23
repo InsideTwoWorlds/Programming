@@ -1,0 +1,6 @@
+editor.SetCreateRect 0 0 256 256
+
+Editor.DeleteAllObjects FOX_01 
+
+Editor.DeleteAllObjects BEAVER_01
+

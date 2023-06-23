@@ -1,0 +1,75 @@
+#ifndef UNITS_MOVERANDOM_ECH
+#define UNITS_MOVERANDOM_ECH
+
+////    Declarations    ////
+
+int m_nMoveMidX;
+int m_nMoveMidY;
+int m_bMoveRandMode;
+int m_nMoveRandDelay;
+
+////    Functions    ////
+
+function int CheckMoveRandomInNothing(int nStateTicks)
+{
+    int nX, nY, nPlayer, nPlayersCnt;
+    unit uHero;
+    if ((IsUnit() && IsInArmedMode()) || (IsPreparingToDialog())) return false;
+    
+    if (!m_bMoveRandMode)
+    {
+        return false;
+    }
+    if (m_nMoveRandDelay > 0)
+    {
+        m_nMoveRandDelay -= nStateTicks;
+        return false;
+    }
+    m_nMoveRandDelay = 100 + Rand(100);
+    nPlayersCnt = GetCampaign().GetPlayersCnt();
+    for (nPlayer = 0; nPlayer < nPlayersCnt; nPlayer++)
+    {
+        if( !GetCampaign().IsPlayer(nPlayer) )
+        {
+            continue;
+        }
+        uHero = GetCampaign().GetPlayerHeroUnit(nPlayer);
+        if ((uHero != null) && (DistanceTo(uHero) < 80*e1m))
+        {
+            break;
+        }
+    }
+    
+    if (nPlayer >= nPlayersCnt)
+    {
+        return false;
+    }
+    nX = m_nMoveMidX + (-e10m + Rand(e20m));
+    nY = m_nMoveMidY + (-e10m + Rand(e20m));
+    CommandMoveAttack(nX, nY, 0);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+////    Commands    ////
+
+//Set move rand point and start
+command UserPoint0(int nX, int nY, int nZ) hidden
+{
+    m_nMoveMidX = nX;
+    m_nMoveMidY = nY;
+    m_bMoveRandMode = true;
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//start/stop move rand
+command UserOneParam0(int bMoveRand) hidden
+{
+    m_bMoveRandMode = bMoveRand;
+    if (m_bMoveRandMode && (m_nMoveMidX == 0) &&  (m_nMoveMidY == 0))
+    {
+        GetLocation(m_nMoveMidX, m_nMoveMidY);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_MOVERANDOM_ECH

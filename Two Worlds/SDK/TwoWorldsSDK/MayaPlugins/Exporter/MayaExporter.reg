@@ -1,0 +1,13 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Polanie3\DBAdmin\HTTPData]
+"HTTPServ"=""
+"HTTPPort"=""
+"HTTPBase"=""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Polanie3\MayaPlugin\FileSystem]
+"DestinationPath"="D:\\Games\\TwoWorlds\\Models\\"
+
+[HKEY_CURRENT_USER\SOFTWARE\Polanie3\MayaPlugin\FileSystem]
+"DestinationPath"="D:\\Games\\TwoWorlds\\Models\\"
+

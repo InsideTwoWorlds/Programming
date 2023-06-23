@@ -1,0 +1,56 @@
+#ifndef UNITS_ALARM_ECH
+#define UNITS_ALARM_ECH
+
+////    Declarations    ////
+
+int m_nLastAlarmTick;
+
+////    Functions    ////
+
+function void AlarmPartyUnitsAboutEnemy(unit uEnemy)
+{
+    int nSearchType, nGameTick, nRange;
+    int nIndex, nCount;
+    unit uUnit;
+    unit uHouse;
+    
+    if (!IsAlarmModeUnit())
+    {
+        return;
+    }
+    nGameTick = GetGameTick();
+    if ((nGameTick - m_nLastAlarmTick) < 150)
+    {
+        return;
+    }
+    m_nLastAlarmTick = nGameTick;
+    if (IsUnit())
+    {
+        nSearchType = eTargetTypeUnit;
+    }
+    else
+    {
+        nSearchType = eTargetTypeUnitBase;
+    }
+    nSearchType |= eTargetTypeLand | eTargetTypeLive;
+    if (!GetPartiesNums().GetSize())
+    {
+        return;
+    }
+//    nRange = (GetSightRange() + GetEarRange())/2;
+    nRange = M2A(35);
+    if (SearchUnits(nRange, GetPartiesNums(), nSearchType, eSortTypeNone) == 0)
+    {
+        return;
+    }
+    nCount = GetSearchUnitsCount();
+    uHouse = uEnemy.GetHouseWithObject();
+    for (nIndex = 0; nIndex < nCount; ++nIndex)
+    {
+        uUnit=GetSearchUnit(nIndex);
+        if(uUnit != null && uUnit.GetHouseWithObject() == uHouse) uUnit.SetEventAlarmEnemy(uEnemy);
+        
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_ALARM_ECH

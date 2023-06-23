@@ -1,0 +1,1466 @@
+#ifndef UNITS_ATTACK_ECH
+#define UNITS_ATTACK_ECH
+
+#include "..\\Common\\UnitInfo.ech"
+
+////    Declarations    ////
+
+state WaitingToSetArmedModeBeforeAttack;
+state SettingArmedModeBeforeAttack;
+state SettingUnarmedModeAfterAttack;
+state MovingToAttackTarget;
+state AttackingTarget;
+state EndAttackTarget;
+state StrikeAttackingTarget;
+state ShootAttackPrepareFire;
+state WaitBeforeMovingToHoldAreaPos;
+state MovingToHoldAreaPos;
+state MovingAndAttack;
+state WaitingToSetArmedMode;
+state SettingArmedMode;
+state WaitingToAttackTarget;
+state MakingCustomWork;
+
+unit m_uTarget;
+int  m_bAutoTarget;
+int  m_bAttackingEnemy;
+int  m_nHoldPosX;
+int  m_nHoldPosY;
+int  m_nHoldPosZ;
+int  m_bIsMovingAndAttack;
+int  m_bAutoArmed;
+int  m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ;
+int  m_nAttackCounter;
+int  m_bSetArmedMode;
+int  m_nAttackAngle;
+unit m_uDefender;
+
+consts
+{
+    eHoldAreaRange = 100*e1m;
+//(p)
+    eIsTargetFreeRangeA = M2A(5);
+    eFindFreeDefenderRangeA = M2A(10);
+    eHeroTooCloseRangeA = M2A(5);
+    eGoToArcherRangeA = M2A(5);
+    eDistanceToDefenderRangeA = M2A(5);
+//    eMaxAttacksPerTarget = 4;
+    eFindDefenderInterval = 150;
+    eIsTargetFreeInterval = 150;
+//(p)    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+////    Functions    ////
+
+//(p)
+
+function int CanReachObject(unit uUnit) {
+
+    if (GetMission().IsAnyGoodPointForUnit(uUnit.GetLocationX(),uUnit.GetLocationY(),32) || HaveShootWeapon()) return true;
+    return false;
+
+}
+/*
+function int IsTargetFree(unit uTarget) {
+
+    if (GetEnemyType(GetThis()) != eEnemySwordsman) return true;
+
+    uTarget.SearchUnits(eIsTargetFreeRangeA,GetPartiesNums());
+    if (uTarget.GetSearchUnitsCount() >= eMaxAttacksPerTarget) {
+        uTarget.ClearSearchUnitsArray();
+        return false;
+    }
+    uTarget.ClearSearchUnitsArray();
+    return true;
+
+}
+
+function void GoToArcher() {
+
+    int i, count;
+    SearchUnits(eGoToArcherRangeA,GetPartiesNums());
+    count = GetSearchUnitsCount();
+    for (i = 0; i < count; i++) if (GetEnemyType(GetSearchUnit(i)) == eEnemyArcher) {
+        CallMoveToPoint(GetSearchUnit(i).GetLocationX(),GetSearchUnit(i).GetLocationY(),0);
+        return;   
+    }
+
+}
+*/
+function void ProcessDefender() {
+
+    if (m_uDefender == null) return;
+    if (m_uDefender.IsLive() && DistanceTo(m_uDefender) < eDistanceToDefenderRangeA) return;
+    m_uDefender = null;
+
+}
+
+function void FindFreeDefender() {
+
+    int i, count;
+    
+    if (GetCampaign().GetGameTick() % eFindDefenderInterval) return;    
+    if (m_uDefender != null) return;
+        
+    SearchUnits(eFindFreeDefenderRangeA,GetPartiesNums(),eSortTypeRange);
+    count = GetSearchUnitsCount();
+    for (i = 0; i < count; i++) if (GetEnemyType(GetSearchUnit(i)) == eEnemySwordsman) {
+        GetSearchUnit(i).CommandUserObject0(GetThis());        
+        if (m_uDefender != null) return;   
+    }
+
+}
+//(p)
+
+function void StoreHoldPos()
+{
+    GetLocation(m_nHoldPosX, m_nHoldPosY, m_nHoldPosZ);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void ResetAttackTarget()
+{
+    m_uTarget = null;
+    m_nAttackAngle = -1;
+    m_uDefender = null; //(p)
+    //nie kasujemy m_bAutoTarget bo bedzie sprawdzane w EndAttackTarget
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void SetAttackTarget(unit uTarget, int bAutoTarget)
+{
+    ResetAttackTarget();
+    m_uTarget = uTarget;
+    m_bAutoTarget = bAutoTarget;
+    if (IsEnemy(uTarget))
+    {
+        m_bAttackingEnemy = true;
+    }
+    else
+    {
+        m_bAttackingEnemy = false;
+    }
+    if (IsDialogUnit(GetThis())) ResetIsDialogUnit(GetThis()); //(p)
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanAttackTarget(unit uTarget)
+{
+    if (!HaveUsableWeapon() || (uTarget == null) || !uTarget.IsLive() || !IsTheSameMission(uTarget) || (uTarget.IsUnit() && uTarget.IsInDialogTalk()) || !uTarget.CanBeHitAndDamaged() || (uTarget == GetThis()))    
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanAttackTargetNoTestTalk(unit uTarget)
+{
+    if (!HaveUsableWeapon() || (uTarget == null) || !uTarget.IsLive() || !IsTheSameMission(uTarget) || !uTarget.CanBeHitAndDamaged() || (uTarget == GetThis()))    
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void StopAttacking()
+{
+    if (IsMoving())
+    {
+        CallStopCurrentAction();
+    }
+    else if (IsAttacking())
+    {
+        CallStopCurrentAction();
+    }
+    ResetAttackTarget();
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsInAttackState()
+{
+    if ((state == WaitingToSetArmedModeBeforeAttack) ||
+        (state == SettingArmedModeBeforeAttack) || 
+        (state == MovingToAttackTarget) || 
+        (state == AttackingTarget) || 
+        (state == EndAttackTarget) ||
+        (state == StrikeAttackingTarget) ||
+        (state == ShootAttackPrepareFire) /*||
+        (state == WaitingToAttackTarget)*/) //(p)
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void StopCurrentActionAttacking()
+{
+    m_bIsMovingAndAttack = false;
+    if (IsInAttackState())
+    {
+        StopAttacking();
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void StopAndSetToArmedMode()
+{
+    ASSERT(!IsInArmedMode());
+    if (IsMoving())
+    {
+        CallStopCurrentAction();
+        state WaitingToSetArmedModeBeforeAttack;
+    }
+    else
+    {
+        m_bAutoArmed = true;
+        CallSetArmedMode(true);
+        state SettingArmedModeBeforeAttack;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void SetToArmedMode()
+{
+    m_bAutoArmed = true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetCommandStateArmedMode()
+{
+    if ((state == WaitingToSetArmedMode) ||
+        (state == SettingArmedMode))
+    {
+        if (m_bSetArmedMode)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (IsInArmedMode())
+    {
+        return 1;
+    }
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MoveToAttackTarget(unit uTarget, int nInRange)
+{
+    int nX, nY, nZ, nDx, nDy, nDist;
+    int bSetArmedMode, bIsSightRange;
+
+#ifndef UNITS_HERO_EC
+    if (HaveMagicDistanceWeapon()) 
+    {
+        nInRange = IsMagicTargetInRange(m_uTarget, false);
+    }
+#endif
+
+    nDist = DistanceTo(uTarget);
+    if (!IsInArmedMode())
+    {
+        bSetArmedMode = true;
+        CHECK_CANCEL_SNEAKMODE();//na wszelki wypadek
+    }
+    if ((nInRange == eInRangeGoodHit) || (nInRange == eInRangeBadAngleAlpha))
+    {
+        TRACE("MoveToAttackTarget: RangeGoodHit || badAlpha                    \n");
+        if (bSetArmedMode)
+        {
+            StopAndSetToArmedMode();
+        }
+        else 
+        {
+            if (IsMoving())
+            {
+                CallStopCurrentAction();
+            }
+            state MovingToAttackTarget;
+        }
+        uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+        return true;
+    }
+    if (nInRange == eInRangeTooClose)
+    {
+        TRACE("MoveToAttackTarget: RangeTooClose                     \n");
+        if (bSetArmedMode)
+        {
+            TRACE("    Przesun sie     \n");
+            SetToArmedMode();
+            //MoveAwayFromPoint:
+            TurnRadiusByAngle(e4m, AngleTo(uTarget.GetLocationX(), uTarget.GetLocationY()) + e1m, nDx, nDy);
+            nX = GetLocationX() + nDx;
+            nY = GetLocationY() + nDy;
+            CallMoveAndSetToArmedMode(nX, nY, nZ);
+        }
+        else
+        {
+            TRACE("MoveToAttackTarget: MoveAwayFromObject            \n",nDist);    
+            MoveAwayFromObject(uTarget, e4m);
+        }
+        state MovingToAttackTarget;
+        uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+        return true;
+    }
+    TRACE("MoveToAttackTarget: RangeTooFar                     \n");
+    if (IsObjectInSightOrHearRange(uTarget, true))
+    {
+        bIsSightRange = true;
+        uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+    }
+    if (!CanReachObject(uTarget))
+    {
+        TRACE("MoveToAttackTarget: Can't Reach Target             \n");
+        /* 07-06-22 NPC moga wchodzic do wody - trzeba by ew. dodac sprawdzenie co to za nieprzejezdnosc
+        if (uTarget.IsObjectInSightOrHearRange(GetThis(),true) || uTarget.GetAttackTarget() == GetThis())
+        {
+            TRACE("moving away                   \n");
+            TurnRadiusByAngle(e4m, AngleTo(uTarget.GetLocationX(), uTarget.GetLocationY()) + 128, nDx, nDy);
+            nX = GetLocationX() + nDx;
+            nY = GetLocationY() + nDy;
+            CallMoveAndSetToArmedMode(nX, nY, nZ);            
+            state MovingToAttackTarget;
+            uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+            return true;
+        }    
+        else
+        */ {
+            TRACE(" ->end                \n");
+            return false;
+        }
+    }
+    else if (HaveDirectFightWeapon())
+    {
+        if ((uTarget.GetAttackTarget() == GetThis()) && uTarget.IsMoving() &&
+            HaveDirectFightWeapon() &&
+            (DistanceTo(uTarget) < e4m))
+        {
+            if (bSetArmedMode)
+            {
+                StopAndSetToArmedMode();
+            }
+            else 
+            {
+                if (GetAngleDiff(AngleTo(uTarget))!=0) 
+                {
+                    CallTurnToAngle(AngleTo(uTarget));
+                }
+                else if (IsMoving())
+                {
+                    CallStopCurrentAction();
+                }
+                state MovingToAttackTarget;
+            }
+        }
+        else
+        {
+            if (bIsSightRange)
+            {
+                if (!FindFreePointForTargetDirectFight(uTarget, nX, nY, nZ))
+                {
+                    uTarget.GetLocation(nX, nY, nZ);
+                }
+            }
+            else
+            {
+                if (DistanceTo(m_nLastTargetPosX, m_nLastTargetPosY) < e50cm)
+                {
+                    TRACE("    target not visible from last pos -> end\n");
+                    return false;
+                }
+                nX = m_nLastTargetPosX;
+                nY = m_nLastTargetPosY;
+                nZ = m_nLastTargetPosZ;
+            }
+            if (IsNoRouteTarget(nX, nY, nZ, true))
+            {
+                return false;
+            }
+            if (bSetArmedMode)
+            {
+                SetToArmedMode();
+                CallMoveAndSetToArmedMode(nX, nY, nZ);
+            }
+            else
+            {
+                CallMoveToPoint(nX, nY, nZ);
+            }
+            state MovingToAttackTarget;
+        }
+    }
+    else
+    {
+        TRACE("MoveToAttackTarget: CallMoveToPoint                     \n");
+        if (bIsSightRange)
+        {
+            uTarget.GetLocation(nX, nY, nZ);
+        }
+        else
+        {
+            if (DistanceTo(m_nLastTargetPosX, m_nLastTargetPosY) < e50cm)
+            {
+                TRACE("    target not visible from last pos -> end\n");
+                return false;
+            }
+            nX = m_nLastTargetPosX;
+            nY = m_nLastTargetPosY;
+            nZ = m_nLastTargetPosZ;
+        }
+        if (bSetArmedMode)
+        {
+            SetToArmedMode();
+            CallMoveAndSetToArmedMode(nX, nY, nZ);
+        }
+        else
+        {
+            CallMoveToPoint(nX, nY, nZ);
+        }
+        state MovingToAttackTarget;
+    }
+    if (state == MovingToAttackTarget)
+    {
+        if (nDist < e3m)
+        {
+            SetStateDelay(5);
+        }
+        else if (nDist < e6m)
+        {
+            SetStateDelay(10);
+        }
+        else
+        {
+            SetStateDelay(20);
+        }
+    }
+    else
+    {
+        SetStateDelay(0);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MoveToAttackTarget(unit uTarget)
+{
+    return MoveToAttackTarget(uTarget, IsTargetInAttackRange(uTarget, false));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void BeginAttackTarget(unit uTarget, int bAutoTarget, int bFromAttackedByUnit, int bCheckFreeTarget)
+{
+    int i;
+//(p)
+    AlarmPartyUnitsAboutEnemy(uTarget);
+    SetAttackTarget(uTarget, bAutoTarget);
+    OnBeginAttackTarget(uTarget, false);
+/*    
+    if (bCheckFreeTarget && (!IsTargetFree(uTarget))) {
+        GoToArcher();
+        state WaitingToAttackTarget;
+        return;    
+    }    
+*/    
+    uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+//(p)    
+    if (!MoveToAttackTarget(uTarget))
+    {
+        state MovingToAttackTarget;//na wszelki wypadek
+        SetStateDelay(0);
+    }
+    SetAutoRunMode(true);
+    //state ustawiony w MoveToAttackTarget
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MakeCommandMoveAttack(int nX, int nY, int nZ)
+{
+    TRACE("command MoveAttack     \n");
+    if (!HaveUsableWeapon())
+    {
+        CHECK_STOP_CURR_ACTION();
+        MoveToPoint(nX, nY, nZ);
+	    state Moving;
+    }
+    if ((state == AttackingTarget) && m_bAutoTarget)
+    {
+        m_nMoveToX = nX;
+        m_nMoveToY = nY;
+        m_nMoveToZ = nZ;
+        m_bIsMovingAndAttack = true;
+        //dalej zostajemy w stanie AttackingTarget
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+        MoveToPoint(nX, nY, nZ);
+        m_bIsMovingAndAttack = true;
+        SetStateDelay(0);
+        state MovingAndAttack;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int OnAttackByOtherUnit(unit uAttacker, int bHit)
+{
+    ASSERT(!IsHeroUnit());//hero tego nie dostaje
+    if (!HaveUsableWeapon() || !CanReachObject(uAttacker))
+    {
+        if (bHit || IsObjectInSightOrHearRange(uAttacker, true)) //(p)
+        {
+            CHECK_CANCEL_SNEAKMODE();
+            if (state == MakingCustomWork) StopCurrentActionImmediate();
+            SetAutoRunMode(true);            
+            MoveAwayFromObject(uAttacker, e16m);
+            AlarmPartyUnitsAboutEnemy(uAttacker);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if ((bHit || (state == Nothing) || (state == Moving)) && (bHit || IsObjectInSightOrHearRange(uAttacker, true))) //(p)
+    {
+        //07-07-02 - poprawa zgloszonych bledow: jesli atakuje juz wroga to nie atakujemy nowego jesli to NPC
+        if (IsInAttackState() && (m_uTarget != null) && IsEnemy(m_uTarget) && !uAttacker.IsHeroUnit())
+        {
+            return false;
+        }
+        CHECK_CANCEL_SNEAKMODE();
+        StoreHoldPos();
+        BeginAttackTarget(uAttacker, true, true, true);
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//unit po zaatakowaniu przez uAttacker przeszedl do dodge/parry
+function int OnStartDirectFightActionByEnemy(unit uAttacker)
+{
+    ASSERT(!IsHeroUnit());//hero tego nie dostaje
+    if (!HaveUsableWeapon() || !CanReachObject(uAttacker))
+    {
+        if (IsObjectInSightOrHearRange(uAttacker, true))
+        {
+            CHECK_CANCEL_SNEAKMODE();
+            MoveAwayFromObject(uAttacker, e16m);
+            AlarmPartyUnitsAboutEnemy(uAttacker);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    StoreHoldPos();
+    BeginAttackTarget(uAttacker, true, true, true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function unit FindBestTarget()
+{
+    int nIndex, nCount, nInRange;
+    unit uTarget, uResult;
+    int nDist, nRangeOfFire, nPosX, nPosY, nTargetX, nTargetY;
+    int bDirectFight, bFighting, bResultFighting;
+    int nSurfaceTargetType;
+
+    ASSERT(HaveWeapon());
+    if (HaveDirectFightWeapon())
+    {
+        bDirectFight = true;
+        nSurfaceTargetType = eTargetTypeLand;
+    }
+    else
+    {
+        nSurfaceTargetType = eTargetTypeLand | eTargetTypeAir;
+    }
+    if (SearchUnits(GetEnemiesParties(), nSurfaceTargetType | eTargetTypeUnit | eTargetTypeLive | eTargetTypeDamagableOnly | eTargetTypeAttackingSummonedUnitOwner, eSortTypeRange) == 0)
+    {
+        return null;
+    }
+    nCount = GetSearchUnitsCount();
+    for (nIndex = 0; nIndex < nCount; ++nIndex)
+    {
+        uTarget = GetSearchUnit(nIndex);
+        if (!IsHeroUnit() && uTarget.IsNearLevelBorder(e10m))
+        {
+            continue;
+        }
+        nInRange = IsTargetInAttackRange(uTarget, false);
+        if ((nInRange == eInRangeGoodHit) || (nInRange == eInRangeBadAngleAlpha))
+        {
+            uResult = uTarget;
+            break;
+        }
+        if (bDirectFight && IsNoRouteTarget(uTarget.GetLocationX(), uTarget.GetLocationY(), uTarget.GetLocationZ(), true))
+        {
+            continue;
+        }
+        if ((uResult == null) || bResultFighting)
+        {
+            //if (movementMode == eModeHoldArea)
+            {
+                nDist = DistanceTo(uTarget);
+                if (bDirectFight)
+                {
+                    nRangeOfFire = e10m;
+                }
+                else
+                {
+                    nRangeOfFire = GetAttackRange();
+                }
+                if (nDist > (nRangeOfFire - e2m))
+                {
+                    if (uTarget.IsMoving())
+                    {
+                        uTarget.GetMoveTarget(nPosX, nPosY);
+                        if (DistanceTo(nPosX, nPosY) < nDist)
+                        {
+                            nTargetX = nPosX;
+                            nTargetY = nPosY;
+                        }
+                        else
+                        {
+                            uTarget.GetLocation(nTargetX, nTargetY);
+                        }
+                    }
+                    else
+                    {
+                        uTarget.GetLocation(nTargetX, nTargetY);
+                    }
+                    if ((state == MovingToHoldAreaPos) || (state == WaitBeforeMovingToHoldAreaPos))
+                    {
+                        if ((DistanceTo(nTargetX, nTargetY) > (nRangeOfFire + eHoldAreaRange - e2m)) ||
+                            (Distance(m_nHoldPosX, m_nHoldPosY, nTargetX, nTargetY) > (nRangeOfFire + eHoldAreaRange - e2m)))
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (DistanceTo(nTargetX, nTargetY) > (nRangeOfFire + eHoldAreaRange - e2m))
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+            if (!bDirectFight)
+            {
+                uResult = uTarget;
+            }
+            else
+            {
+                if (uTarget.IsUnit() && uTarget.HaveDirectFightWeapon() && (uTarget.GetAttackTarget() != null))
+                {
+                    bFighting = true;
+                }
+                else
+                {
+                    bFighting = false;
+                }
+                if ((uResult == null) || !bFighting)
+                {
+                    uResult = uTarget;
+                    bResultFighting = bFighting;
+                }
+            }
+        }
+    }
+    ClearSearchUnitsArray();
+    return uResult;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int FindNothingTarget(int bStoreHoldPos)
+{   
+    unit uTarget;
+
+    if (!HaveUsableWeapon() || IsInSneakMode())
+    {
+        return false;
+    }
+    uTarget = FindBestTarget();
+    if (uTarget != null)
+    {
+        CHECK_CANCEL_SNEAKMODE();
+#ifdef AUTOCASTMAGICBEFOREFIGHT
+        if ((Rand(100) < GetAutoCastMagicProbabilityBeforeFight()) && AutoCastMagicBeforeFight(uTarget))
+        {
+            SetStateDelay(0);
+            return true;
+        }
+#endif //AUTOCASTMAGICBEFOREFIGHT
+        if (bStoreHoldPos)
+        {
+            StoreHoldPos();
+        }
+        BeginAttackTarget(uTarget, true, false, true);
+        SetStateDelay(0);
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int FindNothingTarget()
+{   
+    return FindNothingTarget(true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//wywolywane co 5 tickow przy atakowaniu celu
+function void AttackingTargetAttackSkillsStep()
+{
+    int nNextAttackSkill, nSkill, nIndex;
+    int arrAvailable[];
+    int arrSecondHand[];
+    
+    nNextAttackSkill = GetNextAttackSkill();
+    if (nNextAttackSkill >= 0)
+    {
+        if (nNextAttackSkill == eSkillBerserk)
+        {
+            if (!Rand(10))
+            {
+                SetNextAttackSkill(-1);
+            }
+        }
+    }
+    else
+    {
+        if (Rand(5))
+        {
+            return;
+        }
+        for (nSkill = eFirstAttackSkill; nSkill <= eLastAttackSkill; nSkill++)
+        {
+            if (CanMakeActiveSkill(nSkill, false, m_uTarget))
+            {
+                arrAvailable.Add(nSkill);
+                arrSecondHand.Add(false);
+            }
+        }
+        if (CanMakeActiveSkill(eSkillStun, true, m_uTarget))
+        {
+            arrAvailable.Add(eSkillStun);
+            arrSecondHand.Add(true);
+        }
+        if (CanMakeActiveSkill(eSkillPullShield, true, m_uTarget))
+        {
+            arrAvailable.Add(eSkillPullShield);
+            arrSecondHand.Add(true);
+        }
+        if (!arrAvailable.GetSize())
+        {
+            return;
+        }
+        nIndex = Rand(arrAvailable.GetSize());
+        if (arrAvailable[nIndex] == eSkillKnifeDeathStrike)
+        {
+            //CommandSkillKnifeDeathStrike(m_uTarget, 0);
+        }
+        else if (arrAvailable[nIndex] == eSkillStealing)
+        {
+            //CommandSkillStealing(m_uTarget);
+        }
+        else
+        {
+            SetNextAttackSkill(arrAvailable[nIndex], arrSecondHand[nIndex]);
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+////    States    ////
+
+state WaitingToSetArmedModeBeforeAttack
+{
+
+// (p) IsMoving zwraca true nawet jesli unit sie nie rusza, przez co unit zawiesza sie w tym miejscu    
+//    ENABLE_TRACE(true);
+//    TRACE("%s:%d x:%d y:%d moving:%d            \n",__FILE__,__LINE__,GetLocationX() / 256,GetLocationY() / 256,IsMoving());
+//    ENABLE_TRACE(false);
+
+    if (IsMoving())
+    {
+        return WaitingToSetArmedModeBeforeAttack, 1;
+    }
+    else
+    {        
+      if (IsMoving()) StopCurrentActionImmediate();        
+        m_bAutoArmed = true;
+        CallSetArmedMode(true);
+        return SettingArmedModeBeforeAttack, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingArmedModeBeforeAttack
+{
+    if (IsSettingArmedMode())
+    {
+        return SettingArmedModeBeforeAttack, 5;
+    }
+    else
+    {
+        if (!MoveToAttackTarget(m_uTarget))
+        {
+            return MovingToAttackTarget, 0;//na wszelki wypadek
+        }
+        //state ustawiony w MoveToAttackTarget
+        return state, GetStateDelay();
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingUnarmedModeAfterAttack
+{
+    if (IsSettingArmedMode())
+    {
+        return SettingUnarmedModeAfterAttack, 5;
+    }
+    else
+    {
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingToAttackTarget
+{
+    int nInRange;
+    
+    TRACE("state MovingToAttackTarget         \n");
+    if ((m_uTarget == null) || !m_uTarget.IsLive() || !IsTheSameMission(m_uTarget) || m_uTarget.IsInDialogTalk() || !HaveUsableWeapon())
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+    if (m_bAutoTarget && m_bAttackingEnemy && !IsEnemy(m_uTarget))
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+#ifndef UNITS_HERO_EC
+    if ((Rand(100) < GetAutoCastMagicProbabilityDuringFight()) && AutoCastMagicDuringFight(m_uTarget))
+    {
+            //zostaje stan ustawiony w AutoCastMagicDuringFight
+            return state, 0;
+    }
+#endif    
+    m_uTarget.SetEventAttackByOtherUnit(GetThis());
+    nInRange = IsTargetInAttackRange(m_uTarget, false);
+    if ((nInRange == eInRangeGoodHit) || (nInRange == eInRangeBadAngleAlpha))
+    {
+        m_uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+        if (HaveShootWeapon() && IsMoving() && m_uTarget.IsMoving() &&
+            (GetTargetDirectionDiff(m_uTarget) <= 0x50) && (DistanceTo(m_uTarget) >= (GetAttackRange() - e5m)))
+        {            
+            //podchodzimy jeszcze blizej bo moze ucieka - przechodzimy dalej
+            TRACE("   ->target in range escaping -> moving closer         \n");
+        }
+        else
+        {
+            if (IsMoving())
+            {
+                CallStopCurrentAction();
+                return MovingToAttackTarget, 1;
+            }
+            TRACE("       -> CallAttackTarget                    \n");
+            CallAttackTarget(m_uTarget, false);
+            return AttackingTarget, 5; //20;
+        }
+    }
+    /*
+    else if (nInRange == eInRangeBadAngleAlpha)
+    {
+        CallTurnToAngle(AngleTo(m_uTarget));
+        return MovingToAttackTarget, 1;
+    }
+    */
+    if (!IsHeroUnit() && m_uTarget.IsNearLevelBorder(e10m))
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+    if (m_bAutoTarget)
+    {
+        //!!if ((movementMode == eModeHoldArea) &&
+        if ((DistanceTo(m_nHoldPosX, m_nHoldPosY) > eHoldAreaRange))
+        {
+            TRACE("    ->holdArea->Dist>range->Stop     \n");
+            ResetAttackTarget();
+            if (!m_bAutoTarget)
+            {
+                EndCommand(true);
+            }
+            return EndAttackTarget, 0;
+        }
+    }
+    if (!MoveToAttackTarget(m_uTarget, nInRange))
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+    //state ustawiony w MoveToAttackTarget
+    return state, GetStateDelay();
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state AttackingTarget
+{
+    int nAngle;
+    int nAngleLeft;
+    int nAngleRight;
+    
+    TRACE("state Attacking Target         \n");
+    ProcessDefender(); //(p)
+    if (m_bAutoTarget && m_bAttackingEnemy && !IsEnemy(m_uTarget))
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+    if (!m_uTarget.IsLive() || !IsTheSameMission(m_uTarget) || m_uTarget.IsInDialogTalk())
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+    if (!IsHeroUnit() && m_uTarget.IsNearLevelBorder(e10m))
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, 0;
+    }
+
+    if (IsAttacking() && CanReachObject(m_uTarget))
+    {        
+        TRACE("  IsAttacking()       \n");
+        m_uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+//(p)
+        if (m_nAttackAngle != -1) {
+        
+            nAngle = AngleTo(m_nLastTargetPosX,m_nLastTargetPosY);
+            nAngleLeft = (nAngle + 256 - m_nAttackAngle) % 256;
+            nAngleRight = (m_nAttackAngle + 256 - nAngle) % 256;
+            
+            if ((nAngleLeft > 48) && (nAngleRight > 48)) {
+                if (nAngleLeft > nAngleRight) CallMoveOneStep(3,nAngle);
+                else CallMoveOneStep(1,nAngle);
+            }
+                  
+        }
+        AlarmPartyUnitsAboutEnemy(m_uTarget);
+        if ((GetEnemyType(GetThis()) == eEnemyArcher || (HaveShootWeapon() && !HaveDirectFightWeapon())) && DistanceTo(m_uTarget) < eHeroTooCloseRangeA) {
+            FindFreeDefender();
+            if (CheckAndMoveAwayFromObject(m_uTarget,eHeroTooCloseRangeA * 3)) return MovingToAttackTarget, 30 * 3;
+        }
+//(p)      
+#ifdef AUTOCASTMAGICDURINGFIGHT
+        if ((Rand(100) < GetAutoCastMagicProbabilityDuringFight()) && AutoCastMagicDuringFight(m_uTarget))
+        {
+            //zostaje stan ustawiony w AutoCastMagicDuringFight
+        }
+        else
+#endif //AUTOCASTMAGICDURINGFIGHT
+        {
+#ifndef UNITS_HERO_EC
+            AttackingTargetAttackSkillsStep();
+            if ((GetCampaign().GetGameTick() % 5) != 0) return AttackingTarget, 4 - (GetCampaign().GetGameTick() % 5); //(p)            
+            return AttackingTarget, 4;
+#endif //UNITS_HERO_EC            
+        }
+    }
+    else 
+    {
+        if (!HaveDirectFightWeapon() || CanStartDirectFightAction(m_uTarget))
+        {
+            if (!MoveToAttackTarget(m_uTarget))
+            {
+                StopAttacking();
+                if (!m_bAutoTarget)
+                {
+                    EndCommand(true);
+                }
+                return EndAttackTarget, 0;
+            }
+        }
+        else
+        {
+            StepTurnNoAnimToAttackTarget(m_uTarget);
+            SetStateDelay(0);
+        }
+        //state ustawiony w MoveToAttackTarget
+        return state, GetStateDelay();
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state EndAttackTarget
+{
+    int nDist;
+    
+    TRACE("EndAttackingTarget     \n");
+    if (!m_bAutoTarget || IsHeroUnit())
+    {
+        TRACE("    ->!Auto->Nothing     \n");
+        m_bIsMovingAndAttack = false;
+        return Nothing, 0;
+    }
+    if (m_bIsMovingAndAttack)
+    {
+        TRACE("  ->m_bIsMovingAndAttack     \n");
+        //szukamy nowego celu
+        if (FindNothingTarget())//robimy StoreHoldPos
+        {
+            TRACE("    ->FindNothingTarget     \n");
+            return state, GetStateDelay();//state ustawiony w FindNothingTarget
+        }
+        TRACE("    ->MovingAndAttack     \n");
+        CallMoveToPoint(m_nMoveToX, m_nMoveToY, m_nMoveToZ);
+        return MovingAndAttack, 5;
+    }
+    else if (true)//!!if (movementMode == eModeHoldArea)
+    {
+        TRACE("  ->eModeHoldArea     \n");
+        //sprawdzamy czy w poblizu jest inny cel
+        nDist = DistanceTo(m_nHoldPosX, m_nHoldPosY);
+        if (nDist < eHoldAreaRange/2)
+        {
+            if (FindNothingTarget(false))
+            {
+                TRACE("    ->FindNothingTarget     \n");
+                return state, GetStateDelay();//state ustawiony w FindNothingTarget
+            }
+        }
+        m_bIsMovingAndAttack = false;
+        if ((nDist > e1m) && !IsSummonedUnit())
+        {
+            TRACE("    ->WaitBeforeMovingToHoldAreaPos     \n");
+            m_nAttackCounter = 10;
+            return WaitBeforeMovingToHoldAreaPos, 5;
+        }
+        else
+        {
+            TRACE("    ->Nothing     \n");
+            return Nothing, 0;
+        }
+    }
+    else
+    {
+        TRACE("    ->Nothing     \n");
+        m_bIsMovingAndAttack = false;
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state StrikeAttackingTarget
+{
+    if (IsAttacking())
+    {
+        return StrikeAttackingTarget, 5;
+    }
+    else
+    {
+        ResetAttackTarget();
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state ShootAttackPrepareFire
+{
+    if (IsAttacking())
+    {
+        return ShootAttackPrepareFire, 4;//musi sie roznic od StrikeAttackingTarget
+    }
+    else
+    {
+        ResetAttackTarget();
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state WaitBeforeMovingToHoldAreaPos
+{    
+    TRACE("WaitBeforeMovingToHoldAreaPos     \n");
+    if (FindNothingTarget(false))
+    {
+        TRACE("    ->FindNothingTarget     \n");
+        return state, GetStateDelay();//state ustawiony w FindNothingTarget
+    }
+    m_nAttackCounter--;
+    if (m_nAttackCounter > 0)
+    {
+        return WaitBeforeMovingToHoldAreaPos, 20;
+    }
+    TRACE("    ->MovingToHoldAreaPos     \n");
+    CallMoveToPoint(m_nHoldPosX, m_nHoldPosY, m_nHoldPosZ);
+    return MovingToHoldAreaPos, 5;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingToHoldAreaPos
+{
+// (p) IsMoving zwraca true nawet jesli unit sie nie rusza, przez co unit zawiesza sie w tym miejscu    
+//    ENABLE_TRACE(true);
+//    TRACE("%s:%d x:%d y:%d moving:%d            \n",__FILE__,__LINE__,GetLocationX() / 256,GetLocationY() / 256,IsMoving());
+//    ENABLE_TRACE(false);
+
+	if (IsMoving() || IsStartingMoving())
+	{
+		TRACE("MovingToHoldAreaPos     \n");
+        //sprawdzamy czy w poblizu jest inny cel
+        if (DistanceTo(m_nHoldPosX, m_nHoldPosY) < eHoldAreaRange - e3m)
+        {
+            if (FindNothingTarget(false))
+            {
+                TRACE("   ->AttackingTarget     \n");
+                return state, GetStateDelay();//state ustawiony w FindNothingTarget
+            }
+        }
+        return MovingToHoldAreaPos;
+	}
+	else
+	{
+		TRACE("MovingToHoldAreaPos -> Nothing     \n");
+        //to bylo z m_bAutoTarget
+		return Nothing, 0;
+	}
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingAndAttack
+{
+    unit uOwner;
+    int nX, nY;
+
+	if (IsMoving() || IsStartingMoving())
+	{
+		TRACE("MovingAndAttack     \n");
+        //szukamy nowego celu
+        if (FindNothingTarget())//robimy StoreHoldPos
+        {
+            TRACE("   ->AttackingTarget     \n");
+            return state, GetStateDelay();//state ustawiony w FindNothingTarget
+        }
+        uOwner = GetSummonedUnitOwner();
+        if (uOwner != null)
+        {
+            CalcMoveToNearUnitPos(uOwner, e2m, nX, nY);
+            SetAutoRunMode(true);
+            if ((nX != m_nMoveToX) || (nY != m_nMoveToY))
+            {
+                MakeCommandMoveAttack(nX, nY, GetLocationZ());
+            }
+            return MovingAndAttack, 10;
+        }
+        else
+        {
+            return MovingAndAttack;
+        }
+	}
+	else
+	{
+		TRACE("MovingAndAttack -> Nothing     \n");
+        m_bIsMovingAndAttack = false;
+		EndCommand(true);
+		return Nothing, 0;
+	}
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state WaitingToSetArmedMode
+{
+    if (IsMoving())
+    {
+        return WaitingToSetArmedMode, 1;
+    }
+    else
+    {
+        CallSetArmedMode(m_bSetArmedMode);
+        return SettingArmedMode, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingArmedMode
+{
+    if (IsSettingArmedMode())
+    {
+        return SettingArmedMode, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+state WaitingToAttackTarget//dummy state to allow loading saves on XBox 07-06-19->07-06-21
+{
+    //
+    return Nothing;
+}
+/*
+//(p)
+state WaitingToAttackTarget {
+
+    if ((m_uTarget == null) || !m_uTarget.IsLive() || !IsTheSameMission(m_uTarget) || m_uTarget.IsInDialogTalk() || !HaveUsableWeapon())
+    {
+        StopAttacking();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndAttackTarget, GetStateDelay();
+    }
+
+    if (((GetCampaign().GetGameTick() % eIsTargetFreeInterval) == 0) && (IsTargetFree(m_uTarget))) {
+        BeginAttackTarget(m_uTarget,true,false,false);
+        return state, GetStateDelay();
+    }
+
+    m_uTarget.GetLocation(m_nLastTargetPosX, m_nLastTargetPosY, m_nLastTargetPosZ);
+    return WaitingToAttackTarget, 0;
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+*/
+////    Commands    ////
+
+//CommandUserObject0 - archer->swordsman
+command UserObject0(unit uUnit) hidden {
+
+    if (state == Nothing /*|| state == WaitingToAttackTarget*/ || state == Moving || state == MovingAndAttack) {
+        
+        m_uDefender = uUnit;
+        BeginAttackTarget(uUnit.GetAttackTarget(),true,false,false);
+        uUnit.CommandUserObject1(GetThis());
+        
+    }
+        
+    return true;
+
+}
+
+//CommandUserObject1 - swordsman->archer
+command UserObject1(unit uUnit) hidden {
+
+    m_uDefender = uUnit;
+
+    return true;
+
+}
+
+//CommandUserNoParam - set state WaitingToAttackTarget
+command UserNoParam0() hidden {
+/*
+    if (m_uDefender != null) return true;
+    GoToArcher();
+    state WaitingToAttackTarget;
+*/
+    return true;
+
+}
+
+// SetAttackAngle
+command UserOneParam1(int nAngle) hidden {
+
+    m_nAttackAngle = nAngle;
+    return true;
+
+}
+
+command Attack(unit uTarget) item ITEM_ATTACK hidden
+{
+    int i;
+    if (!CanAttackTarget(uTarget))
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (IsHeroUnit())
+    {
+        SetAttribute("ActionStrike", 1);
+    }
+    if (uTarget == m_uTarget)
+    {
+        
+        return true;
+    }
+    CHECK_STOP_CURR_ACTION();
+    CHECK_CANCEL_SNEAKMODE();
+    BeginAttackTarget(uTarget, false, false, false);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command StrikeAttack(unit uTarget, int nCameraAngle) hidden
+{
+    if (((uTarget != null) && !CanAttackTargetNoTestTalk(uTarget)) || !HaveDirectFightWeapon() || !IsInArmedMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (!IsInAttackState())
+    {
+        if (IsHeroUnit() && !IsOnHorse() && (state == MovingStep))
+        {
+            StopCurrentActionImmediate();
+        }
+        else if (state != MovingOneStep)
+        {
+            CHECK_STOP_CURR_ACTION();
+        }
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (IsHeroUnit())
+    {
+        SetAttribute("ActionStrike", 1);
+    }
+    if (state == MovingStep)
+    {
+        //zapamietujemy
+        SetMoveStepInDirectionAfterCommand(true, m_nAlphaAngle);
+    }
+    CallMakeStrikeAttack(uTarget, nCameraAngle);
+    SetAttackTarget(uTarget, false);
+    if (IsMovingAndStrikeAttack())
+    {
+        //atak w trakcie jazdy na koniu - zostajemy w tym stanie w ktorym jestesmy
+    }
+    else
+    {
+        state StrikeAttackingTarget;
+        SetStateDelay(5);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command ShootAttackManualPrepare() hidden
+{
+    if (!HaveShootWeapon() || !HaveUsableWeapon() || !IsInArmedMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (!IsInAttackState())
+    {
+        CHECK_STOP_CURR_ACTION();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    CallMakeShootAttackManualPrepare();
+    state ShootAttackPrepareFire;
+    SetStateDelay(5);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command ShootAttackManualFire(unit uTarget, int nX, int nY, int nZ) hidden
+{
+    if (!HaveShootWeapon() || !HaveUsableWeapon() || !IsInArmedMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    CallMakeShootAttackManualFire(uTarget);
+    SetAttackTarget(uTarget, false);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+command ShootAttackAutoPrepare(unit uTarget) hidden
+{
+    if (!HaveShootWeapon() || !HaveUsableWeapon() || !IsInArmedMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (!IsInAttackState())
+    {
+        CHECK_STOP_CURR_ACTION();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    CallMakeShootAttackAutoPrepare(uTarget);
+    SetAttackTarget(uTarget, false);
+    state ShootAttackPrepareFire;
+    SetStateDelay(5);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command ShootAttackAutoFire() hidden
+{
+    if (!HaveShootWeapon() || !HaveUsableWeapon() || !IsInArmedMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    CallMakeShootAttackAutoFire();
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command TurnToCamera(int nAlpha, int nBeta, int nTmp) hidden
+{
+    TurnToCamera(nAlpha, nBeta);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SetArmedMode(int bArmed) hidden
+{
+    int nCurrMode;
+    
+    TRACE("command SetArmedMode     \n");
+    if (!CanSetArmedMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (bArmed < 0)
+    {
+        m_bSetArmedMode = !GetCommandStateArmedMode();
+    }
+    else
+    {
+        m_bSetArmedMode = bArmed;
+    }
+    m_bAutoArmed = false;
+    CHECK_STOP_CURR_ACTION();
+    CHECK_CANCEL_SNEAKMODE();
+    if (IsMoving() || IsMovingAndSettingArmedMode())
+    {
+        if (!IsMovingTurning())
+        {
+            if (m_bSetArmedMode)
+            {
+                CallContinueMovingAndSetToArmedMode(true);
+            }
+            else
+            {
+                CallContinueMovingAndSetToArmedMode(false);
+            }
+            //zostaje taki state jaki jest
+            //state SettingArmedMode;
+            //SetStateDelay(5);
+        }
+        else
+        {
+            CallStopCurrentAction();
+            state WaitingToSetArmedMode;
+            SetStateDelay(1);
+        }
+    }
+    else
+    {
+        CallSetArmedMode(m_bSetArmedMode);
+        state SettingArmedMode;
+        SetStateDelay(5);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_ATTACK_ECH

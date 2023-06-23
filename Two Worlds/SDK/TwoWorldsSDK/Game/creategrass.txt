@@ -1,0 +1,1482 @@
+// Map_C05.lnd
+Editor.LoadLevel Map_C05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D05.lnd
+Editor.LoadLevel Map_D05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E05.lnd
+Editor.LoadLevel Map_E05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F05.lnd
+Editor.LoadLevel Map_F05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G05.lnd
+Editor.LoadLevel Map_G05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_H05.lnd
+Editor.LoadLevel Map_H05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 3584 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_I05.lnd
+Editor.LoadLevel Map_I05.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 4096 2048
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B06.lnd
+Editor.LoadLevel Map_B06.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C06.lnd
+Editor.LoadLevel Map_C06.lnd
+
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D06.lnd
+Editor.LoadLevel Map_D06.lnd
+ 
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E06.lnd
+Editor.LoadLevel Map_E06.lnd
+ 
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F06.lnd
+Editor.LoadLevel Map_F06.lnd
+ 
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G06.lnd
+Editor.LoadLevel Map_G06.lnd
+ 
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_H06.lnd
+Editor.LoadLevel Map_H06.lnd
+ 
+Editor.TextureFromBitmapEx GENtexwody.bmp 3584 2560
+
+editor.SetCreateRect 0 0 128 128
+
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_I06.lnd
+Editor.LoadLevel Map_I06.lnd
+ 
+Editor.TextureFromBitmapEx GENtexwody.bmp 4096 2560
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_A07.lnd
+Editor.LoadLevel Map_A07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 0 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B07.lnd
+Editor.LoadLevel Map_B07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C07.lnd
+Editor.LoadLevel Map_C07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D07.lnd
+Editor.LoadLevel Map_D07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E07.lnd
+Editor.LoadLevel Map_E07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F07.lnd
+Editor.LoadLevel Map_F07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G07.lnd
+Editor.LoadLevel Map_G07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_H07.lnd
+Editor.LoadLevel Map_H07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3584 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_I07.lnd
+Editor.LoadLevel Map_I07.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 4096 3072
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_A08.lnd
+Editor.LoadLevel Map_A08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 0 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B08.lnd
+Editor.LoadLevel Map_B08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C08.lnd
+Editor.LoadLevel Map_C08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D08.lnd
+Editor.LoadLevel Map_D08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E08.lnd
+Editor.LoadLevel Map_E08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F08.lnd
+Editor.LoadLevel Map_F08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G08.lnd
+Editor.LoadLevel Map_G08.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 3584
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_A09.lnd
+Editor.LoadLevel Map_A09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 0 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B09.lnd
+Editor.LoadLevel Map_B09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C09.lnd
+Editor.LoadLevel Map_C09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D09.lnd
+Editor.LoadLevel Map_D09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E09.lnd
+Editor.LoadLevel Map_E09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F09.lnd
+Editor.LoadLevel Map_F09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G09.lnd
+Editor.LoadLevel Map_G09.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 4096
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_A10.lnd
+Editor.LoadLevel Map_A10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 0 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B10.lnd
+Editor.LoadLevel Map_B10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C10.lnd
+Editor.LoadLevel Map_C10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D10.lnd
+Editor.LoadLevel Map_D10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E10.lnd
+Editor.LoadLevel Map_E10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F10.lnd
+Editor.LoadLevel Map_F10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G10.lnd
+Editor.LoadLevel Map_G10.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 4608
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B11.lnd
+Editor.LoadLevel Map_B11.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 5120
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C11.lnd
+Editor.LoadLevel Map_C11.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 5120
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D11.lnd
+Editor.LoadLevel Map_D11.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 5120
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E11.lnd
+Editor.LoadLevel Map_E11.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 5120
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F11.lnd
+Editor.LoadLevel Map_F11.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 5120
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G11.lnd
+Editor.LoadLevel Map_G11.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 5120
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_B12.lnd
+Editor.LoadLevel Map_B12.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 512 5632
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_C12.lnd
+Editor.LoadLevel Map_C12.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1024 5632
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_D12.lnd
+Editor.LoadLevel Map_D12.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 1536 5632
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_E12.lnd
+Editor.LoadLevel Map_E12.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2048 5632
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_F12.lnd
+Editor.LoadLevel Map_F12.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 2560 5632
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+
+// Map_G12.lnd
+Editor.LoadLevel Map_G12.lnd
+Editor.TextureFromBitmapEx GENtexwody.bmp 3072 5632
+editor.SetCreateRect 0 0 128 128
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+Editor.RemoveGrassWhereTexture 9 1 1
+Editor.RemoveGrassWhereTexture 10 1 1
+Editor.RemoveGrassWhereTexture 15 1 1
+Editor.RemoveGrassWhereTexture 9 2 1
+Editor.RemoveGrassWhereTexture 10 2 1
+Editor.RemoveGrassWhereTexture 15 2 1
+Editor.RemoveGrassWhereTexture 9 3 1
+Editor.RemoveGrassWhereTexture 10 3 1
+Editor.RemoveGrassWhereTexture 15 3 1
+Editor.RemoveGrassWhereTexture 12 1 1
+Editor.RemoveGrassWhereTexture 13 1 1
+Editor.RemoveGrassWhereTexture 12 2 1
+Editor.RemoveGrassWhereTexture 13 2 1
+Editor.RemoveGrassWhereTexture 12 3 1
+Editor.RemoveGrassWhereTexture 13 3 1
+Editor.SaveLevel 1
+
+

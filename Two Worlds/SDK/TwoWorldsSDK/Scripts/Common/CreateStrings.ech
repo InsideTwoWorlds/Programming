@@ -1,0 +1,661 @@
+#ifndef COMMON_CREATE_STRINGS_ECH
+#define COMMON_CREATE_STRINGS_ECH
+
+
+
+consts {
+
+    
+    eTGUnknown            = 0;
+    eTGShopMerchant       = 1;
+    eTGShopNecro          = 2;
+    eTGShopMage           = 3;
+    eTGShopWarrior        = 4;
+    eTGShopThief          = 5;
+    eTGCoach1             = 6;
+    eTGCoach2             = 7;
+    eTGCoach3             = 8;
+    eTGCoach4             = 9;
+    eTGCoach5             = 10;
+    eTGCoach6             = 11;
+    eTGCoachMage          = 12;
+    eTGCoachNecro         = 13;
+    eTGChanger1           = 14;
+    eTGChanger2           = 15;
+    eTGBartender          = 16;
+    eTGGuardStatic        = 17;
+    eTGGuardDynamic       = 19;
+    eTGWorkerPlay         = 20;
+    eTGWorkerDance        = 21;
+    eTGWorkerPray         = 22;
+    eTGWorkerWoodcut      = 23;
+    eTGWorkerBroom        = 24;
+    eTGWorkerKneel        = 25;
+    eTGWorkerPitchfork    = 26;
+    eTGWorkerScythe       = 27;
+    eTGWorkerPinaxe       = 28;
+    eTGWorkerSitting      = 29;
+    eTGWorkerCook         = 30;
+    eTGCitizen            = 31;
+
+    eMale                 = 0;
+    eFemale               = 1;
+    eRandomSex            = 2;
+
+    eMQGMaleNamesStart    = 1000;
+    eMQGMaleNamesNumber   = 50;
+    eMQGFemaleNamesStart  = 1050;
+    eMQGFemaleNamesNumber = 50;
+
+}
+/*
+
+//Female
+CustomWork0 - MARKER_F_DANCE (dancing)
+CustomWork1 - krzeslo
+CustomWork2 - lozko
+CustomWork3 - MARKER_F_PRAY (knleeling and praying)
+CustomWork4 - MARKER_F_COOK (cooking)
+CustomWork5 - MARKER_TAVERN (standing behind the bar)
+CustomWork6 - MARKER_F_BROOM - (cleaning floor with broom) + BROOM
+CustomWork7 - MARKER_F_KNEEL (kneeling and doing something with hands on the floor)
+
+MARKER_F_WALKER - citizen
+
+//Male
+CustomWork0 - MARKER_PLAY (sitting on the chair playing  quitar)
+CustomWork1 - krzeslo
+CustomWork2 - lozko
+CustomWork3 - MARKER_PRAY knleeling and praying
+CustomWork4 - MARKER_WOODCUT/MARKER_B_WOODCUT (cutting wood) + AXE1/AXE2
+CustomWork5 - MARKER_TAVERN (standing behind the bar)
+CustomWork6 - MARKER_BROOM (cleaning floor with broom) + BROOM
+CustomWork7 - MARKER_KNEEL/MARKER_B_KNEEL (kneeling and doing something with hands on the floor)
+CustomWork8 - MARKER_PICHFORK (working with pitchfork) + PICHFORK
+CustomWork9 - MARKER_SCYTHE (cutting grass with scythea) + SCYTHEA
+CustomWork10 - MARKER_PINAXE (digging with pinneaxe) + PINEAXE
+CustomWork11 - MARKER_SITING/MARKER_B_SITING (sitting on the ground (near fire))
+CustomWork12 - MARKER_SITING/MARKER_B_SITING (sitting on the ground (near fire)) + STICK
+CustomWork13 - MARKER_SITING/MARKER_B_SITING (sitting on the ground (near fire)) + BOTTLE1/BOTTLE2/BOTTLE3
+CustomWork15 - MARKER_DUMMY (walka z kukla zolnerska) + SWORD_WOOD
+CustomWork16 - MARKER_DUMMY (walka z kukla zolnerska) + SWORD_WOOD
+CustomWork17 - MARKER_DUMMY (walka z kukla zolnerska) + SWORD_WOOD
+CustomWork18 - MARKER_LAY_DOWN (lezenie na ziemi i wypoczywanie)
+CustomWork19 - MARKER_LAY_DOWN (lezenie na ziemi i wypoczywanie)
+CustomWork20 - MARKER DESK (czytanie ksiazki)
+CustomWork21 - MARKER_DESK (pisanie  w ksiedze)
+
+MARKER_WALKER - citizen
+
+sklepy:
+MARKER_SHOP
+MARKER_SHOP_NECRO
+MARKER_SHOP_MAGE
+MARKER_SHOP_WARRIOR
+MARKER_SHOP_FENCE
+trenerzy:
+MARKER_COACH_1
+MARKER_COACH_2
+MARKER_COACH_3
+MARKER_COACH_4
+MARKER_COACH_5
+MARKER_COACH_6
+MARKER_COACH_7
+MARKER_COACH_8
+carrier changer:
+MARKER_CHANGER_1
+MARKER_CHANGER_2
+straznicy
+MARKER_GUARD
+MARKER_GUARD2
+MARKER_GUARD_PATROL
+	
+*/
+
+int anMQGMaleNames[eMQGMaleNamesNumber];
+int nMQGMaleCurrentName;
+int anMQGFemaleNames[eMQGFemaleNamesNumber];
+int nMQGFemaleCurrentName;
+
+function string GetMarkerEnemyMulti(string strMarkerEnemyConfig, string strMarker,int nEnemyType) {
+int i; 
+string str;
+
+#define r(a,b)if(i==a) return b;
+
+if(nEnemyType>2)nEnemyType=2;
+if(nEnemyType<0)nEnemyType=0;
+
+str=strMarkerEnemyConfig;
+if(str.EqualNoCase("desert"))//Desert
+{
+    str=strMarker;
+    if(str.EqualNoCase("MARKER_ENEMY_M_GU"))//GROUP UNDEAD
+    {
+        i=Rand(9);
+        r( 0, "MARKER_ENEMY_MUMMY");
+        r( 1, "MARKER_ENEMY_MUMMY");
+        r( 2, "MARKER_ENEMY_MUMMY");
+        r( 3, "MARKER_ENEMY_UNDEAD");
+        r( 4, "MARKER_ENEMY_UNDEAD");
+        r( 5, "MARKER_ENEMY_UNDEAD");
+        r( 6, "MARKER_ENEMY_SKELETON");    
+        r( 7, "MARKER_ENEMY_KHAN");
+        r( 8, "MARKER_ENEMY_SKULL");
+    }
+    
+    if(str.EqualNoCase("MARKER_ENEMY_M_SU"))//BOSS UNDEAD
+    {
+        i=Rand(2);
+        r( 0, "MARKER_ENEMY_DAEMON");    
+        r( 1, "MARKER_ENEMY_HELLMASTER");
+    }
+    if(str.EqualNoCase("MARKER_ENEMY_M_SA"))// BOSS ALIVE
+    {
+        i=Rand(5);
+        r( 0, "MARKER_ENEMY_DRAGON2");
+        r( 1, "MARKER_ENEMY_DRAGON");
+        r( 2, "MARKER_ENEMY_GOLEM_FLESH");
+        r( 3, "MARKER_ENEMY_MANTIS");
+        r( 4, "MARKER_ENEMY_SPIDER");
+    }
+    if(str.EqualNoCase("MARKER_ENEMY_M_CA"))//CAMP
+    {
+        i=Rand(5);
+        r( 0, "MARKER_ENEMY_BANDIT");
+        r( 1, "MARKER_ENEMY_ORC" );
+        r( 2, "MARKER_ENEMY_ORC_02");
+        r( 3, "MARKER_ENEMY_JACKAL");
+        r( 4, "MARKER_ENEMY_INSECTGUY");
+        
+    }
+    //if(EqualNoCase(strMarker,"MARKER_ENEMY_M_GA"))//GROUP ALIVE  - 
+    {
+        i=Rand(5);
+        r( 0, "MARKER_ENEMY_REPTILE3");
+        r( 1, "MARKER_ENEMY_REPTILE4");
+        r( 2, "MARKER_ENEMY_VYVERN4");
+        r( 3, "MARKER_ENEMY_DRAGONFLY");
+        r( 4, "MARKER_ENEMY_INSECT");
+    }
+}//***************************************************************************************
+
+if(str.EqualNoCase("easy"))//First level
+{
+    str=strMarker;
+    if(str.EqualNoCase("MARKER_ENEMY_M_GU"))//GROUP UNDEAD
+    {
+        i=Rand(3);
+        r( 0, "MARKER_ENEMY_ZOMBIE");
+        r( 1, "MARKER_ENEMY_UNDEADANIMAL");
+        r( 2, "MARKER_ENEMY_SKELETON");    
+     
+    }
+    
+    if(str.EqualNoCase("MARKER_ENEMY_M_SU"))//BOSS UNDEAD
+    {
+        r( 0, "MARKER_ENEMY_ZOMBIE");
+    }
+    if(str.EqualNoCase("MARKER_ENEMY_M_SA"))// BOSS ALIVE
+    {
+        r( 6, "MARKER_ENEMY_SPIDER");
+    }
+    if(str.EqualNoCase("MARKER_ENEMY_M_CA"))//CAMP
+    {
+        i=Rand(3);
+        r( 0, "MARKER_ENEMY_BANDIT");
+        r( 1, "MARKER_ENEMY_GOBLIN");
+        r( 11, "MARKER_ENEMY_GOBLIN2");
+    }
+    //if(EqualNoCase(strMarker,"MARKER_ENEMY_M_GA"))//GROUP ALIVE  - 
+    {
+        r( 0, "MARKER_ENEMY_ANIMAL");
+    }
+    return "MARKER_ENEMY_ANIMAL";
+
+}//*******************************************************************************************
+
+str=strMarker;
+if(str.EqualNoCase("MARKER_ENEMY_M_GU"))//GROUP UNDEAD
+{
+    i=Rand(5)+nEnemyType*5;
+    
+    r( 0, "MARKER_ENEMY_UNDEADANIMAL");
+    r( 1, "MARKER_ENEMY_UNDEAD");
+    r( 2, "MARKER_ENEMY_MINION");
+    r( 3, "MARKER_ENEMY_NECRO");
+    r( 4, "MARKER_ENEMY_ZOMBIE");
+    
+    r( 5, "MARKER_ENEMY_SKELETON");    
+    r( 6, "MARKER_ENEMY_SKELETON2");
+    r( 7, "MARKER_ENEMY_SKELETON3");
+    r( 8, "MARKER_ENEMY_ZOMBIE3");
+    r( 9, "MARKER_ENEMY_HIDEOUS");
+    
+    r( 10, "MARKER_ENEMY_MUMMY");
+    r( 11, "MARKER_ENEMY_DEADKNIGHT");
+    r( 12, "MARKER_ENEMY_DEADMEAT");
+    r( 13, "MARKER_ENEMY_KHAN");
+    r( 14, "MARKER_ENEMY_SKULL");
+}
+
+if(str.EqualNoCase("MARKER_ENEMY_M_SU"))//BOSS UNDEAD
+{
+    i=nEnemyType+Rand(2);
+    r( 0, "MARKER_ENEMY_DAEMON");    
+    r( 1, "MARKER_ENEMY_HELLMASTER");
+    r( 2, "MARKER_ENEMY_DAEMON2");
+    r( 3, "MARKER_ENEMY_DAEMON3");
+}
+if(str.EqualNoCase("MARKER_ENEMY_M_SA"))// BOSS ALIVE
+{
+    i=Rand(3)+nEnemyType*2;
+    r( 0, "MARKER_ENEMY_YETI");
+    r( 1, "MARKER_ENEMY_GOLEM_WOOD");
+    
+    r( 2, "MARKER_ENEMY_GOLEM_STONE");
+    r( 3, "MARKER_ENEMY_CYCLOPE");
+    
+    r( 4, "MARKER_ENEMY_GOLEM_FLESH");
+    r( 5, "MARKER_ENEMY_GOLEM_STEEL");
+    r( 6, "MARKER_ENEMY_OGR");
+}
+if(str.EqualNoCase("MARKER_ENEMY_M_CA"))//CAMP
+{
+    i=Rand(3)+nEnemyType*3;
+    r( 0, "MARKER_ENEMY_BANDIT");
+    r( 1, "MARKER_ENEMY_GOBLIN");
+    r( 2, "MARKER_ENEMY_ORC" );
+    
+    r( 3, "MARKER_ENEMY_ORC_02");
+    r( 4, "MARKER_ENEMY_LIZARDMAN");
+    r( 5, "MARKER_ENEMY_DWARF");
+    
+    r( 6, "MARKER_ENEMY_SEAGUY");
+    r( 7, "MARKER_ENEMY_INSECTGUY");
+    r( 8, "MARKER_ENEMY_TREEGUY");
+    
+    
+}
+//if(EqualNoCase(strMarker,"MARKER_ENEMY_M_GA"))//GROUP ALIVE  - 
+{
+    
+    i=Rand(6)+nEnemyType*3;
+    r( 0, "MARKER_ENEMY_ANIMAL");
+    r( 1, "MARKER_ENEMY_REPTILE");
+    r( 2, "MARKER_ENEMY_INSECT");
+    
+    r( 3, "MARKER_ENEMY_ANIMAL2");
+    r( 4, "MARKER_ENEMY_REPTILE2");
+    r( 5, "MARKER_ENEMY_REPTILE3");
+    
+    r( 6, "MARKER_ENEMY_REPTILE4");
+    r( 7, "MARKER_ENEMY_VYVERN1");
+    r( 8, "MARKER_ENEMY_VYVERN3");
+    
+    r( 9,"MARKER_ENEMY_DRAGONFLY");
+    r( 10,"MARKER_ENEMY_MANTIS");
+    r( 11,"MARKER_ENEMY_DRAGON3");//big wywern
+}
+
+    return "MARKER_ENEMY_ANIMAL";
+
+}
+
+function void ShuffleArray(int anArray[], int nSize) {
+
+    int i, j;
+    int tmp;
+
+    for (i = nSize - 1; i > 0 ; i--) {
+        j = Rand(i + 1);
+        tmp = anArray[j];
+        anArray[j] = anArray[i];
+        anArray[i] = tmp;
+    }
+
+}
+
+function void InitQuestGiversMultiNames() {
+
+    int i;    
+    for (i = 0; i < eMQGMaleNamesNumber; i++) anMQGMaleNames[i] = eMQGMaleNamesStart + i;
+    for (i = 0; i < eMQGFemaleNamesNumber; i++) anMQGFemaleNames[i] = eMQGFemaleNamesStart + i;
+
+}
+
+function int GetMQGNameTranslate(int &nCurrentName, int anNames[], int nTotalNames) {
+
+    int nName;
+    
+    if (nCurrentName == 0) ShuffleArray(anNames,nTotalNames);
+    
+    nName = anNames[nCurrentName];
+    nCurrentName = (nCurrentName + 1) % nTotalNames;
+    
+    return nName;
+
+}
+
+function int GetMultiQuestGiverNameTranslate(int nQuestGiverIsMale) {
+
+    if (nQuestGiverIsMale) return GetMQGNameTranslate(nMQGMaleCurrentName,anMQGMaleNames,eMQGMaleNamesNumber);
+    return GetMQGNameTranslate(nMQGFemaleCurrentName,anMQGFemaleNames,eMQGFemaleNamesNumber);
+
+}
+
+function int GetDialogNumber(int nCol, int nRow) 
+{
+
+    //TRACE("   GET DIALOG NUMBER   col=%d  row=%d                    \n",nCol,nRow);
+    if(nRow==1)
+    {
+        if(nCol==eColF) return eTownTypeOutpost;
+        if(nCol==eColG) return eTownTypeOutpost;
+        if(nCol==eColD) return eTownTypeKargaCamp;
+    }
+    else if(nRow==2)
+    { 
+        if(nCol==eColD) return eTownTypeCovenant;
+        if(nCol==eColE) return eTownTypeKomorin;
+    }
+    else if(nRow==3)
+    {
+        if(nCol==eColD) return eTownTypeGorelin;
+        if(nCol==eColE) return eTownTypeTharbakin;
+        if(nCol==eColF) return eTownTypeExcavations;
+        
+    }
+    else if(nRow==6 && nCol==eColC) return eTownTypeClovelly;
+    else if(nRow==7)
+    {
+        if(nCol==eColD) return eTownTypeWindbreak;
+        if(nCol==eColF) return eTownTypeCathalon;
+    }
+    else if(nRow==8)
+    {
+        if(nCol==eColD) return eTownTypeQudinaarSol;
+        if(nCol==eColC || nCol==eColE) return eTownTypeArmyCamp;
+    }
+    else if(nRow>9 && nCol<eColD) return eTownTypeAshos;
+    else if(nRow>7 && nCol>eColF) return eTownTypeKehar;
+    
+    return eTownType4Stones;
+}
+
+function string GetCreateString(int nTownType, int nUnitType, int nSex, int &nDialog, int nCol, int nRow, int &nMagicSkill) 
+{
+    int i,j,k;
+    string str;
+    string strBow;
+    
+    strBow.Format("#%s,NULL,NULL,NULL,NULL,NULL,NULL,%s",GetWeapon(eBow,1+Rand(15)),GetEquipment(eQuiver,1+Rand(15)));
+    nDialog = nTownType;
+    
+    if(nTownType == eTownTypeKehar)            
+    {
+        if(nUnitType==eTGShopWarrior) {nDialog = 82; return "SHOPUNIT_K_2(25)#WP_SWORD_0(5,0)";}
+        if(nUnitType==eTGShopMerchant) {nDialog = 83; return "SHOPUNIT_K_3(25)";}
+    
+    }
+    //sklepy - takie same niezaleznie gdzie
+    
+    if(nUnitType==eTGShopMage) {nDialog = 81; return "SHOPUNIT_1(25)#WP_STAFF_01(1,0)";}
+    if(nUnitType==eTGShopWarrior) {nDialog = 82; return "SHOPUNIT_2(25)#WP_SWORD_0(5,0)";}
+    if(nUnitType==eTGShopMerchant) {nDialog = 83; return "SHOPUNIT_3(25)#WP_MACE_0(1,0,1)";}
+    if(nUnitType==eTGShopThief) {nDialog = 84; return "SHOPUNIT_4(25)#WP_SWORD_0(5,0)";}
+    if(nUnitType==eTGShopNecro) {nDialog = 85; return "SHOPUNIT_5(25)#WP_STAFF_41(1,0)";}
+    
+    #ifdef _DEMO
+    
+        //                               strEnemy,strWeapon,strShield,strHelmet,strArmour,strGloves,strTrousers,strBoots,strQuiver);
+        if(nUnitType==eTGCoach1) return "THE_1_COACH(40)#WP_SWORD_0(5,0),NULL,AR_LEATHER_HELMET(1,0,1),AR_CHAIN_ARMOUR(9,0,11),NULL,AR_CHAIN_TROUSERS(9,0,11),AR_CHAIN_BOOTS(9,0,11)";
+        if(nUnitType==eTGCoach2) return "THE_2_COACH(40)#WP_SWORD_0(5,0),NULL,NULL,AR_CHAIN_ARMOUR(9,0,12),AR_CHAIN_GLOVES(9,0,12),AR_CHAIN_TROUSERS(9,0,12),AR_CHAIN_BOOTS(9,0,12)";
+        if(nUnitType==eTGCoach3) return "THE_3_COACH(40)#WP_MACE_0(5,0),NULL,NULL,AR_LEATHER_ARMOUR(9,0,12),AR_LEATHER_GLOVES(9,0,12),AR_LEATHER_TROUSERS(9,0,12),AR_LEATHER_BOOTS(9,0,12)";
+        if(nUnitType==eTGCoach4) return "THE_4_COACH(40)#WP_SWORD_0(1,0,2)";
+        if(nUnitType==eTGCoach5) {str.Format("THE_5_COACH(40)#%s,NULL,NULL,AR_LEATHER_ARMOUR(9,0,12),AR_LEATHER_GLOVES(9,0,12),AR_LEATHER_TROUSERS(9,0,12),AR_LEATHER_BOOTS(9,0,12),%s",GetWeapon(eBow,9),GetEquipment(eQuiver,9));return str;}
+        if(nUnitType==eTGCoach6) {str.Format("THE_6_COACH(40)#%s,NULL,NULL,AR_CHAIN_ARMOUR(7,0,11),AR_LEATHER_GLOVES(7,0,11),AR_LEATHER_TROUSERS(7,0,11),AR_LEATHER_BOOTS(4,0,4),%s",GetWeapon(eBow,9),GetEquipment(eQuiver,9));return str;}
+        if(nUnitType==eTGCoachMage) return "THE_7_COACH(40)#WP_SWORD_0(1,0,1)";
+        if(nUnitType==eTGCoachNecro) return "THE_8_COACH(40)#WP_SWORD_0(1,0,1)";
+        if(nUnitType==eTGChanger1) return "THE_SKILLCHANGER_1(40)";
+        if(nUnitType==eTGChanger2) return "THE_SKILLCHANGER_2(40)";
+    #else    
+        //                               strEnemy,strWeapon,strShield,strHelmet,strArmour,strGloves,strTrousers,strBoots,strQuiver);
+        if(nUnitType==eTGCoach1) return "THE_1_COACH(40)#WP_SWORD_4(24,0,41),NULL,AR_LEATHER_HELMET(1,0,1),AR_CHAIN_ARMOUR(11,0,15),NULL,AR_CHAIN_TROUSERS(11,0,15),AR_CHAIN_BOOTS(11,0,15)";
+        if(nUnitType==eTGCoach2) return "THE_2_COACH(40)#WP_SWORD_5(36,0,56),NULL,NULL,AR_CHAIN_ARMOUR(23,0,35),AR_CHAIN_GLOVES(23,0,35),AR_CHAIN_TROUSERS(23,0,35),AR_CHAIN_BOOTS(23,0,35)";
+        if(nUnitType==eTGCoach3) return "THE_3_COACH(40)#WP_MACE_4(25,0,42),NULL,NULL,AR_LEATHER_ARMOUR(10,0,14),AR_LEATHER_GLOVES(10,0,14),AR_LEATHER_TROUSERS(10,0,14),AR_LEATHER_BOOTS(10,0,14)";
+        if(nUnitType==eTGCoach4) return "THE_4_COACH(40)#WP_SWORD_0(1,0,2)";
+        if(nUnitType==eTGCoach5) {str.Format("THE_5_COACH(40)#%s,NULL,NULL,AR_LEATHER_ARMOUR(10,0,14),AR_LEATHER_GLOVES(10,0,14),AR_LEATHER_TROUSERS(10,0,14),AR_LEATHER_BOOTS(10,0,14),%s",GetWeapon(eBow,12),GetEquipment(eQuiver,12));return str;}
+        if(nUnitType==eTGCoach6) {str.Format("THE_6_COACH(40)#%s,NULL,NULL,AR_CHAIN_ARMOUR(7,0,11),AR_LEATHER_GLOVES(7,0,11),AR_LEATHER_TROUSERS(7,0,11),AR_LEATHER_BOOTS(4,0,4),%s",GetWeapon(eBow,14),GetEquipment(eQuiver,14));return str;}
+        if(nUnitType==eTGCoachMage) return "THE_7_COACH(40)#WP_SWORD_0(1,0,1)";
+        if(nUnitType==eTGCoachNecro) return "THE_8_COACH(40)#WP_SWORD_0(1,0,1)";
+        if(nUnitType==eTGChanger1) return "THE_SKILLCHANGER_1(40)";
+        if(nUnitType==eTGChanger2) return "THE_SKILLCHANGER_2(40)";
+    #endif
+    if(nUnitType==eTGBartender)
+    { 
+        str.Format("BARTENDER_0%d(25)#WP_MACE_0(4,0)",1+Rand(5));
+        return str;
+    }
+    
+
+    if(nTownType == eTownTypeCathalon || nTownType == eTownTypeQudinaar)
+    {
+        
+        if(nUnitType==eTGGuardStatic || nUnitType==eTGGuardDynamic)
+        {
+            nDialog = eTownTypeQudinaarSol;
+            if(Rand(2))return "SOLDIER_04_01(40)#WP_SWORD_4(24,0,41)";
+            else {str.Format("SOLDIER_04_03(40)%s",strBow);return str;}
+            
+        }
+#ifdef _XBOX
+            if (nTownType == eTownTypeQudinaar) nSex = eMale;   //w qudinarze sami mezczyzni
+#endif            
+        
+        if (nSex == eMale) 
+        {
+            
+            i=1+Rand(12);//numer postaci 1-12
+            if(nUnitType!=eTGCitizen) 
+            {
+                if(i>6)nDialog+=20;//old
+                else nDialog+=10;//medium age
+            }
+        
+            str.Format("CITIZEN_04_%02d(15)",i);
+            return str;
+        }
+        else 
+        {
+            i=1+Rand(12);//numer postaci 1-16
+            if(i>10)nDialog+=40;//old female
+            else nDialog+=30;//young female
+            str.Format("CITIZEN_F_04_%02d(15)",i);
+            return str;
+        }
+    }
+
+    if(nTownType == eTownTypeExcavations)            
+    {
+        if(nUnitType==eTGGuardDynamic || nUnitType==eTGGuardStatic) 
+        {
+            nDialog+=10;
+            if(Rand(2)) {str.Format("SKELDEN_01(25)%s",strBow);return str;}
+            else return "SKELDEN_01(25)#WP_SWORD_0(10,0,14),AR_ROUNDSHIELD(10,0,11)";
+        }
+    }
+    if(nTownType == eTownTypeTharbakin)            
+    {
+    
+        if(nUnitType==eTGGuardDynamic || nUnitType==eTGGuardStatic) 
+        {
+            nDialog+=10;
+            if(Rand(2)) {str.Format("SKELDEN_01(25)%s",strBow);return str;}
+            else return "SKELDEN_01(25)#WP_SWORD_0(5,0),AR_ROUNDSHIELD(10,0,11)";
+        }
+    
+        if (nSex == eMale) 
+        {
+            i=Rand(6);//1,2 5,6 9,10
+            if(i<2)j=1+Rand(2);
+            if(i>1&&i<4)j=5+Rand(2);
+            if(i>3)j=9+Rand(2);
+            if(nUnitType!=eTGCitizen) 
+            {
+                if(j==9||j==10)nDialog+=20;//old
+                else nDialog+=10;//medium age
+            }
+            
+            #ifdef _DEMO
+                j=1+Rand(5);//numer postaci 1-5
+            #endif
+        
+            if(Rand(2))str.Format("CITIZEN_02_%02d(5)#WP_MACE_0(1,0,1)",j);
+            else str.Format("CITIZEN_02_%02d(5)%s",j,strBow);
+            return str;
+        }
+        else 
+        {
+            i=1+Rand(16);//numer postaci 1-16
+            #ifdef _DEMO
+            i=1;
+            #endif
+            if(i>12)nDialog+=40;//old female
+            else nDialog+=30;//young female
+            str.Copy("CITIZEN_F_01(5)#NULL,NULL,HEADDRESS(1,0,1)");
+            return str;
+        }
+    }
+
+    if(nTownType == eTownTypeAshos)            
+    {
+        
+        if(nUnitType==eTGGuardStatic ||nUnitType==eTGGuardDynamic) 
+        {
+            nDialog+=10;
+            if(Rand(2))return "SOLDIER_06_01(50)#WP_BOW_24(16,0),NULL,NULL,NULL,NULL,NULL,NULL,AR_QUIVER_24(16,0)";
+            else return "SOLDIER_06_02(50)#WP_SWORD_6(36,0,61)";
+        }
+        
+        if (nSex == eMale) 
+        {
+            i=1+Rand(12);//numer postaci 3-12
+            if(nUnitType!=eTGCitizen) 
+            {
+                if(i>6)nDialog+=20;//old
+                else nDialog+=10;//medium age
+            }
+
+            if(Rand(2))str.Format("CITIZEN_06_%02d(25)#WP_SWORD_6(36,0,62)",i);
+            else str.Format("CITIZEN_06_%02d(25)%s",i,strBow);
+            return str;
+        }
+        else 
+        {
+        
+            i=1+Rand(16);//numer postaci 1-16
+            if(i>12)nDialog+=40;//old female
+            else nDialog+=30;//young female
+            str.Format("CITIZEN_F_06_%02d(25)",i);
+            return str;
+        }
+    }
+
+    if(nTownType == eTownTypeKehar)            
+    {
+        
+        if(nUnitType==eTGGuardStatic ||nUnitType==eTGGuardDynamic) 
+        {
+            nDialog+=10;
+            if(Rand(2)){str.Format("CITIZEN_09_01(50)%s",strBow);return str;}
+            else return "CITIZEN_09_01(50)#WP_SWORD_3(21,0,34)";
+        }
+        
+        if (nSex == eMale) 
+        {
+            i=1+Rand(12);//numer postaci 3-12
+            if(nUnitType!=eTGCitizen) 
+            {
+                if(i>6)nDialog+=20;//old
+                else nDialog+=10;//medium age
+            }
+            if(Rand(2))str.Format("CITIZEN_09_%02d(35)%s",i,strBow);
+            else str.Format("CITIZEN_09_%02d(35)#WP_SWORD_3(21,0,34)",i);
+            return str;
+        }
+        else 
+        {
+            i=1+Rand(2);//numer postaci 1-16
+            nDialog+=30;//young female
+            str.Format("CITIZEN_F_09_%02d(25)%s",i,strBow);
+            return str;
+        }
+    }
+    if(nTownType == eTownTypeNecro)            
+    {//necromancers
+        nMagicSkill = eMageNecro;
+        i=Rand(4);
+        if(!i)str.Copy("MAGE_NECRO1(40)#WP_STAFF_43(15,0)");
+        if(i==1)str.Copy("MAGE_NECRO2(40)#WP_STAFF_43(15,0)");
+        if(i==2)str.Copy("MAGE1(40)#WP_STAFF_43(15,0)");
+        if(i==3)str.Copy("MAGE2(40)#WP_STAFF_43(15,0)");
+        return str;
+    }
+
+    //Common places
+    // guarded by brotherhood guardians.
+    if(nUnitType==eTGGuardStatic || nUnitType==eTGGuardDynamic) 
+    {
+        #ifdef _DEMO
+        nDialog+=10;
+        if(Rand(2))str.Format("WARRIOR_01(25)%s",strBow);
+        else str.Copy("WARRIOR_01(25)#WP_SWORD_0(5,0)");
+        return str;
+        #else
+        nDialog+=10;
+        if(Rand(2))str.Format("WARRIOR_0%d(25)%s",1+Rand(5),strBow);
+        else str.Format("WARRIOR_0%d(25)#WP_SWORD_0(5,0)",1+Rand(5));
+        return str;
+        #endif
+    }
+    
+    if (nSex == eMale) 
+    {//male everywhere
+        #ifdef _DEMO
+        i=1+Rand(5);//numer postaci 1-5
+        #else
+        i=1+Rand(12);//numer postaci 3-12
+        #endif
+        
+        if(nUnitType!=eTGCitizen) 
+        {
+            if(i>6 && nTownType != eTownTypeOutpost)nDialog+=20;//old
+            else nDialog+=10;//medium age
+        }
+        if(Rand(2))str.Format("CITIZEN_01_%02d(15)%s",i,strBow);
+        else str.Format("CITIZEN_01_%02d(15)#WP_MACE_0(1,0,1)",i);
+        return str;
+    }
+    else 
+    {//female everywhere
+    
+        i=1+Rand(16);//numer postaci 1-16
+        if(i>12)nDialog+=40;//old female
+        else nDialog+=30;//young female
+        #ifdef _DEMO
+        i=1;//numer postaci 1-5
+        #endif
+        str.Format("CITIZEN_F_%02d(15)",i);
+        return str;
+    }
+    str.Format("CITIZEN_01_%02d(15)%s",1+Rand(12),strBow);
+    return str;
+}
+
+#define S(a,b) if (str.EqualNoCase(a)) {strCreateString = b;return;}
+
+#endif
+
+
+

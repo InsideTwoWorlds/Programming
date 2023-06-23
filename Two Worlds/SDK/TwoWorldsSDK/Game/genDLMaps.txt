@@ -1,0 +1,3 @@
+Editor.IgnoreLevelsCheckouts = 1
+editor.foreachlevel @saveDLMap.txt
+Editor.IgnoreLevelsCheckouts = 0

@@ -1,0 +1,111 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> RPGCompute object </title>
+</head>
+<body>
+<a name="RPGCompute">
+<hr>
+<RPGCompute>
+<big><strong>RPGCompute</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<RPGCompute_functions_begin>
+private:
+MissileValues GetEmptyMissileValues()
+PotionValues GetEmptyPotionValues()
+<RPGCompute_functions_private_end>
+<RPGCompute_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<RPGCompute_commands_begin>
+int  Initialize()
+int  InitEquipment(EquipmentValues, EquipmentParams, int, int, int)
+int  InitWeapon(EquipmentValues, WeaponParams, int, int, int)
+int  InitBrokenWeapon(EquipmentValues, WeaponParams, EquipmentValues, WeaponParams)
+int  InitMagicClub(EquipmentValues, MagicClubParams, int, int, int)
+int  InitBrokenMagicClub(EquipmentValues, MagicClubParams, EquipmentValues, MagicClubParams)
+int  InitMagicCard(EquipmentValues, MagicCardParams, int, int, int)
+int  InitUnit(unit, UnitParams, UnitValues, int)
+int  InitMissile(unit, MissileValues, MissileParams, EquipmentValues, WeaponParams, unit)
+int  InitMagicMissile(unit, int, MissileValues, MissileParams)
+int  InitOtherMissile(unit, int, MissileValues, MissileParams)
+int  GetMagicParamObjectNumber(unit, int, int)
+int  GetMagicCastRange(unit, int)
+int  GetMagicManaUse(unit, int)
+int  GetMagicSummonCount(unit, int)
+int  GetMagicMaxSummonCount(unit, int)
+int  GetMagicSummonLevels(unit, int, int&, int&, int&, int&, int&)
+int  FinishMagicSummonedUnit(unit, int, unit)
+int  InitMagicWeapons(unit, int, EquipmentValues, WeaponParams, EquipmentValues, WeaponParams, int&)
+int  CanMakeMagic(unit, int)
+int  CanMakeMagicMissileOnTarget(unit, int, unit)
+int  CanMakeMagicGenericOnUnit(unit, int, unit)
+int  GetMagicGenericOnUnitRange(unit, int, int&, int&, int&)
+int  MakeMagicGenericOnUnit(unit, int, unit)
+int  FinishMakingMagic(unit, int, unit)
+int  AddPermanentPotion(unit, PotionArtefactParams)
+int  UpdateChangedUnitValues(unit)
+int  CanStartDirectFightAction(unit, unit)
+int  GetDirectFightAction(unit, unit, int, int&)
+int  SelectDirectFightStrikeAnim(unit, unit, int)
+int  GetNextSequenceDirectFightAction(unit, unit, int, int, int)
+int  GetDirectFightActionOnStartActionByEnemy(unit, unit, int, int&, int&)
+int  OnEndDirectFightAction(unit, unit, int, int, int&)
+int  OnHitSuccess(unit, unit, int, int, int, int)
+int  GetHitFightAction(unit, unit, int, int, int&, int&)
+int  GetShootAction(unit, unit, int&, int&, int&, int&, int&, int&)
+int  CanUseTwoWeapons(unit)
+int  GetHPDamageOnTarget(MissileValues, unit, int, int&, int&)
+int  GetPoisonHPDamage(int&, int&)
+int  GetExperiencePointsForLevel(int)
+int  OnSetLevel(unit, int, int)
+int  CanIncreasePoint(unit, int)
+int  IncreasePoint(unit, int, int)
+int  CanIncreaseSkill(unit, int, int&)
+int  IncreaseSkill(unit, int, int)
+int  SetNextAttackSkill(unit, int, int)
+int  CanMakeActiveSkillOld(unit, int, int, unit, int&)
+int  MakeActiveSkill(unit, int, int, unit)
+int  GetSkillSetTrapValues(unit, int&, int&)
+int  GetSkillSneakValues(unit, int&, int&, int&)
+int  GetSkillDustEffectID(unit, int, string&)
+int  GetSkillHorseRidingValues(unit, int&, int&, int&, int&, int&)
+int  GetHitCollidedByHorseDamage(unit, unit, int&, int&)
+int  CanJoinInventoryEquipments(unit, EquipmentParams, EquipmentValues, EquipmentValues)
+int  JoinInventoryEquipments(unit, EquipmentParams, EquipmentValues, EquipmentValues, EquipmentValues)
+int  CanJoinInventoryWeapons(unit, WeaponParams, EquipmentValues, EquipmentValues)
+int  JoinInventoryWeapons(unit, WeaponParams, EquipmentValues, EquipmentValues, EquipmentValues)
+int  CanJoinInventoryEquipmentWithSpecialArtefact(unit, EquipmentParams, EquipmentValues, SpecialArtefactParams)
+int  JoinInventoryEquipmentWithSpecialArtefact(unit, EquipmentParams, EquipmentValues, SpecialArtefactParams)
+int  CanJoinInventoryWeaponWithSpecialArtefact(unit, WeaponParams, EquipmentValues, SpecialArtefactParams)
+int  JoinInventoryWeaponWithSpecialArtefact(unit, WeaponParams, EquipmentValues, SpecialArtefactParams)
+int  GetHeroShopPricePercents(unit, unit, int&, int&)
+int  DefaultEventOpenContainerObject(unit, unit, int, int, int&, int&, int&)
+int  DefaultEventCloseContainerObject(unit, unit, int, int)
+int  DefaultEventClickGateByUnit(unit, unit, int, int, int&, int&, int&)
+int  CanStartOpenLock(unit, unit, int&)
+int  CanUseInventoryItemInAlchemyOld(unit, string, EquipmentValues, object, int&)
+int  MakeAlchemyResult(unit, int)
+int  GetObjectInfoText(unit, int, int, UnitValues, string, EquipmentValues, object, stringW, int, stringW&)
+int  GetPointInfoTextOld(unit, int, stringW&)
+int  GetSkillInfoText(unit, int, stringW&)
+int  GetInventoryUnitInfoText(unit, stringW&, stringW&)
+int  GetInventoryUnitStatTextOld(unit, int, int&, int&, stringW&)
+int  GetReputationInfoText(unit, stringW&)
+int  GetHeroSelectionInfo(unit, unit, object, stringW, int&, int&, int&, int&, stringW&)
+int  GetHeroSelectionLockInfo(unit, unit, object, int&, int&)
+int  GetInventoryUnitStatText(unit, int, int&, int&, stringW&, stringW&)
+int  CanUseInventoryItemInAlchemy(unit, string, EquipmentValues, object, int&, int&)
+int  GetPointInfoText(unit, int, stringW&, stringW&)
+int  CanMakeActiveSkill(unit, int, int, unit, int&, int&)
+int  GetDisplayShootChanceValues(unit, int&, int&, int&)
+int  GetRegenerationHPMaxVal(unit)
+int  GetRegenerationManaMaxVal(unit)
+<RPGCompute_commands_end>
+</pre>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

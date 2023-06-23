@@ -1,0 +1,2010 @@
+
+#ifndef RPGCOMPUTE_INFO_ECH
+#define RPGCOMPUTE_INFO_ECH
+
+#define NO_DETAILED_ENEMY_STATS
+
+#include "Weapon.ech"
+#include "Unit.ech"
+
+
+#include "..\\Common\\Enums.ech"
+#include "..\\Common\\Guilds.ech"
+#include "..\\Common\\Lock.ech"//LockInfo
+
+
+
+#define eColorLViolet "<0xFFFFAAFF>"
+#define eColorRed "<0xFFFF4444>"
+#define eColorLRed "<0xFFFFAAAA>"
+#define eColorLBlue "<0xFFAAAAFF>"
+#define eColorGreen "<0xFF80FF80>"
+#define eColorLGreen "<0xFFAAFFAA>"
+#define eColorLYellow "<0xFFFFFFAA>"
+#define eColorLMagenta "<0xFFAAFFFF>"
+
+function void AppendWithEOL(stringW& strText, stringW strAppend)
+{
+    stringW strN;
+    
+    if (!strText.IsEmpty())
+    {
+        strN.Copy("\n");
+        strText.Append(strN);
+    }
+    strText.Append(strAppend);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void AppendWithColorEOL(stringW& strText, string strColor,stringW strAppend)
+{
+    stringW strN;
+    
+    if (!strText.IsEmpty())
+    {
+        strN.Copy("\n");
+        strText.Append(strN);
+    }
+    strN.Copy(strColor);
+    strText.Append(strN);
+    strText.Append(strAppend);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void CreateDamageText(unit pUnit, EquipmentValues eVal, MissileParams mPar,int nMagicDamage, stringW& strText)
+{
+    stringW strText2;
+    int i,d1,d2;
+   
+    
+    for(i=0;i<8;i++)
+    {
+        if(nMagicDamage>0)
+        { 
+            d2=(mPar.GetMaxDamage(i)*nMagicDamage)/100;
+            d1=d2;
+        }
+        else
+        {
+            d1=GetMissileDamage(pUnit, mPar, i,eVal,0,0);
+            d2=GetMissileDamage(pUnit, mPar, i,eVal,100,0);
+        }
+        if(d2>0)
+        {
+            if(i<eDamageCold && d1!=d2)
+                strText2.Format("<0xFFFF8888>%s:  %d-%d<*>",m_arrDamageName[i],d1,d2 );
+            else
+                strText2.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+            AppendWithEOL(strText, strText2);
+        }
+    }
+    
+}
+
+
+function void GetEquipmentInfoText(unit pUnit, UnitValues unVal, string strObjectID, EquipmentValues eVal, EquipmentParams ePar, int bAlchemyResultInfo, stringW& strText)
+{
+    int nIndex,i,k,d1,d2;
+    string strID;
+    stringW strAdd,strTmp,strText2;
+    MissileParams mPar;
+    
+    if (ePar.GetType() == eEqTypeMagicCard)
+    {
+        return;
+    }
+    //strAdd.Format("<0xFF888888>meshNum:%d<*>", eVal.GetMeshNum());
+    //AppendWithEOL(strText, strAdd);
+    strTmp.Translate("translateClass");
+    strAdd.Format("<0xFFAAAAAA>%s %d<*>",strTmp, eVal.GetMultiplied());
+    AppendWithEOL(strText, strAdd);
+    
+   
+    
+    if (ePar.GetType() == eEqTypeArmour)
+    {
+        for(i=0;i<=eLastPhysicalDamage;i=i+1)
+        {
+            k=GetArmour(eVal, ePar, i);
+            if(k>0)
+            {
+                strAdd.Format("<0xFF90FF90>%s: %3d<*>",m_arrArmourName[i],k);
+                AppendWithEOL(strText, strAdd);
+            }
+        }
+    }
+    else if (ePar.GetType() == eEqTypeShield)
+    {
+        strTmp.Translate("translateParry");
+        strAdd.Format("<0xFFAAFFAA>%s %d<*>",strTmp, eVal.GetParry());
+        AppendWithEOL(strText, strAdd);
+    }
+    for (nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        if (eVal.GetAddPoint(nIndex) != 0)
+        {
+            strAdd.Format("<0xFFAAAAFF>%s %d<*>",m_arrAddPointFormat[nIndex], eVal.GetAddPoint(nIndex));
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+    for (nIndex = 0; nIndex < eParamsCnt; nIndex++)
+    {
+        if (eVal.GetAddParam(nIndex) != 0)
+        {
+            strAdd.Format("<0xFFAAAAFF>%s %d<*>",m_arrAddParamFormat[nIndex], eVal.GetAddParam(nIndex));
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+    for (nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        if (eVal.GetAddProtect(nIndex) != 0)
+        {
+            strAdd.Format("<0xFFAAFFAA>%s %d<*>",m_arrAddProtectFormat[nIndex], eVal.GetAddProtect(nIndex));
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+    for (nIndex = 0; nIndex < eSkillsCnt; nIndex++)
+    {
+        if (eVal.GetAddSkill(nIndex) != 0)
+        {
+            strAdd.Format("<0xFFFFFFAA>%s %d<*>",m_arrAddSkillInfoFormat[nIndex], eVal.GetAddSkill(nIndex));
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+    
+    if (ePar.GetType() == eEqTypeQuiver)
+    {
+        strID = GetQuiverAmmoID(strObjectID);
+        ASSERT(strID.GetLength() > 0);
+        mPar = GetMissileParams(strID);
+        CreateDamageText(pUnit, eVal, mPar,0, strText);
+    }
+    
+    if (ePar.GetEquipmentFlags() & eEquipmentBlockUseBowCrossbowWeapon)
+    {
+        strTmp.Translate("translateItemInfoBlockBow");
+        strAdd.Format("<0xFFFF4444>%s<*>",strTmp);
+        AppendWithEOL(strText, strAdd);
+    }
+    if (ePar.GetEquipmentFlags() & eEquipmentBlockUseTwoWeapons)
+    {
+        strTmp.Translate("translateItemInfoBlock2Weapons");
+        strAdd.Format("<0xFFFF4444>%s<*>",strTmp);
+        AppendWithEOL(strText, strAdd);
+    }
+    if (ePar.GetEquipmentFlags() & eEquipmentBlockSwimming)
+    {
+        strTmp.Translate("translateItemInfoBlockSwimming");
+        strAdd.Format("<0xFFFF4444>%s<*>",strTmp);
+        AppendWithEOL(strText, strAdd);
+    }
+   
+    if (ePar.GetType() == ePriceTypeEqArmour && eVal.GetMeshNum()>0&&ePar.GetPhysicalArmour(eDamagePiercing)>=50)
+    {
+        strTmp.Translate("translateSetNumber");
+        strAdd.Format("<0xFFAAAAAA>%s %d<*>",strTmp, eVal.GetMeshNum()-500+10*ePar.GetPhysicalArmour(eDamagePiercing));
+        AppendWithEOL(strText, strAdd);
+    }
+    if (ePar.GetInventoryWeight()>0)
+    {
+        strTmp.Translate("translateWeight");
+        strAdd.Format("<0xFFAAAAAA>%s %d<*>",strTmp, ePar.GetInventoryWeight());
+        AppendWithEOL(strText, strAdd);
+    }    
+
+//XXXMD remove soon
+ /*   {
+        strAdd.Format("<0xFFAAAAAA>Price %d<*>", eVal.GetPrice());
+        AppendWithEOL(strText, strAdd);
+    }    */
+    
+    if (unVal != null)
+    {
+        if (unVal.GetLevel() < eVal.GetRequiredLevel())
+        {
+            strTmp.Translate("translateRequiredLevel");
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, eVal.GetRequiredLevel());
+            AppendWithEOL(strText, strAdd);
+        }
+        if (GetStrength(unVal) < ePar.GetRequiredStrength())
+        {
+            strTmp.Translate("translateRequiredStrength");
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, ePar.GetRequiredStrength());
+            AppendWithEOL(strText, strAdd);
+        }
+    	if (GetDexterity(unVal)< ePar.GetRequiredDexterity())
+        {
+            strTmp.Translate("translateRequiredDexterity");
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, ePar.GetRequiredDexterity());
+            AppendWithEOL(strText, strAdd);
+        }
+    	if (GetMagic(unVal) < ePar.GetRequiredMagic())
+        {
+            strTmp.Translate("translateRequiredMagic");
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, ePar.GetRequiredMagic());
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+       
+    
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetWeaponInfoText(unit pUnit, UnitValues unVal, string strObjectID, EquipmentValues wVal, WeaponParams wPar, int bAlchemyResultInfo, stringW& strText)
+{
+    stringW strText2;
+    int i, d1,d2;
+    
+    GetEquipmentInfoText(pUnit, unVal, strObjectID, wVal, wPar, bAlchemyResultInfo, strText);
+
+    if(wPar.GetWeaponType() == eWeaponBow)
+    {
+        strText2.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[8],GetBowDamage(wVal,wPar));
+        AppendWithEOL(strText, strText2);
+        
+        for(i=eDamageCold;i<8;i++)
+        {
+            d1=GetDamage(pUnit, wVal, wPar,i, 0,0,true);
+            d2=GetDamage(pUnit, wVal, wPar,i, 100,0,true);
+            if(d2>0)
+            {
+                strText2.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+                AppendWithEOL(strText, strText2);
+            }
+        }
+        
+        
+        strText2.Format("<0xFFAAFFAA>%s:  %dm<*>",m_arrDamageName[9],wPar.GetMaxRangeA()/e1m);
+        AppendWithEOL(strText, strText2);
+        if(wPar.GetShootChanceValue()>0)
+        {
+            strText2.Format("<0xFFAAAAFF>%s:  +%d%%<*>",m_arrDamageName[10],wPar.GetShootChanceValue()*50);
+            AppendWithEOL(strText, strText2);
+        }
+        else if(wPar.GetShootChanceValue()<0)
+        {
+            strText2.Format("<0xFFFFAAAA>%s:  %d%%<*>",m_arrDamageName[10],wPar.GetShootChanceValue()*50);
+            AppendWithEOL(strText, strText2);
+        }
+    }
+    else    
+    {
+        for(i=0;i<8;i++)
+        {
+            d1=GetDamage(pUnit, wVal, wPar,i, 0,0,true);
+            d2=GetDamage(pUnit, wVal, wPar,i, 100,0,true);
+            if(d2>0)
+            {
+                if(i<eDamageCold)
+                    strText2.Format("<0xFFFF8888>%s:  %d-%d<*>",m_arrDamageName[i],d1,d2 );
+                else
+                    strText2.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+                AppendWithEOL(strText, strText2);
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+//————————————————————————————————————————————————————————————————————————————————————————————————————|
+//XXXTrap
+
+// potrzebne
+// trapValues - tam zapisane o ile zwiekszyc damage pulapki
+// trapParams - tam zapisane jaki jest damage pulapki
+
+
+function void GetTrapInfoText(unit pUnit, UnitValues unVal, unit pObject, string strObjectID, object pChangedParams, int bAlchemyResultInfo, stringW& strText)
+{
+    stringW strTmp,strText2;
+    int i, d1,d2;
+    TrapParams tPar;
+    MissileParams mPar;
+    int nDamage,nMultiply;
+    
+    
+    tPar = GetTrapParams(strObjectID, pChangedParams);
+    if (!bAlchemyResultInfo)
+    {
+        if (tPar.GetInventoryWeight()>0)
+        {
+            strTmp.Translate("translateWeight");
+            strText2.Format("<0xFFAAAAAA>%s %d<*>",strTmp, tPar.GetInventoryWeight());
+            AppendWithEOL(strText, strText2);
+        }    
+    }
+    
+    if (tPar.GetHoldTicks()>0)
+    {
+        strText2.Format("<0xFFFFFFAA>%s %ds<*>",m_arrDamageName[11], tPar.GetHoldTicks()/30);
+        AppendWithEOL(strText, strText2);
+    }    
+    
+    mPar = GetTrapAmmoMissileParams(strObjectID, pChangedParams);
+
+    if (pObject != null)
+    {
+        nDamage = tPar.GetDamage() + pObject.GetTrapAddDamage();
+    }
+    else
+    {
+        nDamage = tPar.GetDamage();
+    }
+
+    for(i=0;i<8;i++)
+    {
+        //d1=GetMissileDamage(pUnit, mPar, i,nDamage,0);
+        //d2=GetMissileDamage(pUnit, mPar, i,nDamage,100);
+
+        //InitOtherMissile:
+        d1 = nDamage*mPar.GetMinDamage(i)/100;
+        d2 = nDamage*mPar.GetMaxDamage(i)/100;
+        
+        if(d2>0)
+        {
+            if(i<eDamageCold)
+                strText2.Format("<0xFFFF8888>%s:  %d-%d<*>",m_arrDamageName[i],d1,d2 );
+            else
+                strText2.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+            AppendWithEOL(strText, strText2);
+        }
+    }
+       
+    if (unVal != null)
+    {
+        if (unVal.GetSkill(eSkillSetTrap) < tPar.GetTrapLevel())
+        {
+            strTmp.Translate("translateRequiredSkillLevelTrap");
+            strText2.Format("<0xFFFF4444>%s %d<*>",strTmp, tPar.GetTrapLevel());
+            AppendWithEOL(strText, strText2);
+        }
+    }
+}//-------------------------------------------------------------------------------------------------------
+
+function void GetMagicCardSimpleInfoText(unit pUnit, UnitValues unVal, string strObjectID, EquipmentValues wVal, MagicCardParams mPar, int bAlchemyResultInfo, stringW& strText)
+{
+    stringW strAdd, strTmp;
+int nMagicSchool;
+    GetEquipmentInfoText(pUnit, unVal, strObjectID, wVal, mPar, bAlchemyResultInfo, strText);    
+    if( mPar.GetRequiredMagicSchoolSkill() > unVal.GetSkill(eFirstMagicSkill + mPar.GetMagicSchool() ))
+    {
+        nMagicSchool = mPar.GetMagicSchool();
+        if(nMagicSchool>=0 &&nMagicSchool<5)//boostery maja to ustawione na -1
+        {
+            strTmp = m_arrRequiredMagicSchool[nMagicSchool];
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, mPar.GetRequiredMagicSchoolSkill() );
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+
+}//-------------------------------------------------------------------------------------------------------
+
+function void GetMagicPowerUpCardInfoText(unit pUnit, int nMagicCardSlotNum, int nPowerUpIndex, string strObjectID, EquipmentValues wVal, MagicCardParams mPar, int bAlchemyResultInfo, stringW& strText)
+{
+    int i,x;
+    stringW str;
+    
+    for(i=0;i<eMagicCardPowerUpCnt;i++)
+    {
+        x=GetPowerUpCardsValueSumOnIndex(pUnit, nMagicCardSlotNum, nPowerUpIndex,i);
+        if(x>0)
+        {
+            str.Format(m_arrMagicCardPowerUpName[i],x);
+            AppendWithColorEOL(strText,eColorLViolet, str);
+        }
+    }
+}
+
+
+#define TOOLTIP2(a,col,b) nVal=a;if(nVal>0){ str.FormatTrl(b,nVal);AppendWithColorEOL(strText,col, str);}
+#define TOOLTIP(a,col,b,c) nVal=a;if(nVal>0){ str.FormatTrl(b,nVal);AppendWithColorEOL(strText,col, str);}if(nVal<0){ str.FormatTrl(c,nVal);AppendWithColorEOL(strText,col, str);}
+
+function void GetMagicCardInfoText(unit pUnit, int nMagicCardSlotNum, string strObjectID, EquipmentValues wVal, MagicCardParams mPar, int bAlchemyResultInfo, stringW& strText)
+{
+    int nVal,nCardCnt, nRequiredSkill, nSkill, nManaUse;
+    MagicCardParams mcPar;
+    MissileParams misPar;
+    PotionValues ptVal;
+    string strCardName;
+    stringW str,str2;
+    int nDamage, nAddUnitHP,nAddTargetHP,nFreezeTicks,nStopMovingTicks;
+    int bHealPoison,bRemoveTarget,bUnsummonTarget,bStoneWall,bRessurectTarget,bCanBeUsed;
+    int nUnitLevel, nWeaponLevel, nShieldLevel, nArmourLevel, nOtherLevel;
+
+    ASSERT(nMagicCardSlotNum >= 0 && nMagicCardSlotNum <3);
+    
+    nCardCnt = pUnit.GetMagicCardOnSlotCount(nMagicCardSlotNum);
+    mcPar = GetMagicCardParams(strObjectID);
+   
+    strCardName = pUnit.GetMagicCardIDOnSlot(nMagicCardSlotNum);
+    
+    nSkill = pUnit.GetUnitValues().GetSkill(eFirstMagicSkill + mcPar.GetMagicSchool()) + GetPowerUpMagicLevel(pUnit, nMagicCardSlotNum);
+    nRequiredSkill = mcPar.GetRequiredMagicSchoolSkill();
+    nAddUnitHP=0;nAddTargetHP=0;nFreezeTicks=0;nStopMovingTicks=0;
+    bHealPoison=false;bRemoveTarget=false;bUnsummonTarget=false;bStoneWall=false;bRessurectTarget=false;
+    
+    ptVal = GetEmptyPotionValues();//zwraca wskaznik do jednego obiektu!!
+        
+    PrepareMagicDataOnUnit(pUnit, strCardName, nCardCnt, nMagicCardSlotNum, nRequiredSkill,nSkill,
+                           ptVal, nAddUnitHP,nAddTargetHP,nFreezeTicks,nStopMovingTicks,
+                           bHealPoison,bRemoveTarget,bUnsummonTarget,bStoneWall,bRessurectTarget,bCanBeUsed);
+    
+    
+    if (mcPar.GetMagicType() == eMagicCardTypeMissile)
+    {
+        misPar = GetMagicCardMissileParams(strCardName, 0);
+        CreateDamageText(pUnit, wVal, misPar,CalculateMagicDamage(pUnit, nMagicCardSlotNum), strText);
+    }
+    
+    if (mcPar.GetMagicType() == eMagicCardTypeSummon)
+    {
+        GetMagicSummonLevels(pUnit, nMagicCardSlotNum, nUnitLevel, nWeaponLevel, nShieldLevel, nArmourLevel, nOtherLevel,false);
+        str.FormatTrl("translateSpellSummonedLevel",nUnitLevel);
+        AppendWithColorEOL(strText,eColorLViolet, str);
+        str.FormatTrl("translateSpellSummonedCount",GetMagicSummonCount(pUnit, nMagicCardSlotNum));
+        AppendWithEOL(strText, str);
+        nFreezeTicks=GetMagicSummonTime(pUnit, nMagicCardSlotNum,mcPar,nCardCnt)/30;
+        str.FormatTrl("translateSpellSummonedTime",nFreezeTicks/60,nFreezeTicks%60);
+        AppendWithColorEOL(strText,eColorLMagenta, str);
+        nFreezeTicks=0;
+    }
+    
+    //GetEquipmentInfoText(pUnit, strObjectID, wVal, mPar, bAlchemyResultInfo, strText);    
+       
+    
+    if(nAddUnitHP>0)
+    {
+        str.FormatTrl("translateSpellAddHP",nAddUnitHP);
+        AppendWithColorEOL(strText,eColorLBlue, str);
+    }
+    if(nAddTargetHP>0)
+    {
+        str.FormatTrl("translateSpellAddHP",nAddTargetHP);
+        AppendWithColorEOL(strText,eColorLBlue, str);
+    }
+    if(bHealPoison>0)
+    {
+        str.Translate("translateSpellHealPoison");
+        AppendWithColorEOL(strText,eColorLGreen, str);
+    }
+    if((ptVal.GetPotionFlags() & ePotionBlockPoison)==ePotionBlockPoison)
+    {
+        str.Translate("translateSpellBlockPoison");
+        AppendWithColorEOL(strText,eColorLGreen, str);
+    }
+    if((ptVal.GetPotionFlags() & ePotionSlowDown)==ePotionSlowDown)
+    {
+        str.Translate("translateSpellSlowDown");
+        AppendWithColorEOL(strText,eColorLGreen, str);
+    }
+    
+    if(nFreezeTicks>0)
+    {
+        str.FormatTrl("translateSpellFreezeTicks",nFreezeTicks/30);
+        AppendWithColorEOL(strText,eColorLRed, str);
+    }
+    if(nStopMovingTicks>0)
+    {
+        str.FormatTrl("translateSpellStopMovingTicks",nStopMovingTicks/30);
+        AppendWithColorEOL(strText,eColorLRed, str);
+    }
+    TOOLTIP(ptVal.GetAddParam(eParamHP),eColorLYellow,"translateSpellParamHPPlus","translateSpellParamHPMinus");
+    TOOLTIP2(ptVal.GetHPRegenerationSpeedUpPercent(),eColorLYellow,"translateSpellHPReg");
+    TOOLTIP(ptVal.GetStrengthUpPercent(),eColorLYellow,"translateSpellStrPrPlus","translateSpellStrPrMinus");
+    TOOLTIP(ptVal.GetAddPoint(ePointsDexterity),eColorLYellow,"translateSpellDexPlus","translateSpellDexMinus");
+    TOOLTIP(ptVal.GetAddPoint(ePointsStrength),eColorLYellow,"translateSpellStrPlus","translateSpellStrMinus");
+    
+     //TOOLTIP(ptVal.GetAddParam(eParamStamina),"translateSpellStaPlus","translateSpellStaMinus");
+    TOOLTIP(ptVal.GetAddParam(eParamDefence),eColorLYellow,"translateSpellDefPlus","translateSpellDefMinus");
+    TOOLTIP(ptVal.GetAddParam(eParamAttack),eColorLYellow,"translateSpellAttPlus","translateSpellAttMinus");
+    TOOLTIP(ptVal.GetAddParam(eParamDamage),eColorLYellow,"translateSpellDamPlus","translateSpellDamMinus");
+    
+    TOOLTIP2(ptVal.GetMagicEnhanceMissileDamageUpPercent(),eColorLYellow,"translateSpellDamPrPlus");;
+    TOOLTIP2(ptVal.GetMagicEnhanceManaUseUpPercent(),eColorLYellow,"translateSpellManaUsePr");
+    TOOLTIP2(ptVal.GetMagicEnhanceSummonAddLevels(),eColorLYellow,"translateSpellSummonAddLevel");
+    TOOLTIP2(ptVal.GetMagicEnhanceSummonAddCount(),eColorLYellow,"translateSpellSummonAddCount");
+    
+    TOOLTIP2(ptVal.GetManaAsHPPercent(),eColorLYellow,"translateSpellManaHPChange");
+    TOOLTIP2(ptVal.GetExtraHP(),eColorLYellow,"translateSpellExtraHP");
+    TOOLTIP2(ptVal.GetReflectDamagePercent(),eColorLYellow,"translateSpellReflectDamagePr");
+    
+    TOOLTIP(ptVal.GetAddProtect(eProtectPhysical),eColorLYellow,"translateSpellProtPhysPlus","translateSpellProtPhysMinus");    
+    TOOLTIP2(ptVal.GetAddProtect(eProtectCold),eColorLYellow,"translateSpellProtColdPlus");
+    TOOLTIP2(ptVal.GetAddProtect(eProtectFire),eColorLYellow,"translateSpellProtFirePlus");
+    TOOLTIP2(ptVal.GetAddProtect(eProtectElectric),eColorLYellow,"translateSpellProtElPlus");
+    
+    
+    TOOLTIP2(ptVal.GetDamage(eDamageFire),eColorLRed,"translateSpellDamageFire");
+    TOOLTIP2(ptVal.GetDamage(eDamageCold),eColorLRed,"translateSpellDamageCold");
+    TOOLTIP2(ptVal.GetDamage(eDamagePoison),eColorLRed,"translateSpellDamagePoison");
+    TOOLTIP2(ptVal.GetDamage(eDamageElectric),eColorLRed,"translateSpellDamageElectric");
+    	
+    TOOLTIP2(ptVal.GetLeechHP(),eColorLRed,"translateSpellLeechHP");
+       
+    if(ptVal.GetPotionTicks()>0) 
+    {
+        str.FormatTrl("translateSpellTime",ptVal.GetPotionTicks()/30);
+        AppendWithColorEOL(strText,eColorLMagenta, str);
+    }
+    
+    nManaUse = GetMagicManaUse(pUnit, nMagicCardSlotNum);
+    if(nManaUse>0)
+    {
+        str.FormatTrl("translateSpellMana",nManaUse);
+        AppendWithColorEOL(strText,eColorLBlue, str);
+    }
+    //PotionValues ptVal;
+    //ptVal = GetEmptyPotionValues();//zwraca wskaznik do jednego obiektu!!
+    //pUnit.AddPotionValues(ptVal);
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetMagicClubInfoText(unit pUnit, UnitValues unVal, string strObjectID, EquipmentValues wVal, MagicClubParams mPar, int bAlchemyResultInfo, stringW& strText)
+{
+    stringW strAdd, strTmp;
+    int i, d1,d2;
+    int nMagicSchool, nSkill, nAddSkill;
+    
+// equipment
+    GetEquipmentInfoText(pUnit, unVal, strObjectID, wVal, mPar, bAlchemyResultInfo, strText);
+// required school skill    
+    nMagicSchool = mPar.GetMagicSchool();
+    if( mPar.GetRequiredMagicSchoolSkill() > unVal.GetSkill(eFirstMagicSkill + nMagicSchool ))
+    {
+        strTmp = m_arrRequiredMagicSchool[nMagicSchool];
+        strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, mPar.GetRequiredMagicSchoolSkill() );
+        AppendWithEOL(strText, strAdd);
+    }
+// add magic skill level
+    for(i = eSkillAirMagic; i < eSkillAirMagic + 5; i++)
+    {
+        nAddSkill = mPar.GetAddMagicSchoolSkill(i - eFirstMagicSkill);
+        if( nAddSkill > 0 )
+        {
+            strTmp = m_arrAddSkillInfoFormat[i];
+            strAdd.Format("<0xFFFFFFAA>%s %d<*>",strTmp, nAddSkill );
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+ // maxmana
+    strAdd.Format("<0xFFAAAAFF>%s %d<*>",m_arrAddParamFormat[eParamMana], mPar.GetMaxMana());
+    AppendWithEOL(strText, strAdd);
+    //strTmp.Translate("translateMagicClubMaxMana");
+    //strAdd.Format("<0xFFAAAAFF>%s %d<*>",strTmp, mPar.GetMaxMana() );
+    //AppendWithEOL(strText, strAdd);
+    
+// damage
+    for(i = 0; i < 8; i++)
+    {
+        d1 = GetDamage(pUnit, wVal, mPar,i, 0, 0,true);
+        d2 = GetDamage(pUnit, wVal, mPar,i, 100, 0,true);
+        if( d2 > 0 )
+        {
+            if(i < eDamageCold)
+                strTmp.Format("<0xFFFF8888>%s:  %d-%d<*>",m_arrDamageName[i],d1,d2 );
+            else
+                strTmp.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+            AppendWithEOL(strText, strTmp);
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetUnitInfoText(unit pUnit, int nHeroLevel, stringW& strText)
+{
+    UnitValues uVal;
+    stringW str,str2;
+    int nLevel2;
+    int nTeamNum;
+    
+    #ifndef NO_DETAILED_ENEMY_STATS
+    
+    string strObjectID,strID,strTmp;
+    int nVal, nTmp,nTmp2;
+    EquipmentValues wValR, wValL,eVal;
+    EquipmentParams ePar;
+    WeaponParams wParR, wParL;
+    MissileParams mPar;
+    int i, bArmour,nStrength,k,d1,d2,nDamMin,nDamMax,nDamTmp,bFullSet;
+    #endif
+    
+    uVal = pUnit.GetUnitValues();
+    nLevel2=uVal.GetLevel();
+
+    if( pUnit.GetAttribute("TeamMonsterHuntTargetOwner", nTeamNum) )
+    {
+        // jezeli ma taki atrybut tzn ze jestesmy w multi w trybie monster hunt     
+        if(nTeamNum == 0)
+            str.Format("<F6><0xFF0000FF>%s",strText);
+        else if(nTeamNum == 1)
+            str.Format("<F6><0xFFFF0000>%s",strText);
+        else
+            str.Format("<F6>%s",strText);
+        strText.Copy(str);
+    }
+    else
+    {
+        // kolor podpisu zalezny od levelu
+        if(nHeroLevel<((nLevel2*7)/10)) str.Format("<F6><0xFFFF8080>%s",strText);
+        else if(nHeroLevel>((nLevel2*14)/10)) str.Format("<F6><0xFF80FF80>%s",strText);
+        else str.Format("<F6>%s",strText);
+        strText.Copy(str);
+    }
+
+    
+    
+    
+    
+    #ifndef NO_DETAILED_ENEMY_STATS
+    
+    //wypisywanie levelu
+    uVal = pUnit.GetUnitValues();
+    nLevel2=uVal.GetLevel();
+    str2.Translate("translateHeroStats1");
+    
+    if(nHeroLevel<((nLevel2*7)/10)) str.Format("<0xFFFF8080>%s %d",str2,nLevel2);
+    else if(nHeroLevel>((nLevel2*14)/10)) str.Format("<0xFF80FF80>%s %d",str2,nLevel2);
+    else str.Format("%s %d",str2,nLevel2);
+    AppendWithEOL(strText, str);
+    
+    
+    
+    uVal = pUnit.GetUnitValues();
+    wValR = pUnit.GetWeaponValuesOnSlot(eSlotRightHand);
+    wParR = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+    wValL = pUnit.GetWeaponValuesOnSlot(eSlotLeftHand);
+    wParL = pUnit.GetWeaponParamsOnSlot(eSlotLeftHand);
+
+//    if(pUnit.IsHeroUnit())str.Format("Level: %d   Experience: %d/%d", uVal.GetLevel(), uVal.GetExperiencePoints(), GetExperiencePointsForLevel(uVal.GetLevel() + 1));
+//    else str.Format("Level: %d", uVal.GetLevel());
+//    AppendWithEOL(strText, str);
+    
+//    if (pUnit.GetMaxMana() > 0)
+//    {
+//        str.Format("HP: %d/%d   Mana: %d/%d", pUnit.GetHP(), pUnit.GetMaxHP(), pUnit.GetMana(), pUnit.GetMaxMana());
+//    }
+//    else
+    {
+        str2.Translate("translateHeroStats2");
+        str.Format("<0xFFAAAAAA>%s %d/%d",str2, pUnit.GetHP(), pUnit.GetMaxHP());
+    }
+    AppendWithEOL(strText, str);
+    
+    
+    //--- Protection -------------------------");
+    str.Copy("");
+    str2.Copy("");
+    bArmour=false;
+    for(i=0;i<eDamageSpirit;i=i+1)
+    {
+        k=MagicalArmour(pUnit, pUnit.GetUnitParams(), i);
+        if(i<= eLastPhysicalDamage) k+= GetPhysicalArmour(pUnit, i,bFullSet);
+        if(k>0)
+        {
+            bArmour=true;
+            if(!pUnit.IsHeroUnit() && k>=10000)
+            {
+                strTmp.Format("translateImmune%d",i);
+                str.Translate(strTmp);
+            }
+            else
+            {
+                str.Format("<0xFF90FF90>%s: %3d<*>",m_arrArmourName[i],k);
+            }
+            AppendWithEOL(str2, str);
+        }
+    }
+    if(bArmour) AppendWithEOL(strText, str2);
+    
+    
+    //XXXMD wypisac poprawny damage od luku
+    if (wValR != null)
+    {
+        str.Copy("");//--- Right Hand Weapon ------------------");
+        if(wParR.GetWeaponType()== eWeaponBow)
+        {
+            if (pUnit.GetEquipmentOnSlot(eSlotQuiver, ePar, eVal))
+            {
+                nStrength = GetBowDamageWithPotions(pUnit,wValR,wParR);
+                strObjectID = pUnit.GetEquipmentIDOnSlot(eSlotQuiver);
+                strID = GetQuiverAmmoID(strObjectID);
+                ASSERT(strID.GetLength() > 0);
+                mPar = GetMissileParams(strID);
+                eVal = pUnit.GetEquipmentValuesOnSlot(eSlotQuiver);
+                
+                for(i=0;i<eDamagesCnt;i=i+1)
+                {
+                    //function int GetMissileDamage(pUnit, MissileParams mPar,int nIndex, EquipmentValues eVal,int nRand,int nStrength)
+                    d1=GetMissileDamage(pUnit, mPar,i, eVal, 0, nStrength);
+                    d2=GetMissileDamage(pUnit, mPar,i, eVal,100, nStrength);
+                    if(d2>0)
+                    {
+                        if(i<eDamageCold)
+                            str.Format("<0xFFFF8888>%s:  %d-%d<*>",m_arrDamageName[i],d1,d2 );
+                        else
+                            str.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+                        AppendWithEOL(strText, str);    
+                    }
+                }
+            }
+        }
+        else
+        {
+            nStrength = GetDamage(pUnit);
+            for(i=0;i<eDamagesCnt;i=i+1)
+            {
+                d1=GetDamage(pUnit, wValR, wParR,i,   0, nStrength,false);
+                d2=GetDamage(pUnit, wValR, wParR,i, 100, nStrength,false);
+                if(d2>0)
+                {
+                    if(i<eDamageCold)
+                        str.Format("<0xFFFF8888>%s:  %d-%d<*>",m_arrDamageName[i],d1,d2 );
+                    else
+                        str.Format("<0xFFFF88AA>%s:  %d<*>",m_arrDamageName[i],d2 );
+                    AppendWithEOL(strText, str);    
+                }
+            }
+        }
+    }
+    
+    #endif
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetObjectInfoText(unit pUnit, int nSlotNum, int nSlotNum2, UnitValues unVal, unit pObject, string strObjectID, EquipmentValues eVal, object pChangedParams, stringW strName, int bAlchemyResultInfo, stringW& strText)
+{
+    int i,bPotionEffect;
+    stringW strAdd,strTmp;
+    string strTmp2;
+        
+    SpecialArtefactParams ePar;
+    PotionArtefactParams ptPar;
+    
+    if (!bAlchemyResultInfo)
+    {
+        strText.Format("<F6>%s",strName);
+    }
+    
+    if (IsMagicClub(strObjectID))
+    {
+        GetMagicClubInfoText(pUnit, unVal, strObjectID, eVal, GetMagicClubParams(strObjectID), bAlchemyResultInfo, strAdd);
+        AppendWithEOL(strText, strAdd);
+    }
+    else if (IsWeapon(strObjectID))
+    {
+        if (GetEquipmentParams(strObjectID).GetEquipmentFlags() & eEquipmentNameFromMesh)
+        {
+            strTmp2.Format("translate%s%d",strObjectID,eVal.GetMeshNum()%10);
+            strTmp.Translate(strTmp2);
+            strText.Format("<F6>%s",strTmp);
+        }
+        
+        strAdd.Copy("");
+        GetWeaponInfoText(pUnit, unVal, strObjectID, eVal, GetWeaponParams(strObjectID), bAlchemyResultInfo, strAdd);
+        AppendWithEOL(strText, strAdd);
+    }
+    else if (IsMagicCard(strObjectID))
+    {
+        if(nSlotNum<0)// karty na ziemi - tylko nazwa
+            GetMagicCardSimpleInfoText(pUnit, unVal, strObjectID, eVal, GetMagicCardParams(strObjectID), bAlchemyResultInfo, strAdd);
+        else if(nSlotNum2>=0)//karty powerupsow w slocie uzywanym            
+            GetMagicPowerUpCardInfoText(pUnit, nSlotNum, nSlotNum2, strObjectID, eVal, GetMagicCardParams(strObjectID), bAlchemyResultInfo, strAdd);
+        else // karty czrow w slocie uzywanym   
+            GetMagicCardInfoText(pUnit, nSlotNum, strObjectID, eVal, GetMagicCardParams(strObjectID), bAlchemyResultInfo, strAdd);
+        AppendWithEOL(strText, strAdd);
+    }
+    else if (IsEquipment(strObjectID))
+    {
+        if (GetEquipmentParams(strObjectID).GetEquipmentFlags() & eEquipmentNameFromMesh)
+        {
+            strTmp2.Format("translate%s_%02d",strObjectID,eVal.GetMeshNum());
+            strTmp.Translate(strTmp2);
+            strText.Format("<F6>%s",strTmp);
+        }
+        strAdd.Copy("");
+        GetEquipmentInfoText(pUnit, unVal, strObjectID, eVal, GetEquipmentParams(strObjectID), bAlchemyResultInfo, strAdd);
+        AppendWithEOL(strText, strAdd);
+    }
+    else if (IsSpecialArtefact(strObjectID))
+    {
+        if (GetSpecialArtefactParams(strObjectID, pChangedParams).GetSpecialArtefactType() == eTypeMoneyArtefact)
+        {
+            strAdd.FormatTrl("translateTooltipGoldFormat", GetSpecialArtefactParams(strObjectID, pChangedParams).GetMoney());
+            AppendWithEOL(strText, strAdd);
+            
+        }
+        else
+        {
+            if (!bAlchemyResultInfo)
+            {
+                if (GetInventoryWeight(strObjectID, pChangedParams)>0)//XXXMD
+                {
+                    strTmp.Translate("translateWeight");
+                    strAdd.Format("<0xFFAAAAAA>%s %d<*>",strTmp, GetInventoryWeight(strObjectID, pChangedParams));
+                    AppendWithEOL(strText, strAdd);
+                }
+            }
+        }
+    }
+    else if (IsPotionArtefact(strObjectID))
+    {
+        
+        ptPar = GetPotionArtefactParams(strObjectID, pChangedParams);
+        bPotionEffect=false;
+        
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorGreen);strText.Append(strAdd);}
+        if(ptPar.GetPotionFlags() & ePotionBlockPoison)
+        {
+            bPotionEffect=true;
+            strAdd.Translate("translatePotionBlockPoison");AppendWithEOL(strText, strAdd);
+        }
+        if(ptPar.GetPotionFlags() & ePotionClearPoison)
+        {
+            strAdd.Translate("translatePotionHealPoison");AppendWithEOL(strText, strAdd);
+        }
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorLBlue);strText.Append(strAdd);}
+        if(ptPar.GetRegenerateHP()>0)
+        {
+            if(ptPar.GetRegenerateHP()<300) strAdd.FormatTrl("translatePotionAddHP1",ptPar.GetRegenerateHP());
+            else if(ptPar.GetRegenerateHP()<1000) strAdd.FormatTrl("translatePotionAddHP2",ptPar.GetRegenerateHP());
+            else strAdd.FormatTrl("translatePotionAddHP3",ptPar.GetRegenerateHP());
+            AppendWithEOL(strText, strAdd);
+        }
+        if(ptPar.GetRegenerateMana()>0)
+        {
+            strAdd.FormatTrl("translatePotionAddMana",ptPar.GetRegenerateMana());
+            AppendWithEOL(strText, strAdd);
+        }
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorLRed);strText.Append(strAdd);}
+        if(ptPar.GetRegenerateHP()<0)
+        {
+            strAdd.FormatTrl("translatePotionRemHP",ptPar.GetRegenerateHP());
+            AppendWithEOL(strText, strAdd);
+        }
+        if(ptPar.GetRegenerateMana()<0)
+        {
+            strAdd.FormatTrl("translatePotionRemMana",ptPar.GetRegenerateMana());
+            AppendWithEOL(strText, strAdd);
+        }
+
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorLYellow);strText.Append(strAdd);}
+
+        for(i=0;i<ePointsCnt;i++)
+        if(ptPar.GetAddPoint(i)>0)
+        {
+            bPotionEffect=true;
+            strAdd.FormatTrl(astrPointName[i],ptPar.GetAddPoint(i));
+            AppendWithEOL(strText, strAdd);
+        }
+
+        for(i=0;i<=eParamMana;i++)
+        if(ptPar.GetAddParam(i)>0)
+        {
+            bPotionEffect=true;
+            strAdd.FormatTrl(astrParamName[i],ptPar.GetAddParam(i));
+            AppendWithEOL(strText, strAdd);
+        }
+        
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorLGreen);strText.Append(strAdd);}
+        for(i=eProtectPhysical;i<eProtectSpirit;i++)
+        if(ptPar.GetAddProtect(i)>0)
+        {
+            bPotionEffect=true;
+            strAdd.FormatTrl(astrProtectName[i],ptPar.GetAddProtect(i));
+            AppendWithEOL(strText, strAdd);
+        }
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorLMagenta);strText.Append(strAdd);}
+        if(ptPar.GetPotionTicks()>0)
+        {
+            strAdd.FormatTrl("translatePotionTime",ptPar.GetPotionTicks()/(30*60),(ptPar.GetPotionTicks()/30)%60);
+            AppendWithEOL(strText, strAdd);
+        }
+        else
+        {
+            if(bPotionEffect){strAdd.Translate("translatePotionPermanent");AppendWithEOL(strText, strAdd);}
+        }
+        
+        if (!bAlchemyResultInfo)
+        {
+            if (GetInventoryWeight(strObjectID, pChangedParams)>0)
+            {
+                strTmp.Translate("translateWeight");
+                strAdd.Format("<0xFFAAAAAA>%s %d<*>",strTmp, GetInventoryWeight(strObjectID, pChangedParams));
+                AppendWithEOL(strText, strAdd);
+            }
+        }
+        if (!bAlchemyResultInfo){strAdd.Copy(eColorRed);strText.Append(strAdd);}
+        if(ptPar.GetRegenerateHP()<0)
+        {
+            strTmp.Translate("translateRequiredHP");
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, -ptPar.GetRegenerateHP()+1);
+            AppendWithEOL(strText, strAdd);
+        }
+        if(ptPar.GetRegenerateMana()<0)
+        {
+            strTmp.Translate("translateRequiredMana");
+            strAdd.Format("<0xFFFF4444>%s %d<*>",strTmp, -ptPar.GetRegenerateMana()+1);
+            AppendWithEOL(strText, strAdd);
+        }
+        if(ptPar.GetPotionFlags() & ePotionNotUsable)
+        {
+            strTmp.Translate("translateNotUsableBeforeCoock");
+            strAdd.Format("<0xFFFF4444>%s<*>",strTmp);
+            AppendWithEOL(strText, strAdd);
+        }
+        strAdd.Copy("<*>");
+        strText.Append(strAdd);
+    }
+    else if (IsTrap(strObjectID))//XXXTRAP
+    {
+        GetTrapInfoText(pUnit, unVal, pObject, strObjectID, pChangedParams, bAlchemyResultInfo, strAdd);
+        AppendWithEOL(strText, strAdd);
+    }
+    else if (IsDynamicTeleport(strObjectID))
+    {
+        if (!bAlchemyResultInfo)
+        {
+            if (GetInventoryWeight(strObjectID, pChangedParams)>0)//XXXMD
+            {
+                strTmp.Translate("translateWeight");
+                strAdd.Format("<0xFFAAAAAA>%s %d<*>",strTmp, GetInventoryWeight(strObjectID, pChangedParams));
+                AppendWithEOL(strText, strAdd);
+            }
+        }
+    }
+   
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetPointInfoText(unit pUnit, int nPointIndex, stringW& strLabel, stringW& strTooltip)
+{
+    int nBasicPoints, nAddPoints;
+    
+    nBasicPoints = pUnit.GetUnitValues().GetBasicPoint(nPointIndex);
+    nAddPoints = pUnit.GetUnitValues().GetPoint(nPointIndex) - nBasicPoints;
+    if (nAddPoints != 0)
+    {
+        if (nAddPoints > 0)
+        {
+            strTooltip.FormatTrl(m_arrPointInfoFormat2[nPointIndex], nBasicPoints, nAddPoints);
+            //strLabel.FormatTrl("translateParamPointsFormat2", nBasicPoints, nAddPoints);
+            strLabel.Format("%d + <0xFFAAAAFF>%d", nBasicPoints, nAddPoints);
+        }
+        else
+        {
+            strTooltip.FormatTrl(m_arrPointInfoFormat2Neg[nPointIndex], nBasicPoints, nAddPoints);
+            strLabel.Format("%d - <0xFFFF4444>%d", nBasicPoints, nAddPoints);
+            //strLabel.FormatTrl("translateParamPointsFormat2Neg", nBasicPoints, nAddPoints);
+        }
+    }
+    else
+    {
+        strTooltip.FormatTrl(m_arrPointInfoFormat[nPointIndex], nBasicPoints);
+        strLabel.FormatTrl("translateParamPointsFormat", nBasicPoints);
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetSkillInfoText(unit pUnit, int nSkillIndex, stringW& strText)
+{
+    int i;
+    stringW str,strAdd;
+    int nVal, nLevel;
+    int nChance;
+    int nChamber;
+
+    nLevel = pUnit.GetUnitValues().GetSkill(nSkillIndex);// to poziom po uwzglednieniu potionów itp
+    
+    if(nSkillIndex == eSkillParry)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillParry);
+        strText.FormatTrl("translateSkillParry",nLevel, nVal);
+    }
+    if(nSkillIndex == eSkillSwimming)
+    {
+        if(nLevel==0) 
+            strText.FormatTrl("translateSkillSwimming0", nLevel);
+        else     
+            strText.FormatTrl("translateSkillSwimming1", nLevel, CalcFullInventoryPercent_SkillSwimming(pUnit) );
+    }
+    if(nSkillIndex == eSkillHorseRiding)
+    {
+        if(nLevel==0) 
+            strText.FormatTrl("translateSkillHorseRiding0", nLevel);
+        else
+            strText.FormatTrl("translateSkillHorseRiding1", nLevel, CalcSkillDamageIncreasePercent(pUnit, eSkillHorseRiding));
+    }
+    if(nSkillIndex == eSkillLockPicking)
+    {
+        strText.FormatTrl("translateSkillLockPicking", nLevel);
+        
+        for(i = 1; i < 8; i++)
+        {    
+            //if( (i - nLevel < -1 ))
+            //    continue;
+            nChance = CalcOpenChancePercent_SkillLockPick(pUnit, i);
+            str.FormatTrl(m_arrLockpickChance[i], nChance);
+            AppendWithEOL(strText, str);
+        }
+    }
+    if(nSkillIndex == eSkillAlchemy)
+    {
+        strText.FormatTrl("translateSkillAlchemy", nLevel);
+        str.FormatTrl("translateSkillAlchemyInfo", MIN(100,50+nLevel*5));
+        AppendWithEOL(strText, str);
+    }
+    if(nSkillIndex == eSkillSneak)
+    {
+        if(nLevel==0) 
+            strText.FormatTrl("translateSkillSneak0", nLevel);
+        else
+            strText.FormatTrl("translateSkillSneak1", nLevel, CalcReducedRangePercent_SkillSneak(pUnit));
+    }
+    if(nSkillIndex == eSkillStealing)
+    {
+        if(nLevel==0) 
+            strText.FormatTrl("translateSkillStealing", nLevel, 0, 0, 0);
+        else
+            strText.FormatTrl("translateSkillStealing", nLevel, CalcSkillChanceInfo(pUnit, nSkillIndex),
+                                                                CalcMinItems_SkillStealing(pUnit),
+                                                                CalcMaxItems_SkillStealing(pUnit) );
+    }
+    
+    if(nSkillIndex == eSkillStun)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillStun);
+        strText.FormatTrl("translateSkillStun", nLevel, nVal, CalcStunTime_SkillStun(pUnit) );
+    }    
+    if(nSkillIndex == eSkillBurn)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillBurn);
+        strText.FormatTrl("translateSkillBurn", nLevel, nVal, CalcBurnTime_SkillBurn(pUnit) );
+    }    
+    if(nSkillIndex == eSkillShieldTrick)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillShieldTrick);
+        strText.FormatTrl("translateSkillShieldTrick", nLevel, nVal, CalcSlowDownTime_SkillShieldTrick(pUnit) );
+    }
+    
+    if(nSkillIndex == eSkillSwordBrake)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillSwordBrake);
+        strText.FormatTrl("translateSkillBreakSword", nLevel, nVal);
+    }    
+    
+    if(nSkillIndex == eSkillDismountFromHorse)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillDismountFromHorse);
+        strText.FormatTrl("translateSkillDismount", nLevel, nVal);
+    }    
+    if(nSkillIndex == eSkillPullShield)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillPullShield);
+        strText.FormatTrl("translateSkillBreakShield", nLevel, nVal);
+    }    
+    
+    if(nSkillIndex == eSkillKnifeDeathStrike)
+    {
+        strText.FormatTrl("translateSkillKnifeDeathStrike", nLevel, CalcSkillDamageIncreasePercent(pUnit, eSkillKnifeDeathStrike));
+    }    
+    if(nSkillIndex == eSkillDeadlyPiruet)
+    {
+        strText.FormatTrl("translateSkillDeadlyPiruet", nLevel, CalcSkillDamagePercent(pUnit, eSkillDeadlyPiruet ));
+    }    
+    
+    
+    if(nSkillIndex == eSkillDisarmingArrow)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillDisarmingArrow);
+        strText.FormatTrl("translateSkillDisarmingArrow", nLevel, nVal);
+    }
+    if(nSkillIndex == eSkillMultiArrows)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillMultiArrows);
+        strText.FormatTrl("translateSkillMultiArrows", nLevel, CalcNumberOfArrows_SkillMultiArrows(pUnit), nVal);
+    }
+    if(nSkillIndex == eSkillPiercing)
+    {
+        strText.FormatTrl("translateSkillPiercing", nLevel, CalcNumberOfEnemies_SkillPiercing(pUnit) );
+    }
+    if(nSkillIndex == eSkillArrowOfDust)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillArrowOfDust);
+        strText.FormatTrl("translateSkillArrowOfDust", nLevel, nVal, CalcBlindTime_SkillArrowOfDust(pUnit) );
+    }
+        
+    if(nSkillIndex == eSkillStability)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillStability);
+	    strText.FormatTrl("translateSkillStability", nLevel, nVal);//XXXMD
+    }
+    if(nSkillIndex == eSkillStrongHand)
+    {
+        strText.FormatTrl("translateSkillStrongHand", nLevel, CalcSkillDamageIncreasePercent(pUnit, eSkillStrongHand) );
+    }
+    if(nSkillIndex == eSkillCriticalHit)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillCriticalHit);
+        strText.FormatTrl("translateSkillCriticalHit", nLevel, nVal, CalcSkillDamagePercent(pUnit, eSkillCriticalHit));
+    }
+    if(nSkillIndex == eSkillDoubleBlade)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillDoubleBlade);
+	    strText.FormatTrl("translateSkillDoubleBlade", nLevel, nVal);
+    }
+    if(nSkillIndex == eSkillKnockDown)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillKnockDown);
+	    strText.FormatTrl("translateSkillKnockDown", nLevel, nVal);
+    }
+    if(nSkillIndex == eSkillFastAiming)
+    {
+        strText.FormatTrl("translateSkillFastAiming", nLevel, CalcDrawSpeedPercent_SkillFastAiming(pUnit) );
+    }
+    if(nSkillIndex == eSkillArchery)
+    {
+        strText.FormatTrl("translateSkillArchery", nLevel, CalcAccurancy_SkillArchery(pUnit) );
+    }
+    
+    if(nSkillIndex == eSkillCloseDistanceShoot)
+    {
+        strText.FormatTrl("translateSkillOverdraw", nLevel, CalcSkillDamageIncreasePercent(pUnit, eSkillCloseDistanceShoot) );
+    }
+    if(nSkillIndex == eSkillPrecizeAiming)
+    {
+        strText.FormatTrl("translateSkillPrecizeAiming", nLevel,CalcHitChance_SkillPrecizeAiming(pUnit) );
+    }
+    
+    if(nSkillIndex == eSkillStoneSkin)
+    {
+        strText.FormatTrl("translateSkillStoneSkin", nLevel, CalcProtection_SkillStoneSkin(pUnit) );
+    }
+    if(nSkillIndex == eSkillDirtyTrick)
+    {
+        nVal = CalcSkillChanceInfo(pUnit, eSkillDirtyTrick);
+        strText.FormatTrl("translateSkillDirtyTrick", nLevel, nVal, CalcBlindTime_SkillDirtyTrick(pUnit) );
+    }
+    if(nSkillIndex == eSkillBerserk)
+    {
+        strText.FormatTrl("translateSkillBerserk", nLevel, CalcSkillDamageIncreasePercent(pUnit, eSkillBerserk) );
+    }
+    if(nSkillIndex == eSkillDefensiveFight)
+    {
+        strText.FormatTrl("translateSkillDefensiveFight", nLevel,CalcIncomingDamagePercent_SkillDefensiveFight(pUnit),
+                                                                 CalcCriticalHitChance_SkillDefensiveFight(pUnit),
+                                                                 CalcCriticalHitChanceFraction_SkillDefensiveFight(pUnit),
+                                                                 CalcDefencePercent_SkillDefensiveFight(pUnit));
+    }
+    if(nSkillIndex == eSkillSetTrap)
+    {
+        strText.FormatTrl("translateSkillSetTrap", nLevel,CalcTrapLevel_SkillSetTrap(pUnit),
+                                                          CalcTrapDamage_SkillSetTrap(pUnit),
+                                                          CalcTrapHoldTime_SkillSetTrap(pUnit) );
+    }
+
+
+    /*Magic
+        eSkillAirMagic
+        eSkillFireMagic,
+        eSkillWaterMagic,
+        eSkillEarthMagic,
+        eSkillNecromancyMagic*/
+    
+    if(nSkillIndex >= eSkillAirMagic && nSkillIndex <= eSkillNecromancyMagic)
+    {
+        nChamber = GetAccessibleChamber(nLevel);
+        strText.FormatTrl(m_arrSkillMagicShool[nSkillIndex - eSkillAirMagic], nLevel);
+        if( nChamber == 0 )
+            str.FormatTrl("translateMagicLevel0", nLevel);
+        else if( nChamber == 1 )
+            str.FormatTrl("translateMagicLevel1", nLevel, eSecondRing);
+        else if( nChamber == 2 )
+            str.FormatTrl("translateMagicLevel2", nLevel, eThirdRing);
+        else if( nChamber == 3 )
+            str.FormatTrl("translateMagicLevel3", nLevel, eFourthRing);
+        else if( nChamber == 4 )
+            str.FormatTrl("translateMagicLevel4", nLevel, eFifthRing);
+        else if( nChamber == 5 )
+            str.FormatTrl("translateMagicLevel5", nLevel);
+        else
+            __ASSERT_FALSE();
+        AppendWithEOL(strText, str);
+        nLevel = pUnit.GetUnitValues().GetBasicSkill(nSkillIndex);// to poziom bez uwzglednienia potionów itp
+        if(/*pUnit.GetUnitValues().GetSkillPoints()>0 &&*/ nLevel<15 && nLevel>1+pUnit.GetUnitValues().GetLevel()/2)//see unit.ech line 1896
+        {
+            str.Copy(eColorRed);
+            strText.Append(str);
+            str.Translate("translateSkillsCantAddMorePoints");
+            AppendWithEOL(strText, str);
+            strAdd.Translate("translateRequiredLevel");
+            str.Format("<0xFFFF4444>%s %d<*>",strAdd,(nLevel-1)*2 );
+            AppendWithEOL(strText, str);
+        }
+    }
+    else 
+    {
+        nLevel = pUnit.GetUnitValues().GetBasicSkill(nSkillIndex);// to poziom bez uwzglednienia potionów itp
+        if(/*pUnit.GetUnitValues().GetSkillPoints()>0 &&*/ nLevel<10 && nLevel>1+pUnit.GetUnitValues().GetLevel()/3)
+        {
+            str.Copy(eColorRed);
+            strText.Append(str);
+            str.Translate("translateSkillsCantAddMorePoints");
+            AppendWithEOL(strText, str);
+            strAdd.Translate("translateRequiredLevel");
+            str.Format("<0xFFFF4444>%s %d<*>",strAdd,(nLevel-1)*3 );
+            AppendWithEOL(strText, str);
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetInventoryUnitInfoText(unit pUnit, stringW& strTitles, stringW& strValues)
+{
+    stringW str,strText;
+
+    UnitValues uVal;
+    uVal = pUnit.GetUnitValues();
+    
+    /*
+    item translateHeroStats1 "Level: %d   Experience: %d/%d"
+item translateHeroStats2 "HP: %d/%d"
+item translateHeroStats3 "Mana: %d/%d"
+item translateHeroStats4 "Meele attack: %d%%"
+item translateHeroStats5 "Defence: %d%%"
+item translateHeroStats6 "Shooting: %d%%"
+*/
+    strText.Copy("<F6>");
+    str.Translate("translateHeroStats1");
+    strText.Append(str);
+    str.Translate("translateHeroStats7");
+    AppendWithEOL(strText, str);
+
+    str.Translate("translateHeroStats2");
+    AppendWithEOL(strText, str);
+    str.Translate("translateHeroStats3");
+    AppendWithEOL(strText, str);
+    str.Translate("translateHeroStats4");
+    AppendWithEOL(strText, str);
+    str.Translate("translateHeroStats5");
+    AppendWithEOL(strText, str);
+    //str.Translate("translateHeroStats6");
+    //AppendWithEOL(strText, str);
+        
+    strTitles = strText;
+    
+    //str.Format("<F6>%d (%d/%d)\n%d/%d\n%d/%d\n%d%%\n%d%%\n%d%%\n",
+    //str.Format("<F6>%d (%d/%d)\n%d/%d\n%d/%d\n%d%%\n%d%%\n",
+    str.Format("<F6>%d\n%d/%d\n%d/%d\n%d/%d\n%d%%\n%d%%\n",
+                         uVal.GetLevel(), uVal.GetExperiencePoints(), GetExperiencePointsForLevel(uVal.GetLevel() + 1),
+                         pUnit.GetHP(), pUnit.GetMaxHP(),
+                         pUnit.GetMana(), pUnit.GetMaxMana(),                    
+                         CalcSkillChanceInfo(pUnit, eSkillAttack),                
+                         CalcSkillChanceInfo(pUnit, eSkillDefence));
+                         //CalcSkillChanceInfo(pUnit, eSkillArchery));
+                         
+    strValues=str;
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//jesli statystki sa zawsze w tym samym miejscu to nIconTemplateNum mozna ustawic w GameInterface i tutaj nie zmieniac
+function void GetInventoryUnitStatText(unit pUnit, int nStaticNum, int& bVisible, int& nIconTemplateNum, stringW& strValue, stringW& strTooltip)
+{
+    int nValue,i,nSkip,d1,d2,nStrength,bFullSet;
+    EquipmentValues wVal, eVal;
+    EquipmentParams ePar;
+    WeaponParams wPar;
+    MissileParams mPar;
+    MissileValues mVal;
+    string strObjectID, strID,strTMP;     
+    
+    bVisible = false;
+    
+    if(nStaticNum<6) //damage
+    {
+        if(nStaticNum<3) //right hand
+        {
+            wVal = pUnit.GetWeaponValuesOnSlot(eSlotRightHand);
+            wPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+        }
+        else
+        {
+            wVal = pUnit.GetWeaponValuesOnSlot(eSlotLeftHand);
+            wPar = pUnit.GetWeaponParamsOnSlot(eSlotLeftHand);
+        }
+        if (wVal == null) return;
+        nSkip=0; 
+        if(nStaticNum==1||nStaticNum==4)nSkip=1;
+        if(nStaticNum==2||nStaticNum==5)nSkip=2;
+        
+        if(wPar.GetWeaponType()== eWeaponBow)
+        {
+            
+            if (pUnit.GetEquipmentOnSlot(eSlotQuiver, ePar, eVal))
+            {
+                nStrength = GetBowDamageWithPotions(pUnit,wVal,wPar);
+                strObjectID = pUnit.GetEquipmentIDOnSlot(eSlotQuiver);
+                strID = GetQuiverAmmoID(strObjectID);
+                ASSERT(strID.GetLength() > 0);
+                mPar = GetMissileParams(strID);
+                eVal = pUnit.GetEquipmentValuesOnSlot(eSlotQuiver);
+                
+                for(i=0;i<eDamagesCnt;i=i+1)
+                {
+                    //function int GetMissileDamage(pUnit, MissileParams mPar,int nIndex, EquipmentValues eVal,int nRand,int nStrength)
+                    if(i<3)
+                    {
+                        d1=GetMissileDamage(pUnit, mPar,i, eVal, 50, nStrength);
+                        d2=GetMissileDamage(pUnit, mPar,i, eVal,100, nStrength);
+                        if(pUnit.GetUnitValues().GetSkill(eSkillOverdraw)>0)
+                        {
+                            d1= (d1* (pUnit.GetUnitValues().GetSkill(eSkillOverdraw)+10))/10;
+                            //d2= (d2* (pUnit.GetUnitValues().GetSkill(eSkillOverdraw)+10))/10;
+                        }
+                    }
+                    else
+                    {
+                        d1=GetDamage(pUnit, wVal, wPar,i,   50, nStrength,false);
+                        //d2=GetDamage(pUnit, wVal, wPar,i, 100, nStrength);
+                    }
+                    d2=d1;
+                    if(d2>0 && !nSkip)
+                    {
+                        strTMP.Format("%s%d","translateUnitStatTooltipDamage",i+1);
+                        strTooltip.Translate(strTMP);
+                        nIconTemplateNum=90+i;
+                        //if(d2==d1)
+                            strValue.Format("<F6><0xFFFFAAAA>%d", d1);
+                        //else
+                        //    strValue.Format("%d-%d", d1,d2);
+                        bVisible = true;
+                        return;
+                    }
+                    if(d2>0 && nSkip)
+                    {
+                        nSkip--;
+                    }
+                }
+            }
+        }
+        else
+        {
+            nStrength = GetDamage(pUnit);
+            for(i=0;i<eDamagesCnt;i=i+1)
+            {
+                d1=GetDamage(pUnit, wVal, wPar,i,   50, nStrength,false);
+                //d2=GetDamage(pUnit, wVal, wPar,i, 100, nStrength);
+                d2=d1;
+                if(d2>0 && !nSkip)
+                {
+                    strTMP.Format("%s%d","translateUnitStatTooltipDamage",i+1);
+                    strTooltip.Translate(strTMP);
+                    nIconTemplateNum=90+i;
+                    //if(d2==d1)
+                        strValue.Format("<F6><0xFFFFAAAA>%d", d1);
+                    //else
+                    //    strValue.Format("%d-%d", d1,d2);
+                    bVisible = true;
+                    return;
+                }
+                if(d2>0 && nSkip)
+                {
+                    nSkip--;
+                }
+            }
+        }
+    }
+    if(nStaticNum>=6)
+    {//Protect
+        bFullSet=false;
+        nValue = MagicalArmour(pUnit, pUnit.GetUnitParams(), nStaticNum-6);
+        nValue += GetPhysicalArmour(pUnit, nStaticNum-6,bFullSet);
+        if(nValue>0 && nStaticNum<12)
+        {
+            strTMP.Format("%s%d","translateUnitStatTooltipProtect",nStaticNum-5);
+            strTooltip.Translate(strTMP);
+            
+            nIconTemplateNum=90+nStaticNum+2;
+            if(bFullSet)strValue.Format("<F6><0xFFAAAAFF>%d", nValue);
+            else strValue.Format("<F6><0xFFAAFFAA>%d", nValue);
+            bVisible = true;
+        }
+    }
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetContainerInfoText(unit pUnit, unit pContainer, stringW& strText)
+{
+    int nCount, nChance;
+    stringW str;
+    int nOpen, nLevel;//(p)
+    
+    //nLockIconNum == -1 - default - ikonka gate'a lub kontenera
+    //nLockIconNum == 0 - zwykly lock
+    //nLockIconNum == 1 - drzwi zamkniete ze skryptu
+    //nLockIconNum == 2,3 - do ew. innych celow
+    //bIsChanceToOpenLock - czy drzwi sa mozliwe do otwarcia
+    //nOpen == 0 - otwarte
+    //nOpen == 1 - zwykly lock
+    //nOpen == 2 - drzewi questowe
+    
+    if (pContainer.IsGate())
+    {
+        if (GetCampaign().IsNetworkChannelGame())
+        {
+            return;
+        }
+        /*
+        //!!byc moze jakies specjalne warunki otwarcia - trzeba by sprawdzic w tamtym skrypcie
+        if (pContainer.IsGateClosed() && (pContainer.GetGateScriptOwnerUID() > 0))
+        {
+            basescript pScript = FindScript(pContainer.GetGateScriptOwnerUID());
+            if (pScript.CommandMessageGet(eMsgGetScriptGateInfo, strTrl))
+            {
+                strText.Translate(strTrl);
+                return;
+            }
+        }
+        */
+        if (pContainer.GetAttribute("Open",nOpen)) 
+        {
+            if (nOpen == 0 || nOpen == 2)
+            {
+                return;
+            }
+            else if (!pContainer.IsGateClosed()) 
+            {
+                return;
+            }
+        }
+        else if (!pContainer.IsGateClosed() || pContainer.WasObjectOpen())
+        {
+            return;
+        }
+        if (pContainer.IsUnitInsideExternalDoorGate(pUnit))
+        {
+            return;
+        }
+    }
+    else if (pContainer.IsContainer())
+    {
+        if (pContainer.WasObjectOpen())
+        {
+            return;
+        }
+    }
+    else
+    {
+        return;
+    }
+    nLevel=pContainer.GetLockLevel();
+    
+    if (nLevel <= NO_LOCK)
+    {
+        //bez zamka
+        return;
+    }
+    else if(nLevel>7)nLevel=7;
+    
+    str.Translate(m_arrLockName[nLevel]);
+    strText.Format("<f6>%s",str);
+    
+    
+    nCount = pUnit.GetKeyArtefactsInInventoryCount(0, false);
+    if (nCount == 0)
+    {
+        str.Copy("<0xFFFF8080>");
+        strText.Append(str);
+        str.Translate("translateLockInfoNoPickLock");
+        AppendWithEOL(strText, str);
+        return;
+    }    
+    nChance = CalcOpenLockChance(pContainer, pUnit);
+    if (nChance <= 0)
+    {
+        str.Copy("<0xFFFF8080>");
+        strText.Append(str);
+        str.Translate("translateLockInfoTooDifficult");
+        AppendWithEOL(strText, str);
+        return;
+    }
+
+    str.Translate("translateLockpicksLeft");
+    AppendWithEOL(strText,str);
+    str.Format(" %d",nCount);
+    strText.Append(str);
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//to samo co powyzej
+function void GetContainerLockInfo(unit pUnit, unit pContainer, int& nLockIconNum, int& bIsChanceToOpenLock)
+{
+    int nCount, nChance;
+    int nOpen, nLevel;//(p)
+    nLockIconNum = -1;
+    
+    //nLockIconNum == -1 - default - ikonka gate'a lub kontenera
+    //nLockIconNum == 0 - zwykly lock
+    //nLockIconNum == 1 - drzwi zamkniete ze skryptu
+    //nLockIconNum == 2,3 - do ew. innych celow
+    //bIsChanceToOpenLock - czy drzwi sa mozliwe do otwarcia
+    //nOpen == 0 - otwarte
+    //nOpen == 1 - zwykly lock
+    //nOpen == 2 - drzewi questowe
+    
+    if (pContainer.IsGate())
+    {
+        /*
+        //!!byc moze jakies specjalne warunki otwarcia - trzeba by sprawdzic w tamtym skrypcie
+        if (pContainer.IsGateClosed() && (pContainer.GetGateScriptOwnerUID() > 0))
+        {
+            basescript pScript = FindScript(pContainer.GetGateScriptOwnerUID());
+            if (pScript.CommandMessageGet(eMsgGetScriptGateInfo, strTrl))
+            {
+                strText.Translate(strTrl);
+                return;
+            }
+        }
+        */
+        if (GetCampaign().IsNetworkChannelGame())
+        {
+            nLockIconNum = 1;
+            bIsChanceToOpenLock = false;
+            return;
+        }
+        if (pContainer.GetAttribute("Open",nOpen))
+        {
+            if (nOpen == 0)
+            {
+                //zamek otwarty ze skryptu - nLockIconNum zostaje -1
+                bIsChanceToOpenLock = true;
+            }
+            else if (nOpen == 1)
+            {
+                //zamek zablokowany ze skryptu ale wyglada jak "zwykly" lock
+                nLockIconNum = 0;
+                bIsChanceToOpenLock = true;
+            }
+            else // nOpen == 2
+            {
+                //zamek zablokowany ze skryptu
+                nLockIconNum = 1;
+                bIsChanceToOpenLock = false;
+            }
+            return;
+        }
+        if (!pContainer.IsGateClosed() || pContainer.WasObjectOpen())
+        {
+            bIsChanceToOpenLock = true;
+            return;
+        }
+        if (pContainer.IsUnitInsideExternalDoorGate(pUnit))
+        {
+            bIsChanceToOpenLock = true;
+            return;
+        }
+    }
+    else if (pContainer.IsContainer())
+    {
+        if (pContainer.WasObjectOpen())
+        {
+            bIsChanceToOpenLock = true;
+            return;
+        }
+    }
+    else
+    {
+        bIsChanceToOpenLock = false;
+        return;
+    }
+    nLevel=pContainer.GetLockLevel();
+    
+    if (nLevel <= NO_LOCK)
+    {
+        //bez zamka
+        bIsChanceToOpenLock = true;
+        return;
+    }
+    else if(nLevel>7)nLevel=7;
+    
+    //if (pContainer.IsGate())//xxxmd
+    {
+        nLockIconNum = 0;
+    }
+    
+    nCount = pUnit.GetKeyArtefactsInInventoryCount(0, false);
+    if (nCount == 0)
+    {
+        bIsChanceToOpenLock = false;
+        return;
+    }
+    nChance = CalcOpenLockChance(pContainer, pUnit);
+    if (nChance <= 0)
+    {
+        bIsChanceToOpenLock = false;
+        return;
+    }
+    bIsChanceToOpenLock = true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//to samo co powyzej; funkcja dla gameplaya
+function int CanStartOpenLock(unit pUnit, unit pContainer, int& bPlayAnim)
+{
+    int nCount, nChance;
+    int nOpen, nLevel;//(p)
+    
+    bPlayAnim = false;
+    if (pContainer.IsGate())
+    {
+        if (GetCampaign().IsNetworkChannelGame())
+        {
+            return false;
+        }
+        if (pContainer.GetAttribute("Open",nOpen))
+        {
+            if (nOpen == 0)
+            {
+                return true;
+            }
+            else if (nOpen == 1)
+            {
+                // "zwykle" drzwi
+            }
+            else // nOpen == 2
+            {
+                return false;
+            }
+        }
+        if (pContainer.IsUnitInsideExternalDoorGate(pUnit))
+        {
+            return true;
+        }
+        if (!pContainer.IsGateClosed() || pContainer.WasObjectOpen())
+        {
+            return true;
+        }
+    }
+    else if (pContainer.IsContainer())
+    {
+        if (pContainer.WasObjectOpen())
+        {
+            bPlayAnim = true;
+            return true;
+        }
+    }
+    else
+    {
+        return false;
+    }
+    nLevel=pContainer.GetLockLevel();
+    
+    if (nLevel <= NO_LOCK)
+    {
+        //bez zamka
+        return true;
+    }
+    else if(nLevel>7)nLevel=7;
+    
+    nCount = pUnit.GetKeyArtefactsInInventoryCount(0, false);
+    if (nCount == 0)
+    {
+        return false;
+    }
+    nChance = CalcOpenLockChance(pContainer, pUnit);
+    if (nChance <= 0)
+    {
+        return false;
+    }
+    bPlayAnim = true;
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetHeroSelectionInfo(unit pUnit, unit uPointedObject, object pChangedParams, stringW strName, int& bDrawTargetSelection, int& nTargetHP, int& nTargetPoison, int& nTargetMaxHP, stringW& strText)
+{
+    stringW strAdd,strTMP;
+    UnitValues uVal;
+    //strText jest puste
+    ASSERT(pUnit);
+    bDrawTargetSelection = false;
+    nTargetHP = nTargetPoison = nTargetMaxHP = 0;
+    if (uPointedObject == null)
+    {
+        return;
+    }
+    if (uPointedObject.IsGate() || uPointedObject.IsContainer())
+    {
+        GetContainerInfoText(pUnit, uPointedObject, strText);
+    }
+    else if (uPointedObject.IsTrap())
+    {
+        GetObjectInfoText(pUnit, -1, -1, pUnit.GetUnitValues(), uPointedObject, uPointedObject.GetObjectIDName(), null, pChangedParams, strName, false, strText);
+    }
+    else if (uPointedObject.IsArtefact())
+    {
+        if (uPointedObject.IsEquipmentArtefact())
+        {
+            GetObjectInfoText(pUnit, -1, -1, pUnit.GetUnitValues(), uPointedObject, uPointedObject.GetArtefactEquipmentIDName(), uPointedObject.GetArtefactEquipmentValues(), null, strName, false, strText);
+        }
+        else if (uPointedObject.IsSpecialArtefact() && (GetSpecialArtefactParams(uPointedObject.GetObjectIDName(), pChangedParams).GetSpecialArtefactType() == eTypeMoneyArtefact))
+        {
+            strText = strName;
+            strAdd.FormatTrl("translateTooltipGoldFormat", uPointedObject.GetArtefactMoney());
+            AppendWithEOL(strText, strAdd);
+        }
+        else
+        {
+            strText = strName;
+        }
+    }
+    else if (uPointedObject.IsTeleport())
+    {
+        strText = strName;
+    }
+    else if (uPointedObject.IsUnit() && uPointedObject.IsLive())
+    {
+        bDrawTargetSelection = true;
+        nTargetHP = uPointedObject.GetHP();
+        nTargetPoison = uPointedObject.GetCurrPoison();
+        nTargetMaxHP = uPointedObject.GetMaxHP();
+        strText = strName;
+        uVal = pUnit.GetUnitValues();
+        GetUnitInfoText(uPointedObject,uVal.GetLevel(), strText);
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetHeroSelectionLockInfo(unit pUnit, unit uPointedObject, object pChangedParams, int& nLockIconNum, int& bIsChanceToOpenLock)
+{
+    ASSERT(pUnit);
+    nLockIconNum = -1;
+    bIsChanceToOpenLock = false;
+    if (uPointedObject == null)
+    {
+        return;
+    }
+    if (uPointedObject.IsGate() || uPointedObject.IsContainer())
+    {
+        GetContainerLockInfo(pUnit, uPointedObject, nLockIconNum, bIsChanceToOpenLock);
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void CreateGuildString(int nGuild, int nReputation, stringW& strText, int bStartEOL)
+{
+    string strTMP;
+    stringW strAdd;
+    int a,b;
+
+// zapis liczbowy (0/0 lub 0.0%) - AA2020 (ciemny czerwonawy)
+//opis reputacji w poszczególnych gildiach (you are nobody) - 3030AA (ciemny niebieski)
+
+    nReputation = MIN(10,MAX(nReputation,0));
+    strAdd.Copy("<f10>");
+    strText.Append(strAdd);    
+    
+    if(nGuild==eGuildMage)     strAdd.Translate("translateGuildMage");    
+    if(nGuild==eGuildWarrior)  strAdd.Translate("translateGuildWarrior");
+    if(nGuild==eGuildThief)    strAdd.Translate("translateGuildThief");
+    if(nGuild==eGuildMerchant) strAdd.Translate("translateGuildMerchant");
+    if(nGuild==eGuildNecro)    strAdd.Translate("translateGuildNecro");
+    if(nGuild==eGuildKarga)    strAdd.Translate("translateGuildKarga");
+    if(nGuild==eGuildSkelden)    strAdd.Translate("translateGuildSkelden");
+    if (bStartEOL)
+    {
+        AppendWithEOL(strText, strAdd);
+    }
+    else
+    {
+        strText.Append(strAdd);
+    }
+    
+    strAdd.Copy("<0xFFAA2020> ");
+    strText.Append(strAdd);    
+    strAdd.Format("%d/%d",nReputation,10);//ReputationPerLevel(nGuild, 1+CalcReputationLevel(nGuild,nReputation)));
+    strText.Append(strAdd);    
+    strAdd.Copy("<f11><0xFF3030AA>");    
+    strText.Append(strAdd);    
+    
+    if(nGuild==eGuildMerchant) strTMP.Format("%s%d","translateGuildMerchantState",CalcReputationLevel(nGuild,nReputation));
+    else if(nGuild==eGuildThief) strTMP.Format("%s%d","translateGuildThiefState",CalcReputationLevel(nGuild,nReputation));
+    else strTMP.Format("%s%d","translateGuildState",CalcReputationLevel(nGuild,nReputation));
+    
+    strAdd.Translate(strTMP);
+    AppendWithEOL(strText, strAdd);
+    
+    if(CalcReputationLevel(nGuild,nReputation)>0) 
+    {
+        if(nGuild==eGuildMerchant)
+        {
+            strAdd.Translate(strTMP);
+            strAdd.FormatTrl("translateGuildMerchantStats",CalcDiscount(nGuild,nReputation));
+            AppendWithEOL(strText, strAdd);
+        }
+        else if(nGuild==eGuildThief)
+        {
+            strAdd.Translate(strTMP);
+            strAdd.FormatTrl("translateGuildThiefStats",CalcDiscount(nGuild,nReputation));
+            AppendWithEOL(strText, strAdd);
+        }
+    }
+}
+function void CreateEfficiencyString(stringW& strText, int nKill, int nRes, int bShowStats)
+{
+    string strTMP;
+    stringW strAdd;
+    int a;
+    
+    
+    strAdd.Copy("<f10>");
+    strText.Append(strAdd);    
+    strAdd.Translate("translateHeroEfficiencyStats");    
+    AppendWithEOL(strText, strAdd);
+    
+    if(!bShowStats)return;
+    
+    strAdd.Copy("<f11><0xFF3030AA>");    
+    AppendWithEOL(strText, strAdd);
+    
+    
+    strAdd.Translate("translateHeroEfficiencyKills");    
+    strText.Append(strAdd);    
+    strAdd.Format("   %d",nKill);
+    strText.Append(strAdd);    
+    
+    
+    strAdd.Translate("translateHeroEfficiencyRes");    
+    AppendWithEOL(strText, strAdd);
+    strAdd.Format("   %d",nRes);
+    strText.Append(strAdd);    
+    
+    if(nKill+nRes==0)a=0;
+    else a=(10000*nKill)/(nKill+nRes);
+    
+    strAdd.Translate("translateHeroEfficiency");    
+    AppendWithEOL(strText, strAdd);
+    
+    if(a<7500) strAdd.Copy("<0xFFAA2020>");    //red
+    else if(a<9500) strAdd.Copy("<0xFFAAAA44>");    //yellow
+    else  strAdd.Copy("<0xFF20AA20>");    //green
+    strText.Append(strAdd);    
+    
+    strAdd.Format(" %d.%d%%",a/100,a%100 );
+    strText.Append(strAdd);    
+}
+
+function void FormatDistance(int nDistance, stringW& strDist)
+{
+    if( nDistance/10 <= 1000 )
+    {
+        strDist.FormatTrl("translateHeroStatDistanceMeters", nDistance / 10, nDistance % 10);
+    }
+    else
+    {
+        strDist.FormatTrl("translateHeroStatDistanceKilometers", nDistance / 10000, (nDistance % 10000) / 1000 );
+    }
+}
+
+function void GetReputationInfoText(unit pUnit, stringW& strText)
+{
+    int i,nStatus,nLast,bStartEOL;
+    stringW strAdd;
+    nStatus=-1;
+
+    if(GetCampaign().IsCampaignGame())//campaign: show Karga and Skelden reputation
+    {
+        nLast=eGuildSkelden;
+
+        for(i=eFirstGuild;i<=nLast;i++)
+        {
+            if(i==eLastGuild)continue;
+            nStatus=0;
+            pUnit.GetAttribute(i,nStatus);
+            strAdd.Copy("");
+            if (i>eFirstGuild)
+            {
+                bStartEOL = true;
+            }
+            else
+            {
+                bStartEOL = false;
+            }
+            CreateGuildString(i, nStatus, strAdd, bStartEOL);
+            AppendWithEOL(strText, strAdd);
+            //strText.Append(strAdd);
+        }
+    }
+    if(GetCampaign().EventGetDifficultyLevel()<2)
+    {    
+        i=0;
+        nStatus=0;
+        pUnit.GetAttribute("Ress",i);
+        pUnit.GetAttribute("Kill",nStatus);
+        strAdd.Copy("");
+        CreateEfficiencyString(strAdd,nStatus,i,true);
+        AppendWithEOL(strText, strAdd);
+    }
+    else
+    {
+        strAdd.Copy("");
+        CreateEfficiencyString(strAdd,nStatus,i,false);
+        AppendWithEOL(strText, strAdd);
+    }
+
+    strAdd.Copy("<f11><0xFF3030AA>");    
+    AppendWithEOL(strText, strAdd);
+    
+    i=0;
+    pUnit.GetAttribute("L",i);
+    strAdd.Translate("translateHeroStatLockpiks");    
+    strText.Append(strAdd);    
+    strAdd.Format(" %d/%d",i,GetNextSkillPointLimit(i));
+    strText.Append(strAdd);    
+    
+    
+    i=0;
+    pUnit.GetAttribute("S",i);
+    strAdd.Translate("translateHeroStatSteal");    
+    AppendWithEOL(strText, strAdd);
+    strAdd.Format(" %d/%d",i,GetNextSkillPointLimit(i));
+    strText.Append(strAdd);    
+    
+    if(GetCampaign().IsCampaignGame())
+    {
+        i=0;
+        pUnit.GetAttribute("T",i);
+        strAdd.Translate("translateHeroStatTeleport");    
+        AppendWithEOL(strText, strAdd);
+        strAdd.Format(" %d/%d",i,GetNextSkillPointLimit(i));
+        strText.Append(strAdd);    
+    }
+    
+    i=0;
+    pUnit.GetAttribute("M",i);
+    strAdd.Translate("translateHeroStatMonsters");    
+    AppendWithEOL(strText, strAdd);
+    strAdd.Format(" %d/%d",i,GetNextMonstersLimit(i));
+    strText.Append(strAdd);    
+    
+    strAdd.Translate("translateHeroStatDistanceFoot");
+    AppendWithEOL(strText, strAdd);
+    FormatDistance(GetCampaign().GetPlayerInterface(GetCampaign().GetLocalPlayerNum()).GetLocalHeroTripWalkLen(), strAdd);
+    strText.Append(strAdd);
+
+    strAdd.Translate("translateHeroStatDistanceHorse");
+    AppendWithEOL(strText, strAdd);
+    FormatDistance(GetCampaign().GetPlayerInterface(GetCampaign().GetLocalPlayerNum()).GetLocalHeroTripHorseLen(), strAdd);
+    strText.Append(strAdd);
+
+    strAdd.Translate("translateHeroStatDistanceSwim");
+    AppendWithEOL(strText, strAdd);
+    FormatDistance(GetCampaign().GetPlayerInterface(GetCampaign().GetLocalPlayerNum()).GetLocalHeroTripSwimLen(), strAdd);
+    strText.Append(strAdd);
+
+    strAdd.Translate("translateHeroStatLongestJump");
+    AppendWithEOL(strText, strAdd);
+    FormatDistance(GetCampaign().GetPlayerInterface(GetCampaign().GetLocalPlayerNum()).GetLocalHeroJumpMaxLen(), strAdd);
+    strText.Append(strAdd);
+
+    strAdd.FormatTrl("translateHeroStatNumberOfJumps", GetCampaign().GetPlayerInterface(GetCampaign().GetLocalPlayerNum()).GetLocalHeroJumpsNum());
+    AppendWithEOL(strText, strAdd);
+
+    strAdd.FormatTrl("translateHeroStatNumberOfBackJumps", GetCampaign().GetPlayerInterface(GetCampaign().GetLocalPlayerNum()).GetLocalHeroBackJumpsNum());
+    AppendWithEOL(strText, strAdd);
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//nVal1 - zielony pasek od 0-max
+//nVal2 - czerwony pasek od 0-max nad zielonym
+function void GetDisplayShootChanceValues(unit pUnit, int& nVal1, int& nVal2, int& nMaxVal)
+{
+    int nHitPercentMultiplier;
+    
+    nHitPercentMultiplier = 100;
+    if (pUnit.GetUnitValues().GetSkill(eSkillOverdraw) > 0)
+    {
+        nHitPercentMultiplier += CalcSkillDamageIncreasePercent(pUnit, eSkillOverdraw);
+    }
+    nVal1 = nHitPercentMultiplier*pUnit.GetCurrShootChance()/100;
+    if (nVal1 > 100)
+    {
+        nVal2 = MIN(nVal1 - 100, 100);
+        nVal1 = 100;
+    }
+    else
+    {
+        nVal2 = 0;
+    }
+    nMaxVal = 100;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //RPGCOMPUTE_INFO_ECH
+

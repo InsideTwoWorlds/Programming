@@ -1,0 +1,2276 @@
+
+
+
+// Map_C01.lnd
+editor.LoadLevel Map_C01.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+// Map_D01.lnd
+editor.LoadLevel Map_D01.lnd
+@Herbs6.txt
+editor.SaveLevel
+
+
+// Map_E01.lnd
+editor.LoadLevel Map_E01.lnd
+@Herbs8.txt
+@Herbs5.txt
+editor.SaveLevel
+
+
+
+
+// Map_F01.lnd
+editor.LoadLevel Map_F01.lnd
+@Herbs7.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_G01.lnd
+editor.LoadLevel Map_G01.lnd
+@Herbs1.txt
+editor.SaveLevel
+
+
+// Map_H01.lnd
+editor.LoadLevel Map_H01.lnd
+@Herbs9.txt
+@Herbs4.txt
+editor.SaveLevel
+
+
+// Map_I01.lnd
+editor.LoadLevel Map_I01.lnd
+@Herbs11.txt
+editor.SaveLevel
+
+
+
+
+
+
+// Map_C02.lnd
+editor.LoadLevel Map_C02.lnd
+@Herbs13.txt
+editor.SaveLevel
+
+
+// Map_D02.lnd
+editor.LoadLevel Map_D02.lnd
+@Herbs10.txt
+@Herbs5.txt
+editor.SaveLevel
+
+
+// Map_E02.lnd
+editor.LoadLevel Map_E02.lnd
+@Herbs12.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_F02.lnd
+editor.LoadLevel Map_F02.lnd
+@Herbs15.txt
+@Herbs4.txt
+editor.SaveLevel
+
+
+// Map_G02.lnd
+Level Map_G02.lnd
+@Herbs14.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_H02.lnd
+editor.LoadLevel Map_H02.lnd
+@Herbs17.txt
+editor.SaveLevel
+
+
+// Map_I02.lnd
+editor.LoadLevel Map_I02.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+
+
+// Map_B03.lnd
+editor.LoadLevel Map_B03.lnd
+@Herbs9.txt
+editor.SaveLevel
+
+
+// Map_C03.lnd
+editor.LoadLevel Map_C03.lnd
+@Herbs11.txt
+@Herbs5.txt
+editor.SaveLevel
+
+
+// Map_D03.lnd
+editor.LoadLevel Map_D03.lnd
+@Herbs16.txt
+@Herbs4.txt
+editor.SaveLevel
+
+
+// Map_E03.lnd
+editor.LoadLevel Map_E03.lnd
+@Herbs18.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_F03.lnd
+editor.LoadLevel Map_F03.lnd
+@Herbs6.txt
+editor.SaveLevel
+
+
+// Map_G03.lnd
+editor.LoadLevel Map_G03.lnd
+@Herbs13.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_H03.lnd
+editor.LoadLevel Map_H03.lnd
+@Herbs15.txt
+editor.SaveLevel
+
+
+// Map_I03.lnd
+editor.LoadLevel Map_I03.lnd
+@Herbs17.txt
+editor.SaveLevel
+
+
+
+// Map_B04.lnd
+editor.LoadLevel Map_B04.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+// Map_C04.lnd
+editor.LoadLevel Map_C04.lnd
+@Herbs9.txt
+editor.SaveLevel
+
+
+// Map_D04.lnd
+editor.LoadLevel Map_D04.lnd
+@Herbs8.txt
+@Herbs4.txt
+editor.SaveLevel
+
+
+// Map_E04.lnd
+editor.LoadLevel Map_E04.lnd
+@Herbs11.txt
+editor.SaveLevel
+
+
+// Map_F04.lnd
+editor.LoadLevel Map_F04.lnd
+@Herbs10.txt
+editor.SaveLevel
+
+
+// Map_G04.lnd
+editor.LoadLevel Map_G04.lnd
+@Herbs13.txt
+@Herbs5.txt
+editor.SaveLevel
+
+
+// Map_H04.lnd
+editor.LoadLevel Map_H04.lnd
+@Herbs12.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_I04.lnd
+editor.LoadLevel Map_I04.lnd
+@Herbs15.txt
+editor.SaveLevel
+
+
+
+
+
+// Map_C05.lnd
+editor.LoadLevel Map_C05.lnd
+@Herbs17.txt
+editor.SaveLevel
+
+
+// Map_D05.lnd
+editor.LoadLevel Map_D05.lnd
+@Herbs14.txt
+@Herbs3.txt
+editor.SaveLevel
+
+
+// Map_E05.lnd
+editor.LoadLevel Map_E05.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+// Map_F05.lnd
+editor.LoadLevel Map_F05.lnd
+@Herbs16.txt
+editor.SaveLevel
+
+
+// Map_G05.lnd
+editor.LoadLevel Map_G05.lnd
+@Herbs9.txt
+editor.SaveLevel
+
+
+// Map_H05.lnd
+editor.LoadLevel Map_H05.lnd
+@Herbs11.txt
+@Herbs4.txt
+editor.SaveLevel
+
+
+// Map_I05.lnd
+editor.LoadLevel Map_I05.lnd
+@Herbs18.txt
+editor.SaveLevel
+
+
+
+
+// Map_B06.lnd
+editor.LoadLevel Map_B06.lnd
+@Herbs13.txt
+editor.SaveLevel
+
+
+// Map_C06.lnd
+editor.LoadLevel Map_C06.lnd
+@Herbs6.txt
+editor.SaveLevel
+
+
+// Map_D06.lnd
+editor.LoadLevel Map_D06.lnd
+@Herbs15.txt
+editor.SaveLevel
+
+
+// Map_E06.lnd
+editor.LoadLevel Map_E06.lnd
+@Herbs8.txt
+editor.SaveLevel
+
+
+// Map_F06.lnd
+editor.LoadLevel Map_F06.lnd
+@Herbs17.txt
+editor.SaveLevel
+
+
+// Map_G06.lnd
+editor.LoadLevel Map_G06.lnd
+@Herbs10.txt
+editor.SaveLevel
+
+
+// Map_H06.lnd
+editor.LoadLevel Map_H06.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+// Map_I06.lnd
+editor.LoadLevel Map_I06.lnd
+@Herbs12.txt
+editor.SaveLevel
+
+
+// Map_A07.lnd
+editor.LoadLevel Map_A07.lnd
+@Herbs9.txt
+editor.SaveLevel
+
+
+// Map_B07.lnd
+editor.LoadLevel Map_B07.lnd
+@Herbs14.txt
+editor.SaveLevel
+
+
+// Map_C07.lnd
+editor.LoadLevel Map_C07.lnd
+@Herbs11.txt
+editor.SaveLevel
+
+
+// Map_D07.lnd
+editor.LoadLevel Map_D07.lnd
+@Herbs16.txt
+editor.SaveLevel
+
+
+// Map_E07.lnd
+editor.LoadLevel Map_E07.lnd
+@Herbs13.txt
+editor.SaveLevel
+
+
+// Map_F07.lnd
+editor.LoadLevel Map_F07.lnd
+//las,polana duza ilosc
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1 
+
+
+editor.CreateObjectsOnArea ING_01 14 3
+editor.CreateObjectsOnArea ING_02 18 4
+editor.CreateObjectsOnArea ING_03 16 5
+editor.CreateObjectsOnArea ING_04 14 4
+editor.CreateObjectsOnArea ING_05 15 3
+editor.CreateObjectsOnArea ING_06 12 10
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 10 2
+editor.CreateObjectsOnArea MUSHROOM_03 14 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 12 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+editor.CreateObjectsOnArea MO_RABBIT_01 12 7
+editor.CreateObjectsOnArea MO_SNAKE_03 10 8
+editor.CreateObjectsOnArea BUTTERFLY_GROUP_01 20 5 
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_G07.lnd
+editor.LoadLevel Map_G07.lnd
+@Herbs15.txt
+editor.SaveLevel
+
+
+// Map_H07.lnd
+editor.LoadLevel Map_H07.lnd
+// las, polana malo
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea ING_07 15 3
+editor.CreateObjectsOnArea ING_08 17 4
+editor.CreateObjectsOnArea ING_09 12 3
+editor.CreateObjectsOnArea ING_10 10 6
+editor.CreateObjectsOnArea ING_11 8 5
+editor.CreateObjectsOnArea ING_12 10 7
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 12 2
+editor.CreateObjectsOnArea MUSHROOM_03 15 4
+editor.CreateObjectsOnArea MUSHROOM_04 12 3
+editor.CreateObjectsOnArea MUSHROOM_05 7 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+editor.CreateObjectsOnArea MO_DODO_01 8 5
+editor.CreateObjectsOnArea MO_RABBIT_03 8 8
+editor.CreateObjectsOnArea FERIES_GROUP_01 15 8 
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_I07.lnd
+editor.LoadLevel Map_I07.lnd
+@Herbs17.txt
+editor.SaveLevel
+
+
+// Map_A08.lnd
+editor.LoadLevel Map_A08.lnd
+@Herbs18.txt
+editor.SaveLevel
+
+
+// Map_B08.lnd
+editor.LoadLevel Map_B08.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+// Map_C08.lnd
+editor.LoadLevel Map_C08.lnd
+//las,polana duza ilosc
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1 
+
+
+editor.CreateObjectsOnArea ING_13 13 3
+editor.CreateObjectsOnArea ING_14 16 4
+editor.CreateObjectsOnArea ING_15 12 5
+editor.CreateObjectsOnArea ING_16 15 4
+editor.CreateObjectsOnArea ING_17 11 3
+editor.CreateObjectsOnArea ING_18 12 6
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 10 2
+editor.CreateObjectsOnArea MUSHROOM_03 12 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 12 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+
+editor.CreateObjectsOnArea MO_RABBIT_02 12 6
+editor.CreateObjectsOnArea MO_SNAKE_03 10 8
+editor.CreateObjectsOnArea BUTTERFLY_GROUP_01 20 5 
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_D08.lnd
+editor.LoadLevel Map_D08.lnd
+// las, polana malo
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea ING_19 12 3
+editor.CreateObjectsOnArea ING_20 14 4
+editor.CreateObjectsOnArea ING_21 11 3
+editor.CreateObjectsOnArea ING_22 10 6
+editor.CreateObjectsOnArea ING_23 8 5
+editor.CreateObjectsOnArea ING_24 10 7
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 8 2
+editor.CreateObjectsOnArea MUSHROOM_03 12 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 17 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+
+
+editor.CreateObjectsOnArea MO_RABBIT_03 8 8
+editor.CreateObjectsOnArea MO_SNAKE_04 10 8
+editor.CreateObjectsOnArea FERIES_GROUP_01 15 8 
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_E08.lnd
+editor.LoadLevel Map_E08.lnd
+@Herbs9.txt
+editor.SaveLevel
+
+
+// Map_F08.lnd
+editor.LoadLevel Map_F08.lnd
+@Herbs6.txt
+editor.SaveLevel
+
+
+// Map_G08.lnd
+editor.LoadLevel Map_G08.lnd
+// las, polana malo
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea ING_07 8 3
+editor.CreateObjectsOnArea ING_08 8 4
+editor.CreateObjectsOnArea ING_09 8 3
+editor.CreateObjectsOnArea ING_10 10 6
+editor.CreateObjectsOnArea ING_11 8 5
+editor.CreateObjectsOnArea ING_12 10 7
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 8 2
+editor.CreateObjectsOnArea MUSHROOM_03 7 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 7 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+
+editor.CreateObjectsOnArea MO_RABBIT_03 8 8
+editor.CreateObjectsOnArea MO_SNAKE_04 10 8
+editor.CreateObjectsOnArea FERIES_GROUP_01 15 8
+
+editor.AddCreateObjectsLockedTexture clear
+
+editor.AddCreateObjectsLockedTexture 0 1 
+editor.AddCreateObjectsLockedTexture 1 1 
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1
+ 
+
+editor.CreateObjectsOnArea MO_SNAKE_05  5 8
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_H08.lnd
+editor.LoadLevel Map_H08.lnd
+// pustynia
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+
+editor.AddCreateObjectsLockedTexture 0 1 
+editor.AddCreateObjectsLockedTexture 1 1 
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea MO_SNAKE_04  10 7
+editor.CreateObjectsOnArea MO_SNAKE_05  5 8
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_I08.lnd
+editor.LoadLevel Map_I08.lnd
+//las,polana duza ilosc
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1 
+
+
+editor.CreateObjectsOnArea ING_13 14 3
+editor.CreateObjectsOnArea ING_14 12 4
+editor.CreateObjectsOnArea ING_15 16 5
+editor.CreateObjectsOnArea ING_16 17 4
+editor.CreateObjectsOnArea ING_17 12 3
+editor.CreateObjectsOnArea ING_18 11 10
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 10 2
+editor.CreateObjectsOnArea MUSHROOM_03 8 4
+editor.CreateObjectsOnArea MUSHROOM_04 12 3
+editor.CreateObjectsOnArea MUSHROOM_05 8 4
+editor.CreateObjectsOnArea MUSHROOM_06 17 2
+
+editor.CreateObjectsOnArea MO_RABBIT_01 12 7
+editor.CreateObjectsOnArea MO_SNAKE_03 10 8
+editor.CreateObjectsOnArea BUTTERFLY_GROUP_01 20 5 
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_A09.lnd
+editor.LoadLevel Map_A09.lnd
+// pustynia
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+
+editor.AddCreateObjectsLockedTexture 0 1 
+editor.AddCreateObjectsLockedTexture 1 1 
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1
+
+editor.CreateObjectsOnArea MO_SNAKE_01  10 6 
+editor.CreateObjectsOnArea MO_SNAKE_03  5 7
+
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_B09.lnd
+editor.LoadLevel Map_B09.lnd
+@Herbs8.txt
+editor.SaveLevel
+
+
+// Map_C09.lnd
+editor.LoadLevel Map_C09.lnd
+@Herbs11.txt
+editor.SaveLevel
+
+
+// Map_D09.lnd
+editor.LoadLevel Map_D09.lnd
+@Herbs10.txt
+editor.SaveLevel
+
+
+// Map_E09.lnd
+editor.LoadLevel Map_E09.lnd
+@Herbs13.txt
+editor.SaveLevel
+
+
+// Map_F09.lnd
+editor.LoadLevel Map_F09.lnd
+@Herbs12.txt
+editor.SaveLevel
+
+
+// Map_G09.lnd
+editor.LoadLevel Map_G09.lnd
+@Herbs15.txt
+editor.SaveLevel
+
+
+// Map_H09.lnd
+editor.LoadLevel Map_H09.lnd
+// pustynia
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+
+editor.AddCreateObjectsLockedTexture 0 1 
+editor.AddCreateObjectsLockedTexture 1 1 
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 14 1
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+
+editor.CreateObjectsOnArea MO_SNAKE_03  15 7
+editor.CreateObjectsOnArea MO_SNAKE_04  20 7
+
+
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_I09.lnd
+editor.LoadLevel Map_I09.lnd
+// pustynia
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+
+editor.AddCreateObjectsLockedTexture 0 1 
+editor.AddCreateObjectsLockedTexture 1 1 
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 91 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 14 1
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea MO_SNAKE_01  13 6 
+editor.CreateObjectsOnArea MO_SNAKE_04  13 7
+
+
+
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_A10.lnd
+editor.LoadLevel Map_A10.lnd
+@Herbs14.txt
+editor.SaveLevel
+
+
+// Map_B10.lnd
+editor.LoadLevel Map_B10.lnd
+// las, polana malo
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea ING_19 12 3
+editor.CreateObjectsOnArea ING_20 13 4
+editor.CreateObjectsOnArea ING_21 16 3
+editor.CreateObjectsOnArea ING_22 10 6
+editor.CreateObjectsOnArea ING_23 8 5
+editor.CreateObjectsOnArea ING_24 12 7
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 8 2
+editor.CreateObjectsOnArea MUSHROOM_03 7 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 7 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+
+editor.CreateObjectsOnArea MO_DODO_02 8 5
+editor.CreateObjectsOnArea MO_RABBIT_03 8 8
+
+editor.CreateObjectsOnArea FERIES_GROUP_01 15 8 
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_C10.lnd
+editor.LoadLevel Map_C10.lnd
+@Herbs16.txt
+editor.SaveLevel
+
+
+// Map_D10.lnd
+editor.LoadLevel Map_D10.lnd
+@Herbs17.txt
+editor.SaveLevel
+
+
+// Map_E10.lnd
+editor.LoadLevel Map_E10.lnd
+@Herbs18.txt
+editor.SaveLevel
+
+
+// Map_F10.lnd
+editor.LoadLevel Map_F10.lnd
+@Herbs7.txt
+editor.SaveLevel
+
+
+// Map_G10.lnd
+editor.LoadLevel Map_G10.lnd
+@Herbs6.txt
+editor.SaveLevel
+
+
+// Map_H10.lnd
+editor.LoadLevel Map_H10.lnd
+@Herbs9.txt
+editor.SaveLevel
+
+
+// Map_I10.lnd
+editor.LoadLevel Map_I10.lnd
+@Herbs8.txt
+editor.SaveLevel
+
+
+// Map_A11.lnd
+editor.LoadLevel Map_A11.lnd
+@Herbs11.txt
+editor.SaveLevel
+
+
+// Map_B11.lnd
+editor.LoadLevel Map_B11.lnd
+//las,polana duza ilosc
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1 
+
+
+editor.CreateObjectsOnArea ING_01 10 3
+editor.CreateObjectsOnArea ING_02 8 4
+editor.CreateObjectsOnArea ING_03 10 5
+editor.CreateObjectsOnArea ING_04 8 4
+editor.CreateObjectsOnArea ING_05 8 3
+editor.CreateObjectsOnArea ING_06 8 10
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 10 2
+editor.CreateObjectsOnArea MUSHROOM_03 8 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 8 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+
+editor.CreateObjectsOnArea MO_RABBIT_02 12 6
+editor.CreateObjectsOnArea MO_SNAKE_03 10 8
+editor.CreateObjectsOnArea BUTTERFLY_GROUP_01 20 5 
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_C11.lnd
+editor.LoadLevel Map_C11.lnd
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+editor.AddCreateObjectsLockedTexture 3 1
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1 
+
+
+editor.CreateObjectsOnArea ING_13 15 3
+editor.CreateObjectsOnArea ING_14 8 4
+editor.CreateObjectsOnArea ING_15 12 5
+editor.CreateObjectsOnArea ING_16 8 4
+editor.CreateObjectsOnArea ING_17 12 3
+editor.CreateObjectsOnArea ING_18 8 5
+editor.CreateObjectsOnArea MUSHROOM_01 15 4
+editor.CreateObjectsOnArea MUSHROOM_02 10 2
+editor.CreateObjectsOnArea MUSHROOM_03 15 4
+editor.CreateObjectsOnArea MUSHROOM_04 8 3
+editor.CreateObjectsOnArea MUSHROOM_05 12 4
+editor.CreateObjectsOnArea MUSHROOM_06 8 2
+
+
+editor.CreateObjectsOnArea MO_RABBIT_03 12 8
+editor.CreateObjectsOnArea MO_SNAKE_03 10 8
+editor.CreateObjectsOnArea BUTTERFLY_GROUP_01 20 5 
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_D11.lnd
+editor.LoadLevel Map_D11.lnd
+@Herbs13.txtt
+editor.SaveLevel
+
+
+// Map_E11.lnd
+editor.LoadLevel Map_E11.lnd
+@Herbs10.txt
+editor.SaveLevel
+
+// Map_B12.lnd
+editor.LoadLevel Map_B12.lnd
+// pustynia
+
+editor.SetCreateRect 0 0 128 128
+
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_SNAKE_01
+Editor.DeleteAllObjects MO_SNAKE_02
+Editor.DeleteAllObjects MO_SNAKE_03
+Editor.DeleteAllObjects MO_SNAKE_04
+Editor.DeleteAllObjects MO_SNAKE_05
+Editor.DeleteAllObjects MO_SNAKE_06
+Editor.DeleteAllObjects BUTTERFLY_01
+Editor.DeleteAllObjects BUTTERFLY_GROUP_01
+Editor.DeleteAllObjects FERIES_01
+Editor.DeleteAllObjects FERIES_GROUP_01
+Editor.DeleteAllObjects MO_RABBIT_01
+Editor.DeleteAllObjects MO_RABBIT_02
+Editor.DeleteAllObjects MO_RABBIT_03
+Editor.DeleteAllObjects MO_RABBIT_04
+Editor.DeleteAllObjects MO_RABBIT_05
+Editor.DeleteAllObjects MO_RABBIT_06
+Editor.DeleteAllObjects MO_RABBIT_07
+Editor.DeleteAllObjects MO_RABBIT_08
+Editor.DeleteAllObjects MO_RABBIT_09
+Editor.DeleteAllObjects MO_RABBIT_10
+Editor.DeleteAllObjects MO_RABBIT_11
+Editor.DeleteAllObjects BEAVER_01
+Editor.DeleteAllObjects DEER_01
+Editor.DeleteAllObjects FOX_01
+Editor.DeleteAllObjects GOOSE_01
+Editor.DeleteAllObjects HEN_01
+Editor.DeleteAllObjects DUCK_01
+Editor.DeleteAllObjects MO_DODO_01
+Editor.DeleteAllObjects MO_DODO_02
+Editor.DeleteAllObjects MO_DODO_03
+Editor.DeleteAllObjects MO_DODO_04
+Editor.DeleteAllObjects MO_DODO_05
+Editor.DeleteAllObjects MO_DODO_06
+Editor.DeleteAllObjects MO_DODO_07
+Editor.DeleteAllObjects MO_DODO_08
+Editor.DeleteAllObjects MO_BOAR_01
+Editor.DeleteAllObjects MO_BOAR_02
+Editor.DeleteAllObjects MO_BEAR_01
+Editor.DeleteAllObjects MO_BEAR_02
+Editor.DeleteAllObjects MO_BEAR_03
+Editor.DeleteAllObjects MO_BEAR_04
+Editor.DeleteAllObjects DEAD_BEAR
+Editor.DeleteAllObjects FAKE_BEAR_01
+Editor.DeleteAllObjects FAKE_BEAR_02
+Editor.DeleteAllObjects MO_DOG_01
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30
+
+
+
+editor.AddCreateObjectsLockedTexture 0 1 
+editor.AddCreateObjectsLockedTexture 1 1 
+editor.AddCreateObjectsLockedTexture 2 1 
+editor.AddCreateObjectsLockedTexture 3 1 
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 14 1
+editor.AddCreateObjectsLockedTexture 15 1
+
+
+editor.CreateObjectsOnArea MO_SNAKE_01  10 6 
+
+editor.CreateObjectsOnArea MO_SNAKE_05  15 8
+
+
+
+editor.AddCreateObjectsLockedTexture clear
+editor.SaveLevel
+
+
+// Map_C12.lnd
+editor.LoadLevel Map_C12.lnd
+@Herbs12.txt
+editor.SaveLevel
+
+
+// Map_D12.lnd
+editor.LoadLevel Map_D12.lnd
+@Herbs15.txt
+editor.SaveLevel

@@ -1,0 +1,1764 @@
+//#define NOBEAR
+//orcShaman orc2Shaman- jeszcze nie oblugiwany
+
+#include "Enums.ech"
+#include "UnitInfo.ech"
+
+consts
+{
+    //XXXMD o ile % potwory na  easy sa slabsze a na hardzie mocniejsze
+    eEnemyLevelDivider = 40;
+    
+    eHaveEquipment=0;
+    eSimpleMesh=1;
+    
+    eCommonEnemy=1;
+    eExtraEnemy=2;
+    eBossEnemy=3;  
+        
+    // enemy type
+    eGrayWolf = 1;    
+    eBrownWolf = 2;    
+    eWhiteWolf = 3;    
+    eBoar = 4;    
+    eBlackBear = 5;
+    eBrownBear = 6;
+    eWhiteBear = 7;
+    
+    eDaemon1 = 8;    
+    eDaemon2 = 9;    
+    eDaemon3 = 10;
+    
+    eBandit = 11;    
+    eBanditArcher = 12;
+    eNecro = 13;    
+    
+    eBroWarrior = 14;
+    eSoldier04 = 15;
+    eOficer04 = 16;
+    eMummy = 17;
+    eDwarf = 18;    
+    eYeti = 19; 
+    eGhoul = 20;
+    
+    eBossSkeleton = 21;
+    eSkeleton = 22;
+    eSkeletonArcher = 23;
+    eIceSkeleton = 24;
+    eIceSkeletonArcher = 25;
+    eRedSkeleton = 26;
+    eRedSkeletonArcher = 27;
+    eBlackSkeleton = 28;
+    eBlackSkeletonArcher = 29;
+
+    eVyvern4 = 30;
+    eDragon = 31;
+    eWhiteDragon = 32;
+    eStoneDragon = 33;
+    eLavaDragon = 34;
+    
+    eHellmaster = 35;    
+    eDeadKnight = 36;    
+    
+    eScorpio = 37;
+    eSpider = 38;
+    
+    
+    eGoblin2 = 39;    
+    eGoblin2Archer = 40;    
+    eGoblin = 41;    
+    eGoblinArcher = 42;    
+    eGoblinMage = 43;    
+    eMinion = 44;    
+    eMinionMage = 45;    
+    eInsectGuy = 46;    
+    eInsectGuyMage = 47;    
+    eSeaGuy = 48;    
+    eSeaGuyMage = 49;    
+    eJackal = 50;    
+    eJackalMage = 51;    
+    eOgr = 52;    
+    eCyclope = 53;    
+    
+    eZombie1 = 54;
+    eZombie2 = 55;
+    eZombie3 = 56;
+    eHideous = 57;
+    
+    eMantis = 58;    
+    eLizardman = 59;
+    
+    eGolemFlesh = 60;
+    eGolemWood = 61;
+    eGolemSteel = 62;    
+    eGolemStone = 63;    
+    
+    
+    eUndeadWolf = 64;
+    eUndeadBear = 66;
+    eUndeadReptile = 67;
+            
+    
+    eRaptor1 = 68;
+    eRaptor2 = 69;
+    eRaptor3 = 70;
+    eRaptor4 = 71;
+    eVyvern1 = 72;
+    eVyvern2 = 73;
+    eVyvern3 = 74;
+    
+    eSnowOrc = 75;    eSnowOrcChief = 76;    eSnowOrcArcher = 77;  eSnowOrcShaman = 78;
+    eOrc = 79;    eOrcChief = 80;    eOrcArcher = 81;  eOrcShaman = 82;
+    eOrc2 = 83;   eOrc2Chief = 84;   eOrc2Archer = 85; eOrc2Shaman = 86;
+    
+    eEnt = 87;          
+    eDragonfly = 88;
+    eDeadmeat = 89;
+    eKhan = 90;
+    eSkull = 91;
+    
+    eGhostDwarfEnemy = 92;
+    
+    eLastEnemyType = 93;    
+    eGhost = 94;
+   
+    //-----------------------------------------------------------------------------------
+    eNoWeapon = 0;
+    eOneHanded = 1;
+    eShieldman = 2;
+    eDoubleBladed = 3;
+    eArcher = 4;
+       
+    eNoArmor=0;
+    eLightArmor=1;
+    eRandArmor=2;
+    eFullArmor=3;
+    
+    eRewardNone = 0;
+    eRewardSmall = 1;
+    eRewardMedium = 2;
+    eRewardBig = 3;
+           
+}
+
+#include "Ghosts.ech"
+
+#define FX_CREATE_UNDEAD "RESURRECT_EFFECT"
+#define FX_KILL_UNDEAD "PRE_RESSURECT_EFFECT"
+
+#define SK(a) uUnit.GetUnitValues().SetBasicSkill(a,2);
+#define SM(a,b) uUnit.GetUnitValues().SetBasicSkill(a,b);
+
+int anMinLevel[eLastEnemyType];
+int anMaxLevel[eLastEnemyType];
+int anUseMarkers[eLastEnemyType];
+
+string anMarkerName[eLastEnemyClass];
+int anParty[eLastEnemyClass];
+int bCreateWithEffect;
+function int CheckLevel(int nType,int nLevel) //InitLevels
+{
+    if(nLevel<=anMinLevel[nType])return anMinLevel[nType];
+    else if(nLevel>=anMaxLevel[nType])return anMaxLevel[nType];
+    return nLevel;
+}
+
+function void IL(int nType,int nMinLevel, int nMaxLevel) //InitLevels
+{
+    anMinLevel[nType] = nMinLevel;
+    anMaxLevel[nType] = nMaxLevel;
+    anUseMarkers[nType] =0;
+}
+function void IL(int nType,int bUseMarkers,int nMinLevel, int nMaxLevel) //InitLevels
+{
+    anMinLevel[nType] = nMinLevel;
+    anMaxLevel[nType] = nMaxLevel;
+    anUseMarkers[nType] = bUseMarkers;
+}
+function void InitializeEnemyLevels()
+{
+    bCreateWithEffect=false;
+    //TRACE("*** Start enemy initialization ****              \n");
+    IL(	eBandit,true,4,45);
+    IL(	eBanditArcher,true,4,40);
+    IL(	eBlackBear,7,15);
+    IL(	eBlackSkeleton,true,15,55);
+    IL(	eBlackSkeletonArcher,true,15,55);
+    IL(	eBrownBear,10,25);
+    IL(	eBoar,2,8);
+    IL(	eBossSkeleton,true,6,25);
+    IL(	eBroWarrior,true,10,35);
+    IL(	eBrownWolf,1,6);
+    IL(	eCyclope,30,55);
+    IL(	eDaemon1,10,40); //headless
+    IL(	eDaemon2,25,60); //wingless
+    IL(	eDaemon3,30,75);
+    IL(	eDeadKnight,true,15,40);
+    IL(	eDragon,40,100);
+    IL(	eDwarf, 6,15);
+    IL(	eEnt,30,50);
+    IL(	eGhoul,6,30);
+    IL(	eGhostDwarfEnemy, 6,15);
+    IL(	eGoblin,true,6,15);
+    IL(	eGoblinArcher,true,6,15);
+    IL(	eGoblinMage,true,6,15);
+    IL(	eGoblin2,true,3,12);
+    IL(	eGoblin2Archer,true,3,12);
+    IL(	eGolemFlesh,15,50);
+    IL(	eGolemSteel,30,50);
+    IL(	eGolemStone,30,50);
+    IL(	eGolemWood,30,50);
+    IL(	eGrayWolf,6,10);
+    IL(	eHellmaster,true,30,60);
+    IL(	eHideous,25,75);
+    IL(	eIceSkeleton,true,10,20);
+    IL(	eIceSkeletonArcher,true,10,20);
+    IL(	eInsectGuy,true,10,40);
+    IL(	eInsectGuyMage,true,10,40);
+    IL(	eJackal,true,15,40);
+    IL(	eJackalMage,true,15,40);
+    IL(	eLavaDragon,40,100);
+    IL(	eLizardman,25,50); 
+    IL(	eMantis,25,50);
+    IL(	eMinion,true,40,50);
+    IL(	eMinionMage,true,40,50);
+    IL(	eMummy,30,50);
+    IL(	eNecro,true,15,50);
+    IL(	eOficer04,true,25,50);
+    IL(	eOgr,15,60);
+    IL(	eOrc,true,10,30);
+    IL(	eOrc2,true,20,40);
+    IL(	eOrc2Archer,true,20,40);
+    IL(	eOrc2Chief,true, 25,50);
+    IL(	eOrc2Shaman,true,20,30);
+    IL(	eOrcArcher,true,10,30);
+    IL(	eOrcChief,true,20,40);
+    IL(	eOrcShaman,true,10,30);
+    IL(	eRaptor1,3,8);
+    IL(	eRaptor2,8,15);
+    IL(	eRaptor3,15,20);
+    IL(	eRaptor4,20,25);
+    IL(	eRedSkeleton,true,18,25);
+    IL(	eRedSkeletonArcher,true,18,25);
+    IL(	eScorpio,20,40);
+    IL(	eSeaGuy,true,15,30);
+    IL(	eSeaGuyMage,true,15,30);
+    IL(	eSkeleton,true,5,10);
+    IL(	eSkeletonArcher,true,5,15);
+    IL(	eSnowOrc,true,15,25);
+    IL(	eSnowOrcArcher,true,15,25);
+    IL(	eSnowOrcChief,true,20,30);
+    IL(	eSnowOrcShaman,true,15,25);
+    IL(	eSoldier04,true,10,15);
+    IL(	eSpider,10,30);
+    IL(	eStoneDragon,40,90);
+    IL(	eUndeadBear,15,20);
+    IL(	eUndeadReptile,10,15);
+    IL(	eUndeadWolf,8,12);
+    IL(	eVyvern1,15,19);
+    IL(	eVyvern2,19,25);
+    IL(	eVyvern3,25,30);
+    IL(	eVyvern4,30,35);
+    IL(	eWhiteBear,20,25);
+    IL(	eWhiteWolf,10,15);
+    IL(	eYeti,25,40);
+    IL(	eZombie1,5,10);
+    IL(	eZombie2,10,20);
+    IL(	eZombie3,20,30);
+    IL(	eDragonfly,10,10);
+    IL(	eDeadmeat,15,20);
+    IL(	eKhan,20,20);
+    IL(	eSkull,20,20);
+    	
+        
+    anMarkerName[eClassAnimal] = "MARKER_ENEMY_ANIMAL";
+    anMarkerName[eClassBandit] = "MARKER_ENEMY_BANDIT";
+    anMarkerName[eClassGoblin] = "MARKER_ENEMY_GOBLIN";
+    anMarkerName[eClassZombie] = "MARKER_ENEMY_ZOMBIE";
+    anMarkerName[eClassUndeadAnimal] = "MARKER_ENEMY_UNDEADANIMAL";
+    anMarkerName[eClassOrc] = "MARKER_ENEMY_ORC" ;
+    anMarkerName[eClassSnowOrc] = "MARKER_ENEMY_SNOWORC_01";
+    anMarkerName[eClassOrc2] = "MARKER_ENEMY_ORC_02";
+    anMarkerName[eClassSkeleton] = "MARKER_ENEMY_SKELETON";
+    anMarkerName[eClassLizardman] = "MARKER_ENEMY_LIZARDMAN";
+    anMarkerName[eClassDaemon] = "MARKER_ENEMY_DAEMON";
+    anMarkerName[eClassYeti] = "MARKER_ENEMY_YETI";
+    anMarkerName[eClassGolemWood] = "MARKER_ENEMY_GOLEM_WOOD";
+    anMarkerName[eClassGolemStone] = "MARKER_ENEMY_GOLEM_STONE";
+    anMarkerName[eClassGolemSteel] = "MARKER_ENEMY_GOLEM_STEEL";
+    anMarkerName[eClassGolemFlesh] = "MARKER_ENEMY_GOLEM_FLESH";
+    anMarkerName[eClassUndead] = "MARKER_ENEMY_UNDEAD";
+    anMarkerName[eClassInsect] = "MARKER_ENEMY_INSECT";
+    anMarkerName[eClassMantis] = "MARKER_ENEMY_MANTIS";
+    anMarkerName[eClassSpider] = "MARKER_ENEMY_SPIDER";
+    anMarkerName[eClassReptile] = "MARKER_ENEMY_REPTILE";
+    anMarkerName[eClassMinion] = "MARKER_ENEMY_MINION";
+    anMarkerName[eClassSnowAnimal] = "MARKER_ENEMY_SNOWANIMAL";
+    anMarkerName[eClassSeaGuy] = "MARKER_ENEMY_SEAGUY";
+    anMarkerName[eClassJackal] = "MARKER_ENEMY_JACKAL";
+    anMarkerName[eClassInsectGuy] = "MARKER_ENEMY_INSECTGUY";
+    anMarkerName[eClassDragon] = "MARKER_ENEMY_DRAGON";
+    anMarkerName[eClassWhiteDragon] = "MARKER_ENEMY_DRAGON1";
+    anMarkerName[eClassStoneDragon] = "MARKER_ENEMY_DRAGON2";
+    anMarkerName[eClassLavaDragon] = "MARKER_ENEMY_DRAGON3";
+    anMarkerName[eClassNecro] = "MARKER_ENEMY_NECRO";
+    anMarkerName[eClassGoblin2] = "MARKER_ENEMY_GOBLIN2";
+    anMarkerName[eClassHellmaster] = "MARKER_ENEMY_HELLMASTER";
+    anMarkerName[eClassDeadKnight] = "MARKER_ENEMY_DEADKNIGHT";
+    anMarkerName[eClassDwarf] = "MARKER_ENEMY_DWARF";
+    anMarkerName[eClassBroWarrior] = "MARKER_CAMP_WARRIOR";
+    anMarkerName[eClassSoldier04] = "MARKER_CAMP_SOLDIER_04";
+    anMarkerName[eClassOgr] = "MARKER_ENEMY_OGR";
+    anMarkerName[eClassCyclope] = "MARKER_ENEMY_CYCLOPE";
+    anMarkerName[eClassHideous] = "MARKER_ENEMY_HIDEOUS";
+    anMarkerName[eClassMummy] = "MARKER_ENEMY_MUMMY";
+    anMarkerName[eClassEnt] = "MARKER_ENEMY_TREEGUY";
+
+    anMarkerName[eClassAnimal2] = "MARKER_ENEMY_ANIMAL2";
+    anMarkerName[eClassReptile2] = "MARKER_ENEMY_REPTILE2";
+    anMarkerName[eClassReptile3] = "MARKER_ENEMY_REPTILE3";
+    anMarkerName[eClassReptile4] = "MARKER_ENEMY_REPTILE4";
+    anMarkerName[eClassVyvern1] = "MARKER_ENEMY_VYVERN1";
+    anMarkerName[eClassVyvern2] = "MARKER_ENEMY_VYVERN2";
+    anMarkerName[eClassVyvern3] = "MARKER_ENEMY_VYVERN3";
+    anMarkerName[eClassVyvern4] = "MARKER_ENEMY_VYVERN4";
+    anMarkerName[eClassSkeleton2] = "MARKER_ENEMY_SKELETON2";
+    anMarkerName[eClassSkeleton3] = "MARKER_ENEMY_SKELETON3";
+    anMarkerName[eClassSkeleton4] = "MARKER_ENEMY_SKELETON4";
+    anMarkerName[eClassZombie2] = "MARKER_ENEMY_ZOMBIE2";
+    anMarkerName[eClassZombie3] = "MARKER_ENEMY_ZOMBIE3";
+    anMarkerName[eClassDaemon2] = "MARKER_ENEMY_DAEMON2";
+    anMarkerName[eClassDaemon3] = "MARKER_ENEMY_DAEMON3";
+    anMarkerName[eClassWolf] = "MARKER_ENEMY_WOLF";
+    anMarkerName[eClassDragonfly] = "MARKER_ENEMY_DRAGONFLY";
+    anMarkerName[eClassDeadmeat] = "MARKER_ENEMY_DEADMEAT";
+    anMarkerName[eClassKhan] = "MARKER_ENEMY_KHAN";
+    anMarkerName[eClassSkull] = "MARKER_ENEMY_SKULL";
+    anMarkerName[eClassGhostDwarf] = "MARKER_ENEMY_G_DWARF";
+    
+    anParty[eClassGoblin] = ePartyGreenskins;
+    anParty[eClassOrc] = ePartyGreenskins;
+    anParty[eClassSnowOrc] = ePartyGreenskins;
+    anParty[eClassOrc2] = ePartyGreenskins;
+    anParty[eClassLizardman] = ePartyGreenskins;
+    anParty[eClassYeti] = ePartyGreenskins;
+    anParty[eClassJackal] = ePartyGreenskins;
+    anParty[eClassInsectGuy] = ePartyGreenskins;
+    anParty[eClassMantis] = ePartyGreenskins;
+    anParty[eClassDragon] = ePartyGreenskins;
+    anParty[eClassWhiteDragon] = ePartyGreenskins;
+    anParty[eClassStoneDragon] = ePartyGreenskins;
+    anParty[eClassLavaDragon] = ePartyGreenskins;
+    anParty[eClassGoblin2] = ePartyGreenskins;
+    anParty[eClassOgr] = ePartyGreenskins;
+    anParty[eClassCyclope] = ePartyGreenskins;
+    
+    anParty[eClassAnimal2] = ePartyAnimals;
+    anParty[eClassReptile2] = ePartyAnimals;
+    anParty[eClassReptile3] = ePartyAnimals;
+    anParty[eClassReptile4] = ePartyAnimals;
+    anParty[eClassVyvern1] = ePartyAnimals;
+    anParty[eClassVyvern2] = ePartyAnimals;
+    anParty[eClassVyvern3] = ePartyAnimals;
+    anParty[eClassVyvern4] = ePartyAnimals;
+    anParty[eClassWolf] = ePartyAnimals;
+    anParty[eClassDragonfly] = ePartyAnimals;
+    anParty[eClassInsect] = ePartyAnimals;
+    anParty[eClassSpider] = ePartyAnimals;
+    anParty[eClassReptile] = ePartyAnimals;
+    anParty[eClassSnowAnimal] = ePartyAnimals;
+    anParty[eClassAnimal] = ePartyAnimals;
+    
+    anParty[eClassNecro] = ePartyEvilWarriors;
+    
+    anParty[eClassDaemon] = ePartyUndead;
+    anParty[eClassMinion] = ePartyUndead;
+    anParty[eClassSeaGuy] = ePartyUndead;
+    anParty[eClassGolemWood] = ePartyUndead;
+    anParty[eClassGolemStone] = ePartyUndead;
+    anParty[eClassGolemSteel] = ePartyUndead;
+    anParty[eClassGolemFlesh] = ePartyUndead;
+    anParty[eClassUndead] = ePartyUndead;
+    anParty[eClassHellmaster]  =  ePartyUndead;
+    anParty[eClassDeadKnight] = ePartyUndead;
+    anParty[eClassHideous] = ePartyUndead;
+    anParty[eClassMummy] = ePartyUndead;
+    anParty[eClassEnt] = ePartyUndead;
+    anParty[eClassSkeleton2] = ePartyUndead;
+    anParty[eClassSkeleton3] = ePartyUndead;
+    anParty[eClassSkeleton4] = ePartyUndead;
+    anParty[eClassZombie2] = ePartyUndead;
+    anParty[eClassZombie3] = ePartyUndead;
+    anParty[eClassDaemon2] = ePartyUndead;
+    anParty[eClassDaemon3] = ePartyUndead;
+    anParty[eClassDeadmeat] = ePartyUndead;
+    anParty[eClassKhan] = ePartyUndead;
+    anParty[eClassSkull] = ePartyUndead;
+    anParty[eClassZombie] = ePartyUndead;
+    anParty[eClassUndeadAnimal] = ePartyUndead;
+    anParty[eClassSkeleton] = ePartyUndead;
+    
+    anParty[eClassGhostDwarf] = ePartyBandits;
+    anParty[eClassBandit] = ePartyBandits;
+    anParty[eClassDwarf] = ePartyBandits;
+    anParty[eClassBroWarrior] = ePartyG1;
+    anParty[eClassSoldier04] = ePartyCathalon;
+    
+}
+
+function void SetUnitNameAndDialog(unit uUnit, int nMissionNum) {
+
+    int i, count;
+    int nDialog;
+    int nCol, nRow, nLayer;//,nMissionNum;
+    //nMissionNum=uUnit.GetMission().GetMissionNum();
+//    TRACE("Mission number: %d  ",nMissionNum);
+    MissionNum2Level(nMissionNum,nCol,nRow,nLayer);
+    nDialog = GetDialogNumber(nCol,nRow);
+    SetStandardDialogNumber(uUnit,nDialog);
+
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) {
+        GetCampaign().GetGlobalScript(i).CommandMessage(eMsgSetNPCNameNum,uUnit);
+        GetCampaign().GetGlobalScript(i).CommandMessage(eMsgRegisterSingleDialogUnit,uUnit);
+    }
+
+}
+
+function unit CreateSingleEnemy(mission pMission, int nX, int nY, int nInputLevel, int nType, int nParty,int nForceLevel,int nRemoveOnUnload)
+{
+    int i,k,nLevel,nArmor,nWeapon,bStatic,nReward,nEnemyType;
+    string strUnit, strTMP,strWeapon, strArmour,strEnemy,strShield, strHelmet, strGloves, strBoots, strTrousers,strQuiver;
+    unit uUnit;
+    int nMeshType;
+    int nSetName,nDiff;
+    int nCol, nRow, nLayer,nSkill,nWeaponLevel;    
+    
+    nMeshType=eHaveEquipment;
+    bStatic=false;
+    nSetName = false;
+    nSkill=0;
+    
+    
+    #ifdef _XBOX
+    if(nLevel<15) nLevel = MAX(1,70*nLevel/100);
+    #endif
+            
+    if(nForceLevel>0)    nLevel=nForceLevel;
+    else nLevel = CheckLevel(nType,nInputLevel);
+
+    MissionNum2Level(pMission.GetMissionNum(), nCol, nRow, nLayer);    
+    if(nRow>9) nLevel+=5;
+    
+    // losowanie typu broni w zaleznosci od  typu przeciwnikow.
+    nWeapon = eNoWeapon;
+    nArmor = eNoArmor;
+    nReward = eRewardNone;
+    nEnemyType = eEnemyUnknown;
+    bCreateWithEffect=false;
+    
+    if(nType == eDragonfly){strEnemy.Format("DRAGONFLY_0%d(%%d)",1+Rand(2));}
+    else if(nType == eDeadmeat) {strEnemy.Format("DEADMEAT_0%d(%%d)",1+Rand(2)); nWeapon = eMageFire; }
+    else if(nType == eKhan) {strEnemy.Format("KHAN_0%d(%%d)",1+Rand(2)); nWeapon = eMageNecro;   }
+    else if(nType == eSkull){strEnemy.Format("SKULL_0%d(%%d)",1+Rand(2)); nWeapon = eMageWater;  }
+    else if(nType == eBrownWolf)
+    {
+        i=Rand(2);
+        if(i==0)strEnemy = "MO_WOLF_01(%d)";
+        else strEnemy = "MO_WOLF_02(%d)";
+    }
+    else if(nType == eGrayWolf) strEnemy = "MO_WOLF_04(%d)";
+    else if(nType == eWhiteWolf) strEnemy = "MO_WOLF_03(%d)";
+    else if(nType == eBoar)
+    {
+        i=Rand(2);
+        if(i==0)strEnemy = "MO_BOAR_01(%d)";
+        if(i==1)strEnemy = "MO_BOAR_02(%d)";
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eBlackBear) {strEnemy = "MO_BEAR_01(%d)";nSkill = eSkillKnockDown;}
+    else if(nType == eBrownBear) {strEnemy = "MO_BEAR_02(%d)";nSkill = eSkillKnockDown;}
+    else if(nType == eWhiteBear) {strEnemy = "MO_BEAR_04(%d)";nSkill = eSkillKnockDown;}
+    else if(nType == eRaptor1)
+    {
+        strEnemy.Format("MO_RAPTOR_01_%d(%%d)",1+Rand(8));
+    }
+    else if(nType == eRaptor2)
+    {
+        strEnemy.Format("MO_RAPTOR_02_%d(%%d)",1+Rand(8));
+    }
+    else if(nType == eRaptor3)
+    {
+        strEnemy.Format("MO_RAPTOR_03_%d(%%d)",1+Rand(8));
+    }
+    else if(nType == eRaptor4)
+    {
+        strEnemy.Format("MO_RAPTOR_04_%d(%%d)",1+Rand(8));
+    }
+    else if(nType == eVyvern1) strEnemy = "MO_VYVERN_01(%d)";
+    else if(nType == eVyvern2) strEnemy = "MO_VYVERN_02(%d)";
+    else if(nType == eVyvern3) strEnemy = "MO_VYVERN_03(%d)";
+    
+    else if(nType == eVyvern4) {strEnemy = "DRAGON_03_1(%d)";nSkill = eSkillKnockDown;}
+    
+    else if(nType == eDragon) {strEnemy = "DRAGON_01_1(%d)";nWeapon = eMageFire;}
+    else if(nType == eWhiteDragon) {strEnemy = "DRAGON_01_2(%d)";nWeapon = eMageFire;}
+    else if(nType == eStoneDragon) {strEnemy = "DRAGON_02_1(%d)";nWeapon = eMageFire;}
+    else if(nType == eLavaDragon) {strEnemy = "DRAGON_02_2(%d)";nWeapon = eMageFire;}
+    else if(nType == eHideous) strEnemy = "MO_HIDEOUS_01(%d)";
+    
+    else if(nType == eUndeadWolf)
+    {
+        i=Rand(4);
+        if(i==0) strEnemy = "MO_WOLF_05(%d)";
+        else if(i==1) strEnemy = "MO_WOLF_06(%d)";
+        else strEnemy = "MO_CERBER_01(%d)";
+    }
+    
+    else if(nType == eUndeadBear) {strEnemy = "MO_BEAR_03(%d)";nSkill = eSkillKnockDown;}
+    else if(nType == eUndeadReptile)
+    {
+        strEnemy.Format("MO_RAPTOR_01_%d(%%d)",9+Rand(4));
+    }
+    else if(nType == eZombie1)
+    {
+        strEnemy.Format("MO_ZOMBIE_%02d(%%d)",1+Rand(3));
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eZombie2)
+    {
+        strEnemy.Format("MO_ZOMBIE_%02d(%%d)",4+Rand(4));
+        nWeapon = eNoWeapon;
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+        
+    }
+    else if(nType == eZombie3)
+    {
+        strEnemy = "MO_ZOMBIE_08(%d)";
+        nReward = eRewardBig;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eOgr)
+    {
+        strEnemy = "MO_OGR(%d)";
+        nReward = eRewardBig;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eCyclope)
+    {
+        strEnemy = "MO_CYCLOPE(%d)";
+        nReward = eRewardBig;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eDwarf)
+    {
+        strEnemy.Format("DWARF_%02d(%%d)",1+Rand(2));
+        nReward = eRewardMedium;
+        nWeapon = eShieldman;
+    }
+    else if(nType == eGhostDwarfEnemy)
+    {
+        strEnemy = "G_DWARF_01(%d)#WP_SWORD_0(1,0,1)";
+        nMeshType = eSimpleMesh;
+        bCreateWithEffect = true;
+        nReward = eRewardMedium;
+    }
+    else if(nType == eGoblin2)
+    {
+        strEnemy.Format("GOBLIN_02_%02d(%%d)",1+Rand(2));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eGoblin2Archer)
+    {
+        strEnemy.Format("GOBLIN_02_%02d(%%d)",1+Rand(2));
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eGoblin)
+    {
+        strEnemy.Format("GOBLIN_%02d(%%d)",MIN(21,4+Rand(nLevel*3)));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eGoblinArcher)
+    {
+        strEnemy.Format("GOBLIN_0%d(%%d)",1+Rand(4));
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eGoblinMage)
+    {
+        i=Rand(2);
+        if(i==1){strEnemy="GOBLIN_SH_01(%d)"; nWeapon = eMageFire;     }
+        else    {strEnemy="GOBLIN_SH_02(%d)"; nWeapon = eMageNecro;    }
+        nReward = eRewardSmall;
+        bStatic = true;
+        //nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eMinion)
+    {
+        if(!Rand(5))strEnemy = "HELLWARIOR(%d)";
+        else strEnemy.Format("MINION_%02d(%%d)",1+Rand(21));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eMinionMage)
+    {
+        i=Rand(2);
+        if(i==1){strEnemy="MINION_SH_01(%d)"; nWeapon = eMageFire; }
+        else    {strEnemy="MINION_SH_02(%d)"; nWeapon = eMageFire;}
+        nReward = eRewardSmall;
+        bStatic = true;
+        //nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eInsectGuy)
+    {
+        strEnemy.Format("INSECTGUY_%02d(%%d)",1+Rand(9));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eInsectGuyMage)
+    {
+        i=Rand(2);
+        if(i==1){strEnemy="INSECTGUY_SH_01(%d)"; nWeapon = eMageNecro; }
+        else    {strEnemy="INSECTGUY_SH_02(%d)"; nWeapon = eMageNecro;}
+        nReward = eRewardSmall;
+        bStatic = true;
+        //nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eSeaGuy)
+    {
+        strEnemy.Format("SEAGUY_%02d(%%d)",1+Rand(9));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eSeaGuyMage)
+    {
+        i=Rand(2);
+        if(i==1){strEnemy="SEAGUY_SH_01(%d)"; nWeapon = eMageWater; }
+        else    {strEnemy="SEAGUY_SH_02(%d)"; nWeapon = eMageWater;}
+        nReward = eRewardSmall;
+        bStatic = true;
+        //nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eJackal)
+    {
+        strEnemy.Format("JACKAL_%02d(%%d)",1+Rand(9));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eJackalMage)
+    {
+        i=Rand(2);
+        if(i==1){strEnemy="JACKAL_SH_01(%d)";nWeapon = eMageAir; }
+        else    {strEnemy="JACKAL_SH_02(%d)";nWeapon = eMageAir;}
+        nReward = eRewardSmall;
+        bStatic = true;
+        //nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eNecro)
+    {
+        if(Rand(3)) strEnemy="NECRO_01(%d)";
+        else strEnemy="NECRO_02(%d)";
+        nWeapon = eMageNecro;; 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eBroWarrior)
+    {
+        strEnemy.Format("WARRIOR_0%d(%%d)#WP_SWORD_0(5,0)",1+Rand(5));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nMeshType = eSimpleMesh;
+        nEnemyType = eEnemySwordsman;//XXXMD
+        nSetName = true; 
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eOficer04)
+    {
+        strEnemy.Format("OFICER_04_0%d(%%d)#WP_SWORD_0(5,0)",5+Rand(2));
+        nMeshType = eSimpleMesh;
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;//XXXMD
+        nSetName = true;        
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eSoldier04)
+    {
+        strEnemy.Format("SOLDIER_04_0%d(%%d)#WP_SWORD_0(5,0)",1+Rand(4));
+        nMeshType = eSimpleMesh;
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;//XXXMD
+        nSetName = true;        
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eBandit)
+    {
+        strEnemy.Format("BANDIT_0%d(%%d)",1+Rand(5));
+        nWeapon = eOneHanded+Rand(2); 
+        nArmor = eRandArmor;
+        nReward = eRewardSmall+Rand(1);
+        nEnemyType = eEnemySwordsman;
+    }
+    
+    else if(nType == eBanditArcher)
+    {
+        strEnemy.Format("BANDIT_A_0%d(%%d)",1+Rand(5));
+        nWeapon = eArcher; 
+        nArmor = eLightArmor;
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eOrcChief)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("ORC_0%d(%%d)",8+Rand(2));
+        if(i==1)strEnemy.Format("ORC_0%dB(%%d)",8+Rand(2));
+        if(i==2)strEnemy.Format("ORC_0%dC(%%d)",8+Rand(2));
+        if(i==3)strEnemy.Format("ORC_0%dD(%%d)",8+Rand(2));
+        
+        nWeapon = eDoubleBladed; 
+        nReward = eRewardBig;
+        nEnemyType = eEnemyBoss;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eOrc)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("ORC_0%d(%%d)",1+Rand(7));
+        if(i==1)strEnemy.Format("ORC_0%dB(%%d)",1+Rand(7));
+        if(i==2)strEnemy.Format("ORC_0%dC(%%d)",1+Rand(7));
+        if(i==3)strEnemy.Format("ORC_0%dD(%%d)",1+Rand(7));
+        
+        nWeapon = eOneHanded+Rand(1); 
+        nReward = eRewardMedium;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eOrcArcher)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("ORC_0%d(%%d)",1+Rand(4));
+        if(i==1)strEnemy.Format("ORC_0%dB(%%d)",1+Rand(4));
+        if(i==2)strEnemy.Format("ORC_0%dC(%%d)",1+Rand(4));
+        if(i==3)strEnemy.Format("ORC_0%dD(%%d)",1+Rand(4));
+        nWeapon = eArcher; 
+        //nArmor = eLightArmor;
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eOrc2Chief)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("ORC_02_0%d(%%d)",1+Rand(5));
+        if(i==1)strEnemy.Format("ORC_02_0%dB(%%d)",1+Rand(5));
+        if(i==2)strEnemy.Format("ORC_02_0%dC(%%d)",1+Rand(5));
+        if(i==3)strEnemy.Format("ORC_02_0%dD(%%d)",1+Rand(5));
+        
+        nWeapon = eDoubleBladed; 
+        nReward = eRewardBig;
+        nEnemyType = eEnemyBoss;
+    }
+    else if(nType == eOrc2)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("ORC_02_0%d(%%d)",1+Rand(5));
+        if(i==1)strEnemy.Format("ORC_02_0%dB(%%d)",1+Rand(5));
+        if(i==2)strEnemy.Format("ORC_02_0%dC(%%d)",1+Rand(5));
+        if(i==3)strEnemy.Format("ORC_02_0%dD(%%d)",1+Rand(5));
+        
+        nWeapon = eOneHanded+Rand(1); 
+        nReward = eRewardMedium;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eOrc2Archer)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("ORC_02_0%d(%%d)",1+Rand(4));
+        if(i==1)strEnemy.Format("ORC_02_0%dB(%%d)",1+Rand(4));
+        if(i==2)strEnemy.Format("ORC_02_0%dC(%%d)",1+Rand(4));
+        if(i==3)strEnemy.Format("ORC_02_0%dD(%%d)",1+Rand(4));
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eSnowOrcChief)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("SNOWORC_01_0%d(%%d)",1+Rand(5));
+        if(i==1)strEnemy.Format("SNOWORC_01_0%dB(%%d)",1+Rand(5));
+        if(i==2)strEnemy.Format("SNOWORC_01_0%dC(%%d)",1+Rand(5));
+        if(i==3)strEnemy.Format("SNOWORC_01_0%dD(%%d)",1+Rand(5));
+        
+        nWeapon = eDoubleBladed; 
+        nReward = eRewardBig;
+        nEnemyType = eEnemyBoss;
+    }
+    else if(nType == eSnowOrc)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("SNOWORC_01_0%d(%%d)",1+Rand(5));
+        if(i==1)strEnemy.Format("SNOWORC_01_0%dB(%%d)",1+Rand(5));
+        if(i==2)strEnemy.Format("SNOWORC_01_0%dC(%%d)",1+Rand(5));
+        if(i==3)strEnemy.Format("SNOWORC_01_0%dD(%%d)",1+Rand(5));
+        
+        nWeapon = eOneHanded+Rand(1); 
+        nReward = eRewardMedium;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eSnowOrcArcher)
+    {
+        i=Rand(4);
+        if(i==0)strEnemy.Format("SNOWORC_01_0%d(%%d)",1+Rand(4));
+        if(i==1)strEnemy.Format("SNOWORC_01_0%dB(%%d)",1+Rand(4));
+        if(i==2)strEnemy.Format("SNOWORC_01_0%dC(%%d)",1+Rand(4));
+        if(i==3)strEnemy.Format("SNOWORC_01_0%dD(%%d)",1+Rand(4));
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eSkeleton)
+    {
+        i=Rand(2);
+        if(i==0)strEnemy="SKELETON_02(%d)";
+        if(i==1)strEnemy="SKELETON_03(%d)";
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        nEnemyType = eEnemySwordsman;        
+    }
+    else if(nType == eSkeletonArcher)
+    {
+        strEnemy="SKELETON_01(%d)";
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+        nEnemyType = eEnemyArcher;
+    }
+    else if(nType == eBossSkeleton)
+    {
+        
+        strEnemy="SKELETON_04(%d)";
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardBig;
+        bStatic = true;
+        nEnemyType = eEnemyBoss;        
+    }
+    else if(nType == eIceSkeleton)
+    {
+        
+        strEnemy="SKELETON_05(%d)";
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        
+    }
+    else if(nType == eIceSkeletonArcher)
+    {
+        strEnemy="SKELETON_05(%d)";
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+    }
+    else if(nType == eRedSkeleton)
+    {
+        
+        strEnemy="SKELETON_06(%d)";
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        
+    }
+    else if(nType == eRedSkeletonArcher)
+    {
+        strEnemy="SKELETON_06(%d)";
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+    }
+    else if(nType == eBlackSkeleton)
+    {
+        
+        strEnemy="SKELETON_06(%d)";
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardSmall;
+        
+    }
+    else if(nType == eBlackSkeletonArcher)
+    {
+        strEnemy="SKELETON_06(%d)";
+        nWeapon = eArcher; 
+        nReward = eRewardSmall;
+        bStatic = true;
+    }
+    else if(nType == eLizardman)
+    {
+        strEnemy.Format("MO_SNAKE_01_%d(%%d)",1+Rand(5));
+        nWeapon = eDoubleBladed; 
+        nReward = eRewardMedium;
+    }
+    else if(nType == eGolemFlesh)
+    {
+        strEnemy="MO_GOLEM_FLESH_01(%d)";
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eGolemWood)
+    {
+        strEnemy="MO_GOLEM_WOOD_01(%d)";
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eEnt)
+    {
+        strEnemy="MO_GOLEM_WOOD_02(%d)";
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eGolemSteel)
+    {
+        i=Rand(2);
+        if(i==0)strEnemy="MO_GOLEM_STEEL_01(%d)";
+        if(i==1)strEnemy="MO_GOLEM_STEEL_02(%d)";
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eGolemStone)
+    {
+        strEnemy.Format("MO_GOLEM_STONE_0%d(%%d)",1+Rand(4));
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eHellmaster)
+    {
+        strEnemy.Format("HELLMASTER_0%d(%%d)",1+Rand(2));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardBig;
+        nEnemyType = eEnemySwordsman;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eDeadKnight)
+    {
+        strEnemy.Format("DEADKNIGHT_0%d(%%d)",1+Rand(5));
+        nWeapon = eOneHanded+Rand(2); 
+        nReward = eRewardBig;
+        nEnemyType = eEnemySwordsman;
+    }
+    else if(nType == eDaemon1)
+    {
+        strEnemy.Format("MO_DAEMON_02_%d(%%d)",1+Rand(3));
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eDaemon2)
+    {
+        strEnemy.Format("MO_DAEMON_01_%d(%%d)",1+Rand(2));
+        nReward = eRewardMedium;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eDaemon3)
+    {
+        strEnemy.Format("MO_DAEMON_03_%d(%%d)",1+Rand(3));
+        nReward = eRewardBig;
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eMantis)
+    {
+        strEnemy.Format("MO_MANTIS_0%d(%%d)",1+Rand(4));
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eScorpio)
+    {
+        strEnemy.Format("MO_SCORPIO_0%d(%%d)",1+Rand(4));
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eSpider)
+    {
+        strEnemy.Format("MO_SPIDER_0%d(%%d)",1+Rand(4));
+    }
+    else if(nType == eMummy)
+    {
+        strEnemy.Format("MO_MUMMY_0%d(%%d)",1+Rand(3));
+        nReward = eRewardSmall;
+    }
+    else if(nType == eGhoul)
+    {
+        strEnemy.Format("MO_GHOUL_0%d(%%d)",1+Rand(4));
+        nSkill = eSkillKnockDown;
+    }
+    else if(nType == eYeti)
+    {
+        strEnemy.Format("MO_YETI_01_%d(%%d)",1+Rand(4));
+        nReward = eRewardBig;
+        nSkill = eSkillKnockDown;
+    }
+    
+    nDiff = GetCampaign().EventGetDifficultyLevel();    
+    
+    if(!nDiff) nLevel = (nLevel* (100-eEnemyLevelDivider))/100;
+    if(nDiff==2) nLevel = (nLevel* (100+eEnemyLevelDivider))/100;
+    
+    // losowanie broni i ekwipunku w zaleznosci od levelu
+    k=0;
+    
+    strWeapon ="NULL";
+    strShield="NULL";
+    strArmour="NULL";
+    strHelmet="NULL";
+    strGloves="NULL";
+    strTrousers="NULL";
+    strBoots="NULL";
+    strQuiver="NULL";
+    
+    if(nMeshType != eSimpleMesh)
+    {
+        k=0;
+        nWeaponLevel = MAX(1,nLevel/2+Rand(nLevel/2));
+        if(nWeapon==eArcher && nLevel<6) {nWeapon = eOneHanded;nEnemyType = eEnemySwordsman;}
+        
+        if(nWeapon==eOneHanded || nWeapon==eShieldman || nWeapon==eDoubleBladed)
+        {
+            if(!Rand(5) && (nType == eGoblin2 || nType == eGoblin))
+            {
+                strWeapon.Format("WP_MACE_%02d(5,0)",7+Rand(4));
+            }
+            else
+            if(nType == eDwarf)
+                strWeapon = GetWeapon(eAxe,nWeaponLevel,0);
+            else
+                if(nWeapon==eShieldman || nWeapon==eDoubleBladed)
+                    strWeapon = GetWeapon(Rand(eLastMeeleWeapon+1),nWeaponLevel,1);
+                else
+                    strWeapon = GetWeapon(Rand(eLastMeeleWeapon+1),nWeaponLevel,0);    
+        }
+        
+        if(nWeapon==eShieldman)
+        {
+            if(nType==eGoblin || nType==eGoblin2)
+            {
+                
+                if(nLevel<4) strShield = "AR_GOBLIN_SHIELD_01(2,0)";
+                else if(nLevel<7) strShield = "AR_GOBLIN_SHIELD_02(4,0)";
+                else strShield = "AR_GOBLIN_SHIELD_03(6,0)";
+            }
+            else
+                strShield = GetEquipment(eShield,nWeaponLevel);
+            
+        }
+        if(nWeapon==eDoubleBladed)
+        {
+            strShield = GetWeapon(Rand(eLastMeeleWeapon+1),nWeaponLevel,1);
+        }
+        if(nWeapon==eArcher)
+        {
+            if(nType==eGoblinArcher || nType==eGoblin2Archer)
+            {
+                i=Rand(3);
+                if(i==0) strWeapon = "WP_GOBLINBOW_01(4,0)";
+                else if(i==1) strWeapon = "WP_GOBLINBOW_02(4,0)";
+                else if(i==2) strWeapon = "WP_GOBLINBOW_03(4,0)";
+            }
+            else
+                strWeapon = GetWeapon(eBow,nWeaponLevel);
+            strQuiver = GetEquipment(eQuiver,nWeaponLevel);
+        }
+        if(nWeapon>=eMageAir && nWeapon<=eMageAir+4)
+        {
+            strWeapon = GetWeapon(eClub1+nWeapon-eMageAir,nLevel/3);//XXXMD Mage
+        }
+        
+        if(nArmor==eFullArmor)
+        {
+            strArmour = GetEquipment(eArmour,1+Rand(nLevel));
+            strHelmet = GetEquipment(eHelmet,1+Rand(nLevel));
+            strGloves = GetEquipment(eGloves,1+Rand(nLevel));
+            strTrousers = GetEquipment(eTrousers,1+Rand(nLevel));
+            strBoots = GetEquipment(eBoots,1+Rand(nLevel));
+        }
+        if(nArmor==eLightArmor)
+        {
+            strArmour = GetEquipment(eArmour,MIN(1+Rand(nLevel),17));
+            strTrousers = GetEquipment(eTrousers,1+Rand(nLevel));
+            strBoots = GetEquipment(eBoots,1+Rand(nLevel));
+        }
+        if(nArmor==eRandArmor)
+        {
+            if(!Rand(2))strArmour = GetEquipment(eArmour,1+Rand(nLevel));
+            if(!Rand(3))strHelmet = GetEquipment(eHelmet,1+Rand(nLevel));
+            if(!Rand(4))strGloves = GetEquipment(eGloves,1+Rand(nLevel));
+            strTrousers = GetEquipment(eTrousers,1+Rand(nLevel));
+            strBoots = GetEquipment(eBoots,1+Rand(nLevel));
+        }   
+        if(nType == eOrcChief || nType == eOrc2Chief ||nType == eSnowOrcChief)
+        {
+            i=1+Rand(3);
+            strHelmet.Format("AR_ORC_HELMET_0%d(%d,0)",i,nLevel);
+        }
+    }
+    //sk³adanie nazwy przeciwnika
+    if(nMeshType == eSimpleMesh)
+        strTMP.Format("%s",strEnemy);
+    else
+        strTMP.Format("%s#%s,%s,%s,%s,%s,%s,%s,%s",strEnemy,strWeapon,strShield,strHelmet,strArmour,strGloves,strTrousers,strBoots,strQuiver);
+    strUnit.Format(strTMP,nLevel);
+                
+    if(bCreateWithEffect)pMission.CreateObject(FX_CREATE_UNDEAD,nX,nY,0, Rand(255));
+    // tworzenie przeciwników
+    uUnit = pMission.CreateObject(strUnit,nX,nY,0, Rand(255));
+#ifdef TWO_WORLDS_ENEMIES_TRAPS
+    TrapCreateEffect(pMission, nX ,nY);
+#endif    
+    // zrobienie z unita wrogów dla gracza
+    if(uUnit) 
+    {
+        uUnit.SetPartyNum(nParty);
+        uUnit.SetAlarmModeUnit(true);
+        uUnit.SetRemoveOnUnloadLevel(nRemoveOnUnload);
+        uUnit.SetAttribute("EnemyClass",nType);                
+        SetIsCamper(uUnit,true);
+        if(nType == eBroWarrior) 
+        {
+            uUnit.SetAttribute("PSDN",eTownTypeOutpost);
+        }
+        
+        if(anUseMarkers[nType]) SetExternalActivity(uUnit,eEActivityControlledByUnit);
+        
+        if (nSetName) 
+        {
+            SetUnitNameAndDialog(uUnit,pMission.GetMissionNum());
+        }
+        if(!bStatic) uUnit.CommandUserOneParam0(true);
+        
+        if(nSkill>0)SM(nSkill,MIN(10,nLevel));
+        
+        if(nWeapon>=eMageAir && nWeapon<=eMageAir+4)
+        {
+            SM(eSkillAirMagic+nWeapon-eMageAir,MAX(15,nLevel));
+            uUnit.UpdateChangedUnitValues();
+            uUnit.AddMagicCard(GetSimpleMagicCardString(1+nWeapon-eMageAir),0);
+            uUnit.SetAttribute("Mage",1+nWeapon-eMageAir);
+        }
+        
+        if(nWeapon==eOneHanded || nWeapon==eShieldman || nWeapon==eDoubleBladed)
+        {
+            if(!Rand(5))SM(eSkillDirtyTrick,MIN(10,nLevel/2));
+            if(!Rand(5))SM(eSkillPullShield,MIN(10,nLevel/2));
+            SM(eSkillKnockDown,MIN(10,nLevel/2));
+            if(!Rand(2))SM(eSkillStability,MIN(10,nLevel/5));
+        }
+        if(nWeapon==eShieldman)
+        {
+            SM(eSkillParry,MIN(10,nLevel));
+        }
+        if(nWeapon==eDoubleBladed)
+        {
+            SM(eSkillParry,MIN(10,nLevel));
+            SM(eSkillDoubleBlade,MIN(10,nLevel/2));
+        }
+        if(nWeapon==eArcher)
+        {
+            SK(eSkillArchery);
+            if(!Rand(5))SM(eSkillMultiArrows,MIN(10,nLevel/3));
+            if(!Rand(10))SM(eSkillDisarmingArrow,MIN(10,nLevel/4));
+        }
+        uUnit.UpdateChangedUnitValues();
+        if(nReward)
+        {
+            uUnit.SetAttribute("Reward",nReward);
+        }
+        if (nEnemyType != eEnemyUnknown) SetEnemyType(uUnit,nEnemyType);
+    }
+    return uUnit;
+}
+/*
+function unit CreateSingleEnemy(mission pMission, int nX, int nY, int nInputLevel, int nType, int nParty,int nForceLevel) {
+
+    return CreateSingleEnemy(pMission,nX,nY,nInputLevel,nType,nParty,nForceLevel,true);
+
+}
+*/
+int nCreatedGroups;
+function void CreateEnemyGroup(mission pMission,int nQuantityFactor,int nLevel,int nX,int nY, int nParty, int a,int b,int c,int d,int nForceLevel,int nRemoveOnUnload, int nClass, int nMarker)
+{
+    int j,k;
+    unit uUnit;
+    
+    if(nQuantityFactor && nCreatedGroups>0) return;
+    
+    nCreatedGroups++;
+    
+    if(nQuantityFactor)    k=nQuantityFactor;
+    else 
+    {
+        k=a+Rand(1+b);
+        #ifdef _XBOX
+        if(k>3)k=3;
+        #endif
+    }
+    
+    for(j=0;j<k;j++) {
+        uUnit = CreateSingleEnemy(pMission,nX+(j%3)*128,nY+(j/3)*128,nLevel+c,d,nParty,nForceLevel,nRemoveOnUnload);
+        if (uUnit != null) SetBaseMarker(uUnit,nClass,nMarker);
+    }
+}
+
+#define CE(a,b,c,d) CreateEnemyGroup(pMission,nQuantityFactor, nLevel, nX,nY,nParty,a,b,c,d,nForceLevel,nRemoveOnUnload,nEnemyClass,nMarker)
+// a ilosc postaci
+// b + random ilosc postaci
+// c dodaje do levelu
+// d typ
+
+
+function void CreateEnemy(mission pMission, int nX,int nY, int nMissionNum,int nEnemyClass, int nParty, int nQuantityFactor, int nForceLevel, int nRemoveOnUnload, int nMarker)
+{
+    int nLevel,i,j;
+
+    nLevel = GetHeroesAvgLevel();
+    
+    nCreatedGroups=0;
+            
+    if(nEnemyClass==eClassAnimal2)
+    {
+        i=Rand(5);
+        if(i <4 ) CE( 2,2, 0,eGrayWolf);
+        else CE( 1,0, 2,eBrownBear);
+    }
+    else if(nEnemyClass==eClassReptile){CE( 1,4, 0,eRaptor1);}
+    else if(nEnemyClass==eClassReptile2){CE( 1,4, 0,eRaptor2);}
+    else if(nEnemyClass==eClassReptile3){CE( 1,4, 0,eRaptor3);}
+    else if(nEnemyClass==eClassReptile4){CE( 1,4, 0,eRaptor4);}
+    else if(nEnemyClass==eClassVyvern1){CE( 1,3, 0,eVyvern1);}
+    else if(nEnemyClass==eClassVyvern2){CE( 1,3, 0,eVyvern2);}
+    else if(nEnemyClass==eClassVyvern3){CE( 1,3, 0,eVyvern3);}
+    else if(nEnemyClass==eClassVyvern4){CE( 1,1, 0,eVyvern4);}
+    
+    else if(nEnemyClass==eClassDragonfly){CE( 1,3, 0,eDragonfly);}
+    else if(nEnemyClass==eClassDeadmeat){CE( 1,3, 0,eDeadmeat);}
+    else if(nEnemyClass==eClassKhan){CE( 1,3, 0,eKhan);}
+    else if(nEnemyClass==eClassSkull){CE( 1,1, 0,eSkull);}
+    
+    else if(nEnemyClass==eClassSkeleton)
+    {
+        i=Rand(5);
+        #ifdef _XBOX
+        //         il,lev,type       
+        if(i ==  0){CE( 2,1, 0,eSkeleton);}
+        if(i ==  1){CE( 2,0, 0,eSkeleton);CE( 1,0, 0,eSkeletonArcher);}
+        if(i ==  2){CE( 1,0, 0,eSkeleton);CE( 2,0, 0,eSkeletonArcher);}
+        if(i ==  3){CE( 1,0, 2,eBossSkeleton);CE( 1,0,-1,eSkeleton);      CE( 1,0,0,eSkeletonArcher);}
+        if(i ==  4){CE( 1,0, 2,eBossSkeleton);CE( 2,0, 0,eSkeletonArcher);}
+        #else
+        
+        //         il,lev,type       
+        if(i ==  0){CE( 2,2, 0,eSkeleton);}
+        if(i ==  1){CE( 2,1, 0,eSkeleton);CE( 1,1, 0,eSkeletonArcher);}
+        if(i ==  2){CE( 1,2, 0,eSkeleton);CE( 2,1,-1,eSkeletonArcher);}
+        if(i ==  3){CE( 1,0, 2,eBossSkeleton);CE( 2,2,-1,eSkeleton);      CE( 3,0,0,eSkeletonArcher);}
+        if(i ==  4){CE( 1,0, 2,eBossSkeleton);CE( 1,3, 0,eSkeletonArcher);}
+        #endif
+    }
+    else if(nEnemyClass==eClassSkeleton2)
+    {
+        i=Rand(3);
+        #ifdef _XBOX
+        //         il,lev,type       
+        if(i ==  0){CE( 1,0, 0,eIceSkeleton);CE( 2,3, 1,eIceSkeletonArcher);}
+        if(i ==  1){CE( 1,0, 3,eIceSkeleton);CE( 1,2, 0,eSkeleton);CE( 2,2, 1,eSkeletonArcher);}
+        if(i ==  2){CE( 3,1, 0,eIceSkeleton);CE( 1,1, 1,eIceSkeletonArcher);}
+        #else
+        if(i ==  0){CE( 1,0, 0,eIceSkeleton);CE( 2,0, 0,eIceSkeletonArcher);}
+        if(i ==  1){CE( 1,0, 0,eIceSkeleton);CE( 1,0, 0,eSkeleton);CE( 1,0, 0,eSkeletonArcher);}
+        if(i ==  2){CE( 2,0, 0,eIceSkeleton);CE( 1,0, 0,eIceSkeletonArcher);}
+        #endif
+    }
+    else if(nEnemyClass==eClassSkeleton3)
+    {
+        i=Rand(3);
+        #ifdef _XBOX
+        if(i ==  0){CE( 1,0, 3,eBlackSkeleton);CE( 2,2, 0,eRedSkeleton);CE( 2,2, 1,eRedSkeletonArcher);}
+        if(i ==  1){CE( 1,0, 3,eBlackSkeleton);CE( 2,2, 2,eBlackSkeletonArcher);}
+        if(i ==  2){CE( 1,0, 3,eBlackSkeleton);CE( 2,2, 0,eRedSkeleton);}
+        #else
+        if(i ==  0){CE( 1,0, 0,eBlackSkeleton);CE( 1,0, 0,eRedSkeleton);CE( 1,0, 0,eRedSkeletonArcher);}
+        if(i ==  1){CE( 1,0, 0,eBlackSkeleton);CE( 2,0, 0,eBlackSkeletonArcher);}
+        if(i ==  2){CE( 1,0, 0,eBlackSkeleton);CE( 2,0, 0,eRedSkeleton);}
+        #endif
+    }
+    else if(nEnemyClass==eClassSkeleton4)
+    {
+        i=Rand(3);
+        #ifdef _XBOX
+        //         il,lev,type       
+        if(i ==  0){CE( 1,0, 3,eRedSkeleton);CE( 2,1, 0,eSkeleton);CE( 1,1, 1,eSkeletonArcher);}
+        if(i ==  1){CE( 1,0, 3,eRedSkeleton);CE( 1,1, 1,eRedSkeleton);CE( 1,1, 1,eRedSkeletonArcher);}
+        if(i ==  2){CE( 1,0, 3,eRedSkeleton);CE( 3,2, 0,eSkeleton);CE( 1,1, 1,eRedSkeletonArcher);}
+        #else
+        if(i ==  0){CE( 1,0, 0,eRedSkeleton);CE( 1,0, 0,eSkeleton);CE( 1,0, 0,eSkeletonArcher);}
+        if(i ==  1){CE( 1,0, 0,eRedSkeleton);CE( 1,0, 0,eRedSkeleton);CE( 1,0, 0,eRedSkeletonArcher);}
+        if(i ==  2){CE( 1,0, 0,eRedSkeleton);CE( 1,0, 0,eSkeleton);CE( 1,0, 0,eRedSkeletonArcher);}
+        #endif
+    }
+    else if(nEnemyClass==eClassZombie){CE( 2,3,0,eZombie1);}
+    else if(nEnemyClass==eClassZombie2){CE( 2,3,0,eZombie2);}
+    else if(nEnemyClass==eClassZombie3){CE( 2,3,0,eZombie3);}
+    else if(nEnemyClass==eClassDaemon)CE( 1,0,0,eDaemon1);
+    else if(nEnemyClass==eClassDaemon2)CE( 1,0,0,eDaemon2);
+    else if(nEnemyClass==eClassDaemon3)CE( 1,0,0,eDaemon3);
+    
+    else if(nEnemyClass==eClassAnimal)
+    {
+        i=Rand(7);
+        //         il,rnd(il),lev,type       
+        if(i ==  0) CE( 1,3,0,eBrownWolf);
+        if(i ==  1) CE( 1,3,1,eBoar);
+        if(i ==  2) CE( 1,3,1,eBoar);
+        if(i ==  3) CE( 1,0,2,eBlackBear);
+        if(i ==  4) CE( 3,1,1,eBrownWolf);
+        if(i ==  5) CE( 3,1,1,eBrownWolf);
+        if(i ==  6) CE( 3,1,1,eBrownWolf);
+        
+    }
+    else if(nEnemyClass==eClassSnowAnimal)
+    {
+        i=Rand(5);
+        //         il,rnd(il),lev,type       
+        if(i <3 ) CE( 2,1,0,eWhiteWolf);
+        if(i ==  3) {CE( 1,0,0,eWhiteWolf);CE( 2,1,0,eGrayWolf);}
+        if(i ==  4) CE( 1,0, 0,eWhiteBear);
+        
+    }
+    else if(nEnemyClass==eClassDwarf)
+    {
+        //         il,lev,type       
+        CE( 2,3, 0,eDwarf);
+    }
+    else if(nEnemyClass==eClassGhostDwarf)
+    {
+        //         il,lev,type       
+        CE( 2,6, 0,eGhostDwarfEnemy);
+    }
+    else if(nEnemyClass==eClassBandit)
+    {
+        #ifdef _XBOX
+        i=Rand(3);
+        if(i == 0){CE( 3,0, 0,eBandit);}
+        if(i == 1){CE( 2,0, 0,eBandit);CE( 1,0, 0,eBanditArcher);}
+        if(i == 2){CE( 1,0, 0,eBandit);CE( 2,0, 0,eBanditArcher);}
+        
+        #else
+        
+        i=Rand(MIN(nLevel,6));
+        //         il,lev,type       
+        if(i ==  0){CE( 3,0, 0,eBandit);}
+        if(i ==  1){CE( 2,0, 0,eBandit);CE( 1,0, 0,eBanditArcher);}
+        if(i ==  2){CE( 2,0, 0,eBandit);CE( 2,0, 0,eBanditArcher);}
+        if(i ==  3){CE( 3,0, 0,eBandit);CE( 1,0, 0,eBanditArcher);}
+        if(i ==  4){CE( 3,0, 0,eBandit);CE( 2,0, 0,eBanditArcher);}
+        if(i ==  5){CE( 2,0, 0,eBandit);CE( 3,0, 0,eBanditArcher);}
+        #endif
+        
+    }
+    else if(nEnemyClass==eClassHideous) { CE( 1,2, 0,eHideous);}
+    else if(nEnemyClass==eClassBroWarrior) { CE( 5,0, 0,eBroWarrior);}
+    else if(nEnemyClass==eClassSoldier04) { CE( 1,0, 3,eOficer04);CE( 5,0, 0,eSoldier04);}
+    else if(nEnemyClass==eClassNecro) { CE( 2,4, 0,eNecro); }
+    else if(nEnemyClass==eClassOgr) { CE( 1,0, 0,eOgr); }
+    else if(nEnemyClass==eClassCyclope) { CE( 1,0, 0,eCyclope); }
+    else if(nEnemyClass==eClassGoblin2)
+    {
+        //TRACE("****************************\n******* Create Goblin 2       ***********\n***************************\n");
+        if(nLevel<4){CE( 3,0, 0,eGoblin2);}
+        else
+        {
+            
+            i=Rand(2);
+            #ifdef _XBOX
+            if(i ==  0){CE( 3,0, 0,eGoblin2);}
+            if(i ==  1){CE( 2,0, 0,eGoblin2);CE( 1,0, 0,eGoblin2Archer);}
+            #else
+            
+            //         il,lev,type       
+            if(i ==  0){CE( 3,2, 0,eGoblin2);}
+            if(i ==  1){CE( 2,1, 0,eGoblin2);CE( 1,1, 0,eGoblin2Archer);}
+            #endif
+        }
+        
+    }
+    else if(nEnemyClass==eClassGoblin)
+    {
+        i=Rand(5);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eGoblin);}
+        if(i ==  1){CE( 2,0, 0,eGoblin);CE( 1,0, 0,eGoblinArcher);}
+        if(i ==  2){CE( 2,0, 0,eGoblin);CE( 1,0, 0,eGoblinMage);}
+        if(i ==  3){CE( 1,0, 0,eGoblin);CE( 1,0, 0,eGoblinMage);  CE( 1,0,0,eGoblinArcher);}
+        if(i ==  4){CE( 1,0, 0,eGoblin);CE( 2,0, 0,eGoblinMage);}
+        #else
+        if(i ==  0){CE( 3,0, 0,eGoblin);}
+        if(i ==  1){CE( 2,1, 0,eGoblin);CE( 1,1, 0,eGoblinArcher);}
+        if(i ==  2){CE( 1,2, 0,eGoblin);CE( 1,1, 0,eGoblinMage);}
+        if(i ==  3){CE( 1,2, 0,eGoblin);CE( 0,1, 0,eGoblinMage);  CE( 2,0,0,eGoblinArcher);}
+        if(i ==  4){CE( 1,1, 0,eGoblin);CE( 1,1, 0,eGoblinArcher);CE( 1,1,0,eGoblinMage);}
+        #endif
+    }
+    else if(nEnemyClass==eClassMinion)
+    {
+        i=Rand(3);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eMinion);}
+        if(i ==  1){CE( 2,0, 0,eMinion);CE( 1,0, 0,eMinionMage);}
+        if(i ==  2){CE( 1,0, 0,eMinion);CE( 2,0, 0,eMinionMage);}
+        #else
+        if(i ==  0){CE( 2,3, 0,eMinion);}
+        if(i ==  1){CE( 2,1, 0,eMinion);CE( 1,1, 0,eMinionMage);}
+        if(i ==  2){CE( 1,1, 0,eMinion);CE( 2,1, 0,eMinionMage);}
+        
+        #endif
+        
+    }
+    else if(nEnemyClass==eClassSeaGuy)
+    {
+        i=Rand(2);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eSeaGuy);}
+        if(i ==  1){CE( 2,0, 0,eSeaGuy);CE( 1,0, 0,eSeaGuyMage);}
+        #else
+        if(i ==  0){CE( 3,2, 0,eSeaGuy);}
+        if(i ==  1){CE( 1,1, 0,eSeaGuy);CE( 2,1, 0,eSeaGuyMage);}
+        #endif
+    }
+    else if(nEnemyClass==eClassInsectGuy)
+    {
+        i=Rand(2);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eInsectGuy);}
+        if(i ==  1){CE( 2,0, 0,eInsectGuy);CE( 1,0, 0,eInsectGuyMage);}
+        #else
+        if(i ==  0){CE( 3,3, 0,eInsectGuy);}
+        if(i ==  1){CE( 1,2, 0,eInsectGuy);CE( 1,2, 0,eInsectGuyMage);}
+        
+        #endif
+    }
+    else if(nEnemyClass==eClassJackal)
+    {
+        i=Rand(2);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eJackal);}
+        if(i ==  1){CE( 2,0, 0,eJackal);CE( 1,0, 0,eJackalMage);}
+        #else
+        if(i ==  0){CE( 3,3, 0,eJackal);}
+        if(i ==  1){CE( 2,1, 0,eJackal);CE( 1,2, 0,eJackalMage);}
+        #endif
+    }
+    else if(nEnemyClass==eClassGolemFlesh)
+    {
+        i=Rand(10);
+        //         il,ril,lev,type       
+        if(i <6)       {CE( 1,0,0,eGolemFlesh);}
+        else if(i < 9) {CE( 1,1,0,eGolemFlesh);}
+        else           {CE( 1,3,0,eGolemFlesh);}
+    }
+    else if(nEnemyClass==eClassEnt)
+    {
+        CE(1,0,0,eEnt);
+    }
+    else if(nEnemyClass==eClassGolemWood)
+    {
+        i=Rand(10);
+        //         il,ril,lev,type       
+        if(i <6){ CE( 1,0,0,eGolemWood);}
+        else if(i < 9) {CE( 1,1,0,eGolemWood);}
+        else {CE( 1,3,0,eGolemWood);}
+    }
+    else if(nEnemyClass==eClassGolemSteel)
+    {
+        i=Rand(10);
+        //         il,ril,lev,type       
+        if(i <6){ CE( 1,0,0,eGolemSteel);}
+        else if(i < 9) {CE( 1,0,1,eGolemSteel);CE( 1,0,-1,eGolemSteel);}
+        else {CE( 1,0,2,eGolemSteel);CE( 2,1,-4,eGolemSteel);}
+    }
+    else if(nEnemyClass==eClassGolemStone)
+    {
+        i=Rand(10);
+        //         il,ril,lev,type       
+        if(i <6){ CE( 1,0,0,eGolemStone);}
+        else if(i < 9) {CE( 1,2,0,eGolemStone);}
+        else {CE( 1,3,0,eGolemStone);}
+    }
+    else if(nEnemyClass==eClassInsect)
+    {
+        i=Rand(2);
+        //         il,ril,lev,type       
+        if(i ==  0) CE( 1,1,0,eScorpio);
+        if(i ==  1) CE( 2,2,0,eScorpio);
+    }
+    else if(nEnemyClass==eClassMantis)
+    {
+        CE( 1,3,0,eMantis);
+    }
+    else if(nEnemyClass==eClassLizardman)
+    {
+        CE( 1,3,0,eLizardman);
+    }
+    else if(nEnemyClass==eClassHellmaster)
+    {
+        CE( 1,3,0,eHellmaster);
+    }
+    else if(nEnemyClass==eClassDeadKnight)
+    {
+        CE( 3,2,0,eDeadKnight);
+    }
+    else if(nEnemyClass==eClassOrc)
+    {
+        i=Rand(5);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,2, 0,eOrc);}
+        if(i ==  1){CE( 2,0, 0,eOrc);CE( 1,0, -3,eOrcArcher);}
+        if(i ==  2){CE( 1,0, 0,eOrc);CE( 2,0, -3,eOrcArcher);}
+        if(i ==  3){CE( 1,0, 3,eOrcChief);CE( 1,0,-1,eOrc);      CE( 1,0,-3,eOrcArcher);}
+        if(i ==  4){CE( 1,0, 3,eOrcChief);CE( 2,0, -3,eOrcArcher);}
+        #else
+        if(i ==  0){CE( 3,2, 0,eOrc);}
+        if(i ==  1){CE( 2,1, 0,eOrc);CE( 1,1, -3,eOrcArcher);}
+        if(i ==  2){CE( 1,2, 0,eOrc);CE( 2,1, -3,eOrcArcher);}
+        if(i ==  3){CE( 1,0, 3,eOrcChief);CE( 2,1,-1,eOrc);      CE( 2,0,-3,eOrcArcher);}
+        if(i ==  4){CE( 1,0, 3,eOrcChief);CE( 2,3, -3,eOrcArcher);}
+        #endif
+        
+    }
+    else if(nEnemyClass==eClassSnowOrc)
+    {
+        i=Rand(MIN(nLevel,10));
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eSnowOrc);}
+        if(i ==  1){CE( 2,0, 0,eSnowOrc);CE( 1,0,-3,eSnowOrcArcher);}
+        if(i ==  2){CE( 1,0, 0,eSnowOrc);CE( 2,0,-3,eSnowOrcArcher);}
+        if(i ==  3){CE( 1,0, 3,eSnowOrcChief);CE( 1,0,-1,eSnowOrc);      CE( 1,0,-3,eSnowOrcArcher);}
+        if(i ==  4){CE( 1,0, 3,eSnowOrcChief);CE( 2,0, -3,eSnowOrcArcher);}
+        #else
+        if(i ==  0){CE( 3,2, 0,eSnowOrc);}
+        if(i ==  1){CE( 2,1, 0,eSnowOrc);CE( 1,1,-3,eSnowOrcArcher);}
+        if(i ==  2){CE( 1,2, 0,eSnowOrc);CE( 2,1,-3,eSnowOrcArcher);}
+        if(i ==  3){CE( 1,0, 3,eSnowOrcChief);CE( 2,1,-1,eSnowOrc);      CE( 2,0,-3,eSnowOrcArcher);}
+        if(i ==  4){CE( 1,0, 3,eSnowOrcChief);CE( 2,3, -3,eSnowOrcArcher);}
+        
+        #endif
+    }
+    else if(nEnemyClass==eClassOrc2)
+    {
+        i=Rand(5);
+        //         il,lev,type       
+        #ifdef _XBOX
+        if(i ==  0){CE( 3,0, 0,eOrc2);}
+        if(i ==  1){CE( 2,0, 0,eOrc2);CE( 1,0, -3,eOrc2Archer);}
+        if(i ==  2){CE( 1,0, 0,eOrc2);CE( 2,0, -3,eOrc2Archer);}
+        if(i ==  3){CE( 1,0, 3,eOrc2Chief);CE( 1,0,-1,eOrc2);      CE( 1,0,-3,eOrc2Archer);}
+        if(i ==  4){CE( 1,0, 3,eOrc2Chief);CE( 2,0, -3,eOrc2Archer);}
+        #else
+        if(i ==  0){CE( 3,2, 0,eOrc2);}
+        if(i ==  1){CE( 2,1, 0,eOrc2);CE( 1,1, -3,eOrc2Archer);}
+        if(i ==  2){CE( 1,2, 0,eOrc2);CE( 2,1, -3,eOrc2Archer);}
+        if(i ==  3){CE( 1,0, 3,eOrc2Chief);CE( 2,1,-1,eOrc2);      CE( 2,0,-3,eOrc2Archer);}
+        if(i ==  4){CE( 1,0, 3,eOrc2Chief);CE( 2,3, -3,eOrc2Archer);}
+        
+        #endif
+    }
+    
+    else if(nEnemyClass==eClassDragon) {CE( 1,0, 0,eDragon);}
+    else if(nEnemyClass==eClassWhiteDragon) {CE( 1,0, 0,eWhiteDragon);}
+    else if(nEnemyClass==eClassStoneDragon) {CE( 1,0, 0,eStoneDragon);}
+    else if(nEnemyClass==eClassLavaDragon) {CE( 1,0, 0,eLavaDragon);}
+        
+    else if(nEnemyClass==eClassSpider)
+    {
+        i=Rand(3);
+        //         il,ril,lev,type       
+        if(i <2) CE( 1,0,0,eSpider);
+        if(i ==  2) CE( 1,1,-2,eSpider);
+    }
+    else if(nEnemyClass==eClassMummy) CE( 1,3,0,eMummy);
+    else if(nEnemyClass==eClassUndead)CE( 1,3,0,eGhoul);
+    else if(nEnemyClass==eClassUndeadAnimal)
+    {
+        i=Rand(4);
+        //         il,ril,lev,type       
+        if(i ==  0) CE( 2,2,0,eUndeadWolf);
+        if(i ==  1) CE( 1,1, 0,eUndeadBear);
+        if(i ==  2) CE( 2,2,0,eUndeadWolf);
+        if(i ==  3) CE( 2,1,0,eUndeadReptile);
+    }
+    else if(nEnemyClass==eClassYeti)CE( 1,2,0,eYeti);
+    else if(nEnemyClass==eClassWolf)CE( 2,2, 0,eGrayWolf);
+    
+    nCreatedGroups=0;
+}
+
+function int CreateMissionEnemies(mission pMission)
+{
+    int i,nMaxMarker,nX,nY,nEnemiesCreated;
+    int nMission;
+    
+    nEnemiesCreated=0;
+    pMission.GetAttribute("EnemiesCreated", nEnemiesCreated);
+    if(nEnemiesCreated>=eLastEnemyClass)return false;
+    
+    nMission = pMission.GetMissionNum();
+    
+    if(nEnemiesCreated!=eClassBandit)
+    {
+        nMaxMarker = pMission.GetMaxMarkerNum(anMarkerName[nEnemiesCreated]);
+//        TRACE("CREATE enemy num: %d  max markers %d                   \n",nEnemiesCreated,nMaxMarker);
+        for (i=1;i<=nMaxMarker;i++)
+        {
+            if(pMission.GetMarker(anMarkerName[nEnemiesCreated],i,nX,nY)) CreateEnemy(pMission,nX,nY,nMission,nEnemiesCreated,anParty[nEnemiesCreated],0,0,true,i);
+        }
+    }
+    nEnemiesCreated++;
+    pMission.SetAttribute("EnemiesCreated", nEnemiesCreated);
+    return true;
+}
+
+function int EnemiesCreated(mission pMission)
+{
+    int nEnemiesCreated;
+    pMission.GetAttribute("EnemiesCreated",nEnemiesCreated);
+    if (nEnemiesCreated >= eLastEnemyClass) return true;
+    return false;    
+}
+
+function void ResetEnemiesCreated(mission pMission)
+{
+    pMission.SetAttribute("EnemiesCreated",0);
+}
+
+function void RemoveUnitsOnMap(mission pMission,int nParty) {
+
+    unit uUnit;
+    int i, nX, nY;
+    int count;
+    
+    pMission.SearchUnitsInArea(64*256,64*256,64*256,GetSinglePartyArray(nParty));
+    
+    count = pMission.GetSearchUnitsInAreaCount();
+    for (i= 0; i < count; i++) {
+        uUnit = pMission.GetSearchUnitInArea(i);
+        ASSERT(uUnit != null);
+        uUnit.GetLocation(nX,nY);
+        pMission.CreateObject(FX_KILL_UNDEAD,nX,nY,0,0);
+        uUnit.RemoveObject();
+    }
+    pMission.ClearSearchUnitsInAreaArray();
+}
+
+
+function void CheckATaintMonsters(mission pMission)
+{
+// wstawianie potworów wokól obiektów skazy.
+// funkcja szukania obiektów danego typu i brania ich pozycji
+// w dzien jezeli jest flaga stworzone  usunac z levelu wszystkie potwory z party-skaza.ustawic flage na 0
+// jezeli brak flagi lub flaga ustawiona na 0 i jest noc to wstawic potwory wokol obiektow skazy - ustawic flage na 1
+    int i,nX,nY,nTaint,nMission,nTime,nEnemyClass;
+    unit uTaint;
+    int anParties[];
+    anParties.Add(ePartyTaintUndead);
+    
+    
+    nTaint=0;
+    pMission.GetAttribute("Taint", nTaint);
+ 
+    nTime = GetCampaign().GetDayTime();
+    if(nTime>20&&nTime<240 && nTaint==1)//day action
+    {
+        TRACE("******** REMOVE TAINT UNITS***************              \n");
+        RemoveUnitsOnMap(pMission, ePartyTaintUndead);
+        pMission.SetAttribute("Taint", 0);
+        return;
+    }
+    
+    if((nTime<20 || nTime>240) && nTaint==0)//night action
+    {
+        //TRACE("******** CREATE TAINT UNITS***************              \n");
+        bCreateWithEffect = true;
+        nMission = pMission.GetMissionNum();
+        pMission.SearchObjectsInArea(64*256,64*256, 64*256,"THE_TAINT");
+        for(i=0; i<pMission.GetSearchUnitsInAreaCount();i++)
+        {
+            uTaint=pMission.GetSearchUnitInArea(i);
+            uTaint.GetLocation(nX,nY);
+            nEnemyClass = eClassUndead+Rand(4);
+            CreateEnemy(pMission,nX,nY,nMission,nEnemyClass,ePartyTaintUndead,0,0,true,0);
+            pMission.RemoveKilledUnits(nX,nY,20*256,false,anParties,true,true);
+        }
+        bCreateWithEffect = false;
+        pMission.ClearSearchUnitsInAreaArray();
+        pMission.SetAttribute("Taint", 1);
+    }
+}
+
+function void RemoveEnemyMarker(unit uKilled) {
+
+    int i;
+    int count;
+    int nBaseMarker;
+    int nMarker;
+    string strMarker;
+    mission pMission;
+    int nEnemyClass;
+    int nX, nY;
+
+    uKilled.GetAttribute("EnemyClass",nEnemyClass);
+    if (nEnemyClass == eGhost) return;
+
+    nBaseMarker = GetBaseMarker(uKilled);
+    uKilled.SearchUnits(M2A(100),uKilled.GetPartiesNums());
+    count = uKilled.GetSearchUnitsCount();
+    for (i = 0; i < count; i++) {
+        if (GetBaseMarker(uKilled.GetSearchUnit(i)) == nBaseMarker) return;
+    }
+    uKilled.ClearSearchUnitsArray();       
+            
+    nEnemyClass = GetEnemyClassFromBaseMarker(nBaseMarker); 
+    strMarker = anMarkerName[nEnemyClass];
+    nMarker = GetMarkerNumberFromBaseMarker(nBaseMarker); 
+
+    if (nMarker == 0) return;   
+
+    pMission = uKilled.GetMission();
+    
+    if (pMission.GetMarker(strMarker,nMarker,nX,nY)) {
+
+        pMission.SearchUnitsInArea(nX,nY,M2A(100),uKilled.GetPartiesNums());
+        count = pMission.GetSearchUnitsInAreaCount();
+        for (i = 0; i < count; i++) {
+            if ((GetBaseMarker(pMission.GetSearchUnitInArea(i)) == nBaseMarker) && (pMission.GetSearchUnitInArea(i) != uKilled)) return;
+        }
+        pMission.ClearSearchUnitsInAreaArray();
+    
+        pMission.RemoveMarker(strMarker,nMarker);
+//        TRACE("%s %d removed              \n",strMarker,nMarker);
+        AddGhostMarkers(pMission,nEnemyClass,nX,nY);        
+
+    }
+
+}
+

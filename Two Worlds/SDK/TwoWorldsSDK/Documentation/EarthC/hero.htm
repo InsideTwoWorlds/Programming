@@ -1,0 +1,76 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> hero object </title>
+</head>
+<body>
+<a name="hero">
+<hr>
+<hero>
+<big><strong>hero</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<hero_functions_begin>
+public:
+hero GetThis()
+void UseMagicCardOnSlot(int dwMagicID, int nCount, int nMagicSlotNum)
+<hero_functions_public_end>
+private:
+void MoveSubObjectToInventory(int nSlotNum, int nPosX, int nPosY, int nToItemNumber)
+void MoveSubObjectFromSlotToSlot(int nSlotNum, int nToSlotNum, int bSlotParam)
+void MoveMagicFromSlotToInventory(int nMagicSlotNum, int bPowerUp, int nItemNumber)
+void MoveMagicFromSlotToSlot(int nMagicSlotNum, int nToMagicSlotNum, int bPowerUp, int nItemNumber)
+void UseObjectFromInventory(int nItemNumber, int nToSlotNum, int bSlotParam, int nItemID, int bShowUseEffect)
+void UsePrevWeapon()
+void UseNextWeapon()
+void UseRegenerateHPPotion()
+void UseRegenerateManaPotion()
+void JoinInventoryObjects(int nFromItemNumber, int nToItemNumber)
+void SetInventoryObjectPos(int nItemNumber, int nPosX, int nPosY)
+void AutoArrangeInventory()
+void DropSubObject(int nSlotNum)
+void DropMoney(int nMoney)
+void DropInventory(int nItemNumber, int nItemID)
+void DropMagicFromSlot(int nMagicSlotNum, int bPowerUp, int nItemNumber)
+void DropAlchemyItem(int nSlotIndex)
+void MoveInventoryToAlchemyItem(int nItemNumber, int nToSlotIndex, int nItemID)
+void MoveAlchemyItemToInventory(int nSlotIndex, int nPosX, int nPosY, int nToItemNumber)
+void MoveAlchemyItemFromSlotToSlot(int nSlotIndex, int nToSlotIndex)
+void MakeAlchemy()
+void AddAlchemyResultFormula(string strFormulaName)
+void SetAlchemyFormulaName(int nFormulaNumber, string strFormulaName)
+void DeleteAlchemyFormula(int nFormulaNumber)
+void LoadAlchemyFormula(int nFormulaNumber)
+void UnloadAlchemyFormula(int nFormulaNumber)
+void MoveAlchemyFormulaUp(int nFormulaNumber)
+void MoveAlchemyFormulaDown(int nFormulaNumber)
+void PickUpObject(unit uTarget)
+int  IsObjectInPickUpRange(unit uTarget)
+int  CanPickUpObject(unit uTarget)
+void SwitchObject(unit uTarget)
+int  IsObjectInSwitchRange(unit uTarget)
+int  CanSwitchObject(unit uTarget)
+void SetPoint(int nPointIndex, int bIncrease, int nMinPoint)
+void SetSkill(int nSkillIndex, int bIncrease, int nMinSkill)
+int  IsDialogUnitInTalkRange(unit uDialogUnit)
+void StartTalkWithDialogUnit(unit uDialogUnit)
+int  IsOpenContainerObjectType(unit uContainerObject, int bCheckCanStart)
+int  IsContainerObjectInOpenRange(unit uShopUnit)
+int  StartOpenContainerObject(unit uContainerObject, int bFirstCall)
+void GetObjectFromContainer(unit uContainer, int nItemNumber, int nPosXY, int nToItemNumber, int bToSlot, int nItemID)
+void GetAllFromContainer(unit uContainer)
+void PutObjectToContainer(unit uContainer, int nItemNumber, int nFromSlotIndex, int nFromMagicSlot, int bFromSlot, int nItemID)
+void OpenTeleport(unit uSourceTeleport)
+void TeleportToActiveTargetTeleport(unit uTargetTeleport)
+void PutObjectToTradeContainer(int nItemNumber, int nFromSlotIndex, int nFromMagicSlot, int bFromSlot, int nItemID)
+void GetObjectFromTradeContainer(int nItemNumber, int nPosXY, int nToItemNumber, int bToSlot, int nItemID)
+void GetAllFromTradeContainer()
+void DecideAboutTrade(int bAgree)
+void PlayerLeftTrade()
+<hero_functions_private_end>
+<hero_functions_end>
+</pre>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

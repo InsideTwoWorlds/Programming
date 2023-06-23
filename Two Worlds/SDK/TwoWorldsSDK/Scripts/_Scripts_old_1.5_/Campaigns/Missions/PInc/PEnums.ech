@@ -1,0 +1,245 @@
+
+#ifndef _P_ENUMS_
+#define _P_ENUMS_
+
+//======================================
+
+// hero
+#define KILLED_BANDITS_ATTRIBUTE                 "PKB"
+
+// unit attributes
+#define ACTIVITY_ATTRIBUTE                       "PA"
+#define BED_NUMBER_ATTRIBUTE                     "PBN"
+#define CREATE_STRING_ATTRIBUTE                  "PCS"
+#define DAILY_STATE_ATTRIBUTE                    "PDS"
+#define GATE_AUTO_ATTRIBUTE                      "PGA"
+#define GATE_NUMBER_ATTRIBUTE                    "PGN"
+#define GUARD_WORK_STATE_ATTRIBUTE               "PGWS"
+#define MAIN_STATE_ATTRIBUTE                     "PMS"
+#define QUEST_BODY_SPOTTED_ATTRIBUTE             "PQBS"
+#define UNIT_MASK_ATTRIBUTE                      "PUM"
+
+// mission attributes
+#define BANDITS_CREATED_ATTRIBUTE                "PBC"
+#define CAMP_CREATED_ATTRIBUTE                   "PCC"
+#define QUEST_UNITS_REGISTERED_ATTRIBUTE         "PQUR"
+
+#define RANDOM_ITEM                              "RANDOM_ITEM"
+
+// quest markers
+#define MARKER_QUEST_GIVER                       "MARKER_QUEST_START"    // te markery sa giverami
+#define MARKER_QUEST_START                       "MARKER_QUEST_START"    // na tym markerze tworzymy giverow
+#define MARKER_QUEST_GO                          "MARKER_QUEST_POINT"
+#define MARKER_QUEST_GO_AWAY                     "MARKER_QUEST_POINT"
+#define MARKER_QUEST_FIND_PLACE                  "MARKER_QUEST_POINT"
+#define MARKER_QUEST_CLEAR_AREA                  "MARKER_QUEST_POINT"
+#define MARKER_QUEST_DELIVER_OBJECT              "MARKER_QUEST_POINT"
+#define MARKER_QUEST_OPEN                        "MARKER_GATE"
+
+#define MARKER_QUEST_POINT                       "MARKER_QUEST_POINT"
+#define MARKER_ACTION_GO                         "MARKER_QUEST_WALK"
+#define MARKER_ACTION_TELEPORT_UNIT              "MARKER_QUEST_TELEPORT"
+#define MARKER_ACTION_CREATE_OBJECT              "MARKER_QUEST_CREATE_OBJECT"
+#define MARKER_ACTION_CREATE_ENEMY               "MARKER_QUEST_CREATE_ENEMY"
+#define MARKER_ACTION_CLEAR_AREA                 "MARKER_QUEST_CLEAR_AREA"
+#define MARKER_ACTION_KILL_AREA                  "MARKER_QUEST_KILL_AREA"
+#define MARKER_CONTAINER                         "MARKER_CHEST"
+// unit markers
+#define MARKER_NPC                               "MARKER_NPC"
+#define MARKER_WORK                              "MARKER_NPC"
+#define MARKER_SLEEP                             "MARKER_SLEEP"
+// town markers
+#define MARKER_GATE                              "MARKER_GATE"
+#define MARKER_PUBLIC_PLACE                      "MARKER_PUBLIC_PLACE"
+#define MARKER_CHAIR                             "MARKER_CHAIR"
+#define MARKER_TAVERN                            "MARKER_TAVERN"
+// guards markers
+#define MARKER_GUARD                             "MARKER_GUARD"
+#define MARKER_GUARD2                            "MARKER_GUARD2"
+#define MARKER_GUARD_PATROL                      "MARKER_GUARD_PATROL"
+#define MARKER_GUARD_BARRACKS                    "MARKER_GUARD_BARRACKS"
+#define MARKER_GUARD_ROUTE                       "MARKER_GUARD_ROUTE"
+// town type markers
+#define MARKER_TOWN_HUMAN                        "MARKER_VILLAGE_04"
+#define MARKER_TOWN_DWARVEN                      "MARKER_VILLAGE_02"
+// male workers
+#define MARKER_SHOP                              "MARKER_SHOP"
+#define MARKER_SHOP_NECRO                        "MARKER_SHOP_NECRO"
+#define MARKER_SHOP_MAGE                         "MARKER_SHOP_MAGE"
+#define MARKER_SHOP_WARRIOR                      "MARKER_SHOP_WARRIOR"
+#define MARKER_SHOP_FENCE                        "MARKER_SHOP_FENCE"
+#define MARKER_COACH_1                           "MARKER_COACH_1"
+#define MARKER_COACH_2                           "MARKER_COACH_2"
+#define MARKER_COACH_3                           "MARKER_COACH_3"
+#define MARKER_COACH_4                           "MARKER_COACH_4"
+#define MARKER_COACH_5                           "MARKER_COACH_5"
+#define MARKER_COACH_6                           "MARKER_COACH_6"
+#define MARKER_COACH_7                           "MARKER_COACH_7"
+#define MARKER_COACH_8                           "MARKER_COACH_8"
+#define MARKER_CHANGER_1                         "MARKER_CHANGER_1"
+#define MARKER_CHANGER_2                         "MARKER_CHANGER_2"
+#define MARKER_PLAY                              "MARKER_PLAY"
+#define MARKER_PRAY                              "MARKER_PRAY"
+#define MARKER_WOODCUT                           "MARKER_WOODCUT"
+#define MARKER_BROOM                             "MARKER_BROOM"
+#define MARKER_KNEEL                             "MARKER_KNEEL"
+#define MARKER_PITCHFORK                         "MARKER_PICHFORK"
+#define MARKER_SCYTHE                            "MARKER_SCYTHE"
+#define MARKER_PINAXE                            "MARKER_PINAXE"
+#define MARKER_CITIZEN                           "MARKER_WALKER"
+#define MARKER_SITTING                           "MARKER_SITING"
+#define MARKER_LAY_DOWN                          "MARKER_LAY_DOWN"
+#define MARKER_READ                              "MARKER_DESK"
+// female workers
+#define MARKER_F_DANCE                           "MARKER_F_DANCE"
+#define MARKER_F_CITIZEN                         "MARKER_F_WALKER"
+#define MARKER_F_COOK                            "MARKER_F_COOK"
+#define MARKER_F_PRAY                            "MARKER_F_PRAY"
+#define MARKER_F_BROOM                           "MARKER_F_BROOM"
+#define MARKER_F_KNEEL                           "MARKER_F_KNEEL"
+// bandit workers
+#define MARKER_B_WOODCUT                         "MARKER_B_WOODCUT"
+#define MARKER_B_KNEEL                           "MARKER_B_KNEEL"
+#define MARKER_B_SITTING                         "MARKER_B_SITING"
+// other markers
+#define MARKER_BANDITS                           "MARKER_ENEMY_BANDIT"
+#define MARKER_RESURRECT                         "MARKER_RESSURECT"
+#define MARKER_TELEPORT                          "MARKER_TELEPORT"
+#define MARKER_MANA                              "MARKER_MANA_REG"
+
+#define DIALOG_FIND_CRIMINAL                     "translateEVENT_1"
+#define DIALOG_ALARMING_GUARDS_MALE              "translateEVENT_2"
+#define DIALOG_ALARMING_GUARDS_FEMALE            "translateEVENT_3"
+#define DIALOG_CHAT                              "translateTALK_%d_%d_%d"
+
+#define TEXT_CRIMINAL_SPOTTED                    "translateCrimeSpotted"
+#define TEXT_GUARDS_ALARMED                      "translateGuardsAlarmed"
+#define TEXT_GUARDS_INFORMED                     "translateGuardsInformed"
+#define TEXT_GATE_CLOSED                         "translateCannonOpen"
+#define TEXT_GATE_OPEN                           "translateCannotClose"
+
+#define PARTY_NPC                                 nPartyTownNPCs
+
+//#define USE_DEBUG_MOVE
+#define USE_COMMAND_DEBUG
+//#define TOWN_DEBUG
+//#define CRIME_DEBUG
+//#define QUEST_DEBUG
+//#define QUEST_FUNCTIONS_DEBUG
+//#define QUEST_GATES_DEBUG
+//#define QUEST_UNITS_DEBUG
+//#define QUEST_LOADER_DEBUG
+//#define HOUSES_DEBUG
+//#define PARSER_DEBUG
+//#define LOCATIONS_DEBUG
+#define DIALOG_UNITS_DEBUG
+//#define BANDITS_DEBUG
+//#define CONTAINERS_DEBUG
+//#define SHOW_UNIT_INFO_ASSERTS
+
+consts {
+             
+    // null constants      
+    eNoMission     = -1;
+    eNoQuest       = 0;
+    eNoUnit        = -1;
+    eNoCoord       = -1;
+    eNoTavern      = -1;
+    eNoChair       = -1;
+    eNoHouse       = 0;      
+    eNoGroup       = -1;  
+    eNoDialogUnit  = 0;
+    eNoParty       = 0;
+    eNoMapping     = -1;
+    eNoLocation    = -1;
+    eNoContainer   = -1;
+    eNoMarker      = 0;
+    eNoRoute       = -1;
+    eNoBarracks    = -1;
+    eNoDoor        = -1;
+                
+    // dialog UID
+    eSpecialDialogUID               = 10000;
+    eDialogFindCriminalUID          = 10001;
+    eDialogQuestActionUID           = 10003;
+    eDialogAlarmingGuardsUID        = 10004;
+    eDialogChangerUID               = 20000;
+    eDialogCoachUID                 = 30000;
+    eStandardDialogUID              = 40000;
+      
+    // bed states
+    eNoBed              = 0;
+    eBedFree            = 1;
+    eBedOccupied        = 2;
+              
+    // main states
+    eMainStateNormal    = 0;
+    eMainStateRunning   = 1;    
+    eMainStateFighting  = 2;
+    eMainStateAlarmingGuards = 3;
+    eMainStateWaiting   = 4;
+
+    // daily states
+    eWorking            = 1;
+    eGoingToWork        = 2;
+    eSleeping           = 3;
+    eGoingToBed         = 4;
+    eRestingInTavern    = 5;
+    eRestingOutside     = 6;
+    eResting            = 7;
+
+    // guard work substates
+    eGuardPatrolling      = 0;
+    eGuardAlarmed         = 1;
+    eGuardChasingCriminal = 2;  
+    eGuardHoldingPosition = 3;
+    eGuardAttackingHero   = 4;
+
+    // crime points  
+ //   eCrimePointsFight    = 20;
+//    eCrimePointsMurder   = 100;
+    eCrimePointsFight    = 15;
+    eCrimePointsMurder   = 50;
+    eCrimePointsBurglary = 10;
+    eCrimePointsTheft    = 12;
+    eCrimePointsChasing  = 2;
+    ePointsCriminalEnemy = 52;
+
+    // ranges
+    eUnitDialogRangeA            = 100;
+    eUnitToBarracksRangeG        = 5;
+    eHeroSightRangeG             = 10;
+    eActiveQuestGiverRangeA      = 300;
+    eQuestGiverAtMarkerRangeG    = 1;
+    eOpenCityGateRangeG          = 5;
+    eTooFarForAttackRangeG       = 5;
+    eQuestFailRangeA             = 512;
+    eQuestBodySpottedRangeA      = 512;
+    eCheckForEnemiesRangeA       = 1024;
+    
+    // other
+    eMaxPlayers         = 8;
+    eInfinity           = 100000000;
+       
+    // time
+    eActivityTime              = 900;
+    eWaitingTime               = 100;
+    eBodyRemoveTime            = 20 * 60 * 30;
+    eResurrectionTime          = 20 * 60 * 30;
+//    eBodyRemoveTime            = 30 * 30;
+//    eResurrectionTime          = 30 * 30;
+
+    // masks
+    eMaskEnemyFound              = 1;
+    eMaskCriminalFound           = 2;
+    eMaskGuardAlarmedByUnit      = 4;
+    eMaskBodySpotted             = 8;
+
+    // czestotliwosc nothing
+    eNothingFrequency          = 5;
+                                       
+}
+
+//======================================
+
+#endif

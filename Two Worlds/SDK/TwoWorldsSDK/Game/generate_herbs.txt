@@ -1,0 +1,1088 @@
+editor.LoadLevel Map_I03.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_TREE_05_s 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_06 EN_STONE_02 20 3 7 
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 5 2 5  
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 5 
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 3 
+editor.SaveLevel
+
+editor.LoadLevel Map_c04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_TREE_05_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 5
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 3 2 5
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 4 2 4  
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 6
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_TREE_25_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 3 2 5 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 3 2 5
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 3 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_D04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_TREE_09_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 3  
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_TREE_25_s 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 3 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 3 2 3
+editor.SaveLevel
+
+editor.LoadLevel Map_E04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 3 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_25_s 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09_s 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 4  
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_STONE_02 10 3 6
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 4 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 3 2 3
+editor.SaveLevel
+
+editor.LoadLevel Map_F04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 4 2 3
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 4  
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02 10 3 5
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 4 2 3
+editor.SaveLevel
+
+editor.LoadLevel Map_G04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 4  
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 7 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_STONE_02 10 3 6
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 4 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 4 2 3
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 4 2 3
+editor.SaveLevel
+
+editor.LoadLevel Map_H04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_TREE_05_s 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_25_s 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09_s 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 4  
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_STONE_02 10 3 6
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 3 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 3 2 3
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 3 2 3
+editor.SaveLevel
+
+editor.LoadLevel Map_I04.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 5 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 5 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_TREE_25_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18 5 2 4  
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 8 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_STONE_02 10 3 6
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 3
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 5 2 3
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29_s 5 2 3
+editor.SaveLevel
+
+editor.LoadLevel Map_C05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02_small 17 2 5 
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02h 17 4 7 
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_05 17 2 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_24_S 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_25_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 5 2 5 
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 5 2 5 
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 5 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_D05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02_small 17 2 5 
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_07 17 2 5 
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_BUSH_06 17 2 5 
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_24_S 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_25_s 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 5 2 5
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_E05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02 20 4 7
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_STONE_02_small 20 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_05_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_24_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_26_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_01 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_F05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02 20 4 7
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02_small 20 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_05_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_24_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_26_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_01 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_G05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_BUSH_03 17 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_11 17 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02_small 17 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_05_s 5 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_24_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_26_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_01 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_H05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_03 17 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_11 17 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02_small 17 2 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_05_s 5 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_24_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_26_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_01 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_i05.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02 20 4 7
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 20 2 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_BUSH_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_G01.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_TREE_05 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 8 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 8 2 3
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_04 EN_STONE_02 20 5 7
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 8 2 3  
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 15 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 8 2 3 
+editor.SaveLevel
+
+editor.LoadLevel Map_G02.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 8
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 3 2 8
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 3 2 8
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 3 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_STONE_02 30 5 9 
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 8
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 8  
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 5 2 8
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_06 EN_TREE_26_s 3 2 8 
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 3 2 8
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_24_s 3 2 8 
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_TREE_06 4 2 8
+editor.CreateObjectsNearObjectsOnArea ING_17 EN_TREE_06_s 4 2 8
+editor.SaveLevel
+
+editor.LoadLevel Map_D01.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 5 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_TREE_09 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09_s 5 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_03 EN_STONE_02 30 5 9 
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 5 2 8  
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 8 
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 8
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 8 
+editor.SaveLevel
+
+editor.LoadLevel Map_C01.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 2 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 2 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_TREE_09 2 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09_s 2 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 2 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 2 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 2 2 4 
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_06 2 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 2 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 2 2 4 
+editor.SaveLevel
+
+editor.LoadLevel Map_C02.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 3 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_TREE_09 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09_s 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 3 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 3 2 4 
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 3 2 4 
+editor.SaveLevel
+
+
+editor.LoadLevel Map_C03.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 3 2 6
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 3 2 6
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 5 2 6
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 3 2 6
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_03 EN_STONE_02 20 4 8
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 3 2 6
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_S 3 2 6  
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_04 EN_TREE_25 5 2 6 
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 3 2 6
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 4 2 6 
+editor.SaveLevel
+
+editor.LoadLevel Map_H02.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_TREE_05 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_STONE_02 10 5 7
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 4 2 3  
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 3 
+editor.SaveLevel
+
+editor.LoadLevel Map_I02.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_TREE_05 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 4 2 3
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_STONE_02 10 5 7
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 4 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 4 2 3  
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_06 10 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 5 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26_s 5 2 3 
+editor.SaveLevel
+
+editor.LoadLevel Map_B06.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_05 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_09 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 7 2 6  
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_05 12 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 15 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 6 2 8
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 6 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_06 EN_BUSH_07 12 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 7 2 8
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_24_s 7 2 8 
+editor.SaveLevel
+
+editor.LoadLevel Map_C06.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_05 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_09 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 7 2 6  
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_05 15 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_06 15 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 6 2 8
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 6 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_06 EN_BUSH_07 15 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 7 2 8
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_24_s 7 2 8 
+editor.SaveLevel
+
+editor.LoadLevel Map_D06.lnd
+editor.SetCreateRect 0 0 128 128 
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_05 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_09 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 7 2 6
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_18_s 7 2 6  
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 7 2 6
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_05 15 2 3
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06 15 2 3
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 6 2 8
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 6 2 8
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_05 EN_BUSH_07 15 2 3 
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 7 2 8
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_24_s 7 2 8 
+editor.SaveLevel
+
+
+
+//do 6 na pozniej
+//editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_04
+//editor.CreateObjectsNearObjectsOnArea ING_17 EN_TREE_06
+//editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_07
+//editor.CreateObjectsNearObjectsOnArea ING_12 EN_TREE_14
+
+editor.LoadLevel Map_E06.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_BUSH_03 8 2 4 
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_BUSH_06 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 8 2 5
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_TREE_06 8 2 5
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 8 2 5
+editor.CreateObjectsNearObjectsOnArea ING_04 EN_TREE_14 8 2 5
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_15 8 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_F06.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_05 EN_TREE_03_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_02_s 7 2 5
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_BUSH_11 10 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_04 EN_TRUNK_01 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_01 7 2 5
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_TREE_02 7 2 5
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 7 2 5
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 7 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_G06.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_BUSH_06 8 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_03 EN_TREE_08_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_TRUNK_01 8 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_04 EN_TREE_08_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_01 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_08 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_19 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_12 EN_TREE_23 6 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_H06.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea  EN_TREE_23_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_06 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_05 EN_STONE_02_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_05_s 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_25_s 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_12 EN_TREE_09_s 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TRUNK_01 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_12 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_23 6 2 5
+editor.SaveLevel
+
+
+editor.LoadLevel Map_I06.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_03 EN_TREE_05_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_05 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_02 EN_TREE_09_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_25_s 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_24_s 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_STONE_02_small 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_25 6 2 5
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 6 2 5
+editor.SaveLevel
+
+editor.LoadLevel Map_A07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_02_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_STONE_02h 10 4 6
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_STONE_02h_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_05 EN_TREE_05_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_24_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_TREE_02 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_25 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_26 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 7 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_B07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_25_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_STONE_02_small 7 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_BUSH_06 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_05_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_03 7 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_TREE_24_s 15 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TREE_09_s 15 2 5
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_19 7 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_C07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_04_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_09 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_BUSH_05 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_05_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_BUSH_01 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_TREE_25_s 10 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_TREE_24_s 10 2 5
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_TREE_08_s 10 2 5
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_05 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 6 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 6 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_D07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02_11 8 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02_6 8 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_03 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_08_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_STONE_02 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TRUNK_02 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_12_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_10_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_08 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_E07.lnd
+editor.SetCreateRect 0 0 128 128
+EN_STONE_02
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_TRUNK_01 8 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TRUNK_02 8 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02h_6 8 3 5
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_TREE_13_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_03_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_07_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_11_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_BUSH_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_01_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_16 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_28 EN_TREE_01 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_G07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_STONE_02 15 3 5
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02_small 15 3 5
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_03_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_17 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_09_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_05_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_25_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_STONE_02c 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_TREE_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_22 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_19 5 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_H07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_23_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_12 EN_STONE_02c_small 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_STONE_02c 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_23 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_12 EN_TREE_22 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_19 5 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_I07.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_12 EN_TREE_23_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_STONE_02c 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_TREE_05_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_25_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_23 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_22 5 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_A08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_TREE_09_s 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_STONE_02h_11 15 4 6
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_STONE_02h 15 4 6
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_05 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_04_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_BUSH_01_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_25_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_08_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_11 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 6 2 4
+editor.SaveLevel
+
+
+
+editor.LoadLevel Map_B08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02_small 20 4 6
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_TRUNK_02 20 4 6
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_12_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_07 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_20_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_05_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_STONE_02 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_03_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_04 EN_TRUNK_01 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_29 EN_TREE_08 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_12EN_TREE_14 6 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_C08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_03_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_09_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_11 EN_TREE_15 6 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_D08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_04 EN_BUSH_02 15 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_TREE_06 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_12 EN_TREE_14 15 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_E08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_TREE_03_s 15 4 5 
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02 15 4 5 
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_01 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_STONE_02_small 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_21 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_07 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_12 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_19 6 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_F08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 15 2 4 
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_STONE_02 15 4 5 
+editor.CreateObjectsNearObjectsOnArea ING_10 N_STONE_02_small 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_03_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_12_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_12 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_11 6 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_H08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_28 EN_PALM_01_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_PALM_01 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_I08.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_28 EN_PALM_01_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_PALM_01 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_A09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02h_small 16 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02h 6 3 5
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_PALM_01_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_28 EN_PALM_01 6 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_B09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02h 16 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_TREE_09_s 16 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_06 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_05_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_04_s 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_05 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_10 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 6 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 6 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_C09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_TREE_25_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_11 12 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_STONE_02 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 ING_14 EN_TREE_03_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_05_s 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_STONE_02h 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_TRUNK_01 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_BAMBOO_01 7 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_D09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_05 N_TREE_03_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_12_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_07 5 2 4 
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_E09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TREE_03_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_12_s 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_06 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_04 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02 5 3 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_07 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 5 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 5 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_F09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_STONE_02_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_07_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_BUSH_07 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02 12 3 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_G09.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02_small 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TREE_25_s 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_24_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_STONE_02 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_07 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_09_s 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_A10.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_TREE_25_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_TREE_09_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_STONE_02 10 3 5
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 12 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_B10.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_06 12 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TREE_09_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_BUSH_10 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_STONE_02h 7 3 5
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_STONE_02h_small 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_TREE_29 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_09 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_18 7 2 4
+editor.CreateObjectsNearObjectsOnArea ING_15 EN_TREE_26 7 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_C10.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02h 20 4 5
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_STONE_02h_11 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_TREE_25_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_09 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_25 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_BAMBOO_01 30 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_D10.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_07 12 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_07_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_BUSH_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_STONE_02 10 3 5
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02h 10 3 5
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_06_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 12 24
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_BAMBOO_01 20 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_E10.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_BUSH_06 20 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_STONE_02 10 3 5
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_BUSH_07 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_STONE_02_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_28 EN_TREE_01 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_F10.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_07 10 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02_small 20 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02 10 3 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_03_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_24 EN_TREE_03 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_01 10 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_B11.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_TREE_09_s 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_BUSH_07 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_STONE_02 8 3 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_01_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_07_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02h 8 3 5
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_25 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_27 EN_TREE_24 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_BAMBOO_01 8 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_C11.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02h 15 3 5
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_TREE_09_s 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TREE_25_s 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_STONE_02_small 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_TREE_24_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_STONE_02 8 3 5
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_BUSH_06_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_BUSH_04 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_TREE_29 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_BAMBOO_01 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_TREE_07 8 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_D11.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_BUSH_06 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_BUSH_04 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_02 EN_STONE_02 8 3 5
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_BUSH_06_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_07_s 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_TREE_11 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_01 EN_BAMBOO_01 8 3 5
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_TREE_12 8 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_E11.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02 8 3 5
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_06 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_20 EN_STONE_02_small 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_04 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 8 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 8 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_F11.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_STONE_02 20 3 5
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_07 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_25 EN_TREE_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_19 EN_TREE_01 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_19 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_G11.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_STONE_02 14 3 5
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_TREE_01_s 15 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_BUSH_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_BUSH_06 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_28 EN_TREE_01 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_08 EN_TREE_04 10 2 4
+editor.SaveLevel
+
+
+editor.LoadLevel Map_B12.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 14 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_TREE_09_s  14 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_06 EN_STONE_02h 14 4 5
+editor.CreateObjectsNearObjectsOnArea ING_16 EN_BUSH_06_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_24_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_STONE_02h_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_29 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_C12.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_02 EN_BUSH_06 12 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_04 EN_TREE_09_s 12 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_STONE_02h 12 4 5
+editor.CreateObjectsNearObjectsOnArea ING_06 EN_BUSH_06_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_BUSH_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_03 EN_TREE_05_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_22 EN_TREE_24_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_18 EN_STONE_02h_small 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_26 EN_TREE_09 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_30 EN_TREE_29 10 2 4
+editor.SaveLevel
+
+editor.LoadLevel Map_D12.lnd
+editor.SetCreateRect 0 0 128 128
+editor.CreateObjectsNearObjectsOnArea mushroom_01 EN_BUSH_06 15 2 4
+editor.CreateObjectsNearObjectsOnArea mushroom_03 EN_STONE_02 15 3 5
+editor.CreateObjectsNearObjectsOnArea mushroom_05 EN_BUSH_07 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_23 EN_BUSH_06_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_07 EN_BUSH_04 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_10 EN_TREE_23_s 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_14 EN_TREE_19 10 2 4
+editor.CreateObjectsNearObjectsOnArea ING_13 EN_TREE_12 10 2 4
+editor.SaveLevel
+
+

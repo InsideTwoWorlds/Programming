@@ -1,0 +1,366 @@
+
+#ifndef COMMON_ENUMS_ECH
+#define COMMON_ENUMS_ECH
+
+//#include "..\\..\\Common\\Generic.ech"
+#define WEATHER_TYPE_ATTR "WT"
+consts
+{
+eColA = 1;
+eColB = 2;
+eColC = 3;
+eColD = 4;
+eColE = 5;
+eColF = 6;
+eColG = 7;
+eColH = 8;
+eColI = 9;
+    
+    eMapSoundTypeForest=1;
+    eMapSoundTypeMeadow=2;
+    eMapSoundTypeCave=3;
+
+    eMapTypeCommon=1;    
+    eMapTypeTown=2;
+    eMapTypeDesert=3;
+    eMapTypeSnow=4;
+    eMapTypeBarrow=5;
+    eMapTypeForest=6;
+    eMapTypeNearFog=7;
+    eMapTypeDenseFog=8;
+    eMapTypeVolcano=9;
+    eMapTypeSwamp=10;
+    eMapTypeTower=11;
+    eMapTypeOswaroth=12;
+    eMapTypeVillage=13;
+    eMapTypeStart=14;
+    //!!tmp
+    ePartyPlayer = 0;
+    
+    ePartyPlayer1 = 0;
+    ePartyPlayer2 = 1;
+    ePartyPlayer3 = 2;
+    ePartyPlayer4 = 3;
+    ePartyPlayer5 = 4;
+    ePartyPlayer6 = 5;
+    ePartyPlayer7 = 6;
+    ePartyPlayer8 = 7;
+    ePartyPlayer9 = 8;
+
+    ePartyPlayerEnemy1 = 9;
+    ePartyPlayerEnemy2 = 10;
+    ePartyPlayerEnemy3 = 11;
+    ePartyPlayerEnemy4 = 12;
+    ePartyPlayerEnemy5 = 13;
+    ePartyPlayerEnemy6 = 14;
+    ePartyPlayerEnemy7 = 15;
+    ePartyPlayerEnemy8 = 16;
+    ePartyPlayerEnemy9 = 17;
+
+    ePartyEnemies = 18;
+    ePartyAnimals = 18;
+    ePartyGreenskins = 19;
+    ePartyBandits = 20;
+    
+    ePartyUndead = 21;
+    ePartyTaintUndead = 22;
+    ePartyEvilWarriors = 23;
+    ePartyGhosts = 24;
+    
+    ePartyHumans = 25;  //general neutral NPC
+    ePartyCathalon = 26;     ePartyF7 = 26;
+    ePartyQudinaar = 27;     ePartyD8 = 27;
+    ePartyAshos = 28;        ePartyB10 = 28;
+    ePartyKomorin = 29;      ePartyE2 = 29;
+    ePartyKarga = 30;       ePartyF3 = 30;//dawne kilofy
+    ePartySkelden = 31;       ePartyE4 = 31;//dawne hammers clan
+    ePartyWindmill = 32;     ePartyD7 = 32;
+    ePartyCovenant = 33;     ePartyD2 = 33;
+    eParty4Stones = 34;      ePartyE6 = 34;
+    ePartyClovelly = 35;     ePartyC6 = 35;
+    ePartyOutpost = 36;      ePartyG1 = 36;
+    ePartyKehar = 37;        ePartyH8 = 37;
+    ePartySettlement = 38;   ePartyD4 = 38;
+    ePartyNecroVillage = 39; ePartyE11 = 39;
+    ePartyGorelin = 40;      ePartyD3 = 40;
+    ePartyRovan = 41;      ePartyD3_2 = 41;
+    ePartyTharbakin = 42;    ePartyE3 = 42;
+    ePartyLastVillage = 42;
+    
+    ePartyNeutralBandits = 43;
+    
+    eAxe = 0;
+    eMace = 1;
+    eSword = 2;
+    ePoleArm = 3;
+    
+    eLastMeeleWeapon = 3;// na razie nie uzywamy polearmsow
+    eBow = 4;
+    eClub = 5;
+    eClub1 = 5;
+    eClub2 = 6;
+    eClub3 = 7;
+    eClub4 = 8;
+    eClub5 = 9;
+    
+    eKnife = 10;
+    eBreaker = 11;
+    
+    eMageShoolAir = 0;
+    eMageShoolFire = 1;
+    eMageShoolWater = 2;
+    eMageShoolEarth = 3;
+    eMageShoolNecro = 4;
+    
+    
+    eShield=0;
+    eHelmet=1;
+    eArmour=2;
+    eGloves=3;
+    eTrousers=4;
+    eBoots=5;
+    eQuiver=6;
+    eRing=7;
+    eRobe=8;
+
+    eRange2 = 2;
+    
+    eFaceNorth =   0;
+    eFaceEast  =  64;
+    eFaceSouth = 128;
+    eFaceWest  = 192;
+    
+    eFaceNorthWest =   32;
+    eFaceNorthEast  =  224;
+    eFaceSouthWest = 160;
+    eFaceSouthEast  = 96;
+    
+    eFadeTime=60;
+    
+    
+    
+    eMission1 = 1;
+    eMission2 = 2;
+    eMission3 = 3;
+    eMission4 = 4;
+    eMission5 = 5;
+
+    eM1 = 1;
+    eM2 = 2;
+    eM3 = 3;
+    eM4 = 4;
+    eM5 = 5;
+    
+    eSkillCrush = 20; //eSkillWeaponThrow;
+    
+    // w³aczanie potionów w questach, przetrzymywane przez kampanie, uzywane w sklepach i nagrodach
+    eFirstPotion =1001;
+    ePotionHealing2 = 1001;
+    ePotionHealing3 = 1002;
+    ePotionSkillTime1 = 1003;
+    ePotionSkillTime2 = 1004;
+    ePotionSkillTime3 = 1005;
+    ePotionSkillTime4 = 1006;
+    ePotionSkillTime5 = 1007;
+    ePotionSkill1 = 1008;
+    ePotionSkill2 = 1009;
+    ePotionSkill3 = 1010;
+    ePotionSkill4 = 1011;
+    ePotionSkill5 = 1012;
+    ePotionPoison = 1013;
+    eLastPotion =1013;
+    eNoOfActivatedPotions=13;
+    
+    eTownScriptID    = 101;
+
+    // guiilds            
+    eNoGuild = 200;
+    eFirstGuild = 201;
+    eGuildMage = 201;
+    eGuildWarrior = 202;
+    eGuildMerchant = 203;
+    eGuildThief = 204;
+    eGuildNecro = 205;
+    eLastGuild = 206;
+    eGuildKarga = 207;
+    eGuildSkelden = 208;
+    
+                  
+    eTownUnknownType      = 0;
+    
+    eTownTypeCovenant     = 1;
+    eTownTypeKomorin      = 2;
+    eTownTypeExcavations  = 3;
+    eTownTypeTharbakin    = 4;
+    eTownTypeOutpost      = 5;
+    
+    eTownTypeGorelin      = 6;
+    eTownTypeKargaCamp    = 7;
+    
+    
+    eTownType4Stones      = 101;
+    eTownTypeWindbreak    = 102;
+    eTownTypeCathalon     = 103;
+    eTownTypeQudinaarSol  = 104;
+    eTownTypeQudinaar     = 105;
+    eTownTypeArmyCamp     = 106;
+    eTownTypeClovelly     = 107;
+    
+    eTownTypeAshos        = 201;
+    eTownTypeKehar        = 301;
+    eTownTypeVillageD4    = 401;
+    eTownTypeNecro        = 402;
+    eTownTypeGorGamar     = 8;
+    eTownTypeGromsCamp    = 9;
+    eTownOswaroth         = 10;
+
+    // enemy Class
+    eClassAnimal = 0;
+    eClassBandit = 1;
+    eClassDaemon = 2;   
+    eClassGoblin = 3;
+    eClassGolemFlesh = 4;    
+    eClassGolemWood = 5;
+    eClassGolemSteel = 6;
+    eClassGolemStone = 7;
+    eClassInsect = 8;
+    eClassLizardman = 9;
+    eClassMantis = 10;
+    eClassOrc = 11;
+    eClassOrc2 = 12;
+    eClassReptile = 13;
+    eClassYeti = 14;
+    eClassSpider = 15;
+    eClassUndead = 16;
+    eClassUndeadAnimal = 17;
+    eClassZombie = 18;    
+    eClassSkeleton = 19;
+    eClassMinion = 20;
+    eClassSeaGuy = 21;    
+    eClassInsectGuy = 22;   
+    eClassSnowOrc = 23; 
+    eClassJackal = 24; 
+    eClassDragon = 25; 
+    eClassWhiteDragon = 26; 
+    eClassStoneDragon = 27; 
+    eClassLavaDragon = 28; 
+    eClassSnowAnimal = 29;
+    eClassNecro = 30;
+    eClassGoblin2 = 31;
+    eClassHellmaster = 32;
+    eClassDeadKnight = 33;
+    eClassDwarf = 34;
+    eClassBroWarrior = 35;
+    eClassSoldier04 = 36;
+    eClassOgr = 37;
+    eClassCyclope = 38;
+    eClassHideous = 39;
+    eClassMummy = 40;
+    eClassEnt = 41;
+    
+    eClassAnimal2 = 42;
+    eClassReptile2 = 43;
+    eClassReptile3 = 44;
+    eClassReptile4 = 45;
+    eClassVyvern1 = 46;
+    eClassVyvern2 = 47;
+    eClassVyvern3 = 48;
+    eClassSkeleton2 = 49;
+    eClassSkeleton3 = 50;
+    eClassSkeleton4 = 51;
+    eClassZombie2 = 52;
+    eClassZombie3 = 53;
+    eClassDaemon2 = 54;
+    eClassDaemon3 = 55;
+    eClassVyvern4 = 56;
+    eClassWolf = 57;
+    eClassDragonfly = 58;
+    eClassDeadmeat = 59;
+    eClassKhan = 60;
+    eClassSkull = 61;
+    eClassGhostDwarf = 62;
+    eLastEnemyClass = 63;         
+
+    eMageAir = 5;
+    eMageFire = 6;
+    eMageWater = 7;
+    eMageEarth = 8;
+    eMageNecro = 9;
+
+// achievements
+    eAchievementLearn5Skills = 0,
+    eAchievementLearn10Skills,
+    eAchievementLearn20Skills,
+    eAchievementLearnAllSkills,
+    eAchievementReachLevel10ForASkill,
+    eAchievementReachLevel5,
+    eAchievementReachLevel10,
+    eAchievementReachLevel20,
+    eAchievementReachLevel35,
+    eAchievementReachLevel50,
+    eAchievementDiscover10Locations,
+    eAchievementDiscover20Locations,
+    eAchievementDiscover50Locations,
+    eAchievementVisitAllBlackTowers,
+    eAchievementFindAllGraveyards,
+    eAchievementVisit10DungeonsOrCaves,
+    eAchievementVisit20DungeonsOrCaves,
+    eAchievementVisitAllDungeonsOrCaves,
+    eAchievementFindAllLocationsInTheGame,
+    eAchievementRideAHorse,
+    eAchievementMakeASuccessfulTeleportation,
+    eAchievementUseAlchemyToCreateAPotion,
+    eAchievementUseAlchemyToCreateAPermanentPotion,
+    eAchievementUseAlchemyToCreateABomb,
+    eAchievementUseAlchemyToCreateAWeaponEnchancer,
+    eAchievementUseMetalurgyToCreateClass2Object,
+    eAchievementUseMetalurgyToCreateClass10Object,
+    eAchievementOpenMasterLock,
+    eAchievementKillADragon,
+    eAchievementKillAStoneGolem,
+    eAchievementUseABoostedSpell,
+    eAchievementCastChamber5Spell,
+    eAchievementSummonAMonster,
+    eAchievementFindARelic,
+    eAchievementFindWaterElement,
+    eAchievementFindAirElement,
+    eAchievementFindFireElement,
+    eAchievementFindEarthElement,
+    eAchievementDeliverAllElementsToQudinaar,
+    eAchievementDestroyThePentagram,
+    eAchievementKillGandohar,
+    eAchievementsCnt,
+        
+    eGameSingleplayer = 0,
+    eGameMultiplayerRPG,
+    eGameMultiplayerPvP,
+    
+    eSingleplayerMap = 0,
+    eMultiplayerMapTown = 1,
+    eMultiplayerMapMission = 2,
+    
+    eGameRPG = 0,
+    eGameRPGArena,
+    eGamePvP,
+
+}
+function int GetNextMonstersLimit(int i)
+{
+    if(i<10) return 10; 
+    if(i<30) return 30;
+    if(i<100)return 100;
+    if(i<250)return 250;
+    return 500 +((i-250)/250)*250;
+}
+function int GetNextSkillPointLimit(int i)
+{
+    if(i<10) return 10; 
+    if(i<30) return 30;
+    if(i<60) return 60;
+    if(i<100)return 100;
+    return 150 +((i-50)/50)*50;
+}
+
+#endif
+
+

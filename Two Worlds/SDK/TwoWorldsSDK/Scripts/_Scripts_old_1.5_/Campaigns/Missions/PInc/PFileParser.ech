@@ -1,0 +1,99 @@
+#ifndef _FILE_PARSER_
+#define _FILE_PARSER_
+
+int nLinesNum;
+string astrLines[];
+string astrArgs[];
+
+//======================================        
+
+function void GetArgs(string strLine) {
+
+    string strArg;
+    int i, j;
+    int nSize;
+    string str;
+    str = strLine;
+
+    i = 0;
+    j = 0;
+    nSize = str.GetLength();
+    if(nSize<1)return;
+    astrArgs.RemoveAll();
+
+    while (i < nSize) {
+
+        while ((GetChar(str,i) == ' ') && (i < nSize)) i++;
+        
+        strArg = "";
+        while ((GetChar(str,i) != ' ') && (i < nSize)) {
+            strArg.Append(GetChar(str,i));
+            i++;
+        }
+        astrArgs.Add(strArg);
+#ifdef PARSER_DEBUG
+  //      TRACE("Parsed %d arguments: %s\n",j,strArg);
+#endif
+        j++;
+        i++;
+        
+    }
+
+}
+
+function int IntArg(int nArg) {
+
+    int nValue;
+    if (nArg >= astrArgs.GetSize()) return 0;
+    if (astrArgs[nArg].EqualNoCase("(null)")) return 0;
+    if (astrArgs[nArg].EqualNoCase("True")) return 1;
+    if (astrArgs[nArg].EqualNoCase("False")) return 0;
+    sscanf(astrArgs[nArg],"%d",nValue);
+    return nValue;
+
+}
+
+function string StrArg(int nArg) {
+
+    if (nArg >= astrArgs.GetSize()) return "";
+    if (astrArgs[nArg].EqualNoCase("(null)")) return "";
+    return astrArgs[nArg];
+    
+}
+
+//======================================        
+
+function int ParseMissionNumber(string strMission) {
+
+    int nCol, nRow, nLayer, nIndex;
+    string strM;
+       
+    strM = strMission;
+    if (strM.EqualNoCase("") || strM.GetLength() < 2) {
+//        __ASSERT_FALSE();
+        return eNoMission;
+    }    
+    nCol = strM.GetAt(0);
+    strM.Mid(1);
+    
+    if (sscanf(strM, "%d_%d", nRow, nLayer) == 2)
+    {
+    }
+    else if (sscanf(strM, "%d", nRow) == 1)
+    {
+        nLayer=0;
+    }
+#ifndef QUESTS_MULTI    
+    nIndex = Level2MissionNum(nCol,nRow,nLayer);
+    if (nIndex == 0) nIndex = eNoMission;
+#else
+    nIndex = GetMultiplayerMissionAndPositionOffsets(nCol,nRow,nLayer);
+#endif    
+    #ifdef PARSER_DEBUG
+    TRACE("Mission parsed: %s -> %d                              \n",strMission,nIndex);    
+    #endif
+    return nIndex;
+
+}
+
+#endif

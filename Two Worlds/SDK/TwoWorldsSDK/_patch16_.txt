@@ -1,0 +1,49 @@
+Patch 1.6 Notes [2007-10-30]
+
+Patch 1.6 contains new changed scripts and parameters so if you have made some changes in it you should
+synchronize your scripts and parameters with changed files. 
+If your mod contains any files updated by Update16.wd then you should release newer version of your mod,
+otherwise your files will be overwritten by newer files from Update16.wd.
+If you did changes only in graphics (all retexturing mods), your mod will still work in patch 1.6.
+
+
+Scripts
+In patch 1.6 more then half of all EarthC script files were changed less or more. Probably you didn't 
+made any major changes in scripts so best way to keep modded scripts synchronized with 1.6 is to
+copy your changes to new files and recompile it.
+
+
+Parameters
+If you did only small changes in parameters, you can copy your changes to new version of TwoWorlds.xls.
+If you have more changes, than you can rather copy changed cells from new TwoWorlds.xls to your parameters file.
+
+Here is the list of changed cells in new TwoWorlds.xls (all are marked by dark background):
+
+Defines: new row 501
+SoundPack: F61-G61
+SoundPacksSet: new rows 130-133
+BasicUnits: V34-V47
+Units: AC65-AC67, T98
+Heros: in rows 68 73 81 86 96 101 110 115 some columns between CI-EC has been changed but weren't marked
+ShopUnits: AD10
+BasicUnitAnimations: S15
+UnitAnimations: CG7-CJ36
+Missiles: AN51, AG52, AG54, AG55
+MagicCard: AC79
+Dynamics: new rows 141-142, 295-298, H188
+PotionArtefacts: AQ91, AV91
+Passives: new rows 498-504
+Containers: rows under column AI
+Markers: new rows 163-167
+CommonGameParams: AR5-AU5, AZ5-BA5, L50, L51
+
+
+Quests
+Few fixes in campaign quests has been make by WhizzEdit. If you didn't progress too much with your quests work,
+you can do it again in TwoWorldsQuests.idx (Sorry there is no other way to synchronize it)
+
+
+Network
+Scripts for network were changed and now you don't need to modify Network\Levels.ech to add new network level.
+Your lnd name should start with Net_. For every lnd file you must create *.txt file describing type
+of your level. Take a look at Levels\*.txt files from Update16.wd to find out how to do that.

@@ -1,0 +1,401 @@
+#ifndef NETWORK_LEVELS_ECH
+#define NETWORK_LEVELS_ECH
+
+
+//////////// Towns ////////////
+
+function void AddTown(string strTownID, int nPosX, int nPosY, int nButtonTemplNum, int bAvailableFromBegin, int bTypeRPG,
+                      string arrChannels[], string arrScripts[], string arrScriptParams[], stringW arrTooltips[], int arrButtonTemplNum[], int arrMapPosition[], int arrAvailable[])
+{
+    string strTranslate;
+    stringW strTooltip, strN, strText;
+    int bAvailable;
+
+    arrChannels.Add(strTownID);
+    if (bTypeRPG)
+    {
+        arrScripts.Add("Scripts\\Network\\TownCampaign.eco");
+    }
+    else
+    {
+        arrScripts.Add("Scripts\\Network\\TownCampaign.eco");
+    }
+    arrScriptParams.Add(strTownID);
+    arrMapPosition.Add(nPosX + (nPosY << 16));
+    arrButtonTemplNum.Add(nButtonTemplNum);
+    strTranslate = "translate";
+    strTranslate.Append(strTownID);
+    strTooltip.Translate(strTranslate);
+    if (bAvailableFromBegin)
+    {
+        bAvailable = true;
+    }
+    else if (!GetFillChannelLevelsListCommonPlayerAttribute(strTownID, bAvailable) || !bAvailable)
+    {
+        bAvailable = false;
+        strN.Copy("\n");
+        strTooltip.Append(strN);
+        strText.Translate("translateNetTownUnavailable");
+        strTooltip.Append(strText);
+    }
+    if (bTypeRPG && !(GetFillChannelLevelsListSelectedHeroFlags() & eHeroTypeRPG))
+    {
+        bAvailable = false;
+        strN.Copy("\n");
+        strTooltip.Append(strN);
+        strText.Translate("translateNetTownUnavailableRPGOnly");
+        strTooltip.Append(strText);
+    }
+    if (!bTypeRPG && !(GetFillChannelLevelsListSelectedHeroFlags() & eHeroTypePVP))
+    {
+        bAvailable = false;
+        strN.Copy("\n");
+        strTooltip.Append(strN);
+        strText.Translate("translateNetTownUnavailablePVPOnly");
+        strTooltip.Append(strText);
+    }
+    arrAvailable.Add(bAvailable);
+    arrTooltips.Add(strTooltip);
+}
+
+function void FillNetworkChannelLevelsList(string& strMapTexture, string arrChannels[], string arrScripts[], string arrScriptParams[], stringW arrTooltips[], int arrButtonTemplNum[], int arrMapPosition[], int arrAvailable[])
+{
+    strMapTexture = "Interface\\NetworkTowns.dds";
+
+    //pozycja w procentach rozmiaru bitmapki swiata
+    AddTown("Net_T_01", 51, 19, 65, true,  true,  arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+    AddTown("Net_T_02", 61, 54, 65, false, true,  arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+    AddTown("Net_T_03", 40, 64, 65, false, true,  arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+    AddTown("Net_T_04", 16, 77, 66, true,  false, arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+}
+
+
+//////////// Missions ////////////
+
+function void AddMission(string strMissionID, int bAvailableFromBegin, int bTypeRPG, int bRPGArena,
+                    string arrScripts[], string arrScriptParams[], string arrNames[], int arrPointsGame[], int arrGuildsGame[], int arrAllowDynConn[], int arrMinPlayersCnt[], int arrAvailable[])
+{
+    string strTranslate;
+    int bAvailable;
+    
+    arrScripts.Add("Scripts\\Network\\MissionCampaign.eco");
+    arrScriptParams.Add(strMissionID);
+    strTranslate = "translate";
+    strTranslate.Append(strMissionID);
+    arrNames.Add(strTranslate);
+    if (!bTypeRPG)
+    {
+        arrPointsGame.Add(true);
+    }
+    else
+    {
+        arrPointsGame.Add(false);
+    }
+    if (!bTypeRPG)
+    {
+        arrGuildsGame.Add(true);
+    }
+    else
+    {
+        arrGuildsGame.Add(false);
+    }
+    if (bTypeRPG && !bRPGArena)
+    {
+        arrAllowDynConn.Add(true);
+        arrMinPlayersCnt.Add(1);
+    }
+    else
+    {
+        arrAllowDynConn.Add(false);
+        arrMinPlayersCnt.Add(2);
+    }
+    if (bAvailableFromBegin)
+    {
+        bAvailable = true;
+    }
+    else if (!GetPlayerHeroUnit(0).GetPlayersCommonAttribute(strMissionID, bAvailable) || !bAvailable)
+    {
+        bAvailable = false;
+    }
+    if (bTypeRPG && !GetPlayerHeroUnit(0).IsHeroTypeRPG())
+    {
+        bAvailable = false;
+    }
+    if (!bTypeRPG && !GetPlayerHeroUnit(0).IsHeroTypePVP())
+    {
+        bAvailable = false;
+    }
+    arrAvailable.Add(bAvailable);
+}
+
+function void FillNetworkMissionsList(string strTown, string arrScripts[], string arrScriptParams[], string arrNames[], int arrPointsGame[], int arrGuildsGame[], int arrAllowDynConn[], int arrMinPlayersCnt[], int arrAvailable[])
+{
+    string strTownID;
+    
+    strTownID = strTown;
+
+    if (strTownID.EqualNoCase("Net_T_01"))
+    {
+        AddMission("Net_M_01", true,  true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_02", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_03", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_04", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_05", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_06", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_A_01", true,  true,  true,  arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+    }
+    else if (strTownID.EqualNoCase("Net_T_02"))
+    {
+        AddMission("Net_M_07", true,  true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_08", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_09", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_10", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_A_02", true,  true,  true,  arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_A_03", false, true,  true,  arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_A_04", false, true,  true,  arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+    }
+    else if (strTownID.EqualNoCase("Net_T_03"))
+    {
+        AddMission("Net_M_11", true,  true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_12", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_13", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_14", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_M_15", false, true,  false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_A_05", true,  true,  true,  arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_A_06", false, true,  true,  arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+    }
+    else if (strTownID.EqualNoCase("Net_T_04"))
+    {
+        AddMission("Net_P_01", true,  false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_P_02", false, false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_P_03", false, false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_P_04", false, false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_P_05", false, false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddMission("Net_P_06", false, false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+    }
+}
+
+function void AddXMission(string strMissionID, int bAvailableFromBegin, int bTypeRPG,
+                          string arrScripts[], string arrScriptParams[], string arrNames[], int arrPointsGame[], int arrGuildsGame[], int arrAllowDynConn[], int arrMinPlayersCnt[], int arrAvailable[])
+{
+    string strTranslate;
+    int bAvailable;
+    
+    arrScripts.Add("Scripts\\Network\\MissionCampaign.eco"); 
+    arrScriptParams.Add(strMissionID);
+    strTranslate = "translate";
+    strTranslate.Append(strMissionID);
+    arrNames.Add(strTranslate);
+    if (!bTypeRPG)
+    {
+        arrPointsGame.Add(true);
+    }
+    else
+    {
+        arrPointsGame.Add(false);
+    }
+    if (!bTypeRPG)
+    {
+        arrGuildsGame.Add(true);
+    }
+    else
+    {
+        arrGuildsGame.Add(false);
+    }
+    if (bTypeRPG)
+    {
+        arrAllowDynConn.Add(true);
+        arrMinPlayersCnt.Add(1);
+    }
+    else
+    {
+        arrAllowDynConn.Add(false);
+        arrMinPlayersCnt.Add(2);
+    }
+    if (bAvailableFromBegin)
+    {
+        bAvailable = true;
+    }
+    else if (!GetFillChannelLevelsListCommonPlayerAttribute(strMissionID, bAvailable) || !bAvailable)
+    {
+        bAvailable = false;
+    }
+    arrAvailable.Add(bAvailable);
+}
+
+function void FillNetworkXMissionsList(int bRPGMode, string arrScripts[], string arrScriptParams[], string arrNames[], int arrPointsGame[], int arrGuildsGame[], int arrAllowDynConn[], int arrMinPlayersCnt[], int arrAvailable[])
+{
+    if (bRPGMode)
+    {
+        AddXMission("Net_M_01",  true,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_02", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_03", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_04", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_05", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_06", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_07", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_08", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_09", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_10", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_11", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_12", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_13", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_14", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_M_15", false,  true, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+    }
+    else
+    {
+        AddXMission("Net_X_01",  true, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_02", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_03", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_04", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_11",  true, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_12", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_13", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_14", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_21",  true, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_22", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_23", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        AddXMission("Net_X_24", false, false, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+    }
+}
+
+function void AddMissionMode(string strModeParam, int nXDefineNum, string arrModeParams[], string arrModeNames[], int arrModeXDefineNum[])
+{
+    string strTranslate;
+
+    arrModeParams.Add(strModeParam);
+    strTranslate = "translateNetMode";
+    strTranslate.Append(strModeParam);
+    arrModeNames.Add(strTranslate);
+    arrModeXDefineNum.Add(nXDefineNum);
+}
+
+function void FillNetworkMissionModes(string strScriptParam, string arrModeParams[], string arrModeNames[], int arrModeXDefineNum[])
+{
+    string strParam;
+    
+    strParam = strScriptParam;
+    if (strParam.EqualNoCase("Net_P_01"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamRustling",    3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_P_02"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamRustling",    3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_P_03"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+//        AddMissionMode("TeamRustling",  3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_P_04"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+//        AddMissionMode("TeamRustling",  3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_P_05"))
+    {
+        AddMissionMode("HorseRacing",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_P_06"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+//        AddMissionMode("TeamRustling",  3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_A_01"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_A_02"))
+    {
+        AddMissionMode("HorseRacing",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_A_03"))
+    {
+        AddMissionMode("HorseRacing",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_A_04"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamRustling",    3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_A_05"))
+    {
+        AddMissionMode("HorseRacing",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_A_06"))
+    {
+        AddMissionMode("TeamAssault",     0, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  1, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", 2, arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamRustling",    3, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+}
+
+#ifdef _XBOX
+#include "../../Achievements.spa.h"
+#endif
+
+function void FillNetworkXMissionModes(string strScriptParam, string arrModeParams[], string arrModeNames[], int arrModeXDefineNum[])
+{
+    string strParam;
+    
+
+#ifdef _XBOX
+#define XBOXDEF(xboxdef, pcdef) xboxdef
+#else
+#define XBOXDEF(xboxdef, pcdef) pcdef
+#endif
+    
+    strParam = strScriptParam;
+    if (strParam.EqualNoCase("Net_X_01") || 
+        strParam.EqualNoCase("Net_X_02") || 
+        strParam.EqualNoCase("Net_X_03") ||
+        strParam.EqualNoCase("Net_X_04"))
+    {
+        AddMissionMode("TeamDeathmatch",  XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_DEATHMATCH, 0), arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_X_11"))
+    {
+        AddMissionMode("TeamAssault",     XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_ASSAULT, 0),    arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_DEATHMATCH, 1), arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_MHUNT, 2),      arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_X_12") ||
+             strParam.EqualNoCase("Net_X_13") ||
+             strParam.EqualNoCase("Net_X_14"))
+    {
+        AddMissionMode("TeamAssault",     XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_ASSAULT, 0),    arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamDeathmatch",  XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_DEATHMATCH, 1), arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamMonsterHunt", XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_MHUNT, 2),      arrModeParams, arrModeNames, arrModeXDefineNum);
+        AddMissionMode("TeamRustling",    XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_HSTEALING, 3),  arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    else if (strParam.EqualNoCase("Net_X_21") ||
+             strParam.EqualNoCase("Net_X_22") ||
+             strParam.EqualNoCase("Net_X_23") ||
+             strParam.EqualNoCase("Net_X_24"))
+    {
+        AddMissionMode("HorseRacing",     XBOXDEF(CONTEXT_GAME_TWMODE_GAME_MODE_HRACING, 0),    arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+    
+#undef XBOXDEF
+}
+
+#endif //NETWORK_LEVELS_ECH

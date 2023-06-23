@@ -1,0 +1,3424 @@
+#ifndef RPGCOMPUTE_UNIT_ECH
+#define RPGCOMPUTE_UNIT_ECH
+
+
+
+#include "Weapon.ech"
+#include "..\common\lock.ech"
+#include "..\common\stealing.ech"
+#include "..\common\achievements.ech"
+
+consts
+{
+    eSkillOverdraw = eSkillCloseDistanceShoot;
+    
+    eTrapAddDamagePerSkillLevel = 30;
+    eTrapAddTimePerSkillLevel = 60;
+}
+
+// prototypy
+function int CalcSkillDamagePercent(unit pUnit, int nSkill);
+function int CalcSkillDamageIncreasePercent(unit pUnit, int nSkill);
+function int CalcSkillAttackPercent(unit pUnit, int nSkill);
+function int CalcSkillAttackIncreasePercent(unit pUnit, int nSkill);
+function int CalcReducedRangePercent_SkillSneak(unit pUnit);
+function int CalcReducedAnglePercent_SkillSneak(unit pUnit);
+function int CalcBlindTime_SkillDirtyTrick(unit pUnit);
+function int CalcStunTime_SkillStun(unit pUnit);
+function int CalcBurnTime_SkillBurn(unit pUnit);
+function int CalcBlindTime_SkillArrowOfDust(unit pUnit);
+function int CalcSlowDownTime_SkillShieldTrick(unit pUnit);
+function int CalcProtection_SkillStoneSkin(unit pUnit);
+function int CalcNumberOfArrows_SkillMultiArrows(unit pUnit);
+function int CalcAccurancy_SkillArchery(unit pUnit);
+function int CalcHitChance_SkillPrecizeAiming(unit pUnit);
+function int CalcMinItems_SkillStealing(unit pUnit);
+function int CalcMaxItems_SkillStealing(unit pUnit);
+function int CalcCriticalHitChance_SkillDefensiveFight(unit pUnit); // wartosc przed przecinkiem
+function int CalcCriticalHitChanceFraction_SkillDefensiveFight(unit pUnit); // wartosc po przecinku
+
+function int CalcExperiencePointsForLevel(int nLevel, int nPrevLevelPoints)
+{
+    return 100+nPrevLevelPoints + (nLevel*(nLevel+5));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int GetExperiencePointsForLevel(int nLevel)
+{
+    if (nLevel < 0)
+    {
+        __ASSERT_FALSE();
+        return 0;
+    }
+    if(nLevel<2)return 0;
+    else if(nLevel==2) return 4;
+    else if(nLevel==3) return 20;
+    else if(nLevel==4) return 45;
+    else if(nLevel==5) return 90;
+    else if(nLevel==6) return 150;
+    return CalcExperiencePointsForLevel(nLevel, GetExperiencePointsForLevel(nLevel - 1));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void FillAvailableSkills(UnitParams unPar, int arrSkillsNumbers[])
+{
+    int nIndex, nAvailablePassiveSkillsMask, nAvailableActiveSkillsMask;
+    
+    arrSkillsNumbers.RemoveAll();
+    nAvailablePassiveSkillsMask = unPar.GetAvailablePassiveSkillsMask();
+    nAvailableActiveSkillsMask = unPar.GetAvailableActiveSkillsMask();
+    for (nIndex = eFirstNormalSkill; nIndex < eSkillsCnt; nIndex++)
+    {
+        if ((nIndex >= eFirstPassiveSkill) && (nIndex <= eLastPassiveSkill))
+        {
+            if (nAvailablePassiveSkillsMask & (1 << (nIndex - eFirstPassiveSkill)))
+            {
+                arrSkillsNumbers.Add(nIndex);
+            }
+        }
+        else if ((nIndex >= eFirstActiveSkill) && (nIndex <= eLastActiveSkill))
+        {
+            if (nAvailableActiveSkillsMask & (1 << (nIndex - eFirstActiveSkill)))
+            {
+                arrSkillsNumbers.Add(nIndex);
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void FillAvailableSkills(unit pUnit, int arrSkillsNumbers[])
+{
+    FillAvailableSkills(pUnit.GetUnitParams(), arrSkillsNumbers);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//rozdzielenie punktow na parametry i skille dla NPC
+function void DistributeNPCPoints(unit pUnit)
+{
+    UnitValues unValues;
+    UnitParams unPar;
+    int nSkillPoints, nNum, nLevel;
+    int arrSkillsNumbers[];
+    int arrAvailableParams[];
+
+    unValues = pUnit.GetUnitValues();
+    nLevel = unValues.GetLevel();
+
+
+
+    unValues.SetBasicPoint(ePointsVitality, MAX(9,6*nLevel));
+    unValues.SetBasicPoint(ePointsDexterity,5+(3*nLevel));
+    unValues.SetBasicPoint(ePointsStrength, 5+(3*nLevel));
+    unValues.SetBasicPoint(ePointsMagic, 3*nLevel);
+    
+    //po wywolaniu funkcji trzeba zupdate'owac wartosci
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetStrength(unit pUnit)
+{
+  return pUnit.GetUnitValues().GetPoint(ePointsStrength);
+}//----------------------------------------------------------------------------------------------------|
+function int GetStrength(UnitValues unVal)
+{
+  return unVal.GetPoint(ePointsStrength);
+}//----------------------------------------------------------------------------------------------------|
+function int GetDexterity(unit pUnit)
+{
+  return pUnit.GetUnitValues().GetPoint(ePointsDexterity);
+}//----------------------------------------------------------------------------------------------------|
+function int GetDexterity(UnitValues unVal)
+{
+  return unVal.GetPoint(ePointsDexterity);
+}//----------------------------------------------------------------------------------------------------|
+function int GetMagic(unit pUnit)
+{
+  return pUnit.GetUnitValues().GetPoint(ePointsMagic);
+}//----------------------------------------------------------------------------------------------------|
+function int GetMagic(UnitValues unVal)
+{
+  return unVal.GetPoint(ePointsMagic);
+}//----------------------------------------------------------------------------------------------------|
+
+
+function void UpdateValues(unit pUnit, UnitParams unPar, UnitValues unVal)
+{
+    MagicClubParams mcPar;
+    EquipmentValues eqVal;
+    int nIndex, nIndex2, nEquipmentCnt, nPotionCnt, nUnitLevel;
+    int nSum, nStrength, nStrengthUpPercent;
+    int arrParams[eParamsCnt];
+    int bMaxHP, bMaxMana;
+    int nTmp;
+    
+    if (pUnit != null)
+    {
+        nEquipmentCnt = pUnit.GetEquipmentCount();
+        nPotionCnt = pUnit.GetPotionsCount();
+        mcPar = pUnit.GetMagicClubParams();
+    }
+    nUnitLevel = unVal.GetLevel();
+
+    if (unVal.GetCurrHP() == unVal.GetParam(eParamHP))
+    {
+        bMaxHP = true;
+    }
+    if (unVal.GetCurrMana() == unVal.GetParam(eParamMana))
+    {
+        bMaxMana = true;
+    }
+
+    //sum param points
+    for (nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        nSum = unVal.GetBasicPoint(nIndex);
+        if (pUnit != null)
+        {
+            for (nIndex2 = 0; nIndex2 < nEquipmentCnt; nIndex2++)
+            {
+                eqVal = pUnit.GetEquipmentValuesOnIndex(nIndex2);
+                if (eqVal != null)
+                {
+                    nSum += eqVal.GetAddPoint(nIndex);
+                }
+            }
+            for (nIndex2 = 0; nIndex2 < nPotionCnt; nIndex2++)
+            {
+                nSum += pUnit.GetPotionValues(nIndex2).GetAddPoint(nIndex);
+            }
+        }
+        unVal.SetPoint(nIndex, MAX(nSum, 0));
+    }
+    nStrength = unVal.GetPoint(ePointsStrength);
+    //pomnozenie strength przez potiony od czarow
+    if (pUnit != null)
+    {
+        for (nIndex2 = 0; nIndex2 < nPotionCnt; nIndex2++)
+        {
+            nStrengthUpPercent = pUnit.GetPotionValues(nIndex2).GetStrengthUpPercent();
+            if (nStrengthUpPercent != 0)
+            {
+                unVal.SetPoint(ePointsStrength, unVal.GetPoint(ePointsStrength)*(100 + nStrengthUpPercent)/100);
+            }
+        }
+    }
+    
+    //calculate param values from points
+    
+    if(pUnit.IsHeroUnit() && nUnitLevel>30) nUnitLevel=25;
+    
+    arrParams[eParamHP]      = unPar.GetInitParam(eParamHP)*(10+ (2*unVal.GetPoint(ePointsVitality)*(8+nUnitLevel)))/100;//
+    arrParams[eParamDamage]  = unPar.GetInitParam(eParamDamage) * (unVal.GetPoint(ePointsStrength)  *  (2+nUnitLevel/5)) / 100;
+	arrParams[eParamMana]    = unPar.GetInitParam(eParamMana) * (50+unVal.GetPoint(ePointsMagic)    * (8+nUnitLevel)) / 100;
+    
+	arrParams[eParamStamina] = 50;//stamina na razie nieuzywana
+	arrParams[eParamDefence] = unPar.GetInitParam(eParamDefence)*(10+ unVal.GetPoint(ePointsDexterity) * 10) / 100;
+	arrParams[eParamAttack]  = unPar.GetInitParam(eParamAttack) *(10+ unVal.GetPoint(ePointsDexterity) * 10) / 100;
+	
+    //sum param values
+    for (nIndex = 0; nIndex < eParamsCnt; nIndex++)
+    {
+        nSum = unVal.GetBasicParam(nIndex) + arrParams[nIndex];
+        if (pUnit != null)
+        {
+            for (nIndex2 = 0; nIndex2 < nEquipmentCnt; nIndex2++)// zwiekszenie parametru od ekwipunku
+            {
+                eqVal = pUnit.GetEquipmentValuesOnIndex(nIndex2);
+                if (eqVal != null)
+                {
+                    nSum += eqVal.GetAddParam(nIndex);
+                }
+            }
+            for (nIndex2 = 0; nIndex2 < nPotionCnt; nIndex2++)// zwiekszenie parametru od potionów
+            {
+                nSum += pUnit.GetPotionValues(nIndex2).GetAddParam(nIndex);
+            }
+        }
+        if (nIndex == eParamHP)
+        {
+            unVal.SetParam(nIndex, MAX(nSum, 1));
+        }
+        else
+        {
+            unVal.SetParam(nIndex, MAX(nSum, 0));
+        }
+    }
+    
+    //sum protect
+    for (nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        nSum = unPar.GetInitProtect(nIndex) + unVal.GetBasicProtect(nIndex);
+        if (pUnit != null)
+        {
+            for (nIndex2 = 0; nIndex2 < nEquipmentCnt; nIndex2++)
+            {
+                eqVal = pUnit.GetEquipmentValuesOnIndex(nIndex2);
+                if (eqVal != null)
+                {
+                    nSum += eqVal.GetAddProtect(nIndex);
+                }
+            }
+            for (nIndex2 = 0; nIndex2 < nPotionCnt; nIndex2++)
+            {
+                nSum += pUnit.GetPotionValues(nIndex2).GetAddProtect(nIndex);
+            }
+        }
+        unVal.SetProtect(nIndex, MAX(nSum, 0));
+    }
+    
+    //sum skill
+    for (nIndex = 0; nIndex < eSkillsCnt; nIndex++)
+    {
+        nSum = unVal.GetBasicSkill(nIndex);
+        if (nSum > 0)
+        {
+            if (pUnit != null)
+            {
+                for (nIndex2 = 0; nIndex2 < nEquipmentCnt; nIndex2++)
+                {
+                    eqVal = pUnit.GetEquipmentValuesOnIndex(nIndex2);
+                    if (eqVal != null)
+                    {
+                        nSum += eqVal.GetAddSkill(nIndex);
+                    }
+                }
+                for (nIndex2 = 0; nIndex2 < nPotionCnt; nIndex2++)
+                {
+                    nSum += pUnit.GetPotionValues(nIndex2).GetAddSkill(nIndex);
+                }
+            }
+            if ((mcPar != null) && (nIndex >= eFirstMagicSkill) && (nIndex <= eLastMagicSkill))
+            {
+                nSum += mcPar.GetAddMagicSchoolSkill(nIndex - eFirstMagicSkill);
+            }
+        }
+        if ((nIndex >= eFirstMagicSkill) && (nIndex <= eLastMagicSkill))
+            unVal.SetSkill(nIndex, MIN(15,MAX(nSum, 0)));
+        else
+            unVal.SetSkill(nIndex, MIN(10,MAX(nSum, 0)));
+    }
+    
+    //MaxInventoryWeight
+    unVal.SetMaxInventoryWeight(MIN(20 + nStrength*3,500));//!!
+
+    unVal.SetStrikeDelayTicks(unPar.GetStrikeDelayTicks());
+    if (unVal.GetCurrStrikeDelay() > unVal.GetStrikeDelayTicks())
+    {
+        unVal.SetCurrStrikeDelay(unVal.GetStrikeDelayTicks());
+    }
+    
+    unVal.SetSkillChanceMaxValue(100);
+    unVal.SetSkillChanceUnloadValue(1);
+    unVal.SetSkillChanceUnloadTicks(20);//co 20 ticki zmniejsza o 1
+    
+    if ((unVal.GetCurrHP() > unVal.GetParam(eParamHP)) || bMaxHP)
+    {
+        unVal.SetCurrHP(unVal.GetParam(eParamHP));
+    }
+    if ((unVal.GetCurrMana() > unVal.GetParam(eParamMana)) || bMaxMana)
+    {
+        unVal.SetCurrMana(unVal.GetParam(eParamMana));
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//pUnit moze byc null dla herosa
+function void InitUnit(unit pUnit, UnitParams unPar, UnitValues unVal, int nLevel)
+{
+    unVal.SetLevel(nLevel);
+    unVal.SetExperiencePoints(GetExperiencePointsForLevel(nLevel));
+    
+	if ((pUnit != null) && !pUnit.IsHeroUnit())
+    {
+        if(nLevel==1)
+            unVal.SetParamPoints(2);
+        else 
+            unVal.SetParamPoints(0 + nLevel*(eParamPointsPerLevel+2));
+	    unVal.SetSkillPoints(0);
+        DistributeNPCPoints(pUnit);
+    }
+    UpdateValues(pUnit, unPar, unVal);//nie wywolujemy pUnit.UpdateChangedUnitValues()
+    unVal.SetCurrHP(unVal.GetParam(eParamHP));
+    unVal.SetCurrMana(unVal.GetParam(eParamMana));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void AddPermanentPotion(unit pUnit, PotionArtefactParams ptPar)
+{
+    int nIndex;
+    UnitValues unVal;
+    
+    ASSERT(pUnit != null);
+    unVal = pUnit.GetUnitValues();
+
+    //Points
+    for (nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        unVal.SetBasicPoint(nIndex, MAX(unVal.GetBasicPoint(nIndex) + ptPar.GetAddPoint(nIndex), 0));
+    }
+    //params
+    for (nIndex = 0; nIndex < eParamsCnt; nIndex++)
+    {
+        unVal.SetBasicParam(nIndex, MAX(unVal.GetBasicParam(nIndex) + ptPar.GetAddParam(nIndex), 0));
+    }
+    //protects
+    for (nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        unVal.SetBasicProtect(nIndex, MAX(unVal.GetBasicProtect(nIndex) + ptPar.GetAddProtect(nIndex), 0));
+    }
+    //skills
+    for (nIndex = 0; nIndex < eSkillsCnt; nIndex++)
+    {
+        unVal.SetBasicSkill(nIndex, MAX(unVal.GetBasicSkill(nIndex) + ptPar.GetAddSkill(nIndex), 0));
+    }
+    
+    pUnit.UpdateChangedUnitValues();
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void UpdateChangedUnitValues(unit pUnit)
+{
+    UpdateValues(pUnit, pUnit.GetUnitParams(), pUnit.GetUnitValues());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetSkillArcheryAttackValue(unit pUnit)
+{
+    return pUnit.GetUnitValues().GetParam(eParamAttack) * 2;
+	//return (unVal.GetParam(eParamAttack)*(1+unVal.GetSkill(eSkillArchery)))/3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetSkillDoubleBladeAttackValue(unit pUnit, int nAttack)
+{
+    int nLevel;
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillDoubleBlade);
+    if( nLevel == 0 )
+        return nAttack;
+    return nAttack * CalcSkillAttackPercent(pUnit, eSkillDoubleBlade) / 100;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetSkillHorseRidingAttackValue(unit pUnit, int nAttack)
+{
+    int nSkill;
+    
+    nSkill = pUnit.GetUnitValues().GetSkill(eSkillHorseRiding);
+    if (nSkill <= 4)
+    {
+        return nAttack;
+    }
+	return nAttack * CalcSkillAttackPercent(pUnit, eSkillHorseRiding) / 100;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+function int IsInDefenceMode(unit pUnit)
+{
+    if( pUnit.IsUnit() ) // GetNextAttackSkill tylko dla unita
+    {
+        if( pUnit.GetNextAttackSkill() == eSkillDefensiveFight)
+            return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsInBerserkMode(unit pUnit)
+{
+    if( pUnit.IsUnit() ) // GetNextAttackSkill tylko dla unita
+    {
+        //pUnit.IsInBerserkMode(); - taka funkcja tez jest ale nie dziala
+        if( pUnit.GetNextAttackSkill() == eSkillBerserk)
+            return true; //XXXMD
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetDefence(unit pUnit, int bForInterface)
+{
+    int nDefence;
+    
+    nDefence = pUnit.GetUnitValues().GetParam(eParamDefence);
+    if (IsInBerserkMode(pUnit) || pUnit.FindPotionWithFlags(ePotionDirtyTrick)>=0)
+    {
+        nDefence = 0;
+    }
+    
+    
+    if (IsInDefenceMode(pUnit))
+    {
+        nDefence = nDefence * (1 + pUnit.GetUnitValues().GetSkill(eSkillDefensiveFight));
+    }
+    
+    
+    /*if(!bForInterface)
+    {
+        if(pUnit.GetHP()*4 < pUnit.GetMaxHP())
+        {
+            if(pUnit.IsHeroUnit())
+            {
+                nDefence = nDefence*4;
+            }
+            else 
+            {
+                nDefence = nDefence/4;
+            }
+        }
+    }*/
+    return nDefence;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetDefence(unit pUnit)
+{
+    return GetDefence(pUnit,false);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetDamage(unit pUnit)
+{
+    int nDamage;
+
+    nDamage = pUnit.GetUnitValues().GetParam(eParamDamage);
+    
+//    if(pUnit.HaveShootWeapon())
+//        return nDamage;
+
+        
+    return nDamage;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetAttack(unit pUnit)
+{
+    int nAttack;
+    int nHorseRiding;
+    
+	nAttack = pUnit.GetUnitValues().GetParam(eParamAttack);
+    if (pUnit.HaveTwoWeapons())
+    {
+        nAttack = GetSkillDoubleBladeAttackValue(pUnit, nAttack);
+    }
+    if (pUnit.IsOnHorse())
+    {
+        nAttack = GetSkillHorseRidingAttackValue(pUnit, nAttack);
+    }
+    if (IsInBerserkMode(pUnit))
+    {
+        nAttack *= (1 + pUnit.GetUnitValues().GetSkill(eSkillBerserk));
+    }
+    return nAttack;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetAttack(unit pUnit,int bDoubleHand)
+{
+    int nAttack;
+    int nHorseRiding;
+    
+	nAttack = pUnit.GetUnitValues().GetParam(eParamAttack);
+    if (bDoubleHand)
+    {
+        nAttack = GetSkillDoubleBladeAttackValue(pUnit, nAttack);
+    }
+    if (pUnit.IsOnHorse())
+    {
+        nAttack = GetSkillHorseRidingAttackValue(pUnit, nAttack);
+    }
+    if (IsInBerserkMode(pUnit))
+    {
+        nAttack *= (1 + pUnit.GetUnitValues().GetSkill(eSkillBerserk));
+    }
+    return nAttack;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int ReduceArcheryChanceByShield(int nChance, unit pUnit)
+{
+    EquipmentValues eqValSh;
+    EquipmentParams eqParSh;
+
+    if(!pUnit)return nChance;
+    if (pUnit.GetEquipmentOnSlot(eSlotLeftHand, eqParSh, eqValSh) && (eqParSh.GetType() == eEqTypeShield)) return nChance/2;
+    return nChance;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcChance(int A, int B)
+{
+    return (100*A)/(MAX(1, A+B));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcSkillChance(unit pUnit, int nSkill, unit pEnemy, int nEnemyAttack, int nEnemyDefence, int nEnemyStrength)
+{
+    int nTmp,nTmp2;
+    int nSkillVal;
+    
+    EquipmentValues eqValSh;
+    EquipmentParams eqParSh;
+
+    ASSERT((pUnit != null) && pUnit.IsUnit());
+    
+    nSkillVal = pUnit.GetUnitValues().GetSkill(nSkill);
+    
+    if(nSkillVal<1)nSkillVal=0;// zabezpieczenie przed -1 na skill val
+    if(nSkillVal>10)nSkillVal=10;
+    
+    if (pEnemy)
+    {
+        nEnemyAttack = GetAttack(pEnemy);
+        nEnemyDefence = GetDefence(pEnemy);
+        nEnemyStrength = pEnemy.GetUnitValues().GetPoint(ePointsStrength);
+    }
+
+    if (nSkill == eSkillDefence)
+    {
+        return CalcChance(GetDefence(pUnit), nEnemyAttack);
+    }
+    else if (nSkill == eSkillAttack)
+    {
+        return CalcChance(GetAttack(pUnit), nEnemyDefence);
+    }
+    else if (nSkill == eSkillParry)
+    {
+        if(!pUnit.GetEquipmentOnSlot(eSlotLeftHand, eqParSh, eqValSh) || IsInBerserkMode(pUnit))
+        {
+            return 0;
+        }
+        if (eqParSh.GetType() == eEqTypeShield)
+        {
+            if(pEnemy!=null && IsInBerserkMode(pEnemy))return 95;
+            
+            nTmp = ((eqValSh.GetParry() + (GetDefence(pUnit)/2))*(1+nSkillVal))/3;
+            return CalcChance(nTmp,nEnemyAttack);
+        }
+        else if (eqParSh.GetType() == eEqTypeWeapon)
+        {
+            nTmp = (GetDefence(pUnit)*(1+nSkillVal))/3;
+            return CalcChance(nTmp,nEnemyAttack);
+        }
+        else return 0;
+       
+    }
+    else if (nSkill == eSkillArchery)
+    {
+        nTmp = CalcChance(GetSkillArcheryAttackValue(pUnit), nEnemyDefence);
+        return ReduceArcheryChanceByShield(nTmp, pEnemy);
+    }
+    
+    if(nSkillVal<1) return 0;
+    
+    if (nSkill == eSkillDoubleBlade)//XXXMD
+    {//podajemy roznice szansy z i bez double blada
+       nTmp = CalcChance(GetAttack(pUnit,1),nEnemyDefence) - CalcChance(GetAttack(pUnit,0),nEnemyDefence);
+       return nTmp;
+    }
+    else if (nSkill == eSkillKnockDown)
+    {
+       nTmp=0;
+       if(pEnemy!=null) nTmp = MIN(10,pEnemy.GetUnitValues().GetSkill(eSkillStability));
+       return MAX(0,(nSkillVal-nTmp)*4);
+    }
+    else if (nSkill == eSkillStability)
+    {
+       return nSkillVal*5;
+    }
+    else if (nSkill == eSkillCriticalHit)
+    {
+        nTmp = (CalcChance(GetAttack(pUnit),nEnemyDefence)*(1+nSkillVal))/33;
+        if(IsInDefenceMode(pUnit))
+        {
+             nTmp2 = CalcCriticalHitChance_SkillDefensiveFight(pUnit)*10+CalcCriticalHitChanceFraction_SkillDefensiveFight(pUnit);
+             nTmp = (nTmp*nTmp2)/10;
+        }
+        if (pEnemy != null) if(pEnemy.FindPotionWithFlags(ePotionDirtyTrick)>=0) nTmp = nTmp*3;
+        if(nTmp>90) nTmp=90;
+        return nTmp;
+    }
+    else if (nSkill == eSkillDirtyTrick)
+    {
+       nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+       return (nTmp*(nSkillVal+4))/15;
+    }
+    else if (nSkill == eSkillStun)
+    {
+        nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+        if(pEnemy.FindPotionWithFlags(ePotionDirtyTrick)>=0)return 100;
+        return (nTmp*(nSkillVal+2))/15;
+    }
+    else if (nSkill == eSkillSwordBrake)
+    {
+        nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+        if(pEnemy.FindPotionWithFlags(ePotionDirtyTrick)>=0) return 100;
+        return (nTmp*(nSkillVal+2))/15;
+    }
+    else if (nSkill == eSkillDismountFromHorse)
+    {
+       nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+       if(pEnemy) return (nTmp*(nSkillVal+5-pEnemy.GetUnitValues().GetSkill(eSkillHorseRiding)))/15;
+       else return (nTmp*(nSkillVal+3))/15;    
+    }
+    else if (nSkill == eSkillPullShield)
+    {
+       nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+       if(pEnemy.FindPotionWithFlags(ePotionDirtyTrick)>=0)return 100;
+       return (nTmp*(nSkillVal+3))/15;
+    }
+    else if (nSkill == eSkillDeadlyPiruet)
+    {
+       return 100;
+    }
+    else if (nSkill == eSkillKnifeDeathStrike)
+    {
+       return 100;
+    }
+    else if (nSkill == eSkillBurn)
+    {
+       nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+       return (nTmp*(nSkillVal+4))/15;
+    }
+    else if (nSkill == eSkillShieldTrick)
+    {
+       if(nSkillVal<1)return 0;
+       if(nSkillVal<6)return 20+nSkillVal*10;
+       return 70+(nSkillVal-5)*5;
+       //nTmp = CalcChance(GetAttack(pUnit),nEnemyDefence);
+       //return (nTmp*(nSkillVal+4))/15;
+    }
+    else if (nSkill == eSkillStealing)
+    {
+       return MIN(20 + nSkillVal * 7,90);
+    }
+   
+    //--------------------------------archery-------------------------------------    
+    else if (nSkill == eSkillPiercing)
+    {
+        nTmp = CalcChance(GetSkillArcheryAttackValue(pUnit), nEnemyDefence);
+        nTmp = ReduceArcheryChanceByShield(nTmp, pEnemy);
+        return nTmp;
+    }
+    else if (nSkill == eSkillPrecizeAiming)
+    {
+        return CalcChance(GetSkillArcheryAttackValue(pUnit)*(1+nSkillVal), nEnemyDefence);
+    }
+    else if (nSkill == eSkillMultiArrows)
+    {
+       if(nSkillVal==0)return 0;
+       nTmp = CalcChance(GetSkillArcheryAttackValue(pUnit), nEnemyDefence);
+       nTmp = ReduceArcheryChanceByShield(nTmp, pEnemy);
+       if(nSkillVal==1||nSkillVal==4||nSkillVal==7||nSkillVal==10) return nTmp/3;
+       if(nSkillVal==2||nSkillVal==5||nSkillVal==8) return nTmp/2;
+       return (nTmp*2)/3;
+    }
+    else if (nSkill == eSkillArrowOfDust)
+    {
+        nTmp = ReduceArcheryChanceByShield(100, pEnemy);
+        return nTmp * nSkillVal/MAX(1, nSkillVal + 1);
+    }
+    else if (nSkill == eSkillDisarmingArrow)
+    {
+       if(pEnemy.IsSummonedUnit())return 0; 
+       nTmp = CalcChance(GetSkillArcheryAttackValue(pUnit), nEnemyDefence);
+       return (nTmp*(4+nSkillVal))/30;
+    }
+    
+    __ASSERT_FALSE();
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcSkillChance(unit pUnit, int nSkill, unit pEnemy)
+{
+    //ASSERT((pEnemy != null) && pEnemy.IsUnit());
+    if(!pEnemy || !pEnemy.IsUnit())return 100;
+    return CalcSkillChance(pUnit, nSkill, pEnemy, 0, 0, 0);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+function int CalcSkillChanceInfo(unit pUnit, int nSkill)
+{
+    int nAttack, nDefence, nStrength;
+    
+    ASSERT((pUnit != null) && pUnit.IsUnit());
+    nAttack = 10 + (pUnit.GetUnitValues().GetLevel()*10*ePointsPerLevel)/3;
+    nStrength = 10 + (pUnit.GetUnitValues().GetLevel()*2*ePointsPerLevel)/3;
+    nDefence = nAttack;
+    
+    return CalcSkillChance(pUnit, nSkill, null, nAttack, nDefence, nStrength);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int DiceCanDoFightActionOnTarget(unit pUnit, int nFightAction, unit pEnemy)
+{
+    if (!pEnemy || !pUnit.HaveFightActionAnimation(nFightAction, pEnemy))
+    {
+        return false;
+    }
+    
+    if (nFightAction == eFightActionParry)
+    {
+        if (Rand(100) < CalcSkillChance(pUnit, eSkillParry, pEnemy))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if (nFightAction == eFightActionDodge)
+    {
+        if (Rand(100) < CalcSkillChance(pUnit, eSkillDefence, pEnemy))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    __ASSERT_FALSE();
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanMakeActiveSkill(unit pUnit, int nSkill, int bSecondHand, int bBothHands, unit pEnemy);
+function int CanMakeActiveSkill(unit pUnit, int nSkill, int bSecondHand, unit pEnemy);
+function int GetHPDamageOnTarget(unit pAttacker, int nFightAction, unit pTarget);
+
+function int DiceCanDoNextAttackSkillOnTarget(unit pUnit, int nNextAttackSkill, int bSecondHand, int bBothHands, unit pEnemy)
+{
+    int nTmp;
+    int nSkillVal, nChance;
+    EquipmentValues eqValSh;
+    EquipmentParams eqParSh;
+    PotionValues ptVal;
+    
+    if (!CanMakeActiveSkill(pUnit, nNextAttackSkill, bSecondHand, bBothHands, pEnemy))
+    {
+        return false;
+    }
+    if(!pEnemy) return false;
+    
+    nSkillVal = MIN(10,pUnit.GetUnitValues().GetSkill(nNextAttackSkill));
+    if (nNextAttackSkill == eSkillDirtyTrick)
+    {
+        nChance = CalcSkillChance(pUnit, eSkillDirtyTrick, pEnemy);
+        if (pEnemy.GetEquipmentOnSlot(eSlotLeftHand, eqParSh, eqValSh) && (eqParSh.GetType() == eEqTypeShield))
+        {
+            return false;// dirty trick nie dziala na gosci z tarcza.
+        }
+    }
+    else if (nNextAttackSkill == eSkillStun)
+    {
+        nChance = CalcSkillChance(pUnit, eSkillStun, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillSwordBrake)
+    {
+        nChance = CalcSkillChance(pUnit, eSkillSwordBrake, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillDismountFromHorse)
+    {
+        nChance = CalcSkillChance(pUnit, eSkillDismountFromHorse, pEnemy);
+        
+    }
+    else if (nNextAttackSkill == eSkillPullShield)
+    {
+        nChance = CalcSkillChance(pUnit, eSkillPullShield, pEnemy);
+        
+    }
+    else if (nNextAttackSkill == eSkillDeadlyPiruet)
+    {
+        nChance = CalcSkillChance(pUnit, eSkillDeadlyPiruet, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillKnifeDeathStrike)
+    {
+        nChance = 100;
+    }
+    else if (nNextAttackSkill == eSkillBurn)
+    {
+       nChance = CalcSkillChance(pUnit, eSkillBurn, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillShieldTrick)
+    {
+       nChance = CalcSkillChance(pUnit, eSkillShieldTrick, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillArrowOfDust)
+    {
+       nChance = CalcSkillChance(pUnit, eSkillArrowOfDust, pEnemy);
+    }
+    else
+    {
+        __ASSERT_FALSE();
+        return false;
+    }
+    
+    if (Rand(100) < nChance)
+    {
+        return true;
+    }
+    pEnemy.GetUnitValues().SetCurrStrikeDelay(0);//jak nie wyszed³ skill aktywny to przeciwnik przystepuje do ataku
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanUseTwoWeapons(unit pUnit)
+{
+    if (pUnit.GetUnitValues().GetSkill(eSkillDoubleBlade) > 0)
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int ActiveSkill2FightAction(int nSkill, int bSecondHand)
+{
+    if (nSkill == eSkillDirtyTrick) return eFightActionDirtyTrick;
+    if (nSkill == eSkillStun) 
+    {
+        if (bSecondHand) return eFightActionStrikeStunLeftHand;
+        else return eFightActionStrikeStun;
+    }
+    if (nSkill == eSkillSwordBrake) return eFightActionBrakeSword;
+    if (nSkill == eSkillDismountFromHorse) return eFightActionDismountFromHorse;
+    if (nSkill == eSkillPullShield) 
+    {
+        if (bSecondHand) return eFightActionPullShieldLeftHand;
+        else return eFightActionPullShield;
+    }
+    if (nSkill == eSkillKnifeDeathStrike) return eFightActionStrikeKnifeDeathStrike;
+    if (nSkill == eSkillDeadlyPiruet) return eFightActionStrikeDeadlyPiruet;
+    if (nSkill == eSkillBurn) return eFightActionBurn;
+    if (nSkill == eSkillShieldTrick) return eFightActionStrikeShieldTrick;
+    if (nSkill == eSkillDisarmingArrow) return eFightActionShootDisarmingArrow;
+    if (nSkill == eSkillMultiArrows) return eFightActionShootMultiArrows;
+    if (nSkill == eSkillPiercing) return eFightActionShootPiercing;
+    if (nSkill == eSkillArrowOfDust) return eFightActionShootArrowOfDust;
+    return eFightActionNothing;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int FightAction2ActiveSkill(int nFightAction)
+{
+    if (nFightAction == eFightActionDirtyTrick) return eSkillDirtyTrick;
+    if (nFightAction == eFightActionStrikeStun) return eSkillStun;
+    if (nFightAction == eFightActionStrikeStunLeftHand) return eSkillStun;
+    if (nFightAction == eFightActionStrikeStunBothHands) return eSkillStun;
+    if (nFightAction == eFightActionBrakeSword) return eSkillSwordBrake;
+    if (nFightAction == eFightActionDismountFromHorse) return eSkillDismountFromHorse;
+    if (nFightAction == eFightActionPullShield) return eSkillPullShield;
+    if (nFightAction == eFightActionPullShieldLeftHand) return eSkillPullShield;
+    if (nFightAction == eFightActionPullShieldBothHands) return eSkillPullShield;
+    if (nFightAction == eFightActionStrikeKnifeDeathStrike) return eSkillKnifeDeathStrike;
+    if (nFightAction == eFightActionStrikeDeadlyPiruet) return eSkillDeadlyPiruet;
+    if (nFightAction == eFightActionBurn) return eSkillBurn;
+    if (nFightAction == eFightActionStrikeShieldTrick) return eSkillShieldTrick;
+    if (nFightAction == eFightActionShootDisarmingArrow) return eSkillDisarmingArrow;
+    if (nFightAction == eFightActionShootMultiArrows) return eSkillMultiArrows;
+    if (nFightAction == eFightActionShootPiercing) return eSkillPiercing;
+    if (nFightAction == eFightActionShootArrowOfDust) return eSkillArrowOfDust;
+    return -1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsStrikeFightAction(int nFightAction, int bNotHitTrue)
+{
+    if ((nFightAction == eFightActionStrike) ||
+        (nFightAction == eFightActionStrikeCritical) ||
+        (nFightAction == eFightActionStrikeStun) ||
+        (nFightAction == eFightActionStrikeStunLeftHand) ||
+        (nFightAction == eFightActionStrikeStunBothHands) ||
+        (nFightAction == eFightActionStrikeShieldTrick) ||
+        (nFightAction == eFightActionStrikeDeadlyPiruet) ||
+        (nFightAction == eFightActionStrikeKnifeDeathStrike))
+    {
+        return true;
+    }
+    if ((nFightAction == eFightActionStrikeNotHit) ||
+        (nFightAction == eFightActionDirtyTrick) ||
+        (nFightAction == eFightActionDismountFromHorse) ||
+        (nFightAction == eFightActionPullShield) ||
+        (nFightAction == eFightActionPullShieldLeftHand) ||
+        (nFightAction == eFightActionPullShieldBothHands) ||
+        (nFightAction == eFightActionBrakeSword) ||
+        (nFightAction == eFightActionBurn))
+    {
+        return bNotHitTrue;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsHitFightAction(int nFightAction)
+{
+    if ((nFightAction == eFightActionHit) ||
+        (nFightAction == eFightActionHitFall) ||
+        (nFightAction == eFightActionHitBurn) ||
+        (nFightAction == eFightActionHitByKnifeDeathStrike) ||
+        (nFightAction == eFightActionHitDismountedFromHorse) ||
+        (nFightAction == eFightActionHitPushed) ||
+        (nFightAction == eFightActionHitDirtyTricked) ||
+        (nFightAction == eFightActionHitStunned) ||
+        (nFightAction == eFightActionHitLooseWeapon))
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int SelectDirectFightStrikeAnim(unit pUnit, unit pEnemy, int nAnimsCnt)
+{
+    nAnimsCnt = MIN(pUnit.GetUnitValues().GetLevel(), nAnimsCnt);
+    return Rand(nAnimsCnt);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanStartDirectFightAction(unit pUnit, unit pEnemy)
+{
+    //pEnemy moze byc null
+    if (pUnit.GetUnitValues().GetCurrStrikeDelay() > 0)
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetDirectFightAction(unit pUnit, unit pEnemy, int bInRange, int& nFightAction)
+{
+    int nNextAttackSkill, nNextFightAction;
+    int bStrike;
+    UnitParams unPar;
+    
+    
+    //pEnemy moze byc null (dla hero zawsze jest null)   
+    nFightAction = eFightActionNothing;
+    if (!CanStartDirectFightAction(pUnit, pEnemy))
+    {
+        if(!pUnit.IsHeroUnit() && (pEnemy != null))  // losowe odskoki na boki  podczas  delaya przed nastepnym ciosem
+        {
+            unPar = pUnit.GetUnitParams();
+            bStrike = unPar.GetStrikeDelayTicks()%10;
+            if (bStrike == 1 || (bStrike == 2 && !Rand(2)) ||(bStrike == 3 && !Rand(10)))
+            {
+                if(!Rand(2)) nFightAction = eFightActionStepRight;
+                else nFightAction = eFightActionStepLeft;
+            }
+            if ((nFightAction != eFightActionNothing) && !pUnit.HaveFightActionAnimation(nFightAction, pEnemy))
+            {
+                nFightAction = eFightActionNothing;
+            }
+        }
+        return;
+    }
+    if (!pUnit.IsHeroUnit() && (pEnemy != null) && !pEnemy.IsUnit())
+    {
+        if (!bInRange)
+        {
+            return;
+        }
+        if (pUnit.HaveFightActionAnimation(eFightActionStrike, pEnemy))
+        {
+            nFightAction = eFightActionStrike;
+        }
+        return;
+    }
+    nNextAttackSkill = pUnit.GetNextAttackSkill();
+    if (nNextAttackSkill >= 0)
+    {
+        nNextFightAction = ActiveSkill2FightAction(nNextAttackSkill, pUnit.GetNextAttackSkillBySecondHand());
+        
+        //dirty trick NPC robi co 4 cios.
+        if(nNextFightAction == eFightActionDirtyTrick && !pUnit.IsHeroUnit() && Rand(100)<75) nFightAction = eFightActionStrike;
+    }
+    //CanMakeActiveSkill - nie sprawdzamy enemy - animacje rozpoczynamy zawsze
+    if ((nNextAttackSkill >= 0) && (nNextFightAction != eFightActionNothing) && CanMakeActiveSkill(pUnit, nNextAttackSkill, pUnit.GetNextAttackSkillBySecondHand(), false, null) &&
+        pUnit.HaveFightActionAnimation(nNextFightAction, pEnemy))
+    {
+        if ((nNextFightAction == eFightActionStrikeStun) && 
+            CanMakeActiveSkill(pUnit, nNextAttackSkill, false, true, null) &&
+            pUnit.HaveFightActionAnimation(eFightActionStrikeStunBothHands, pEnemy) &&
+            (Rand(100) < 50))
+        {
+            nNextFightAction = eFightActionStrikeStunBothHands;
+        }
+        if ((nNextFightAction == eFightActionPullShield) && 
+            CanMakeActiveSkill(pUnit, nNextAttackSkill, false, true, null) &&
+            pUnit.HaveFightActionAnimation(eFightActionPullShieldBothHands, pEnemy) &&
+            (Rand(100) < 50))
+        {
+            nNextFightAction = eFightActionPullShieldBothHands;
+        }
+        pUnit.SetNextAttackSkill(-1);
+        nFightAction = nNextFightAction;
+    }
+    else
+    {
+        if (pUnit.IsHeroUnit())
+        {
+            pUnit.GetAttribute("ActionStrike", bStrike);
+            pUnit.SetAttribute("ActionStrike", 0);
+        }
+        else
+        {
+            if (!bInRange)
+            {
+                return;
+            }
+            bStrike = true;
+        }
+        if (bStrike)
+        {
+            if (/*pEnemy!=null &&*/ //07-09-15
+                (Rand(100) < CalcSkillChance(pUnit, eSkillCriticalHit, pEnemy, 0, 0, 0)) && 
+                pUnit.HaveFightActionAnimation(eFightActionStrikeCritical, pEnemy))
+            {
+                //TRACE("                               Critical HIT!  %d%%             \n",CalcSkillChance(pUnit, eSkillCriticalHit, pEnemy));
+                nFightAction = eFightActionStrikeCritical;
+            }
+            else if (pUnit.HaveFightActionAnimation(eFightActionStrike, pEnemy))
+            {
+                nFightAction = eFightActionStrike;
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetNextSequenceDirectFightAction(unit pUnit, unit pEnemy, int nFightAction, int nCurrAnimSequenceNum, int nAnimSequencesCnt)
+{
+    int nFightSkill;
+    int bStrike;
+    
+    //pEnemy moze byc null
+    nFightSkill = FightAction2ActiveSkill(nFightAction);
+    if (nFightSkill >= 0)
+    {
+        if (nFightSkill != pUnit.GetNextAttackSkill())
+        {
+            return false;
+        }
+        //CanMakeActiveSkill - nie sprawdzamy enemy - animacje rozpoczynamy zawsze
+        if (!CanMakeActiveSkill(pUnit, nFightAction, pUnit.GetNextAttackSkillBySecondHand(), false, null))
+        {
+            return false;
+        }
+        return true;
+    }
+    if (pUnit.IsHeroUnit())
+    {
+        pUnit.GetAttribute("ActionStrike", bStrike);
+        pUnit.SetAttribute("ActionStrike", 0);
+    }
+    else
+    {
+        //XXXMD wyremowany if zeby potwor robil serie wszystkich ciosów -ale i tak nie dziala bo potwór przerywa atak jak hero zrobi unik
+        if(nCurrAnimSequenceNum==1 && Rand(100) < 85)bStrike = true;
+        if(nCurrAnimSequenceNum==2 && Rand(100) < 60)bStrike = true;
+        if(nCurrAnimSequenceNum==3 && Rand(100) < 30)bStrike = true;
+    }
+    return bStrike;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetDirectFightActionOnStartActionByEnemy(unit pUnit, unit pEnemy, int nEnemyFightAction, int& nFightAction, int& bMakeFightAction)
+{//XXXMD
+    nFightAction = eFightActionNothing;
+    bMakeFightAction = false;
+    if (pUnit.GetCurrentFightAction() != eFightActionNothing)
+    {
+        return;
+    }
+    if (nEnemyFightAction == eFightActionStrike)
+    {
+        if (DiceCanDoFightActionOnTarget(pUnit, eFightActionParry, pEnemy))
+        {
+            nFightAction = eFightActionParry;
+            bMakeFightAction = true; //!pUnit.IsHeroUnit(); // przed wyremowaniem hero nie robil akcji
+        }
+        else if (DiceCanDoFightActionOnTarget(pUnit, eFightActionDodge, pEnemy))
+        {
+            if(pUnit.HaveFightActionAnimation(eFightActionParry, pEnemy))// parujemy nawet na dogu jesli mamy animacje - parowanie wyglada lepiej niz dodge
+                nFightAction = eFightActionParry;
+            else
+                nFightAction = eFightActionDodge;
+            bMakeFightAction = true; //!pUnit.IsHeroUnit();
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void OnEndDirectFightAction(unit pUnit, unit pEnemy, int nFightAction, int bMadeFightAction, int& bMoveBack)
+{
+    int nDelay;
+    //pEnemy moze byc null
+    bMoveBack = false;
+    if (IsStrikeFightAction(nFightAction, true))
+    {
+        nDelay=pUnit.GetUnitValues().GetStrikeDelayTicks();
+        if((nDelay%10)>4) nDelay+=Rand(nDelay*2); // losowy delay
+        pUnit.GetUnitValues().SetCurrStrikeDelay(nDelay);
+        if (!pUnit.IsHeroUnit() && (pUnit.GetUnitValues().GetCurrStrikeDelay() >= 30))
+        {
+            bMoveBack = true; 
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//zwiekszanie paska
+function void OnHitSuccess(unit pUnit, unit pEnemy, int nFightAction, int nHPDamage, int bByPoison, int bFirstMissileHit)
+{
+    if (pUnit.GetUnitValues().GetSkillChanceValue() >= 100)
+    {
+        return;
+    }
+    /*if ((pEnemy != null) && pEnemy.IsUnit() &&
+         ((nFightAction == eFightActionStrike) ||
+         (nFightAction == eFightActionStrikeCritical) ||
+         (nFightAction == eFightActionStrikeNotHit) ||
+         (nFightAction == eFightActionShoot) ||
+         (nFightAction == eFightActionShootCloseDistance)))
+    {
+        pUnit.GetUnitValues().SetSkillChanceValue(MIN(pUnit.GetUnitValues().GetSkillChanceValue() + 10, 100));
+    }*/
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//pEnemy moze byc null
+function void GetHitFightAction(unit pUnit, unit pEnemy, int nEnemyFightAction, int bByHitPushedMissile, int& nFightAction, int& nAnimDelay)
+{
+    int nHitAction, nBreakPercent, nCurrAction;
+    
+    nFightAction = eFightActionNothing;
+    if ((nEnemyFightAction == eFightActionStrikeStun) || (nEnemyFightAction == eFightActionStrikeStunLeftHand) || (nEnemyFightAction == eFightActionStrikeStunBothHands) ||
+        (nEnemyFightAction == eFightActionDirtyTrick) ||
+        (nEnemyFightAction == eFightActionBurn))
+    {
+        //te skille zawsze przerywaja
+    }
+    else
+    {
+        if (pUnit.IsHeroUnit())
+        {
+            //hero zawsze ma przerywana akcje
+            nCurrAction = pUnit.GetCurrentFightAction();
+            if (nCurrAction == eFightActionStrikeDeadlyPiruet ||
+                nCurrAction == eFightActionStrikeCritical ||
+                nCurrAction == eFightActionStrikeShieldTrick ||
+                nCurrAction == eFightActionStrikeDeadlyPiruet ||
+                nCurrAction == eFightActionStrikeKnifeDeathStrike)return;//tych akcji sie nie przerywa
+        }
+        else
+        {
+            nCurrAction = pUnit.GetCurrentFightAction();
+            if (((nCurrAction != eFightActionNothing) && (IsStrikeFightAction(nCurrAction, true) || IsHitFightAction(nCurrAction))) ||
+                ((pUnit.GetAttackTarget() == pEnemy) && pUnit.HaveDirectFightWeapon() && (pUnit.GetUnitValues().GetCurrStrikeDelay() == 0)))
+            {
+                nBreakPercent = pUnit.GetUnitParams().GetBreakStrikeChancePercent();
+            }
+            else
+            {
+                nBreakPercent = pUnit.GetUnitParams().GetBreakOtherChancePercent();
+            }
+            if ((nBreakPercent < 100) && (Rand(100) < (100 - nBreakPercent)))
+            {
+                return;
+            }
+        }
+    }
+
+    if ((nEnemyFightAction == eFightActionNothing) ||
+        (nEnemyFightAction == eFightActionStrike) ||
+        (nEnemyFightAction == eFightActionStrikeCritical) ||
+        (nEnemyFightAction == eFightActionStrikeShieldTrick) ||
+        (nEnemyFightAction == eFightActionStrikeDeadlyPiruet) ||
+        (nEnemyFightAction == eFightActionStrikeKnifeDeathStrike) ||
+        (nEnemyFightAction == eFightActionStrikeNotHit) ||
+        (nEnemyFightAction == eFightActionShoot) ||
+        (nEnemyFightAction == eFightActionShootCloseDistance) ||
+        (nEnemyFightAction == eFightActionShootDisarmingArrow) ||
+        (nEnemyFightAction == eFightActionShootMultiArrows) ||
+        (nEnemyFightAction == eFightActionShootPiercing) ||
+        (nEnemyFightAction == eFightActionShootArrowOfDust)
+        )
+    {
+        if ((nEnemyFightAction == eFightActionStrike) && !pUnit.IsOnHorse() && (Rand(100) < CalcSkillChance(pEnemy, eSkillKnockDown, pUnit)))
+        {
+            nHitAction = eFightActionHitFall;
+            nAnimDelay = 0;
+        }
+        else
+        {
+            if (bByHitPushedMissile && !pUnit.IsOnHorse())
+            {
+                nHitAction = eFightActionHitPushed;
+            }
+            else
+            {
+                nHitAction = eFightActionHit;
+            }
+        }
+    }
+    else if ((nEnemyFightAction == eFightActionStrikeStun) || (nEnemyFightAction == eFightActionStrikeStunLeftHand) || (nEnemyFightAction == eFightActionStrikeStunBothHands))
+    {
+        if (pUnit.IsOnHorse())
+        {
+            nHitAction = eFightActionHit;
+        }
+        else
+        {
+            nHitAction = eFightActionHitStunned;
+        }
+    }
+    else if (nEnemyFightAction == eFightActionStrikeKnifeDeathStrike)
+    {
+        if (pUnit.IsOnHorse())
+        {
+            nHitAction = eFightActionHit;
+        }
+        else
+        {
+            nHitAction = eFightActionHitByKnifeDeathStrike;
+        }
+    }
+    else if (nEnemyFightAction == eFightActionDirtyTrick)
+    {
+        nHitAction = eFightActionHitDirtyTricked;
+    }
+    else if (nEnemyFightAction == eFightActionDismountFromHorse)
+    {
+        nHitAction = eFightActionHitDismountedFromHorse;
+    }
+    else if (nEnemyFightAction == eFightActionBurn)
+    {
+        nHitAction = eFightActionHitBurn;
+    }
+    else if (nEnemyFightAction == eFightActionShootDisarmingArrow)
+    {
+        nHitAction = eFightActionHitLooseWeapon;
+    }
+    else
+    {
+        return;
+    }
+    if (!pUnit.HaveFightActionAnimation(nHitAction, pEnemy))
+    {
+        return;
+    }
+    nFightAction = nHitAction;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int DiceCanDoNextShootAttackSkillOnTarget(unit pUnit, int nNextAttackSkill, unit pEnemy, int& nShootFightAction)
+{
+    //wyglada na to za liczenie chance w tym miejscu nie ma sensu bo jest ono liczone jeszcze raz w funkcji initMissile
+    int nSkillVal;//, nChance;
+    EquipmentValues eqValSh;
+    EquipmentParams eqParSh;
+    
+    if (!CanMakeActiveSkill(pUnit, nNextAttackSkill, false, pEnemy))
+    {
+        return false;
+    }
+    nSkillVal = pUnit.GetUnitValues().GetSkill(nNextAttackSkill);
+    if (nNextAttackSkill == eSkillDisarmingArrow)
+    {
+        nShootFightAction = eFightActionShootDisarmingArrow;
+        //nChance = CalcSkillChance(pUnit, eSkillDisarmingArrow, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillMultiArrows)
+    {
+        nShootFightAction = eFightActionShootMultiArrows;
+        //nChance = 100;
+    }
+    else if (nNextAttackSkill == eSkillPiercing)
+    {
+        nShootFightAction = eFightActionShootPiercing;
+        //nChance = CalcSkillChance(pUnit, eFightActionShootPiercing, pEnemy);
+    }
+    else if (nNextAttackSkill == eSkillArrowOfDust)
+    {
+        nShootFightAction = eFightActionShootArrowOfDust;
+        //nChance = CalcSkillChance(pUnit, eSkillArrowOfDust, pEnemy);
+    }
+    else
+    {
+        __ASSERT_FALSE();
+        return false;
+    }
+    
+    if (!pUnit.HaveShootFightActionAnimation(nShootFightAction, pEnemy))
+    {
+        return false;
+    }
+    if (!pUnit.IsHeroUnit())
+    {
+        pUnit.SetNextAttackSkill(-1);
+    }
+    //if (Rand(100) < nChance)
+    //{
+    //    return true;
+    //}
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetShootAction(unit pUnit, unit pEnemy, int& nShootFightAction, int& nAimingTicks, int& nMissileCount, int& nShootChanceValue, int& nShootChanceIncTicks, int& nShootChanceIncValue)
+{
+    int nNextAttackSkill;
+    WeaponParams wPar;
+
+    nNextAttackSkill = pUnit.GetNextAttackSkill();
+    
+    nShootChanceValue = nShootChanceIncTicks = nShootChanceIncValue = 0;
+    
+    if (pEnemy.IsUnitBase() && 
+            (pUnit.DistanceTo(pEnemy) <= e6m) &&
+            pUnit.HaveShootFightActionAnimation(eFightActionShootCloseDistance, pEnemy))
+    {
+        nShootFightAction = eFightActionShootCloseDistance;
+    }
+        
+    else if (((nNextAttackSkill == eSkillDisarmingArrow) || (nNextAttackSkill == eSkillMultiArrows) || (nNextAttackSkill == eSkillPiercing) ||
+         (nNextAttackSkill == eSkillArrowOfDust)) &&
+        DiceCanDoNextShootAttackSkillOnTarget(pUnit, nNextAttackSkill, pEnemy, nShootFightAction))
+    {
+        //wykonanie skilla aktywnego
+    }
+    else 
+    {
+        nShootFightAction = eFightActionShoot;
+    }
+    
+    nMissileCount = 1;
+    
+    if (nShootFightAction == eFightActionShootMultiArrows)
+    {
+        nMissileCount = CalcNumberOfArrows_SkillMultiArrows(pUnit);
+    }
+    
+    nAimingTicks = 60+Rand(120);
+    
+    if (pUnit.IsHeroUnit())//XXXMD
+    {
+        nShootChanceValue = CalcAccurancy_SkillArchery(pUnit);
+        wPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+        if (wPar == null)
+        {
+            wPar = pUnit.GetWeaponParamsOnSlot(eSlotLeftHand);
+        }
+        nShootChanceIncTicks = 1;
+        nShootChanceIncValue = MAX(1,(2+pUnit.GetUnitValues().GetSkill(eSkillFastAiming) + wPar.GetShootChanceValue())/2);
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void InitMissile(unit pUnit, int nCurrentFightAction, MissileValues mVal, MissileParams mPar, EquipmentValues wVal, WeaponParams wPar, unit pEnemy)
+{
+    int nHitPercentMultiplier, nStrength;
+    int nDist, nChance, nMoving, i;
+    int tmpa, tmpb;
+    EquipmentParams ePar;
+    EquipmentValues eVal;
+    
+    nHitPercentMultiplier=100;
+    
+    if ((nCurrentFightAction == eFightActionShoot) || (nCurrentFightAction == eFightActionShootCloseDistance) ||
+        (nCurrentFightAction == eFightActionShootDisarmingArrow) || (nCurrentFightAction == eFightActionShootMultiArrows) ||
+        (nCurrentFightAction == eFightActionShootPiercing) || 
+        (nCurrentFightAction == eFightActionShootArrowOfDust))
+    {
+        
+        if (pEnemy.IsUnitBase())
+        {
+            if(pUnit.IsHeroUnit()) nChance = 100;
+            else nChance = CalcSkillChance(pUnit, eSkillArchery, pEnemy);
+
+        
+            if (nCurrentFightAction == eFightActionShootCloseDistance)
+            {
+                nChance = 100;
+                nHitPercentMultiplier = 150;
+            }
+            else if (nCurrentFightAction == eFightActionShootMultiArrows)
+            {
+                //nChance = CalcSkillChance(pUnit, eSkillMultiArrows, pEnemy);
+                nHitPercentMultiplier = (100+pUnit.GetUnitValues().GetSkill(eSkillMultiArrows)*10)/CalcNumberOfArrows_SkillMultiArrows(pUnit);
+            }
+            else if (nCurrentFightAction == eFightActionShootPiercing)
+            {
+                nChance = CalcSkillChance(pUnit, eSkillPiercing, pEnemy);
+                nHitPercentMultiplier = CalcSkillDamagePercent(pUnit, eSkillPiercing);
+            }
+            else if (nCurrentFightAction == eFightActionShootDisarmingArrow)
+            {
+                nChance = CalcSkillChance(pUnit, eSkillDisarmingArrow, pEnemy);
+            }
+            else if (nCurrentFightAction == eFightActionShootArrowOfDust)
+            {
+                nChance = CalcSkillChance(pUnit, eSkillArrowOfDust, pEnemy);
+            }
+                
+            nDist = pUnit.DistanceTo(pEnemy);
+            if(nDist>e100m)nChance = (nChance*3)/10;
+            else if(nDist>e80m)nChance = (nChance*5)/10;
+            else if(nDist>e60m)nChance = (nChance*7)/10;
+            else if(nDist>e40m)nChance = (nChance*9)/10;
+            else if(nDist>e20m)nChance = (nChance*11)/10;
+            else if(nDist>e10m)nChance = (nChance*13)/10;
+            else if(nDist<e8m)nChance = 100;
+            
+            if (Rand(100) < nChance) nChance = 1;
+            else
+            {
+                nChance=0;
+                nHitPercentMultiplier = 50;
+                nCurrentFightAction = eFightActionShoot;
+                if(pUnit.IsHeroUnit()) nChance = 1;
+            }
+            
+            //to tutaj po liczeniu szansy
+            if(pUnit.GetUnitValues().GetSkill(eSkillOverdraw)>0)
+            {
+                nHitPercentMultiplier += CalcSkillDamageIncreasePercent(pUnit, eSkillOverdraw);
+            }
+            if(nCurrentFightAction != eFightActionShootMultiArrows && Rand(100) < CalcHitChance_SkillPrecizeAiming(pUnit) )
+            {
+                nHitPercentMultiplier = nHitPercentMultiplier * CalcSkillDamagePercent(pUnit, eSkillPrecizeAiming) / 100;
+            }
+        }
+        
+        if (pUnit.IsHeroUnit())//damage od paska naciagu luku
+        {
+            // maksymalny pasek oznacza 100% damageu
+            nHitPercentMultiplier = (nHitPercentMultiplier*pUnit.GetCurrShootChance())/100;
+        }    
+                
+        nStrength = GetBowDamageWithPotions(pUnit,wVal,wPar);
+        pUnit.GetEquipmentOnSlot(eSlotQuiver, ePar, eVal);
+        
+        InitBowMissile(pUnit, mVal, mPar, eVal, ePar, wVal, wPar, nHitPercentMultiplier, nStrength);
+            
+        
+        if (pEnemy.IsUnitBase())
+        {
+            if (nChance)
+                mVal.SetMissShoot(false);//OK, trafia
+            else
+                mVal.SetMissShoot(true);// nie trafia strzala leci gdzies w bok
+            
+            if (nCurrentFightAction == eFightActionShootDisarmingArrow)
+            {
+                if(pUnit.IsHeroUnit() && pEnemy.IsHeroUnit())mVal.SetDisarmingArrow(false);// zablokowane disarmowanie bo sluzylo do kradzenia ekwipunku
+                else mVal.SetDisarmingArrow(true);
+            }
+            if (nCurrentFightAction == eFightActionShootPiercing)
+            {
+                mVal.SetPiercingPercent(50 + pUnit.GetUnitValues().GetSkill(eSkillPiercing)*100);
+            }
+            if (nCurrentFightAction == eFightActionShootArrowOfDust)
+            {
+                if (!pEnemy.IsOnHorse() && pEnemy.IsLandObject() && (pUnit.DistanceTo(pEnemy) > e4m))
+                {
+                    mVal.SetArrowOfDust(true);
+                }
+            }
+        }
+    }
+    else
+    {
+        nStrength = GetDamage(pUnit);
+        if (nCurrentFightAction == eFightActionStrikeCritical)
+        {
+            nHitPercentMultiplier = CalcSkillDamagePercent(pUnit, eSkillCriticalHit);
+        }
+        else if (nCurrentFightAction == eFightActionStrikeDeadlyPiruet)
+        {
+            nHitPercentMultiplier = CalcSkillDamagePercent(pUnit, eSkillDeadlyPiruet);
+        }
+        else if (nCurrentFightAction == eFightActionStrikeKnifeDeathStrike)   
+        {
+            if( !pEnemy.IsKnifeDeathStrikeResistant() ) // obrazenia zwiekszaja sie tylko dla unitow nieodpornych na KnifeDeathSkill
+            {
+                nHitPercentMultiplier = CalcSkillDamagePercent(pUnit, eSkillKnifeDeathStrike);
+                if(pEnemy.GetAttackTarget() != pUnit) nHitPercentMultiplier*=5;// jak zachodzimy od ty³u to zadajemy duzo wiecej damagu.
+            }
+        }
+        //Zwiekszenie damage od: strong hand, Defence i Berserk dodawane sa w funkcji GetDamage(...) wewnatrz InitMissile(...)      
+        
+        if(IsInBerserkMode(pUnit))
+        {
+            if(pEnemy.IsUnit())
+            {
+                if (pEnemy.GetEquipmentOnSlot(eSlotLeftHand, ePar, eVal) && ePar.GetType() == eEqTypeShield)
+                    nHitPercentMultiplier = 10;// wróg z tarcza otrzymuje tylko 10% obrazen podczas berserka
+            }
+        }
+        if(pEnemy!=null && pEnemy.IsUnit() && pEnemy.FindPotionWithFlags(ePotionDirtyTrick) >= 0)
+        {
+            nHitPercentMultiplier = nHitPercentMultiplier*2;
+        }
+        if(pEnemy!=null && IsInBerserkMode(pEnemy))
+        {
+            nHitPercentMultiplier = (nHitPercentMultiplier * 15) / 10; //postac bedaca w berserku otrzymuje 1.5x wiecej obrazen
+        }
+        if(pEnemy!=null && IsInDefenceMode(pEnemy))
+        {
+            tmpa = pEnemy.GetUnitValues().GetSkill(eSkillDefensiveFight);
+            nHitPercentMultiplier = nHitPercentMultiplier * (47 + tmpa * 3) / 100; //postac bedaca w defensie otrzymuje 1/2 obrazen
+        }    
+        
+        if(pUnit.GetHorseMoveSpeed() == 1) nHitPercentMultiplier += 100; //200%
+        if(pUnit.GetHorseMoveSpeed() == 2) nHitPercentMultiplier += 200; //300%
+        if(pUnit.GetHorseMoveSpeed() == 3) nHitPercentMultiplier += 300; //400%
+        
+        InitMissile(pUnit, mVal, wVal, wPar, pUnit.IsOnHorse(), nHitPercentMultiplier, nStrength);
+    }
+    mVal.SetArmourKnowledge(0);
+    mVal.SetHitInfoColor(wVal.GetWeaponTrailNormalColor());
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void InitMissile(unit pUnit, MissileValues mVal, MissileParams mPar, EquipmentValues wVal, WeaponParams wPar, unit pEnemy)
+{
+    InitMissile(pUnit, pUnit.GetCurrentFightAction(), mVal, mPar, wVal, wPar, pEnemy);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MagicalArmour(unit pUnit, UnitParams unPar, int nDamageIndex) // zwraca armour magiczny - ogólny niezalezny od lokacji
+{
+    int nProtect;
+    int nProtectIndex;
+    
+    if (nDamageIndex >= eDamagePoison)
+    {
+        return 0;
+    }
+    if (nDamageIndex <= eLastPhysicalDamage)
+    {
+        nProtectIndex = eProtectPhysical;
+    }
+    else
+    {
+        nProtectIndex = eFirstMagicalProtect + (nDamageIndex - eFirstMagicalDamage);
+    }
+
+    nProtect = pUnit.GetUnitValues().GetProtect(nProtectIndex);
+    if (nDamageIndex <= eLastPhysicalDamage)
+    {
+        nProtect = nProtect*unPar.GetPhysicalProtectModifier(nDamageIndex)/100;
+    }
+    if (nProtectIndex != eProtectSpirit)
+    {
+        nProtect += CalcProtection_SkillStoneSkin(pUnit);
+    }
+    nProtect = MIN(nProtect, 99999);
+    return nProtect;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetPhysicalArmour(unit pUnit, int nDamageIndex, int &bFullSet)
+{
+    EquipmentValues eVal;
+    EquipmentParams ePar;
+    int i,nArmour,nMeshNum,nArmourType;// po wszystkich slotach zsumowac armor i podzielic przez 5
+    
+    if (nDamageIndex > eLastPhysicalDamage)
+    {
+        return 0;
+    }
+    
+    nArmour = 0;
+
+    //Check is whole set used
+    pUnit.GetEquipmentOnSlot(eSlotArmourHelmet, ePar, eVal);  
+    if(eVal!=null) {nMeshNum=eVal.GetMeshNum();bFullSet=true;nArmourType=ePar.GetPhysicalArmour(eDamagePiercing);}
+    else {nMeshNum=0;bFullSet=false;nArmourType=0;}
+    
+    for(i=eSlotArmourHelmet;i<=eSlotArmourBoots;i=i+1)
+    {
+        pUnit.GetEquipmentOnSlot(i, ePar, eVal);    
+        if(eVal!=null) 
+        {
+            nArmour += (eVal.GetPhysicalArmour()*ePar.GetPhysicalArmour(nDamageIndex))/100;
+            if(nMeshNum!=eVal.GetMeshNum())bFullSet=false;
+            if(nArmourType!=ePar.GetPhysicalArmour(eDamagePiercing))bFullSet=false;
+        }
+        else bFullSet=false;
+    }
+    
+    if(bFullSet)nArmour = (nArmour*15)/10;
+    
+    nArmour = MIN(nArmour, 99999);
+	return nArmour;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int ReducedDamage(unit pUnit, int nDamage, int nDamageIndex)
+{
+    int nTmp,k;
+	if (!nDamage) return 0;
+    k=MagicalArmour(pUnit, pUnit.GetUnitParams(), nDamageIndex);
+    if(nDamageIndex<= eLastPhysicalDamage) k+= GetPhysicalArmour(pUnit, nDamageIndex,nTmp);
+        
+    if(!pUnit.IsHeroUnit() && k>=10000) return 0; //immune
+    
+    if(nDamage<10000)return nDamage*nDamage/MAX(1, nDamage + k);
+    
+    if(nDamage>99999)nDamage = 99999;
+    if(k>99999)k = 99999;
+    
+    nDamage/=1000;
+    k/=1000;
+    return 1000*(nDamage*nDamage/MAX(1, nDamage + k));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetArmour(EquipmentValues eVal, EquipmentParams ePar, int nDamageIndex)
+{
+    int nArmour;
+    
+    if (nDamageIndex > eLastPhysicalDamage)
+    {
+        return 0;
+    }
+    nArmour = (eVal.GetPhysicalArmour()*ePar.GetPhysicalArmour(nDamageIndex))/100;
+	return nArmour;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+function void GetHPDamageOnNonUnitTarget(MissileValues mVal, unit pTarget, int& nHPDamage, int& nPoisonDamage)
+{
+    int nDamageIndex;
+    
+    nHPDamage = 0;
+	for (nDamageIndex = 0; nDamageIndex < eDamagePoison; nDamageIndex++)//tutaj nastepuje redukcja damage od zbroi i od ogolnego armoura
+	{
+        nHPDamage += mVal.GetDamage(nDamageIndex);
+	}
+    nPoisonDamage = mVal.GetDamage(eDamagePoison);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetHPDamageOnTarget(MissileValues mVal, unit pTarget, int nSplashDistancePercent, int& nHPDamage, int& nPoisonDamage)
+{
+    int nDamageIndex;
+    int nTargetTypeModifier;
+    
+    if (!pTarget.IsUnit())
+    {
+        GetHPDamageOnNonUnitTarget(mVal, pTarget, nHPDamage, nPoisonDamage);
+        return;
+    }
+    
+    nHPDamage = 0;
+    nPoisonDamage = 0;
+    nTargetTypeModifier = 0;
+    pTarget.GetAttribute("INDEST",nTargetTypeModifier);
+    if(nTargetTypeModifier==1) { nHPDamage = 1; return; }
+    
+    for (nDamageIndex = 0; nDamageIndex < eDamagePoison; nDamageIndex++)//tutaj nastepuje redukcja damage od zbroi i od ogolnego armoura
+	{
+        nHPDamage += ReducedDamage(pTarget, mVal.GetDamage(nDamageIndex), nDamageIndex);
+	}
+    
+    if (pTarget.IsOnHorse())
+    {
+        nTargetTypeModifier = mVal.GetTargetTypeModifier(eTargetTypeModifierOnHorse);
+    }
+    else
+    {
+        nTargetTypeModifier = mVal.GetTargetTypeModifier(pTarget.GetUnitParams().GetTargetTypeModifier() & eTargetTypeModifierTypeMask);
+    }
+	nHPDamage = (nHPDamage*nTargetTypeModifier)/100;// zredukowane o typ obiektu 
+
+    nPoisonDamage = mVal.GetDamage(eDamagePoison);
+    nPoisonDamage = (nPoisonDamage*nTargetTypeModifier)/100;
+
+    if (nSplashDistancePercent != 0)
+    {
+        ASSERT(nSplashDistancePercent <= 100);
+        nHPDamage = nHPDamage*(100 - nSplashDistancePercent)/100;
+        nPoisonDamage = nPoisonDamage*(100 - nSplashDistancePercent)/100;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetHPDamageOnTarget(unit pAttacker, int nFightAction, unit pTarget)
+{
+    MissileValues mVal;
+    MissileParams mPar;
+    EquipmentValues wVal;
+    WeaponParams wPar;
+    int nHPDamage, nPoisonDamage;//,i,j;
+
+    if ((pAttacker == null) || 
+        (!pAttacker.GetWeaponOnSlot(eSlotRightHand, wPar, wVal, mPar) && !pAttacker.GetWeaponOnSlot(eSlotLeftHand, wPar, wVal, mPar)) || 
+        (mPar == null))
+    {
+        return 0;
+    }
+    mVal = GetEmptyMissileValues();
+    InitMissile(pAttacker, nFightAction, mVal, mPar, wVal, wPar, pTarget);
+    
+/*    i=0;j=0;
+    pTarget.GetAttribute("TEAM",i);
+    pAttacker.GetAttribute("TEAM",j);
+    if(i>0 && i==j)
+    {
+        nPoisonDamage=0;
+        return 0;
+    }*/
+    GetHPDamageOnTarget(mVal, pTarget, 0, nHPDamage, nPoisonDamage);
+    return nHPDamage;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+function void GetPoisonHPDamage(int& nPoison, int& nHPDamage)
+{
+    nHPDamage = 1 + 1*(nPoison/50);
+    nPoison = MAX(nPoison - nHPDamage, 0);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void OnSetLevel(unit pUnit, int nOldLevel, int nNewLevel)
+{
+    int nX, nY;
+    unit pObject;
+    
+    ASSERT((pUnit != null) && pUnit.IsUnit());
+    pUnit.GetUnitValues().SetLevel(nNewLevel);//jest zmieniany w kodzie ale na wszelki wypadek tutaj tez
+    if (nNewLevel > nOldLevel)
+    {
+    	pUnit.GetUnitValues().SetParamPoints(pUnit.GetUnitValues().GetParamPoints() + (nNewLevel - nOldLevel)*eParamPointsPerLevel);
+    	pUnit.GetUnitValues().SetSkillPoints(pUnit.GetUnitValues().GetSkillPoints() + (nNewLevel - nOldLevel)*eSkillPointsPerLevel);
+        if (!pUnit.IsHeroUnit())
+        {
+            DistributeNPCPoints(pUnit);
+            pUnit.UpdateChangedUnitValues();
+        }
+        if( pUnit == GetCampaign().GetPlayerHeroUnit( GetCampaign().GetLocalPlayerNum()) )
+        {
+            pUnit.GetLocation(nX,nY);
+            pObject = pUnit.GetMission().CreateObject("LEVELUP_EFFECT",nX,nY,0,0);
+            pObject.SetDynamicHoldObject(pUnit, false, false);
+            
+            if( nNewLevel >= 5 )
+                GetCampaign().CommandMessage(eMsgAchievement, eAchievementReachLevel5, pUnit);
+            if( nNewLevel >= 10 )
+                GetCampaign().CommandMessage(eMsgAchievement, eAchievementReachLevel10, pUnit);
+            if( nNewLevel >= 20 )
+                GetCampaign().CommandMessage(eMsgAchievement, eAchievementReachLevel20, pUnit);
+            if( nNewLevel >= 35 )
+                GetCampaign().CommandMessage(eMsgAchievement, eAchievementReachLevel35, pUnit);
+            if( nNewLevel >= 50 )
+                GetCampaign().CommandMessage(eMsgAchievement, eAchievementReachLevel50, pUnit);
+                    
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int CanIncreasePoint(unit pUnit, int nPointIndex)
+{
+    if (pUnit.GetUnitValues().GetParamPoints() > 0)
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void IncreasePoint(unit pUnit, int nPointIndex, int bIncrease)
+{
+    UnitValues unVal;
+    
+    unVal = pUnit.GetUnitValues();
+    if (bIncrease)
+    {
+        if (CanIncreasePoint(pUnit, nPointIndex) && (unVal.GetParamPoints() > 0))
+        {
+            unVal.SetParamPoints(unVal.GetParamPoints() - 1);
+            unVal.SetBasicPoint(nPointIndex, unVal.GetBasicPoint(nPointIndex) + 1);
+            pUnit.UpdateChangedUnitValues();
+        }
+    }
+    else
+    {
+        if (unVal.GetBasicPoint(nPointIndex) > 0)
+        {
+            unVal.SetParamPoints(unVal.GetParamPoints() + 1);
+            unVal.SetBasicPoint(nPointIndex, unVal.GetBasicPoint(nPointIndex) - 1);
+            pUnit.UpdateChangedUnitValues();
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsLockedSkill(unit uUnit, int nSkill)
+{
+    if ((nSkill >= eFirstPassiveSkill) && (nSkill <= eLastPassiveSkill))
+    {
+        if (uUnit.GetUnitValues().GetLockedPassiveSkills() & (1 << (nSkill - eFirstPassiveSkill)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if ((nSkill >= eFirstActiveSkill) && (nSkill <= eLastActiveSkill))
+    {
+        if (uUnit.GetUnitValues().GetLockedActiveSkills() & (1 << (nSkill - eFirstActiveSkill)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    __ASSERT_FALSE();
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int CanIncreaseSkill(unit pUnit, int nSkillIndex, int& bLockedSkill)
+{
+    bLockedSkill = false;
+    if (IsLockedSkill(pUnit, nSkillIndex))
+    {
+        bLockedSkill = true;
+        return false;
+    }
+    
+    
+    if ((nSkillIndex >= eFirstMagicSkill) && (nSkillIndex <= eLastMagicSkill))//magia
+    {
+      if(pUnit.GetUnitValues().GetBasicSkill(nSkillIndex) > 14) return false;
+      if (pUnit.GetUnitValues().GetBasicSkill(nSkillIndex) > 1+pUnit.GetUnitValues().GetLevel()/2)//see info.ech1178
+      {//poziom skilla nie moze byc wiekszy od levelu postaci+1 (sprawdzic czy dla npców sie to nie zatnie)
+            return false;
+      }
+
+    }
+    else //inne skille
+    {
+        if(pUnit.GetUnitValues().GetBasicSkill(nSkillIndex) > 9) return false;
+        if (pUnit.GetUnitValues().GetBasicSkill(nSkillIndex) > 1+pUnit.GetUnitValues().GetLevel()/3)//see info.ech1178
+        {//poziom skilla nie moze byc wiekszy od levelu postaci+1 (sprawdzic czy dla npców sie to nie zatnie)
+            return false;
+        }
+
+    }
+    
+    if (pUnit.GetUnitValues().GetSkillPoints() > 0)
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanIncreaseSkill(unit pUnit, int nSkillIndex)
+{
+    int bLockedSkill;
+   
+    return CanIncreaseSkill(pUnit, nSkillIndex, bLockedSkill);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void IncreaseSkill(unit pUnit, int nSkillIndex, int bIncrease)
+{
+    UnitValues unVal;
+    
+    unVal = pUnit.GetUnitValues();
+    if (bIncrease)
+    {
+        if (CanIncreaseSkill(pUnit, nSkillIndex) && (unVal.GetSkillPoints() > 0))
+        {
+            unVal.SetSkillPoints(unVal.GetSkillPoints() - 1);
+            unVal.SetBasicSkill(nSkillIndex, unVal.GetBasicSkill(nSkillIndex) + 1);
+            pUnit.UpdateChangedUnitValues();
+            ProcessSkillAchievements(pUnit);
+        }
+    }
+    else
+    {
+        if (unVal.GetBasicSkill(nSkillIndex) > 0)
+        {
+            unVal.SetSkillPoints(unVal.GetSkillPoints() + 1);
+            unVal.SetBasicSkill(nSkillIndex, unVal.GetBasicSkill(nSkillIndex) - 1);
+            pUnit.UpdateChangedUnitValues();
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+function int IsSwitchSkill(int nSkill)
+{
+    if ((nSkill == eSkillBerserk) ||
+        (nSkill == eSkillDefensiveFight) ||
+        (nSkill == eSkillDisarmingArrow) ||
+        (nSkill == eSkillMultiArrows) ||
+        (nSkill == eSkillPiercing) ||
+        (nSkill == eSkillArrowOfDust))
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int SetNextAttackSkill(unit pUnit, int nSkillIndex, int bSecondHand)
+{
+    if (nSkillIndex < 0)
+    {
+        pUnit.SetNextAttackSkill(-1);
+        return true;
+    }
+    else if (IsSwitchSkill(nSkillIndex) && (pUnit.GetNextAttackSkill() == nSkillIndex) && (!!pUnit.GetNextAttackSkillBySecondHand() == !!bSecondHand))
+    {
+        pUnit.SetNextAttackSkill(-1);
+        return true;
+    }
+    if (!CanMakeActiveSkill(pUnit, nSkillIndex, bSecondHand, null))
+    {
+        return false;
+    }
+    pUnit.SetNextAttackSkill(nSkillIndex, bSecondHand);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+//ta funkcja nie sprawdza level'u skilla
+//bAvailable - czy dostepne przy aktualnym zestawie bronii (niezaleznie od tego czy armed/onHorse) - potrzebne
+// dla interface'u aby wlasciwie wyswietlalo aktualny skill z grupy
+function int CanMakeActiveSkill2(unit pUnit, int nSkill, int bSecondHand, int bBothHands, unit pEnemy, int& bAvailable)
+{
+    WeaponParams wpPar, wpParL;
+    EquipmentValues eqValL;
+    EquipmentParams eqParL;
+    int nSlot, nFightAction;
+
+    ASSERT(pUnit);
+    bAvailable = false;
+    //lewel skilla sprawdzamy w funkcji ponizej
+    if (nSkill == eSkillSetTrap)
+    {
+        bAvailable = true;
+        if (pUnit.IsOnHorse())
+        {
+            return false;
+        }
+        return true;
+    }
+    if (nSkill == eSkillSneak)
+    {
+        if (pUnit.IsInArmedMode() || pUnit.IsOnHorse())
+        {
+            return false;
+        }
+        bAvailable = true;
+        return true;
+    }
+    if (nSkill == eSkillKnifeDeathStrike)
+    {
+        //gdy pEnemy == NULL - sprawdzamy czy jest komenda
+        //gdy pEnemy != NULL - sprawdzamy czy mozna wykonac na pEnemy
+        if (!pUnit.IsInSneakMode())
+        {
+            return false;
+        }
+        wpPar = pUnit.GetWeaponParamsOnSlot(eSlotKnife);
+        if ((wpPar != null) && (wpPar.GetWeaponType() == eWeaponKnife))
+        {
+            if (!pUnit.HaveFightActionAnimation(eFightActionStrikeKnifeDeathStrike))
+            {
+                return false;
+            }
+            bAvailable = true;
+            if (pEnemy)
+            {
+                if (pEnemy.IsUnit() && !pEnemy.IsOnHorse() && //(pEnemy.GetAttackTarget() != pUnit) &&//XXXMD
+                    (pUnit.DistanceTo(pEnemy) < e3m)) // maksymalnie z 2m mozna dzgnac wroga
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (nSkill == eSkillStealing)
+    {
+        if (pUnit.IsInArmedMode() || pUnit.IsOnHorse())
+        {
+            return false;
+        }
+        bAvailable = true;
+        if (pEnemy)
+        {
+            if (pEnemy.IsUnit() && !pEnemy.IsOnHorse() && (pEnemy.GetAttackTarget() != pUnit) &&
+                (pUnit.DistanceTo(pEnemy) < e2m) && !pEnemy.IsHeroUnit())// zablokowana mozliwosc okradania innych graczy do patcha 1.6
+            {
+                return CanSteal(pUnit,pEnemy);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    
+    if (nSkill == eSkillBerserk)
+    {
+        if (!pUnit.HaveDirectFightWeapon())
+        {
+            return false;
+        }
+        bAvailable = true;
+        if (!pUnit.IsInArmedMode())
+        {
+            return false;
+        }
+        return true;
+    }
+    if (nSkill == eSkillDefensiveFight)
+    {
+        wpPar = pUnit.GetWeaponParamsOnSlot(nSlot);
+        if ((wpPar != null) && (wpPar.GetWeaponType() == eWeaponSword))
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (nSkill == eSkillDirtyTrick)
+    {
+        if (!pUnit.HaveDirectFightWeapon())
+        {
+            return false;
+        }
+        bAvailable = true;
+        if (!pUnit.IsInArmedMode())
+        {
+            return false;
+        }
+        if (!pUnit.HaveFightActionAnimation(eFightActionDirtyTrick))
+        {
+            return false;
+        }
+        return true;
+    }
+    if (nSkill == eSkillStun)
+    {
+        if (bBothHands)
+        {
+            wpPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+            wpParL = pUnit.GetWeaponParamsOnSlot(eSlotLeftHand);
+            if ((wpPar != null) && (wpPar.GetWeaponType() == eWeaponMace) &&
+                (wpParL != null) && (wpParL.GetWeaponType() == eWeaponMace))
+            {
+                bAvailable = true;
+                if (!pUnit.IsInArmedMode())
+                {
+                    return false;
+                }
+                if (!pUnit.HaveFightActionAnimation(eFightActionStrikeStunBothHands))
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (bSecondHand)
+            {
+                nSlot = eSlotLeftHand;
+                nFightAction = eFightActionStrikeStunLeftHand;
+            }
+            else
+            {
+                nSlot = eSlotRightHand;
+                nFightAction = eFightActionStrikeStun;
+            }
+            wpPar = pUnit.GetWeaponParamsOnSlot(nSlot);
+            if ((wpPar != null) && 
+                (wpPar.GetWeaponType() == eWeaponMace))
+            {
+                bAvailable = true;
+                if (!pUnit.IsInArmedMode())
+                {
+                    return false;
+                }
+                if (!pUnit.HaveFightActionAnimation(nFightAction))
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    if (nSkill == eSkillSwordBrake)
+    {
+        wpPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+        wpParL = pUnit.GetWeaponParamsOnSlot(eSlotLeftHand);
+        if ((wpPar != null) && 
+            ((wpPar.GetWeaponType() == eWeaponSword) || (wpPar.GetWeaponType() == eWeaponAxe) || (wpPar.GetWeaponType() == eWeaponMace)) &&
+            (wpParL != null) && (wpParL.GetWeaponFlags() & eWeaponCanBrakeSword))
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            if (!pUnit.HaveFightActionAnimation(eFightActionBrakeSword))
+            {
+                return false;
+            }
+            if (pEnemy != null)
+            {
+                if (pEnemy.IsUnit() && pEnemy.HaveWeaponPossibleToBrake())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (nSkill == eSkillDismountFromHorse)
+    {
+        wpPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+        if ((wpPar != null) && 
+            ((wpPar.GetWeaponType() == eWeaponSpear) || (wpPar.GetWeaponType() == eWeaponMagicClub)))
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            if (!pUnit.HaveFightActionAnimation(eFightActionDismountFromHorse))
+            {
+                return false;
+            }
+            if (pEnemy != null)
+            {
+                if (pEnemy.IsUnit() && pEnemy.IsOnHorse())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (nSkill == eSkillPullShield)
+    {
+        if (bBothHands)
+        {
+            wpPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+            wpParL = pUnit.GetWeaponParamsOnSlot(eSlotLeftHand);
+            if ((wpPar != null) && (wpPar.GetWeaponType() == eWeaponAxe) &&
+                (wpParL != null) && (wpParL.GetWeaponType() == eWeaponAxe))
+            {
+                bAvailable = true;
+                if (!pUnit.IsInArmedMode())
+                {
+                    return false;
+                }
+                if (!pUnit.HaveFightActionAnimation(eFightActionPullShieldBothHands))
+                {
+                    return false;
+                }
+                if (pEnemy != null)
+                {
+                    if (pEnemy.IsUnit() && 
+                        pEnemy.GetEquipmentOnSlot(eSlotLeftHand, eqParL, eqValL) &&
+                        (eqParL.GetType() == eEqTypeShield) &&
+                        !(eqParL.GetEquipmentFlags() & eEquipmentCantBePullShield))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }                
+        else
+        {
+            if (bSecondHand)
+            {
+                nSlot = eSlotLeftHand;
+                nFightAction = eFightActionPullShieldLeftHand;
+            }
+            else
+            {
+                nSlot = eSlotRightHand;
+                nFightAction = eFightActionPullShield;
+            }
+            wpPar = pUnit.GetWeaponParamsOnSlot(nSlot);
+            if ((wpPar != null) && 
+                (wpPar.GetWeaponType() == eWeaponAxe))
+            {
+                bAvailable = true;
+                if (!pUnit.IsInArmedMode())
+                {
+                    return false;
+                }
+                if (!pUnit.HaveFightActionAnimation(nFightAction))
+                {
+                    return false;
+                }
+                if (pEnemy != null)
+                {
+                    if (pEnemy.IsUnit() && 
+                        pEnemy.GetEquipmentOnSlot(eSlotLeftHand, eqParL, eqValL) &&
+                        (eqParL.GetType() == eEqTypeShield) &&
+                        !(eqParL.GetEquipmentFlags() & eEquipmentCantBePullShield))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    if (nSkill == eSkillDeadlyPiruet)
+    {
+        wpPar = pUnit.GetWeaponParamsOnSlot(eSlotRightHand);
+        if ((wpPar != null) && 
+            //(wpPar.GetWeaponType() == eWeaponSword) &&  //wyremowany zeby byly wszystkie dwureczne
+            pUnit.HaveDirectFightWeapon() &&
+            (((wpPar.GetSlotNumMask() & eBlockedEqSlotNumMask) >> eBlockedEqSlotNumShift) & (1 << eSlotLeftHand)))//bothhands
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            if (!pUnit.HaveFightActionAnimation(eFightActionStrikeDeadlyPiruet))
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (nSkill == eSkillBurn)
+    {
+        eqParL = pUnit.GetEquipmentParamsOnSlot(eSlotLeftHand);
+        if (pUnit.HaveDirectFightWeapon() && 
+            (eqParL != null) && (eqParL.GetType() == eEqTypeTorch))
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            if (!pUnit.HaveFightActionAnimation(eFightActionBurn))
+            {
+                return false;
+            }
+            if (pEnemy)
+            {
+                if (pEnemy.IsUnit() && !pEnemy.IsOnHorse())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (nSkill == eSkillShieldTrick)
+    {
+        eqParL = pUnit.GetEquipmentParamsOnSlot(eSlotLeftHand);
+        if (pUnit.HaveDirectFightWeapon() && 
+            (eqParL != null) && (eqParL.GetType() == eEqTypeShield))
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            if (!pUnit.HaveFightActionAnimation(eFightActionStrikeShieldTrick))
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if ((nSkill == eSkillDisarmingArrow) || (nSkill == eSkillMultiArrows) ||
+        (nSkill == eSkillPiercing) || 
+        (nSkill == eSkillArrowOfDust))
+    {
+        if (pUnit.HaveShootWeapon())
+        {
+            bAvailable = true;
+            if (!pUnit.IsInArmedMode())
+            {
+                return false;
+            }
+            if (!pUnit.HaveFightActionAnimation(eFightActionShoot))
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    __ASSERT_FALSE();
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanMakeActiveSkill(unit pUnit, int nSkill, int bSecondHand, int bBothHands, unit pEnemy, int& bShowDisabled, int& bAvailable)
+{
+    bShowDisabled = false;
+    bAvailable = false;
+    if (!CanMakeActiveSkill2(pUnit, nSkill, bSecondHand, bBothHands, pEnemy, bAvailable))
+    {
+        return false;
+    }
+    if (pUnit.GetUnitValues().GetSkill(nSkill) == 0)
+    {
+        if (nSkill != eSkillSetTrap)
+        {
+            bShowDisabled = true;
+            return false;
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanMakeActiveSkill(unit pUnit, int nSkill, int bSecondHand, int bBothHands, unit pEnemy)
+{
+    int bShowDisabled, bAvailable;
+    return CanMakeActiveSkill(pUnit, nSkill, bSecondHand, bBothHands, pEnemy, bShowDisabled, bAvailable);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanMakeActiveSkill(unit pUnit, int nSkill, int bSecondHand, unit pEnemy)
+{
+    int bShowDisabled, bAvailable;
+    return CanMakeActiveSkill(pUnit, nSkill, bSecondHand, false, pEnemy, bShowDisabled, bAvailable);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CanMakeActiveSkill(unit pUnit, int nSkill, int bSecondHand, unit pEnemy, int& bShowDisabled, int& bAvailable)
+{
+    return CanMakeActiveSkill(pUnit, nSkill, bSecondHand, false, pEnemy, bShowDisabled, bAvailable);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MakeActiveSkill(unit pUnit, int nSkill, int nFightAction, unit pEnemy)
+{
+    int nChance;
+    PotionValues ptVal;
+    EquipmentValues eqValSh;
+    EquipmentParams eqParSh;
+    int nTmp, nSlot;
+    int bSecondHand, bBothHands;
+    
+    ASSERT(pUnit);ASSERT(pEnemy);
+    if (pEnemy.GetUnitParams().GetBlockedActiveSkillsMask() & (1 << nSkill))
+    {
+        return false;
+    }
+    if ((nFightAction == eFightActionStrikeStunLeftHand) ||
+        (nFightAction == eFightActionPullShieldLeftHand))
+    {
+        bSecondHand = true;
+    }
+    else if ((nFightAction == eFightActionStrikeStunBothHands) ||
+        (nFightAction == eFightActionPullShieldBothHands))
+    {
+        bBothHands = true;
+    }
+
+    if (nSkill == eSkillStealing)
+    {
+        if (!CanMakeActiveSkill(pUnit, nSkill, bSecondHand, bBothHands, pEnemy))
+        {
+            return false;
+        }
+        if (Rand(100) >= CalcSkillChanceInfo(pUnit, nSkill) )
+        {
+            DisplayMessageStealingFailed(pUnit);
+            SetStealingDone(pUnit,pEnemy);
+            pEnemy.CommandAttack(pUnit);
+            pEnemy.OnStealingDetected(pUnit);
+            return false;
+        }
+    }
+    else if (!DiceCanDoNextAttackSkillOnTarget(pUnit, nSkill, bSecondHand, bBothHands, pEnemy))
+    {
+        return false;
+    }
+    
+    if (nSkill == eSkillStun)
+    {
+        ASSERT((pEnemy != null) && pEnemy.IsUnit());
+        ptVal = pEnemy.AddPotionValues("STATE_STUNED");//XXXMD
+        ptVal.SetPotionFlags(ePotionStun);
+        ptVal.SetPotionTicks( CalcStunTime_SkillStun(pUnit) * 30);
+        pEnemy.UpdateChangedUnitValues();
+    }
+    else if (nSkill == eSkillDirtyTrick)
+    {
+        ASSERT((pEnemy != null) && pEnemy.IsUnit());
+        ptVal = pEnemy.AddPotionValues("STATE_BLINDET");//XXXMD
+        ptVal.SetPotionFlags(ePotionDirtyTrick);
+        
+        nTmp = GetAttack(pEnemy);
+        nTmp = nTmp-(nTmp/MAX(1, pUnit.GetUnitValues().GetSkill(eSkillDirtyTrick)+1));
+        ptVal.SetAddParam(eParamAttack, -nTmp);
+        
+        nTmp = GetDefence(pEnemy);
+        nTmp = nTmp-(nTmp/MAX(1, pUnit.GetUnitValues().GetSkill(eSkillDirtyTrick)+1));
+        ptVal.SetAddParam(eParamDefence, -nTmp);
+        
+        ptVal.SetPotionTicks( CalcBlindTime_SkillDirtyTrick(pUnit) * 30 );
+        pEnemy.UpdateChangedUnitValues();
+    }
+    else if (nSkill == eSkillArrowOfDust)
+    {
+        ASSERT((pEnemy != null) && pEnemy.IsUnit());
+        ptVal = pEnemy.AddPotionValues("STATE_BLINDET");//XXXMD
+        
+        ptVal.SetPotionFlags(ePotionArrowOfDust);
+        
+        nTmp = GetAttack(pEnemy);
+        nTmp = nTmp-(nTmp/MAX(1, pUnit.GetUnitValues().GetSkill(eSkillArrowOfDust)+1));
+        ptVal.SetAddParam(eParamAttack, -nTmp);
+        
+        nTmp = GetDefence(pEnemy);
+        nTmp = nTmp-(nTmp/MAX(1, pUnit.GetUnitValues().GetSkill(eSkillArrowOfDust)+1));
+        ptVal.SetAddParam(eParamDefence, -nTmp);
+        
+        ptVal.SetPotionTicks( CalcBlindTime_SkillArrowOfDust(pUnit) * 30);
+        pEnemy.UpdateChangedUnitValues();
+    }
+    else if (nSkill == eSkillShieldTrick)
+    {
+        ASSERT((pEnemy != null) && pEnemy.IsUnit());
+        ptVal = pEnemy.AddPotionValues("STATE_SLOWED");//XXXMD
+        ptVal.SetPotionFlags(ePotionSlowDown);
+        ptVal.SetPotionTicks( CalcSlowDownTime_SkillShieldTrick(pUnit) * 30 );
+        pEnemy.UpdateChangedUnitValues();
+    }
+    else if (nSkill == eSkillBurn)
+    {
+        ASSERT((pEnemy != null) && pEnemy.IsUnit());
+        ptVal = pEnemy.AddPotionValues("STATE_SLOWED");//XXXMD
+        ptVal.SetPotionFlags(ePotionSlowDown);
+        ptVal.SetPotionTicks( CalcBurnTime_SkillBurn(pUnit) * 30 );
+        pEnemy.UpdateChangedUnitValues();
+    }
+    else if (nSkill == eSkillStealing)
+    {
+        Steal(pUnit,pEnemy,CalcMinItems_SkillStealing(pUnit),CalcMaxItems_SkillStealing(pUnit));
+        nTmp=0;
+        pUnit.GetAttribute("S",nTmp);
+        nTmp++;
+        pUnit.SetAttribute("S",nTmp);
+        if(nTmp==GetNextSkillPointLimit(nTmp-1))
+        {
+            pUnit.SetAttribute("AddSP",4);
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetSkillSneakValues(unit pUnit, int& nDecSightRangePercent, int& nDecSightAnglePercent, int& nDecEarRangePercent)
+{
+    nDecSightRangePercent = CalcReducedRangePercent_SkillSneak(pUnit);
+    nDecSightAnglePercent = CalcReducedAnglePercent_SkillSneak(pUnit);
+    nDecEarRangePercent   = CalcReducedRangePercent_SkillSneak(pUnit);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//inicjacja przez np. trap w mPar Min/MaxDamage jest bezposrednio damage
+function void InitOtherMissile(unit pUnit, int nDamage, MissileValues mVal, MissileParams mPar)
+{
+    int i, nMin, nMax, nDam;
+    
+	// wpisaæ do  missile'a
+	for (i = 0; i < eDamagesCnt; i++)
+    {
+		nMin = mPar.GetMinDamage(i);
+        nMax = mPar.GetMaxDamage(i);
+        if (nMax > nMin)
+        {
+            nDam = nDamage*(nMin + Rand(nMax - nMin + 1))/100;
+        }
+        else
+        {
+            nDam = nDamage*nMax/100;
+        }
+        
+        mVal.SetDamage(i, nDam);
+    }
+	for (i = 0; i < eTargetTypeModifiersCnt; i++)
+    {
+        mVal.SetTargetTypeModifier(i, 100);
+    }
+    if (mPar.GetDamageRangeA() > 0)
+    {
+        mVal.SetDamageRangeA(mPar.GetDamageRangeA());
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetSkillDustEffectID(unit pUnit, int nSkillIndex, string& strEffectID)
+{
+    if (nSkillIndex == eSkillDirtyTrick)
+    {
+        strEffectID = "SKILL_DIRTY_TRICK";
+    }
+    else if (nSkillIndex == eSkillArrowOfDust)
+    {
+        strEffectID = "SKILL_DIRTY_TRICK";
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetSkillHorseRidingValues(unit pUnit, int& bCanRideHorse, int& nMaxSpeedPercent, int& bCanUseDirectFightWeapons, int& bCanUseShootWeapons, int& bCanCastMagic)
+{
+    int nSkill;
+    
+    nSkill = pUnit.GetUnitValues().GetSkill(eSkillHorseRiding);
+    if (nSkill <= 0)
+    {
+        bCanRideHorse = false;
+        nMaxSpeedPercent = 50;//na wszelki wypadek
+        bCanUseDirectFightWeapons = false;
+        bCanUseShootWeapons = false;
+        bCanCastMagic = false;
+    }
+    else{
+        bCanRideHorse = true;
+        nMaxSpeedPercent = 100;
+        bCanUseDirectFightWeapons = true;
+        bCanUseShootWeapons = true;
+        bCanCastMagic = true;
+    }
+    /*else if (nSkill == 1)
+    {
+        bCanRideHorse = true;
+        nMaxSpeedPercent = 100;
+        bCanUseDirectFightWeapons = true;
+        bCanUseShootWeapons = true;
+        bCanCastMagic = true;
+    }
+    else if (nSkill == 2)
+    {
+        bCanRideHorse = true;
+        nMaxSpeedPercent = 100;
+        bCanUseDirectFightWeapons = false;
+        bCanUseShootWeapons = false;
+        bCanCastMagic = false;
+    }
+    else if (nSkill == 3)
+    {
+        bCanRideHorse = true;
+        nMaxSpeedPercent = 100;
+        bCanUseDirectFightWeapons = false;
+        bCanUseShootWeapons = true;
+        bCanCastMagic = true;
+    }
+    else //(nSkill >= 4)
+    {
+        bCanRideHorse = true;
+        nMaxSpeedPercent = 100;
+        bCanUseDirectFightWeapons = true;
+        bCanUseShootWeapons = true;
+        bCanCastMagic = true;
+    }*/
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GetHitCollidedByHorseDamage(unit pUnit, unit pTarget, int& nHPDamage, int& nPoisonDamage)
+{
+    int nSkill, nDamagePercent;
+    
+    nSkill = pUnit.GetUnitValues().GetSkill(eSkillHorseRiding);
+    if (nSkill < 5)
+    {
+        nHPDamage = nPoisonDamage = 0;
+    }
+    else
+    {
+        if (pUnit.IsHorseMovingBack())
+        {
+            nDamagePercent = 0;
+        }
+        else
+        {
+            nDamagePercent = MAX(pUnit.GetHorseRunSpeedPercent(), 0);
+        }
+        nHPDamage = pTarget.GetMaxHP()*MIN((20 + (nSkill - 5)*20), 90)/100;
+        nHPDamage = nHPDamage*nDamagePercent/100;
+        nPoisonDamage = 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int CanJoinInventoryEquipments(unit pUnit, EquipmentParams ePar, EquipmentValues eVal, EquipmentValues eToVal)
+{
+    int nIndex,nLevel,nSum, a, b, c, min, max;
+    if(ePar.GetType()== eEqTypeTorch) return false;
+    if(ePar.GetType()== eEqTypeRing)
+    { //only 10 rings can be stacked
+        if(eVal.GetMultiplied() + eToVal.GetMultiplied()>10) return false;
+    }
+    else
+    { //only 50 elementow broni i armora can be stacked
+        if(eVal.GetMultiplied() + eToVal.GetMultiplied()>eMaxEqClass) return false;
+    }
+    
+    nSum=0;
+    for (nIndex = 0; nIndex < ePointsCnt; nIndex++)//vitality,dexterity itp
+    {
+        if(eVal.GetAddPoint(nIndex)>0|| eToVal.GetAddPoint(nIndex)>0)nSum++;
+    }
+    for (nIndex = 0; nIndex < eParamsCnt; nIndex++)//hp,mana itp
+    {
+        if(eVal.GetAddParam(nIndex)>0 || eToVal.GetAddParam(nIndex)>0)nSum++;
+    }
+    for (nIndex = 0; nIndex < eProtectsCnt; nIndex++)//protect
+    {
+        if(eVal.GetAddProtect(nIndex)>0 || eToVal.GetAddProtect(nIndex)>0)nSum++;
+    }
+    for (nIndex = 0; nIndex < eSkillsCnt; nIndex++)//skill
+    {
+        if(eVal.GetAddSkill(nIndex)>0 || eToVal.GetAddSkill(nIndex)>0)nSum++;
+    }
+    if(nSum>5) return false;
+    
+    // uwaga, kod wziety z JoinInventoryEquipments (i NoOfAdds)
+    nSum = 0;
+    for (nIndex = 0; nIndex < ePointsCnt; nIndex++)//vitality,dexterity itp
+    {
+        a=eVal.GetAddPoint(nIndex);
+        b=eToVal.GetAddPoint(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        if (c) nSum++;
+    }
+    for (nIndex = 0; nIndex < eParamsCnt; nIndex++)//hp,mana itp
+    {
+        a = eVal.GetAddParam(nIndex);
+        b = eToVal.GetAddParam(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        if (c) nSum++;
+    }
+    for (nIndex = 0; nIndex < eProtectsCnt; nIndex++)//protect
+    {
+        a = eVal.GetAddProtect(nIndex);
+        b = eToVal.GetAddProtect(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        if (c) nSum++;
+    }
+    for (nIndex = 0; nIndex < eSkillsCnt; nIndex++)//skill
+    {
+        a = eVal.GetAddSkill(nIndex);
+        b = eToVal.GetAddSkill(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        if (c>0) nSum++;
+    }
+    // na koncu sprawdzenie jaki bedzie wymagany level powstalego przedmiotu
+    nSum = MAX(1,nSum+MAX(eVal.GetLevel(),eToVal.GetLevel()) - 5);
+    if( nSum > pUnit.GetUnitValues().GetLevel() )
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//eNewVal zainicjowany przez eToVal
+function void JoinInventoryEquipments(unit pUnit, EquipmentParams ePar, EquipmentValues eVal, EquipmentValues eToVal, EquipmentValues eNewVal)
+{
+    int nIndex,nLevel,a,b,c,min,max;
+    
+    
+    eNewVal.SetMultiplied(MIN(eMaxEqClass,eVal.GetMultiplied()+eToVal.GetMultiplied()));
+    eNewVal.SetMultiplied2(MIN(eMaxEqClass,eVal.GetMultiplied2()+eToVal.GetMultiplied2()));
+    nLevel= MAX(eVal.GetLevel(),eToVal.GetLevel());
+    
+    eNewVal.SetLevel(nLevel);
+    //!!tmp do zmiany
+ 
+    InitArmourValue(eNewVal,ePar,nLevel);
+    InitShieldValue(eNewVal,ePar,nLevel);
+    
+    // uwaga, ten sam kod wykorzystany w CanJoinInventoryEquipments
+    for (nIndex = 0; nIndex < ePointsCnt; nIndex++)//vitality,dexterity itp
+    {
+        a=eVal.GetAddPoint(nIndex);
+        b=eToVal.GetAddPoint(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        eNewVal.SetAddPoint(nIndex,  c );
+    }
+    for (nIndex = 0; nIndex < eParamsCnt; nIndex++)//hp,mana itp
+    {
+        a = eVal.GetAddParam(nIndex);
+        b = eToVal.GetAddParam(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        eNewVal.SetAddParam(nIndex, c);
+    }
+    for (nIndex = 0; nIndex < eProtectsCnt; nIndex++)//protect
+    {
+        a = eVal.GetAddProtect(nIndex);
+        b = eToVal.GetAddProtect(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        eNewVal.SetAddProtect(nIndex, c);
+    }
+    for (nIndex = 0; nIndex < eSkillsCnt; nIndex++)//skill
+    {
+        a = eVal.GetAddSkill(nIndex);
+        b = eToVal.GetAddSkill(nIndex);
+        min=MIN(a,b);
+        max=MAX(a,b);
+        if(min>1)min=min/2;
+        c = max + min;
+        eNewVal.SetAddSkill(nIndex,c);
+    }
+    
+    eNewVal.SetPrice(CalculateEquipmentPrice(eNewVal, ePar));    
+    
+    eNewVal.SetRequiredLevel(MAX(1,NoOfAdds(eNewVal)+nLevel - 5));
+    
+    if( eNewVal.GetMultiplied() >= 2 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseMetalurgyToCreateClass2Object, pUnit);
+    }
+    if( eNewVal.GetMultiplied() >= 10 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseMetalurgyToCreateClass10Object, pUnit);
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int CanJoinInventoryWeapons(unit pUnit, WeaponParams wPar, EquipmentValues eVal, EquipmentValues eToVal)
+{
+    int i,nExtra1,nExtra2;
+    
+    if(eVal.GetWeaponExtraDamageType()>=eDamageCold &&
+       eToVal.GetWeaponExtraDamageType()>=eDamageCold )
+    {
+        if(eVal.GetWeaponExtraDamageType() !=  eToVal.GetWeaponExtraDamageType())return false;
+    }
+    
+    return CanJoinInventoryEquipments(pUnit, wPar, eVal, eToVal);
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void JoinInventoryWeapons(unit pUnit, WeaponParams wPar, EquipmentValues eVal, EquipmentValues eToVal, EquipmentValues eNewVal)
+{
+    int nExtraDamagePrecent1,nExtraDamagePrecent2,nExtraDamgeType,i,nVarMin,nVarMax;
+    JoinInventoryEquipments(pUnit, wPar, eVal, eToVal, eNewVal);
+    
+    i=eNewVal.GetMultiplied();
+    if(i>10)
+    {
+        nVarMin = 100; nVarMax = 100;
+    }
+    else if (i<2)
+    {
+	    nVarMin = 80 + Rand(20);
+	    nVarMax = 100 + Rand(20);
+    }
+    else
+    {
+        nVarMin = 100-20+i*2 + Rand(20-i*2);
+	    nVarMax = 100 +  Rand(20-i*2);
+    }
+    if (nVarMax < nVarMin)
+    {
+        SWAP(nVarMax, nVarMax);
+    }
+    
+    
+    eNewVal.SetWeaponVarMin(nVarMin);
+    eNewVal.SetWeaponVarMax(nVarMax);
+
+    
+    
+    nExtraDamagePrecent1=0;
+    nExtraDamagePrecent2=0;
+    if(eVal.GetWeaponExtraDamageType()>=eDamageCold)
+    {
+        nExtraDamgeType = eVal.GetWeaponExtraDamageType();
+        nExtraDamagePrecent1 = eVal.GetWeaponExtraDamagePercent();
+    }
+    if(eToVal.GetWeaponExtraDamageType()>=eDamageCold)// && nExtraDamagePrecent<eToVal.GetWeaponExtraDamagePercent())
+    {
+        nExtraDamgeType = eToVal.GetWeaponExtraDamageType();
+        nExtraDamagePrecent2 = eToVal.GetWeaponExtraDamagePercent();   
+    }
+    
+    if(nExtraDamagePrecent1>0 && nExtraDamagePrecent2>0)
+    {
+        if(nExtraDamagePrecent1> nExtraDamagePrecent2)nExtraDamagePrecent2/=2;
+        else nExtraDamagePrecent1/=2;
+    }
+    if(nExtraDamagePrecent1>0 || nExtraDamagePrecent2>0)
+    {
+        eNewVal.SetWeaponExtraDamageType(nExtraDamgeType);
+        eNewVal.SetWeaponExtraDamagePercent(nExtraDamagePrecent1 + nExtraDamagePrecent2);    
+    }
+        
+    CalculateWeaponPrice(eNewVal, wPar);
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int CanJoinInventoryEquipmentWithSpecialArtefact(unit pUnit, EquipmentParams ePar, EquipmentValues eVal, SpecialArtefactParams artPar)
+{
+    /*if (eVal.GetMultiplied2() > 10)
+    {
+        return false;
+    }*/
+    if (artPar.GetSpecialArtefactType() != eTypeJoinArtefact)
+    {
+        return false;
+    }
+    /*if (artPar.GetJoinEquipmentType() == eEqTypeWeapon && ePar.GetType()==eEqTypeMagicClub)
+    {
+        return true;
+    }*/
+    if (artPar.GetJoinEquipmentType() != ePar.GetType())
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void JoinInventoryEquipmentWithSpecialArtefact(unit pUnit, EquipmentParams ePar, EquipmentValues eVal, SpecialArtefactParams artPar)
+{
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+function int CanJoinInventoryWeaponWithSpecialArtefact(unit pUnit, WeaponParams wPar, EquipmentValues eVal, SpecialArtefactParams artPar)
+{
+    if (!CanJoinInventoryEquipmentWithSpecialArtefact(pUnit, wPar, eVal, artPar))
+    {
+        return false;
+    }
+    if (eVal.GetWeaponExtraDamageType()>=eDamageCold && eVal.GetWeaponExtraDamageType() != artPar.GetJoinValueType())
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void JoinInventoryWeaponWithSpecialArtefact(unit pUnit, WeaponParams wPar, EquipmentValues eVal, SpecialArtefactParams artPar)
+{
+    int i,j;
+    eVal.SetMultiplied2(MIN(eMaxEqClass,eVal.GetMultiplied2() + 1));
+    eVal.SetWeaponExtraDamageType(artPar.GetJoinValueType());
+    
+    i=eVal.GetWeaponExtraDamagePercent();
+    j=100;
+    if(i>100)j=100/(1+(i/100));//XXXMD  zablokowana mozliwosc robienia superbroni.
+    
+    eVal.SetWeaponExtraDamagePercent(i + ((artPar.GetJoinAddValue()*j)/100));
+
+    UpdateWeaponForceFieldType(wPar, eVal);
+    
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//uwaga: wywolywane z interface'u
+//funkcja wywolywana gdy shop nie ma skryptu-ownera lub nie ma w nim eventu GetHeroShopPricePercents
+function void GetHeroShopPricePercents(unit pHero, unit pShopUnit, int& nBuyPercent, int& nSellPercent)
+{
+    //zalezne od reputacji.
+    int nPoints, nGuild;
+    
+    nPoints=0;
+    nGuild=0;
+    
+    nBuyPercent = 150;
+    nSellPercent = 50;
+    
+    pShopUnit.GetAttribute("PG",nGuild);
+    if(nGuild==eGuildMerchant)// || nGuild==eGuildWarrior || nGuild==eGuildMage)
+    {
+        pHero.GetAttribute(nGuild,nPoints);
+        
+        nBuyPercent = 150-(MIN(10,nPoints)*5);
+    }
+    if(nGuild==eGuildThief)
+    {
+        pHero.GetAttribute(nGuild,nPoints);
+        nSellPercent = 50+(MIN(10,nPoints)*5);
+    }
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// ujednolicone funkcje do obliczania parametrow skilli uzywane w grze i przy wyswietlaniu tooltipsow w GetSkillInfoText()
+// czesc z nich jest teraz obliczana osobno w dwoch miejscach w rozny sposob!!!
+// trzeba je wszystkie przejrzec i poprawic
+///////////////////////////////////////////////////////////////////////////////////////////////////
+function int CalcSkillDamagePercent(unit pUnit, int nSkill)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(nSkill);
+ // hit percent
+    if( nSkill == eSkillCriticalHit )
+    {
+        if(nLevel < 5)
+            return 250 + nLevel * 50;
+        return 500;    
+    }
+    else if( nSkill == eSkillDeadlyPiruet )
+    {
+        return 100 + nLevel * 10;
+    }
+    else if( nSkill == eSkillDefensiveFight )
+    {
+        return 50;
+    }
+// 100 + hit increase percent
+    else if( nSkill == eSkillKnifeDeathStrike ||
+             nSkill == eSkillStrongHand ||
+             nSkill == eSkillBerserk ||
+             nSkill == eSkillCloseDistanceShoot ||
+             nSkill == eSkillHorseRiding ||
+             nSkill == eSkillPiercing ||
+             nSkill == eSkillPrecizeAiming ||
+             nSkill == eSkillOverdraw )
+    {
+        return 100 + CalcSkillDamageIncreasePercent(pUnit, nSkill);
+    }
+
+    __ASSERT_FALSE();
+    return 100;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcSkillDamageIncreasePercent(unit pUnit, int nSkill)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = MIN(10,pUnit.GetUnitValues().GetSkill(nSkill));
+ // hit increase percent
+    if( nSkill == eSkillStrongHand )
+    {
+        return nLevel * 10;
+    }
+    else if( nSkill == eSkillBerserk )
+    {
+        if(nLevel == 0)
+            return 0;
+        return 40 * nLevel;
+    }
+    else if( nSkill == eSkillHorseRiding )
+    {
+        return 20 * nLevel;
+    }
+    else if( nSkill == eSkillKnifeDeathStrike )
+    {
+        return 100 + nLevel * 100;
+    }
+    else if( nSkill == eSkillPiercing )
+    {
+        return nLevel * 75;
+    }
+    else if( nSkill == eSkillPrecizeAiming )
+    {
+        return 400;
+    }
+    else if( nSkill == eSkillOverdraw )
+    {
+        return nLevel * 10;
+    }
+
+    __ASSERT_FALSE();
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcSkillAttackPercent(unit pUnit, int nSkill)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(nSkill);
+
+    if( (nSkill == eSkillDoubleBlade) ||
+        (nSkill == eSkillHorseRiding) )
+    {
+        return 100 + CalcSkillAttackIncreasePercent(pUnit, nSkill);
+    }
+    
+    __ASSERT_FALSE();
+    return 100;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcSkillAttackIncreasePercent(unit pUnit, int nSkill)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(nSkill);
+ 
+    if( nSkill == eSkillDoubleBlade )
+    {
+        return MIN(200, nLevel * 20);
+    }
+    if( nSkill == eSkillHorseRiding )
+    {
+        return MIN(100,nLevel*10);
+    } 
+    
+    __ASSERT_FALSE();
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcFullInventoryPercent_SkillSwimming(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillSwimming);
+    return nLevel * 10;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcMinItems_SkillStealing(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillStealing);
+    return 1 + nLevel / 4;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcMaxItems_SkillStealing(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillStealing);
+    return 2 + nLevel / 3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcReducedRangePercent_SkillSneak(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillSneak);
+    if( nLevel == 0 )
+        return 100;
+    return 100 - (25 + nLevel * 5);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcReducedAnglePercent_SkillSneak(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillSneak);
+    if( nLevel == 0 )
+        return 100;
+    return 100 - nLevel * 3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcNumberOfArrows_SkillMultiArrows(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillMultiArrows);
+    return (2+nLevel)/3 + 1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcNumberOfEnemies_SkillPiercing(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillPiercing);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcDrawSpeedPercent_SkillFastAiming(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillFastAiming);
+    return nLevel * 50;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcHitChance_SkillPrecizeAiming(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillPrecizeAiming);
+    return nLevel * 3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcAccurancy_SkillArchery(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillArchery);
+    return nLevel * 5;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcProtection_SkillStoneSkin(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillStoneSkin);
+
+    if(nLevel < 3)
+	    return nLevel * 10;
+    if(nLevel < 6)
+	    return 30 + (nLevel - 2) * 20;
+    return 90 + (nLevel - 5) * 30;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcIncomingDamagePercent_SkillDefensiveFight(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillDefensiveFight);
+    if( nLevel == 0 )
+        return 0;
+    return 47 + nLevel * 3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+    
+function int CalcCriticalHitChance_SkillDefensiveFight(unit pUnit) // wartosc przed przecinkiem
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillDefensiveFight);
+    if( nLevel == 0 )
+        return 1;
+    return (13 + nLevel * 2) / 10;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+    
+function int CalcCriticalHitChanceFraction_SkillDefensiveFight(unit pUnit) // wartosc po przecinku
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillDefensiveFight);
+    if( nLevel == 0 )
+        return 0;
+    return (13 + nLevel * 2) % 10;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+    
+function int CalcDefencePercent_SkillDefensiveFight(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillDefensiveFight);
+    if( nLevel == 0 )
+        return 0;
+    return nLevel * 50;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcTrapLevel_SkillSetTrap(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillSetTrap);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcTrapDamage_SkillSetTrap(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillSetTrap);
+    return nLevel * eTrapAddDamagePerSkillLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcTrapHoldTime_SkillSetTrap(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillSetTrap);
+    return nLevel * eTrapAddTimePerSkillLevel / 30;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcBlindTime_SkillArrowOfDust(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillArrowOfDust);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcBlindTime_SkillDirtyTrick(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillDirtyTrick);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcStunTime_SkillStun(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillStun);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcBurnTime_SkillBurn(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillBurn);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcSlowDownTime_SkillShieldTrick(unit pUnit)
+{
+    int nLevel;
+    ASSERT(pUnit);
+    nLevel = pUnit.GetUnitValues().GetSkill(eSkillShieldTrick);
+    return nLevel;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcOpenChancePercent_SkillLockPick(unit pUnit, int nLockLevel)
+{
+    return CalcOpenLockChance(nLockLevel, pUnit);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetAccessibleChamber(int nLevel)
+{
+    if( nLevel == 0 )
+        return 0;
+    if( nLevel > 0 && nLevel < 3 )
+        return 1;
+    if( nLevel > 2 && nLevel < 6 )
+        return 2;
+    if( nLevel > 5 && nLevel < 10 )
+        return 3;
+    if( nLevel > 9 && nLevel < 15 )
+        return 4;
+    if( nLevel > 14 )
+        return 5;
+    __ASSERT_FALSE();
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetRegenerationHPMaxVal(unit uUnit)
+{
+    return 2000;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetRegenerationManaMaxVal(unit uUnit)
+{
+    return INT_MAX;//2000;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+/*
+
+----OK------------------------------------------------
+  eSkillParry
+  eSkillLockPicking
+  eSkillAlchemy
+  eSkillSneak
+  eSkillShieldTrick
+  eSkillDismountFromHorse
+  eSkillPullShield
+  eSkillKnifeDeathStrike
+  eSkillDeadlyPiruet
+  eSkillStability
+  eSkillKnockDown
+  eSkillSetTrap
+  eSkillStoneSkin
+  eSkillCriticalHit
+  eSkillStrongHand
+  eSkillDisarmingArrow
+  eSkillMultiArrows
+  eSkillDoubleBlade
+  eSkillArchery  
+  eSkillCloseDistanceShoot aka eSkillOverdraw
+  eSkillStealing      
+----OK ale sa wartosci w translate--------------------
+  +eSkillHorseRiding    damage od predkosci konia
+  +eSkillDirtyTrick     damage for enemy, higher chance
+  +eSkillStun           damage for enemy, higher chance
+  +eSkillBurn           damage for enemy, higher chance
+  +eSkillArrowOfDust    damage for enemy, higher chance
+  +eSkillSwordBrake     damage inflicted by enemy
+  eSkillBerserk        incoming damage, reduced defence, chance top hit shielded enemies
+  eSkillDefensiveFight damage weaker
+  +eSkillPrecizeAiming  damage
+----POPRAWIC------------------------------------------
+  eSkillPiercing      niewykorzystane CalcNumberOfEnemies_SkillPiercing
+  eSkillFastAiming    niewykorzystane CalcDrawSpeedPercent_SkillFastAiming, powinno byc uzyte w GetShootAction
+  +eSkillSwimming      w ogole nie ma
+
+do przejrzenia
+
+function void InitMissile(unit pUnit, int nCurrentFightAction, MissileValues mVal, MissileParams mPar, EquipmentValues wVal, WeaponParams wPar, unit pEnemy)
+function int MakeActiveSkill(unit pUnit, int nSkill, int nFightAction, unit pEnemy)
+*/
+
+#endif //RPGCOMPUTE_UNIT_ECH

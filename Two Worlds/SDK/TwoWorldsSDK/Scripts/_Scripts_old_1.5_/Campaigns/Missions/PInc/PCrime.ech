@@ -1,0 +1,908 @@
+#ifndef _P_CRIME_
+#define _P_CRIME_
+
+consts {
+    
+    // crime points
+    ePointsAddGuard            = 51;
+
+    // crime time intervals
+    eDecreaseCityCrimeLevelTime= 100;
+    eHeroCrimeTimeInterval     = 200;
+    
+    // ranges                    
+    eGuardHearRangeA           = 1280;
+
+    // times
+    eBanishmentTime            = 2000;                           
+            
+    eAGPay50                   = 1;    
+    eAGPay100                  = 2;    
+    eAGPay500                  = 4;    
+    eAGPay1000                 = 8;    
+    eAGPay5000                 = 16;    
+    eAGPay10000                = 32;    
+    eAGPay30000                = 64;    
+    eAGNoMoney                 = 128;    
+    eAGScared                  = 256;
+    eAGNotScared               = 512;
+    eAGMurder                  = 1024;
+    eAGTheft                   = 2048;
+    eAGBurglary                = 4096;
+    eAGFight                   = 8192;
+    eAGLessMoney               = 524288;
+    eAGNoLessMoney             = 1048576;
+    eAGInputFlags              = 1589247;
+
+    eAGPayMoney                = 16384;
+    eAGUnitScared              = 32768;
+    eAGPayLessMoney            = 131072;
+    eAGSetMainStateNormal      = 180224;
+                        
+}
+
+//======================================
+
+// banishment
+int anBanishmentTimer[eMaxPlayers];
+int anBanishedHero[eMaxPlayers];
+
+// hero crime points
+int anHeroCrimePoints[eMaxPlayers];
+int anHeroCurrentCrime[eMaxPlayers];
+
+// city crime level
+int nCityCrimeLevel;
+int nCityCrimeTick;
+
+// points kept by units
+int anUnitHeroCrimePoints[UNIT_ARRAY_SIZE];
+int anUnitCityCrimeLevel[UNIT_ARRAY_SIZE];
+
+int anAttackerNumber[UNIT_ARRAY_SIZE];
+int anTargetHero[UNIT_ARRAY_SIZE];
+
+function int IsUnitActive(int nUnit);
+function int IsPaidByHero(int nGuard, int nHero);
+function void ResetGuardsPaidByHero(int nHero);
+function void ResetGuardIsChasingCriminal(int nUnit, int nHero);
+function void CancelAlarm(int nHero);
+
+//======================================
+// other functions
+
+function int IsInGuardHearRange(int nX, int nY, int nUnit) {
+
+    if (UNIT_ARRAY[nUnit].DistanceTo(nX,nY) < eGuardHearRangeA) return true;
+    return false;
+    
+}    
+
+function void DisplayCrimeMessage(int nHero, string strMessage) {
+
+    if (anHeroCrimePoints[nHero] > 0) return;
+    if (GetCampaign().IsPartyEnemy(PARTY_NPC,ePartyPlayer1 + nHero)) return;
+    if (anBanishedHero[nHero]) return;
+
+    ConsoleTextOut(nHero,strMessage);
+
+}
+
+//======================================
+// fight or run away
+
+function void RunAwayFromEnemy(int nUnit, unit uUnit) {
+
+#ifdef CRIME_DEBUG
+    TRACE("RunAwayFromEnemy(%d)                \n",nUnit);
+#endif    
+
+    MoveAwayFromObject(UNIT_ARRAY[nUnit],uUnit,M2A(10));
+    SetMainState(nUnit,eMainStateRunning);
+
+}
+
+function void FightOrRun(int nUnit, unit uUnit) {
+
+#ifdef CRIME_DEBUG
+//    TRACE("FightOrRun(%d)                \n",nUnit);
+#endif    
+
+    UNIT_ARRAY[nUnit].SetRunMode(true);
+    if (!UNIT_ARRAY[nUnit].HaveUsableWeapon()) {
+        RunAwayFromEnemy(nUnit,uUnit);
+    }
+    else {
+        SetMainState(nUnit,eMainStateFighting);
+    }
+        
+}
+
+//======================================
+// crime points functions
+
+function void IncreaseCityCrimeLevel(int nCrimeLevel) {
+
+#ifdef CRIME_DEBUG
+    TRACE("IncreaseCityCrimeLevel(%d)                \n",nCrimeLevel);
+#endif    
+
+    nCityCrimeLevel = nCityCrimeLevel + nCrimeLevel;
+    nCityCrimeTick = GetCampaign().GetGameTick();
+        
+}
+
+function void DecreaseCityCrimeLevel() {
+
+    if (!nCityCrimeLevel) return;
+    if ((GetCampaign().GetGameTick() - nCityCrimeTick) > eDecreaseCityCrimeLevelTime) {
+    
+        nCityCrimeLevel--;
+        nCityCrimeTick = GetCampaign().GetGameTick();
+    
+    }
+
+}
+
+function void UpdateHeroCrimePoints(int nHero, int nHeroCrimePoints) {
+
+#ifdef CRIME_DEBUG
+    TRACE("UpdateHeroCrimePoints(%d,%d)                \n",nHero,nHeroCrimePoints);
+#endif    
+
+    if (nHeroCrimePoints) {
+        DisplayCrimeMessage(nHero,TEXT_GUARDS_INFORMED);
+        ResetGuardsPaidByHero(nHero);
+    }
+
+    anHeroCrimePoints[nHero] += nHeroCrimePoints;
+    if (anHeroCurrentCrime[nHero] < nHeroCrimePoints) anHeroCurrentCrime[nHero] = nHeroCrimePoints;
+
+}
+
+function void ResetHeroCrimePoints(int nHero) {
+
+    anHeroCrimePoints[nHero] = 0;
+    anHeroCurrentCrime[nHero] = 0;
+
+}
+
+function void UpdateCrimePoints(int nUnit, int nHero, int nHeroPoints, int nCityLevel) {
+    
+    unit uGuard;
+
+#ifdef CRIME_DEBUG
+    TRACE("UpdateCrimePoints(%d,%d,%d,%d)                \n",nUnit,nHero,nHeroPoints,nCityLevel);
+#endif    
+
+    // tutaj sprawdzamy, czy przez przypadek nie trafilismy na skorumpowanego straznika    
+    uGuard = GetNearestGuard(UNIT_ARRAY[nUnit]);
+    if ((uGuard != null) && (IsGuard(uGuard))) {
+        if (IsPaidByHero(GetUnitNumber(uGuard),nHero)) return;    
+    }
+
+    UpdateHeroCrimePoints(nHero,nHeroPoints);
+    IncreaseCityCrimeLevel(nCityLevel);
+
+}
+
+function void UpdateCrimePoints(int nUnit) {
+
+#ifdef CRIME_DEBUG
+    TRACE("UpdateCrimePoints(%d)                \n",nUnit);
+#endif    
+
+    if (GetTargetHero(nUnit) != eNoUnit) {
+        UpdateCrimePoints(nUnit,GetTargetHero(nUnit),anUnitHeroCrimePoints[nUnit],anUnitCityCrimeLevel[nUnit]);
+    }
+    else {
+        __ASSERT_FALSE();    
+        UpdateCrimePoints(nUnit,0,anUnitHeroCrimePoints[nUnit],anUnitCityCrimeLevel[nUnit]);
+    }
+
+}
+
+//======================================
+// target hero
+
+function void SetTargetHero(int nUnit, int nHero) {
+
+#ifdef CRIME_DEBUG
+    TRACE("SetTargetHero(%d,%d)                \n",nUnit,nHero);
+#endif    
+    anTargetHero[nUnit] = nHero;
+
+}
+
+function void ResetTargetHero(int nUnit, int nHero) {
+
+    if (anTargetHero[nUnit] == nHero) anTargetHero[nUnit] = eNoUnit;
+
+}
+
+function void GetTargetHero(int nUnit) {
+
+    return anTargetHero[nUnit];
+    
+}
+
+//======================================
+// attacker number
+
+function void SetAttackerNumber(int nUnit, int nHero) {
+
+#ifdef CRIME_DEBUG
+    TRACE("SetAttackerNumber(%d,%d)                \n",nUnit,nHero);
+#endif    
+    anAttackerNumber[nUnit] = anAttackerNumber[nUnit] | (1 << nHero);
+
+}
+
+function void ResetAttackerNumber(int nUnit, int nHero) {
+
+    anAttackerNumber[nUnit] = anAttackerNumber[nUnit] & (~(1 << nHero));
+
+}
+
+function int IsAttacker(int nUnit, int nHero) {
+    
+    if (anAttackerNumber[nUnit] & (1 << nHero)) return true;
+    return false;
+
+}
+
+function int IsAttacker(int nUnit, unit uHero) {
+
+    if (!uHero.IsHeroUnit()) return false;
+    return IsAttacker(nUnit,uHero.GetHeroPlayerNum());
+    
+}
+
+//======================================
+// hero is criminal/banished
+
+function int IsHeroCriminal(int nHero) {
+
+    if ((anHeroCrimePoints[nHero] > 0) && (anHeroCrimePoints[nHero] <= ePointsCriminalEnemy)) return true;
+    return false;
+
+}
+
+function int IsHeroCriminal(unit uHero) {
+
+    return IsHeroCriminal(uHero.GetHeroPlayerNum());
+    
+}
+
+function void ResetHeroIsCriminal(unit uHero) {
+        
+    int i;        
+    int nHero;
+    nHero = uHero.GetHeroPlayerNum();
+
+#ifdef CRIME_DEBUG
+    TRACE("ResetHeroIsCriminal(%d)                \n",nHero);
+#endif    
+
+    // zatrzymujemy konfidentow
+    CancelAlarm(nHero);
+        
+    // wszyscy straznicy wracaja do patrolowania
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) {
+        ResetGuardIsChasingCriminal(i,nHero);
+        ResetAttackerNumber(i,nHero);
+        ResetTargetHero(i,nHero);
+    }
+    
+    // jednostki go nie atakuja
+    StopAttackingHero(uHero);
+
+}
+
+function void ResetHeroIsCriminal(int nHero) {
+
+    ResetHeroIsCriminal(GetHero(nHero));
+
+}
+
+//======================================
+// hero party
+
+function void SetHeroPartyCriminalEnemy(int nHero) {
+
+#ifdef CRIME_DEBUG
+    TRACE("SetHeroPartyCriminalEnemy(%d)                \n",nHero);
+#endif    
+
+    GetCampaign().SetPartyEnemy(PARTY_NPC,ePartyPlayer1 + nHero);
+    ResetHeroCrimePoints(nHero);
+    
+}
+
+function void SetHeroPartyNeutral(int nHero) {
+
+#ifdef CRIME_DEBUG
+    TRACE("SetHeroPartyNeutral(%d)                \n",nHero);
+#endif    
+
+    GetCampaign().SetPartyNeutral(PARTY_NPC,ePartyPlayer1 + nHero);
+    anBanishedHero[nHero] = false;
+
+}
+        
+function void UpdateHeroesParties() {
+    
+    int i;
+        
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        
+        if (!IsPlayer(i)) continue;
+                
+        // tutaj trzeba bedzie uwzgledniac wieksza ilosc graczy
+        if ((anBanishedHero[i] && (anBanishmentTimer[i] < GetCampaign().GetGameTick())) || (anHeroCrimePoints[i] > ePointsCriminalEnemy)) {
+            SetHeroPartyCriminalEnemy(i);
+        }
+    
+    }
+    
+}
+
+//======================================
+// hero banishment
+
+function void SetHeroBanishment(int nHero, int nTime) {
+
+#ifdef CRIME_DEBUG
+    TRACE("SetHeroBanishment(%d,%d)                \n",nHero,nTime);
+#endif    
+
+    if (anBanishedHero[nHero]) return;
+    anBanishmentTimer[nHero] = GetCampaign().GetGameTick() + nTime;
+    anBanishedHero[nHero] = true;
+
+}
+
+function int IsHeroBanished(int nHero) {
+
+    if (GetCampaign().IsPartyEnemy(PARTY_NPC,ePartyPlayer1 + nHero)) return true;
+    if (anBanishedHero[nHero]) return true;
+    return false;
+
+}
+
+function int IsHeroBanished(unit uHero) {
+
+    if (!uHero.IsHeroUnit()) return false;
+    return IsHeroBanished(uHero.GetHeroPlayerNum());
+
+}
+
+//======================================
+// alarm functions
+
+function int IsGuardPatrolling(int nUnit) {
+
+    if (UNIT_ARRAY[nUnit] == null) return false;
+    if (IsUnitActive(nUnit) && IsGuard(nUnit) && (GetMainState(nUnit) == eMainStateNormal) && (GetDailyState(nUnit) == eWorking) && (GetGuardWorkState(nUnit) == eGuardPatrolling)) return true;
+    return false;
+
+}
+
+function int IsGuardPatrolling(unit uUnit) {
+
+    int nUnit;
+    if (uUnit == null) return false;
+    return IsGuardPatrolling(GetUnitNumber(uUnit));
+
+}
+
+function int AlarmGuards(int nHero, int nX, int nY, int nDisplayCrimeMessage) {
+
+    int i;
+    int nGuardsAlarmed;
+    unit uHouse;
+    
+    nGuardsAlarmed = false;
+    uHouse = GetHero(nHero).GetHouseWithObject();
+
+#ifdef CRIME_DEBUG
+    TRACE("AlarmGuards(%d,%d,%d,%d): ",nHero,nX,nY,nDisplayCrimeMessage);
+#endif    
+
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (IsGuardPatrolling(i) && IsInGuardHearRange(nX,nY,i) && (uHouse == UNIT_ARRAY[i].GetHouseWithObject())) {        
+
+        nGuardsAlarmed = true;
+      
+        SetGuardWorkState(i,eGuardAlarmed);
+        UNIT_ARRAY[i].SetRunMode(true);
+        DEBUG_MOVE(UNIT_ARRAY[i],nX,nY);
+        AlarmGuards(nHero,UNIT_ARRAY[i].GetLocationX(),UNIT_ARRAY[i].GetLocationY(),false);
+
+        if (nDisplayCrimeMessage) DisplayCrimeMessage(nHero,TEXT_GUARDS_ALARMED);
+        
+    }
+
+#ifdef CRIME_DEBUG
+    if (nGuardsAlarmed) {
+        TRACE("alarmed                          \n");
+    }
+    else {
+        TRACE("not alarmed                          \n");    
+    }
+#endif
+
+   return nGuardsAlarmed;
+
+}
+
+function void SendUnitToAlarmGuards(int nUnit, int nHero, int nHeroCrimePoints, int nCityCrimePoints) {
+
+    int nX, nY;
+    unit uGuard;
+
+#ifdef CRIME_DEBUG
+    TRACE("SendUnitToAlarmGuards(%d,%d,%d,%d)                  \n",nUnit,nHero,nHeroCrimePoints,nCityCrimePoints);
+#endif    
+
+    if (GetMarker(MARKER_GUARD_BARRACKS,nBarracksNumber,nX,nY));
+    else {
+        
+        uGuard = GetNearestGuard(UNIT_ARRAY[nUnit]);        
+        if (uGuard != null) {   
+            nX = uGuard.GetLocationX();
+            nY = uGuard.GetLocationY();
+        }    
+        else {
+            if (GetMainState(nUnit) != eMainStateNormal) SetMainState(nUnit,eMainStateNormal);
+            return;
+        }
+
+    }
+
+    if (nHeroCrimePoints) {
+        DisplayCrimeMessage(nHero,TEXT_CRIMINAL_SPOTTED);
+    }
+        
+    DEBUG_MOVE(UNIT_ARRAY[nUnit],nX,nY);
+    SetTargetHero(nUnit,nHero);
+    anUnitHeroCrimePoints[nUnit] = nHeroCrimePoints;
+    anUnitCityCrimeLevel[nUnit] = nCityCrimePoints;
+    SetMainState(nUnit,eMainStateAlarmingGuards);    
+
+#ifdef CRIME_DEBUG
+    TRACE("Sent!             \n");
+#endif    
+     
+}
+
+function void SendUnitToAlarmGuardsAgain(int nUnit) {
+
+    int nX, nY;
+    unit uGuard;
+
+#ifdef CRIME_DEBUG
+    TRACE("SendUnitToAlarmGuardsAgain(%d)                  \n",nUnit);
+#endif    
+
+    if (GetMarker(MARKER_GUARD_BARRACKS,nBarracksNumber,nX,nY));
+    else {
+        
+        uGuard = GetNearestGuard(UNIT_ARRAY[nUnit]);
+        if (uGuard != null) {   
+            nX = uGuard.GetLocationX();
+            nY = uGuard.GetLocationY();
+        }    
+        else {
+            if (GetMainState(nUnit) != eMainStateNormal) SetMainState(nUnit,eMainStateNormal);
+            return;
+        }
+
+    }
+
+    DEBUG_MOVE(UNIT_ARRAY[nUnit],nX,nY);
+    SetMainState(nUnit,eMainStateAlarmingGuards);    
+
+#ifdef CRIME_DEBUG
+    TRACE("Sent!             \n");
+#endif    
+    
+}
+
+function void FindAndSendUnitToAlarmGuards(unit uUnit, int nHero, int nHeroCrimePoints) {
+
+    int i, count;
+    int nRange;
+    unit uHouse;
+    unit uSearchUnit;
+
+#ifdef CRIME_DEBUG
+    TRACE("FindAndSendUnitToAlarmGuards(%d,%d,%d)                  \n",GetUnitNumber(uUnit),nHero,nHeroCrimePoints);
+#endif    
+
+    nRange = uUnit.GetSightRange();   
+    uHouse = GetHero(nHero).GetHouseWithObject();
+                    
+    if (uUnit.SearchUnits(nRange,GetSinglePartyArray(PARTY_NPC),eSortTypeRange)) {   
+        
+        count = uUnit.GetSearchUnitsCount();
+        for (i = 0; i < count; i++) {
+            uSearchUnit = uUnit.GetSearchUnit(i);
+            if (GetUnitType(uSearchUnit) == eUnitTypeUnknown) continue;
+            if (IsUnitArmed(uSearchUnit)) continue;
+            if (IsGuard(uSearchUnit)) continue;
+            if (GetMainState(uSearchUnit) == eMainStateAlarmingGuards) continue;
+            if (GetMainState(uSearchUnit) == eMainStateFighting) continue;
+            if (UNIT_ARRAY[GetUnitNumber(uSearchUnit)] == null) continue;
+            if (uHouse != uSearchUnit.GetHouseWithObject()) continue;
+            SendUnitToAlarmGuards(GetUnitNumber(uSearchUnit),nHero,nHeroCrimePoints,0);
+            uUnit.ClearSearchUnitsArray();
+            return;
+        }
+        uUnit.ClearSearchUnitsArray();
+        
+    }
+
+}    
+
+function void UnitStopAlarming(int nUnit, int nFlag) {
+
+    if (GetMainState(nUnit) != eMainStateAlarmingGuards) return;
+
+#ifdef CRIME_DEBUG
+    TRACE("UnitStopAlarming(%d,%d)                  \n",nUnit,nFlag);
+#endif    
+
+    UNIT_ARRAY[nUnit].CommandStop();
+    SetMainState(nUnit,eMainStateNormal);        
+    if (nFlag) {        
+        UpdateCrimePoints(nUnit);
+    }
+    SetTargetHero(nUnit,eNoUnit);
+                 
+}
+
+function void CancelAlarm(int nHero) {
+
+    int i;
+#ifdef CRIME_DEBUG
+    TRACE("CancelAlarm(%d)                  \n",nHero);
+#endif    
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (IsUnitActive(i) && (GetTargetHero(i) == nHero)) UnitStopAlarming(i,false);             
+
+}
+
+function void AlarmGuardsAndPlayScream(unit uUnit) {
+    
+#ifdef CRIME_DEBUG
+    TRACE("AlarmGuardsAndPlayScream(%d)                  \n",GetUnitNumber(uUnit));
+#endif    
+
+    PlayScream(uUnit);
+    AlarmGuards(0,uUnit.GetLocationX(),uUnit.GetLocationY(),false); //pierwszy argument jest nieistotny dopoki ostatnia flaga jest ustawiona na false
+
+}
+
+//======================================
+// alarming guards dialog
+
+function int GetAGInputFlags(unit uUnit, unit uHero) {
+
+    int nRand;
+    int nLevel;
+    int nFlags;
+    int nHero;
+    int nGold;
+    int nUnit;
+    
+    nHero = uHero.GetHeroPlayerNum();
+    nUnit = GetUnitNumber(uUnit);
+    nFlags = eAGInputFlags;
+
+#ifdef TOWN_DEBUG
+    TRACE("GetAGInputFlags: unit hero crime points %d level difference %d gold %d                \n",anUnitHeroCrimePoints[nUnit],uHero.GetUnitLevel() - uUnit.GetUnitLevel(),uHero.GetMoney());
+#endif    
+
+    // przestraszenie
+    nLevel = uHero.GetUnitLevel() - uUnit.GetUnitLevel();
+    nRand = 20;
+    if (nLevel > 0) nRand += nLevel * 7;
+    if (Rand(100) < nRand) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGScared                         \n");
+#endif        
+        nFlags -= eAGScared;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eAGNotScared                         \n");
+#endif        
+        nFlags -= eAGNotScared;
+    }
+    
+    // mniej forsy
+    if (Rand(4) == 0) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGLessMoney                         \n");
+#endif        
+        nFlags -= eAGLessMoney;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eAGNoLessMoney                         \n");
+#endif        
+        nFlags -= eAGNoLessMoney;
+    }
+        
+    // rodzaj przestepstwa    
+    if (anUnitHeroCrimePoints[nUnit] == eCrimePointsMurder) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGMurder                         \n");
+#endif        
+        nFlags -= eAGMurder;
+    }
+    else if (anUnitHeroCrimePoints[nUnit] == eCrimePointsFight) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGFight                         \n");
+#endif        
+        nFlags -= eAGFight;
+    }
+    else if (anUnitHeroCrimePoints[nUnit] == eCrimePointsBurglary) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGBurglary                         \n");
+#endif        
+        nFlags -= eAGBurglary;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eAGTheft                         \n");
+#endif        
+        nFlags -= eAGTheft;
+    }
+    
+    // kasa
+    nGold = uHero.GetMoney();
+    if (nGold >= 30000) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay30000                         \n");
+#endif        
+        nFlags -= eAGPay30000;
+    }
+    else if (nGold >= 10000) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay10000                         \n");
+#endif        
+        nFlags -= eAGPay10000;    
+    }
+    else if (nGold >= 5000) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay5000                         \n");
+#endif        
+        nFlags -= eAGPay5000;
+    }
+    else if (nGold >= 1000) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay1000                         \n");
+#endif        
+        nFlags -= eAGPay1000;
+    }
+    else if (nGold >= 500) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay500                         \n");
+#endif        
+        nFlags -= eAGPay500;
+    }
+    else if (nGold >= 100) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay100                         \n");
+#endif        
+        nFlags -= eAGPay100;
+    }
+    else if (nGold >= 50) {
+#ifdef TOWN_DEBUG
+        TRACE("eAGPay50                         \n");
+#endif        
+        nFlags -= eAGPay50;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eAGNoMoney                         \n");
+#endif        
+        nFlags -= eAGNoMoney;            
+    }
+
+#ifdef TOWN_DEBUG
+    TRACE("GetAGInputFlags returned: %d %d                        \n",nFlags,eAGInputFlags - nFlags);
+#endif    
+    
+    return nFlags;
+
+}
+
+function void PayAGFine(unit uHero, int nPercent) {
+
+    int nGold;  
+    nGold = uHero.GetMoney();
+
+#ifdef TOWN_DEBUG
+    TRACE("PayAGFine: gold %d percent %d                 \n",nGold,nPercent);
+#endif    
+
+    if (nGold >= 30000) nGold -= 300 * nPercent;
+    else if (nGold >= 10000) nGold -= 100 * nPercent;
+    else if (nGold >= 5000) nGold -= 50 * nPercent;
+    else if (nGold >= 1000) nGold -= 10 * nPercent;
+    else if (nGold >= 500) nGold -= 5 * nPercent;
+    else if (nGold >= 100) nGold -= nPercent;
+    else if (nGold >= 50) nGold -= nPercent / 2;
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("PayAGFine warning: gold == 0             \n");
+#endif
+        nGold = 0;
+    }
+
+    uHero.SetMoney(nGold);
+#ifdef TOWN_DEBUG
+    TRACE("PayAGFine gold after: %d             \n",uHero.GetMoney());
+#endif
+    
+}
+
+function void PlayAGDialog(unit uDialogUnit, int nHero) {
+
+    unit uHero;
+    uHero = GetHero(nHero);
+    
+    if(!IsFemale(uDialogUnit)) GetPlayerInterface(nHero).PlayDialog(GetScriptUID(),eDialogAlarmingGuardsUID + GetUnitNumber(uDialogUnit),eDefDialogFlags | eEndEventOnStartFadeOut | PlayDialogWaves(uHero),GetAGInputFlags(uDialogUnit,uHero),DIALOG_ALARMING_GUARDS_MALE,1,uHero,uDialogUnit);
+    else GetPlayerInterface(nHero).PlayDialog(GetScriptUID(),eDialogAlarmingGuardsUID + GetUnitNumber(uDialogUnit),eDefDialogFlags | eEndEventOnStartFadeOut | PlayDialogWaves(uHero),GetAGInputFlags(uDialogUnit,uHero),DIALOG_ALARMING_GUARDS_FEMALE,1,uHero,uDialogUnit);
+
+}
+
+function void EndTalkDialogAlarmingGuards(int nPlayerNum, int nDialogUID, int nEndEvent) {
+
+    nDialogUID -= eDialogAlarmingGuardsUID;
+
+    if (nEndEvent & eAGPayMoney) {
+        PayAGFine(GetHero(nPlayerNum),100);
+        UnitStopAlarming(nDialogUID,false);
+        return;
+    }
+
+    if (nEndEvent & eAGPayLessMoney) {
+        PayAGFine(GetHero(nPlayerNum),30);
+        UnitStopAlarming(nDialogUID,false);
+        return;
+    }
+
+    if (nEndEvent & eAGUnitScared) {
+        UnitStopAlarming(nDialogUID,false);
+        return;
+    }
+
+#ifdef TOWN_DEBUG    
+    TRACE("alarm guards again, event %d\n",nEndEvent);
+#endif    
+    SendUnitToAlarmGuardsAgain(nDialogUID);
+    
+}
+
+//======================================
+
+function void AlarmPartyUnits(int nHero, unit uUnit) {
+
+    int count, i;
+    unit uHero;
+    unit uSearchUnit;
+    unit uHouse;
+    
+#ifdef CRIME_DEBUG
+    TRACE("AlarmPartyUnits(%d,%d)                  \n",nHero,GetUnitNumber(uUnit));
+#endif    
+    
+    uHero = GetHero(nHero);
+    uHouse = uHero.GetHouseWithObject();
+    
+    if (uUnit.SearchUnits(uUnit.GetSightRange(),uUnit.GetPartiesNums())) {
+    
+        count = uUnit.GetSearchUnitsCount();    
+        for (i = 0; i < count; i++) {
+            uSearchUnit = uUnit.GetSearchUnit(i);
+            if (IsGuard(uSearchUnit)) continue;
+            if (GetUnitNumber(uSearchUnit) == 0) continue;
+            if (uSearchUnit.GetHouseWithObject() != uHouse) continue;
+            if (!IsUnitArmed(uSearchUnit) && uSearchUnit.HaveUsableWeapon()) {
+                uSearchUnit.CommandAttack(uHero);        
+                SetTargetHero(GetUnitNumber(uSearchUnit),nHero);
+            }
+            else if (GetMainState(uSearchUnit) == eMainStateNormal) {
+                RunAwayFromEnemy(GetUnitNumber(uSearchUnit),uHero);
+            }
+        }
+        uUnit.ClearSearchUnitsArray();
+    
+    }
+    
+}
+
+//======================================
+// process crime functions
+
+function void ProcessFight(int nHero, unit uUnit) {
+
+    int i;
+    int nUnit;
+    nUnit = GetUnitNumber(uUnit);
+
+#ifdef CRIME_DEBUG
+    TRACE("ProcessFight(%d,%d)                       \n",nHero,nUnit);
+#endif
+
+    SetTargetHero(nUnit,nHero);
+    AlarmPartyUnits(nHero,uUnit);
+
+    SetAttackerNumber(nUnit,nHero);
+
+    // jesli zaatakowalismy kogos uzbrojonego to walczy
+    if (IsUnitArmed(uUnit)) SetMainState(nUnit,eMainStateFighting);        
+    // wpp jesli nie jest to NPC spoza miasta to krzyczy
+    
+    // jesli zaatakowalismy straznika to straz automatycznie wie o naszym wystepku
+    if (IsGuard(uUnit)) UpdateHeroCrimePoints(nHero,eCrimePointsFight);
+    // jesli w okolicy sa straznicy to automatycznie wiedza o naszym wystepku
+    else if (CheckForGuards(GetHero(nHero))) UpdateHeroCrimePoints(nHero,eCrimePointsFight);      
+    // wpp. jesli straznicy nie sa zaalarmowani to wysylamy konfidenta
+    else if (!AlarmGuards(nHero,uUnit.GetLocationX(),uUnit.GetLocationY(),true))
+        FindAndSendUnitToAlarmGuards(uUnit,nHero,eCrimePointsFight);    
+    // zwiekszamy poziom niepokoju w miescie
+    IncreaseCityCrimeLevel(eCrimePointsFight);
+
+}
+
+function void ProcessMurder(unit uHero, unit uUnit) {
+        
+    int nHero;
+    nHero = uHero.GetHeroPlayerNum();            
+
+#ifdef CRIME_DEBUG
+    TRACE("ProcessMurder(%d,%d)                       \n",nHero,GetUnitNumber(uUnit));
+#endif
+
+    AlarmPartyUnits(nHero,uUnit);
+        
+    // jesli w okolicy sa straznicy to automatycznie wiedza o naszym wystepku
+    if (CheckForGuards(uHero)) UpdateHeroCrimePoints(nHero,eCrimePointsMurder);            
+    // wpp alarmujemy straznikow a jesli to nie pomoze wysylamy konfidenta
+    else if (AlarmGuards(uHero.GetHeroPlayerNum(),uHero.GetLocationX(),uHero.GetLocationY(),true)) IncreaseCityCrimeLevel(eCrimePointsMurder);
+    else FindAndSendUnitToAlarmGuards(uUnit,nHero,eCrimePointsMurder);
+
+}
+
+function void ProcessBurglary(int nHero) {
+
+#ifdef CRIME_DEBUG
+    TRACE("ProcessBurglary(%d)                       \n",nHero);
+#endif
+
+    // jesli widzieli straznicy
+    if (CheckForGuards(GetHero(nHero))) UpdateHeroCrimePoints(nHero,eCrimePointsBurglary);
+    // wpp wysylamy konfidenta
+    else FindAndSendUnitToAlarmGuards(GetHero(nHero),nHero,eCrimePointsBurglary);
+
+}
+
+function void ProcessTheft(int nHero) {
+
+#ifdef CRIME_DEBUG
+    TRACE("ProcessTheft(%d)                       \n",nHero);
+#endif
+
+    // jesli widzieli straznicy
+    if (CheckForGuards(GetHero(nHero))) UpdateHeroCrimePoints(nHero,eCrimePointsTheft);
+    // wpp wysylamy konfidenta
+    else FindAndSendUnitToAlarmGuards(GetHero(nHero),nHero,eCrimePointsTheft);
+
+}
+
+//======================================
+
+#endif

@@ -1,0 +1,350 @@
+#ifndef RPGCOMPUTE_EQUIPMENT_ECH
+#define RPGCOMPUTE_EQUIPMENT_ECH
+
+function int CalculateDamageFromLevel(int nLevel)
+{
+    nLevel = ((nLevel-1)/3)*3;
+    if(nLevel==0)
+        return 10;  
+        
+  #ifdef NEW_BALANCING  
+  //        5+    5*25/10    * 2+6/7     = 5+ 125/10 *2 = 5+ 12 *2 = 17*2 =34
+    return (5+(nLevel-1)*3)*(20+nLevel)/10;
+    //return (5+(((nLevel-1)*3))*(20+(nLevel*10)/7))/10;  
+    
+  #else
+  
+	if(nLevel==1)
+        return 17;  
+    return  5 + (nLevel*10);
+    
+  #endif
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+function int SlotNumMask2SlotNum(int nMask)
+{
+    int i;
+    
+    for (i = 0; i < eSlotsCnt; ++i)
+    {
+        if (nMask & (1 << i))
+        {
+            return i;
+        }
+    }
+    __ASSERT_FALSE();
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalculateMultipliedValue(int nVal, int nMultiplied)
+{
+    int a;
+    // 2-5 +20%     6-10 +10%   >10 +5%
+    if(nMultiplied<=5) a=80+ (20*nMultiplied);
+    else if(nMultiplied<=10) a = 130+ (10*nMultiplied);
+    else a = 180 + (5*nMultiplied);
+    return (nVal*a)/100;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalculateArmourFromLevel(int nLevel)
+{
+    
+	nLevel = ((nLevel-1)/3)*3;
+    if(nLevel==0)
+        return  10;  
+ 
+  #ifdef NEW_BALANCING  
+  
+    return (5+(nLevel-1)*3)*(20+nLevel)/10;
+  
+  #else
+
+    return 15 + nLevel*7; 
+  
+  #endif
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalculateShieldParryFromLevel(int nLevel)
+{
+	nLevel = ((nLevel-1)/3)*3;
+    if(nLevel==0)
+        return  20;  
+ 
+    return 10+(nLevel*10);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int NoOfAdds(EquipmentValues eVal)
+{
+	int i, k;
+    
+    k = 0;
+	for (i = 0; i < eSkillsCnt; i++)
+    {
+	    if(eVal.GetAddSkill(i)>0)k+=eVal.GetAddSkill(i);//bo sa minusowe które sie nie licza
+    }
+	
+	for (i = 0; i < ePointsCnt; ++i)
+    {
+	    if(eVal.GetAddPoint(i))k+=MAX(1,eVal.GetAddPoint(i)/2);
+    }
+    for (i = 0; i < eParamsCnt; ++i)
+    {
+	    if(eVal.GetAddParam(i))k+=MAX(1,eVal.GetAddParam(i)/50);
+    }
+    for (i = 0; i < eProtectSpirit; ++i)
+    {
+	    if(eVal.GetAddProtect(i))k+=MAX(1,eVal.GetAddProtect(i)/50);
+    }
+    return k;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void AddPoint(EquipmentValues eVal, int nIndex, int nValue)
+{
+    ASSERT((nIndex >= 0) && (nIndex < ePointsCnt));
+    eVal.SetAddPoint(nIndex, MAX(0, eVal.GetAddPoint(nIndex) + nValue));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void AddParam(EquipmentValues eVal, int nIndex, int nValue)
+{
+    ASSERT((nIndex >= 0) && (nIndex < eParamsCnt));
+    eVal.SetAddParam(nIndex, MAX(0, eVal.GetAddParam(nIndex) + nValue));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void AddSkill(EquipmentValues eVal, int nIndex, int nValue)
+{
+    ASSERT((nIndex >= 0) && (nIndex < eSkillsCnt));
+    eVal.SetAddSkill(nIndex, MAX(0, eVal.GetAddSkill(nIndex) + nValue));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void AddProtect(EquipmentValues eVal, int nIndex, int nValue)
+{
+    ASSERT((nIndex >= 0) && (nIndex < eProtectsCnt));
+    eVal.SetAddProtect(nIndex, MAX(0, eVal.GetAddProtect(nIndex) + nValue));
+    if(nIndex==eProtectSpirit) eVal.SetAddProtect(eProtectSpirit,0);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void GenerateEquipment(EquipmentValues eVal,EquipmentParams ePar, int nClass)
+{
+    int nLevel, nBonus, nMultiplied, i,j,a,b;
+    
+	if (Rand(100) < 10)
+	{
+		j = Rand(100);
+		if      (j <  1) nMultiplied = 6;
+		else if (j <  3) nMultiplied = 5;
+		else if (j <  8) nMultiplied = 4;
+		else if (j < 30) nMultiplied = 3;
+		else                 nMultiplied = 2;
+	}
+	else
+    {
+        nMultiplied = 1;
+    }
+    eVal.SetMultiplied(nMultiplied);
+    
+    if((Rand(100) < (nLevel/3)) || nClass>0)
+    {
+        nLevel = eVal.GetLevel();
+        
+        nBonus = 1;
+        if(nLevel>8 &&!Rand(3)) nBonus=2;
+        if(nLevel>14 &&!Rand(5)) nBonus=3;
+        
+        nMultiplied = MAX(1,MIN(10,nLevel/3));// ile max punktów na bonus
+        if(nClass==2)nBonus = MIN(nBonus*2,5);
+        
+        for(i = 0; i < nBonus; ++i)
+    	{
+            j=Rand(10);
+            if(j<2)//20% generate addPoint Param - vitality itp
+            {
+    	        AddPoint(eVal,Rand(ePointsCnt) , 1+nMultiplied/4+Rand(nMultiplied));
+            }
+            else if(j<4)//20% generate addParam - HP, MANA, ATTACK, DEFENCE
+            {
+    	        AddParam(eVal,Rand(eParamsCnt-1) , 15*(1+nMultiplied/4+Rand(nMultiplied)));
+            }
+            else if(j<6)//20%	generate addSkill
+    	    {
+                a=0;b=30;  // armours
+                if(nLevel>11) b = 19;//Plate armours nie dodaja do archery skills.
+                if (ePar.GetType() == eEqTypeShield){a=0;b=15;}//what group of skills is available on this equipment
+                if (ePar.GetType() == eEqTypeQuiver){a=6;b=24;}
+                if (ePar.GetType() == eEqTypeWeapon){a=0;b=9;}
+                    
+        		AddSkill(eVal, m_arrAddSkillsInEquipment[a+Rand(b-a)], 1);
+    		}
+            else//50% generate Protect
+    	    {
+                j=CalculateArmourFromLevel(nLevel)/2;
+    		    AddProtect(eVal, Rand(eProtectSpirit),j+ Rand(j));
+            }
+    	}
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalculateEquipmentPrice(EquipmentValues eVal, EquipmentParams ePar)
+{
+    int i, nPrice,  nSlot,nDamage,nMul;
+    MagicCardParams mcPar;
+    
+    nMul=9+eVal.GetMultiplied();
+    if (ePar.GetType() == eEqTypeTorch)
+    {
+        return (50*nMul)/10;//!!
+    }
+    
+	nPrice = eVal.GetMultiplied()*10;
+    
+    //Add's price
+	for (i = 0; i< eSkillsCnt; ++i)
+	{
+        if(eVal.GetAddSkill(i)>0) nPrice += eVal.GetAddSkill(i)*eVal.GetAddSkill(i)*150;
+        
+    }
+	for (i = 0; i < ePointsCnt; ++i)
+    {
+        nPrice += eVal.GetAddPoint(i)*eVal.GetAddPoint(i)*75;
+    }
+    for (i = 0; i < eParamsCnt-1; ++i)
+    {
+        nPrice += eVal.GetAddParam(i)*5;
+        
+    }
+	//nPrice = nPrice*nS;
+    for(i = 0; i < eProtectSpirit; ++i)
+    {
+        nPrice += eVal.GetAddProtect(i)*6;
+    }
+    //Armour price
+    if (ePar.GetType() == eEqTypeArmour)
+    {
+        nSlot = SlotNumMask2SlotNum(ePar.GetSlotNumMask());
+             if (nSlot == eSlotArmourHelmet)   nPrice += eVal.GetPhysicalArmour()*5;
+        else if (nSlot == eSlotArmourBody)     nPrice += eVal.GetPhysicalArmour()*10;
+        else if (nSlot == eSlotArmourGloves)   nPrice += eVal.GetPhysicalArmour()*5;
+        else if (nSlot == eSlotArmourTrousers) nPrice += (eVal.GetPhysicalArmour()*15)/2;
+        else if (nSlot == eSlotArmourBoots)    nPrice += eVal.GetPhysicalArmour()*5;
+        else { __ASSERT_FALSE(); }
+    }
+    //Shield price
+    if (ePar.GetType() == eEqTypeShield)
+    {
+        nPrice += eVal.GetParry()*3;
+    }
+    if (ePar.GetType() == eEqTypeQuiver)
+    {
+        nDamage = CalculateDamageFromLevel(eVal.GetLevel());
+        nDamage = CalculateMultipliedValue(nDamage, eVal.GetMultiplied());
+        nPrice += (nDamage*8);
+    }
+    return (nPrice*nMul)/10;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void InitArmourValue(EquipmentValues eVal, EquipmentParams ePar, int nLevel)
+{
+    int nArmourVar, nArmour1,nArmour2,nArmour3,mul,nSlot;
+    if (ePar.GetType() == eEqTypeArmour)
+    {
+        mul = eVal.GetMultiplied();
+        if(mul<=10)nArmourVar = 89 + mul + Rand(22-(mul*2));
+        else nArmourVar = 100;
+        
+        nArmour1 = CalculateArmourFromLevel(nLevel);
+        nArmour2 = CalculateMultipliedValue(nArmour1, mul);
+        nArmour3 = (nArmour2*nArmourVar)/100;
+        
+        nSlot = SlotNumMask2SlotNum(ePar.GetSlotNumMask());
+        
+        if (nSlot == eSlotArmourHelmet || nSlot == eSlotArmourGloves ||nSlot == eSlotArmourBoots) nArmour3/=2;
+        else if (nSlot == eSlotArmourTrousers) nArmour3=(nArmour3*2)/3;
+        
+        eVal.SetPhysicalArmour(nArmour3);
+    }
+    else
+    {
+        eVal.SetPhysicalArmour(0);
+    }
+}
+
+function void InitShieldValue(EquipmentValues eVal, EquipmentParams ePar, int nLevel)
+{
+    int nParry1,nParry2,mul,nVar;
+    if (ePar.GetType() == eEqTypeShield)
+    {
+        mul = eVal.GetMultiplied();
+        nParry1 = CalculateShieldParryFromLevel(nLevel)*ePar.GetParry()/100;
+    	nParry2 = CalculateMultipliedValue(nParry1, mul);
+        
+        if(mul<=10){nVar = 89 + mul + Rand(22-(mul*2));nParry1 = (nParry2*nVar)/100;}
+        else nParry1=nParry2;
+    	
+        eVal.SetParry(nParry1);
+    }
+    else
+    {
+        eVal.SetParry(0);
+    }
+}
+
+function void InitEquipment(EquipmentValues eVal, EquipmentParams ePar, int nLevel, int nClass, int nMeshNum)
+{
+    int i, nArmourVar, nArmour, nParry, nSlot;
+    
+    if(nLevel<1)nLevel=1;
+    
+    eVal.SetLevel(nLevel);
+    eVal.SetClass(nClass);
+
+    if (ePar.GetType() != eEqTypeTorch)
+    {    
+        GenerateEquipment(eVal,ePar, nClass);
+        
+        //armour
+        InitArmourValue(eVal,ePar,nLevel);
+        
+        //shield
+        InitShieldValue(eVal,ePar,nLevel);
+    }	    
+    
+    //price
+    eVal.SetPrice(CalculateEquipmentPrice(eVal, ePar));
+    
+    //requiredLevel
+    eVal.SetRequiredLevel(MAX(1,NoOfAdds(eVal)+nLevel - 5));
+
+    //mesh
+    //generowania numerka mesha z zalozeniem ze jest 6 w grupie (to samo w RPGCompute.cpp)
+    
+    if (nMeshNum == 0)
+    {
+        if (ePar.GetType() == eEqTypeArmour)
+        {   
+            /*
+            1,2,3 = 1,2
+            4,5,6 = 4,5
+            7,8,9 = 11,12
+            10,11,12 = 14,15
+            */
+             nMeshNum = MIN(((nLevel-1)/6)*10 + 1 + Rand(2) + 3*(((nLevel-1)/3)%2),65); //po 2 zbroje w grupie
+        }
+        else
+        {
+            /*
+            1,2,3 = 1,2,3
+            4,5,6 = 4,5,6;
+            7,8,9 = 11,12,13
+            10,11,12 = 14,15,16
+            */
+          
+            nMeshNum = ((nLevel-1)/6)*10 + 1 + Rand(3) + 3*(((nLevel-1)/3)%2); //po 3 bronie tarcze itp w grupie
+            
+        }
+    }
+    //else zostaje to co bylo
+    eVal.SetMeshNum(nMeshNum);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //RPGCOMPUTE_EQUIPMENT_ECH

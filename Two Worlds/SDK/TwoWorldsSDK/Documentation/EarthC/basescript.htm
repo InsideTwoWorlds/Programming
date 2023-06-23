@@ -1,0 +1,131 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> basescript object </title>
+</head>
+<body>
+<a name="basescript">
+<hr>
+<basescript>
+<big><strong>basescript</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<basescript_functions_begin>
+public:
+int  GetPlayersCnt()
+int  IsPlayer(int nPlayer)
+playerinterface GetPlayerInterface(int nPlayerNum)
+int  GetLocalPlayerNum()
+void LoadScript(string strScriptFile)
+string GetScriptFile()
+int  GetScriptUID()
+int  GetNextScriptUID()
+void SetStateDelay(int nDelay)
+int  GetStateDelay()
+void ExecuteState()
+void SetAttribute(int nKey, int nValue)
+void SetAttribute(string strKey, int nValue)
+void SetAttribute(int nKey, string strValue)
+void SetAttribute(string pszKey, string strValue)
+void ResetAttribute(int nKey)
+void ResetAttribute(string strKey)
+void ResetAttributes()
+int  GetAttribute(int nKey, int& pValue)
+int  GetAttribute(string strKey, int& pValue)
+int  GetAttribute(int nKey, string& pszValue)
+int  GetAttribute(string strKey, string& pszValue)
+void SetTimer(int nTimer, int nTimerTicks)
+void SetTimerStep(int nTimer, int nTimerStep)
+int  GetTimer(int nTimer)
+int  GetTimerStep(int nTimer)
+void EventTimer(int nTimer)
+void CommandDebug(string strDebugCommand)
+int  CommandMessage(int nMsg)
+int  CommandMessage(int nMsg, int nP1)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3)
+int  CommandMessageGet(int nMsg, int& pP1)
+int  CommandMessageGet(int nMsg, int& pP1, int& pP2, int& pP3)
+int  CommandMessage(int nMsg, string strP1)
+int  CommandMessageGet(int nMsg, string& pszP1)
+int  CommandMessage(int nMsg, unit uP1)
+int  CommandMessageGet(int nMsg, unit uP1)
+int  CommandMessage(int nMsg, int nP1, string strP2)
+int  CommandMessageGet(int nMsg, int nP1, int nP2, string strP3, int& pP4, string& pszP5)
+int  CommandMessage(int nMsg, int nP1, unit uP2)
+int  CommandMessageGet(int nMsg, int nP1, unit uP2)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3, int nP4)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3, int nP4, int nP5)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3, int nP4, int nP5, int nP6)
+<basescript_functions_public_end>
+private:
+void SetState(int nState)
+void SetState(int nState, int nDelay)
+<basescript_functions_private_end>
+<basescript_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<basescript_commands_begin>
+int  Initialize()
+int  Uninitialize()
+int  Message(int)
+int  Message(int, int)
+int  Message(int, int, int, int)
+int  MessageGet(int, int&)
+int  MessageGet(int, int&, int&, int&)
+int  Message(int, string)
+int  MessageGet(int, string&)
+int  Message(int, unit)
+int  MessageGet(int, unit)
+int  Message(int, int, string)
+int  MessageGet(int, int, int, string, int&, string&)
+int  Message(int, int, unit)
+int  MessageGet(int, int, unit)
+int  Message(int, int, int, int, int)
+int  Message(int, int, int, int, int, int)
+int  Message(int, int, int, int, int, int, int)
+int  CommandDebug(string)
+<basescript_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<basescript_events_begin>
+int  Timer0()
+int  Timer1()
+int  Timer2()
+int  Timer3()
+int  Timer4()
+int  Timer5()
+int  Timer6()
+int  Timer7()
+int  Timer8()
+int  Timer9()
+int  Artefact(unit, unit, int)
+int  GetHeroShopPricePercents(unit, unit, int&, int&)
+int  OpenContainerObject(unit, unit, int, int, int&, int&, int&)
+int  CloseContainerObject(unit, unit, int, int)
+int  StartTalkWithDialogUnit(unit, unit, int)
+int  EndTalkDialog(int, int, int)
+int  EndChatDialog(int)
+int  EndMessageBox(int, int)
+int  EndCutscene(int, int)
+int  ClickGateByUnit(unit, unit, int, int, int&, int&, int&)
+int  AddedUnit(unit, int)
+int  RemovedUnit(unit, unit, int)
+int  PassiveDestroyed(unit, unit)
+int  UsedDynamicTeleport(unit)
+int  RemovedDynamicTeleport(unit)
+int  CustomMakeAlchemyResult(unit, int&)
+int  GetNewNetworkPlayerCreatePos(int, int, int&, int&, int&)
+int  CreatedNewNetworkPlayer(int, int, int, int)
+int  RemovedNetworkPlayer(int)
+int  OnLoadLevel(mission, int)
+int  OnUnloadLevel(mission)
+int  OnStartedTrading(unit)
+int  OnEndedTrading(unit)
+<basescript_events_end>
+</pre>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

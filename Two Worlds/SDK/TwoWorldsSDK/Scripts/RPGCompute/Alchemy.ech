@@ -1,0 +1,1177 @@
+#ifndef RPGCOMPUTE_ALCHEMY_ECH
+#define RPGCOMPUTE_ALCHEMY_ECH
+
+#include "..\\Common\\Enums.ech"
+
+// jezeli w skladnikach jest napoj            -> robi napoj
+//                      nie ma mineralow ale sa szczatki i rosliny -> robi napoj
+//                      liczba mineralow dajacych perm ochrone >= liczba mineralow dajacych temp ochrone -> robi upgrade do broni
+//                      w przeciwnym wypadku pulapka
+
+
+int nAlchemyTicks;
+int nAlchemyCount;
+int nAlchemyCountP;
+int nAlchemyCountPd;
+int nAlchemyCountT;
+int nAlchemyCountTd;
+    
+int nAlchemyRegHP;
+int nAlchemyRegMana;
+int nAlchemyFlags;
+int nAlchemyTrapType;
+int nAlchemyClearPoison;
+int nAlchemyBlockPoison;
+
+int arrTMPProtP[eProtectsCnt];
+int arrTMPProtT[eProtectsCnt];
+int arrTMPPointP[ePointsCnt];
+int arrTMPPointT[ePointsCnt];
+int arrTMPParamP[eParamsCnt];
+int arrTMPParamT[eParamsCnt];
+
+consts
+{
+    eResultUnknown = 0,
+    eResultPotion,
+    eResultWeaponUpgrade,
+    eResultTrap,
+    
+    eInputEmpty = -1,
+    eInputUnknown,
+    eInputPotion,
+    eInputPotionMineral,
+    eInputPotionMineralWithNoProtection, // z nich tylko pulapki
+    eInputPotionAnimalRemain,
+    eInputPotionPlant,
+}
+
+function int GetAlchemyItemsCount(unit uHero)
+{
+    int nIndex;
+    int nCount;
+
+    nCount = 0;
+    for (nIndex = 0; nIndex <= eAlchemySlotInputLast; nIndex++)
+    {
+        if (uHero.GetAlchemyItemCount(nIndex) > 0)
+        {
+           nCount += uHero.GetAlchemyItemCount(nIndex);
+        }
+    }
+    return nCount;
+}
+            
+//strObjectID: equipment, trap, PotionArtefact, SpecialArtefact, CustomArtefact, AlchemyFormulaArtefact
+//uwaga: wywolywane z interface'u
+function int CanUseInventoryItemInAlchemy(unit uHero, string strObjectID, EquipmentValues eVal, object pChangedParams, int& nMaxCount, int& nTotalMaxCount)
+{
+    nTotalMaxCount = 10;
+    if(pChangedParams != null) // nie mozna gotowac potiona ktory jest juz ugotowany
+    {
+        return false;
+    }
+    if( GetAlchemyItemsCount(uHero) >= nTotalMaxCount )
+    {
+        return false;
+    }
+
+    if (IsEquipment(strObjectID) ||
+        IsAlchemyFormulaArtefact(strObjectID) ||
+        IsDynamicTeleport(strObjectID) ||
+        IsTrap(strObjectID) )
+    {
+        return false;
+    }
+    else if (IsCustomArtefact(strObjectID))
+    {
+        return false;
+        /*if (GetCustomArtefactParams(strObjectID, pChangedParams).GetCustomParam1() != XXX)
+        {
+            return false;
+        }
+        nMaxCount = GetCustomArtefactParams(strObjectID, pChangedParams).GetMaxCountInOneInventoryPos()*2;
+        */
+    }
+    else if (IsSpecialArtefact(strObjectID))
+    {
+        return false;
+        /*if (GetSpecialArtefactParams(strObjectID, pChangedParams).GetSpecialArtefactType() == eTypeJoinArtefact)
+        {
+            nMaxCount = GetSpecialArtefactParams(strObjectID, pChangedParams).GetMaxCountInOneInventoryPos()*2;
+        }*/
+    }
+    else if (IsPotionArtefact(strObjectID))
+    {
+        nMaxCount = GetPotionArtefactParams(strObjectID, pChangedParams).GetMaxCountInOneInventoryPos()*2;
+    }
+    else
+    {
+        __ASSERT_FALSE();
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+function void InitializeTMPPar()
+{
+    int i;
+    for(i=0;i<ePointsCnt;i++)
+    {
+        arrTMPPointP[i]=0;
+        arrTMPPointT[i]=0;
+    }    
+    for(i=0;i<eParamsCnt;i++)
+    {
+        arrTMPParamP[i]=0;
+        arrTMPParamT[i]=0;
+    }    
+    for(i=0;i<eProtectSpirit;i++)
+    {
+        arrTMPProtP[i] = 0;
+        arrTMPProtT[i] = 0;
+    }
+
+    nAlchemyTicks=0;
+    nAlchemyCount=0;
+    nAlchemyCountP=0;
+    nAlchemyCountPd=0;
+    nAlchemyCountT=0;
+    nAlchemyCountTd=0;
+    
+    nAlchemyRegHP=0;
+    nAlchemyRegMana=0;
+    nAlchemyFlags=0;
+    nAlchemyTrapType = -1;
+    nAlchemyBlockPoison = 0;
+    nAlchemyClearPoison = 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void CopyObjectParamsToTMPPar(string strObjectID, EquipmentValues eqVal, 
+           object pChangedParams, int nCount)
+{
+    int i,nTicks,bPer;
+    PotionArtefactParams ptPar;
+    SpecialArtefactParams itemSpecialParams;
+    TrapParams itemTrapParams;
+    int nJoinType, nJoinValue;
+
+// weapon upgrade
+    if( IsSpecialArtefact(strObjectID) )
+    {
+        itemSpecialParams = GetSpecialArtefactParams(strObjectID, pChangedParams);
+        if (itemSpecialParams.GetSpecialArtefactType() == eTypeJoinArtefact)
+        {
+            nJoinValue = itemSpecialParams.GetJoinAddValue();
+            nJoinType =  itemSpecialParams.GetJoinValueType();
+            if( nJoinType == 3 )      // eDamageCold 3
+                arrTMPProtP[1] += nJoinValue * nCount;
+            else if( nJoinType == 4 ) // eDamageFire 4
+                arrTMPProtP[2] += nJoinValue * nCount;
+            else if( nJoinType == 5 ) // eDamageElectric 5
+                arrTMPProtP[3] += nJoinValue * nCount;
+            else if( nJoinType == 6 ) // eDamageSpirit	6
+                arrTMPProtP[4] += nJoinValue * nCount;
+            else                      // eDamagePoison 7
+                arrTMPProtP[0] += nJoinValue * nCount;
+        }
+    }
+// potion (w tym mineral, plant, remain)
+    else if(IsPotionArtefact(strObjectID))
+    {
+        bPer=false;
+        ptPar = GetPotionArtefactParams(strObjectID, pChangedParams);
+        nTicks = ptPar.GetPotionTicks();
+
+        for(i=0;i<ePointsCnt;i++)
+        {
+            if(nTicks)
+                arrTMPPointT[i] += ptPar.GetAddPoint(i)*nCount;
+            else
+            {
+                if(ptPar.GetAddPoint(i)>0)bPer=true;
+                arrTMPPointP[i] += ptPar.GetAddPoint(i)*nCount;
+            }
+        }
+        
+        for(i=0;i<eParamsCnt;i++)
+        {
+            if(nTicks)
+                arrTMPParamT[i] += ptPar.GetAddParam(i)*nCount;
+            else
+            {
+                if(ptPar.GetAddParam(i)>0)bPer=true;
+                arrTMPParamP[i] += ptPar.GetAddParam(i)*nCount;
+            }
+        }
+            
+        for(i=0;i<eProtectSpirit;i++)
+        {
+            if(nTicks)
+                arrTMPProtT[i] += ptPar.GetAddProtect(i)*nCount;
+            else
+            {
+                if(ptPar.GetAddProtect(i)>0)bPer=true;
+                arrTMPProtP[i] += ptPar.GetAddProtect(i)*nCount;
+            }
+        }
+        nAlchemyRegHP   += ptPar.GetRegenerateHP()*nCount;
+        nAlchemyRegMana += ptPar.GetRegenerateMana()*nCount;
+        nAlchemyFlags   |= (ptPar.GetPotionFlags()&0x7FFF);//filter out notUsableFlag
+        nAlchemyTicks   = MAX(nAlchemyTicks,nTicks);
+        nAlchemyCount   += nCount;//licznik flaszek
+        if( ptPar.GetPotionFlags() & 0x0001 ) // clear
+        {
+            nAlchemyClearPoison++;
+        }
+        if( ptPar.GetPotionFlags() & 0x0002 ) // block
+        {
+            nAlchemyBlockPoison++;
+        }
+        if(nTicks)
+        {
+            nAlchemyCountT+=nCount;
+            nAlchemyCountTd++;
+        }
+        else if(bPer)// tylko jezeli skladnik byl permanentnym dodawaczem.
+        {
+            nAlchemyCountP+=nCount;
+            nAlchemyCountPd++;
+        }
+    }
+    //TRACE("---------regHP %d ------------------------- \n",nAlchemyRegHP);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void __PrintValues()
+{
+    int nIndex;
+
+    TRACE("------------------------\n");
+    TRACE("nAlchemyCount   %d, p: %d(%d), t: %d(%d)\n", nAlchemyCount, nAlchemyCountP, nAlchemyCountPd, nAlchemyCountT, nAlchemyCountTd);
+    TRACE("nAlchemyRegHP   %d\n", nAlchemyRegHP);
+    TRACE("nAlchemyRegMana %d\n", nAlchemyRegMana);
+    TRACE("nAlchemyTicks   %d (%ds)\n", nAlchemyTicks, nAlchemyTicks/30);
+    TRACE("nAlchemyClear   %d\n", nAlchemyClearPoison);
+    TRACE("nAlchemyBlock   %d\n", nAlchemyBlockPoison);
+   
+
+    TRACE("arrProtP ");
+    for(nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        TRACE("%d ", arrTMPProtP[nIndex]);
+    }
+    TRACE("\n");
+    TRACE("arrProtT ");
+    for(nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        TRACE("%d ", arrTMPProtT[nIndex]);
+    }
+    TRACE("\n");
+    TRACE("arrParamP ");
+    for(nIndex = 0; nIndex < eParamsCnt; nIndex++)
+    {
+        TRACE("%d ", arrTMPParamP[nIndex]);
+    }
+    TRACE("\n");
+    TRACE("arrParamT ");
+    for(nIndex = 0; nIndex < eParamsCnt; nIndex++)
+    {
+        TRACE("%d ", arrTMPParamT[nIndex]);
+    }
+    TRACE("\n");
+
+    TRACE("arrPointP ");
+    for(nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        TRACE("%d ", arrTMPPointP[nIndex]);
+    }
+    TRACE("\n");
+    TRACE("arrPointT ");
+    for(nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        TRACE("%d ", arrTMPPointT[nIndex]);
+    }
+    TRACE("\n");
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsPermanentPotion()
+{
+// sprawdzanie permanentnosci
+// nAlchemyCountT == 0 i ktorys z punktow/parametrow/protekcji > 0
+    int nIsPermanent;
+    int i;
+    
+    if( nAlchemyCountT > 0)
+    {
+        return false;
+    }
+
+    nIsPermanent = false;
+
+    for(i = 0; i < ePointsCnt; i++)
+    {
+        if( arrTMPPointT[i] > 0 )
+        {
+            nIsPermanent = true;
+        }
+    }
+    for(i = 0; i < eParamsCnt; i++)
+    {
+        if( arrTMPParamT[i] > 0 )
+        {
+            nIsPermanent = true;
+        }
+    }
+    for(i = 0; i < eProtectSpirit; i++)
+    {
+        if( arrTMPProtT[i] > 0 )
+        {
+            nIsPermanent = true;
+        }
+    }    
+    return nIsPermanent;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function string MakeBottle()
+{
+    int k;
+    
+    k=nAlchemyCount;
+    
+    if( nAlchemyTicks > 0 )
+    {
+        if((k%5)==0)return "POTION_SKILL_TIME_01";
+        if((k%5)==1)return "POTION_SKILL_TIME_02";
+        if((k%5)==2)return "POTION_SKILL_TIME_03";
+        if((k%5)==3)return "POTION_SKILL_TIME_04";
+        if((k%5)==4)return "POTION_SKILL_TIME_05";
+    }
+    else
+    {
+        if((k%5)==0)return "POTION_SKILL_01";
+        if((k%5)==1)return "POTION_SKILL_02";
+        if((k%5)==2)return "POTION_SKILL_03";
+        if((k%5)==3)return "POTION_SKILL_04";
+    }
+    return "POTION_SKILL_05";
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MixPotion()
+{
+    int i,k;
+    int nPermanentModifier;
+    int nTemporaryModifier;
+    
+    nAlchemyRegHP   = nAlchemyRegHP   * (nAlchemyCount + 20) / 20;
+    nAlchemyRegMana = nAlchemyRegMana * (nAlchemyCount + 20) / 20;
+    
+    if( nAlchemyRegHP < 0 ) // zmniejsz skutki poisonowania
+    {
+        if( nAlchemyBlockPoison )
+        {
+            nAlchemyRegHP = 0;
+        }
+        else
+        {
+            for(i = 0; i < nAlchemyClearPoison; i++)
+            {
+                nAlchemyRegHP *= 5;
+                nAlchemyRegHP /= 10;
+            }
+        }
+    }
+    
+    if(nAlchemyCountT==0)//make permanent potion
+    {
+        k= MIN( (nAlchemyCount + nAlchemyCountPd + 8), 18);
+        
+        for(i=0;i<ePointsCnt;i++)
+        {
+             arrTMPPointT[i] = MAX(!!arrTMPPointP[i], (arrTMPPointP[i] * k) / 10);
+        }
+        for(i=0;i<eParamsCnt;i++)
+        {
+            arrTMPParamT[i]  = MAX(!!arrTMPParamP[i], (arrTMPParamP[i] * k) / 10);
+        }
+        for(i=0;i<eProtectSpirit;i++)
+        {
+            arrTMPProtT[i] = MAX(!!arrTMPProtP[i], (arrTMPProtP[i] / 2 * k) / 10);
+        }
+        nAlchemyTicks = 0;
+    }
+    else // make time potion
+    {
+        k= MIN( (nAlchemyCount + (nAlchemyCountPd + nAlchemyCountTd)/2 + 6), 14);
+        
+        for(i=0;i<ePointsCnt;i++)
+        {
+             arrTMPPointT[i]  = MAX( !!(arrTMPPointT[i] + arrTMPPointP[i]), ( (arrTMPPointT[i] + arrTMPPointP[i]) * k) / 10);
+        }
+        for(i=0;i<eParamsCnt;i++)
+        {
+             arrTMPParamT[i]  = MAX( !!(arrTMPParamT[i] + arrTMPParamP[i]), ( (arrTMPParamT[i] + arrTMPParamP[i]) * k) / 10);
+        }
+        for(i=0;i<eProtectSpirit;i++)
+        {
+            arrTMPProtT[i] = MAX( !!(arrTMPProtT[i]  + arrTMPProtP[i]), ( (arrTMPProtT[i]  + arrTMPProtP[i])  * k) / 10);
+        }
+// kazdy permanentny przedmiot wydluza czas 1.2
+        nPermanentModifier = 100;
+        for(i = 0; i < nAlchemyCountP; i++)
+        {
+            nPermanentModifier += 20;
+        }
+        nPermanentModifier = MIN(200, nPermanentModifier);
+        nAlchemyTicks *= nPermanentModifier;
+        nAlchemyTicks /= 100;
+// kazdy temporalny przedmiot redukuje czas 0.9
+        nTemporaryModifier = 100;
+        for(i = 0; i < nAlchemyCountT; i++)
+        {
+            nTemporaryModifier -= 10;
+        }
+        nTemporaryModifier = MAX(10, nTemporaryModifier);
+        nAlchemyTicks *= nTemporaryModifier;
+        nAlchemyTicks /= 100;
+
+        if(nAlchemyTicks > 0 && nAlchemyTicks < 5 * 30 ) // nie krotsze niz 5 sekund
+        {
+            nAlchemyTicks = 5 * 30;
+        }
+        if( nAlchemyTicks > 8 * 60 * 30 ) // nie dluzsze niz 8 min
+        {
+            nAlchemyTicks = 8 * 60 * 30;
+        }
+    }
+    
+    // w multi permanentne skladniki staja sie tymczasowe
+/*    if (GetCampaign().IsNetworkGame() || GetCampaign().IsNetworkChannelGame() )
+    {
+        nAlchemyTicks = eMultiplayerPermanentTicks;
+    }
+    */
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function string MixWeaponUpgrade(unit uHero)
+{
+    int nIndex, nPercentMax, nIndexMax;
+    string strName, strFullName;
+    int nAlchemySkill;
+
+    __PrintValues();
+
+// szukaj najwiekszego permanent protection
+    nPercentMax = arrTMPProtP[0];
+    nIndexMax = 0;
+    for(nIndex = 1; nIndex < eProtectSpirit; nIndex++)
+    {
+        if( arrTMPProtP[nIndex] > nPercentMax )
+        {
+            nPercentMax = arrTMPProtP[nIndex];
+            nIndexMax = nIndex;
+        }
+    }
+// dodaj pozostale permanent i temporary i wyzeruj wszystkie protection
+    for(nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        if( arrTMPProtT[nIndex] > 0 )
+        {
+            arrTMPProtP[nIndexMax] += arrTMPProtT[nIndex] / 4;
+        }
+        arrTMPProtT[nIndex] = 0;
+        if( nIndex == nIndexMax )
+        {
+            continue;
+        }
+        if( arrTMPProtP[nIndex] > 0 )
+        {
+            arrTMPProtP[nIndexMax] += arrTMPProtP[nIndex] / 2;
+        }
+        arrTMPProtP[nIndex] = 0;
+    }
+// dodaj parametry
+    for(nIndex = 0; nIndex < eParamsCnt - 1; nIndex++) // bez staminy
+    {
+        if( arrTMPParamP[nIndex] > 0 )
+        {
+            arrTMPProtP[nIndexMax] += MIN(arrTMPParamP[nIndex]/10, 20);
+        }
+        if( arrTMPParamT[nIndex] > 0 )
+        {
+            arrTMPProtP[nIndexMax] += MIN(arrTMPParamT[nIndex]/10, 20);
+        }
+    }
+// jezeli sa punkty to zwieksz
+    for(nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        if( arrTMPPointP[nIndex] > 0 )
+        {
+            arrTMPProtP[nIndexMax] += MIN(arrTMPPointP[nIndex] * 2, 20);
+        }
+        if( arrTMPPointT[nIndex] > 0 )
+        {
+            arrTMPProtP[nIndexMax] += MIN(arrTMPPointT[nIndex] / 2, 20);
+        }
+    }
+
+// dodaj hp/mana
+    if( nAlchemyRegHP > 0 )
+    {
+        arrTMPProtP[nIndexMax] += MIN(nAlchemyRegHP / 15, 12);
+    }
+    if( nAlchemyRegMana > 0 )
+    {
+        arrTMPProtP[nIndexMax] += MIN(nAlchemyRegMana / 15, 12);
+    }
+
+    nAlchemySkill = uHero.GetUnitValues().GetSkill(eSkillAlchemy);
+    nAlchemySkill+= 10;
+// zmienic wartosci czynnikiem (nAlchemySkill / 20)
+    nPercentMax = arrTMPProtP[nIndexMax];
+    nPercentMax *= nAlchemySkill;
+    nPercentMax /= 20;
+
+    if( nIndexMax == 0 )
+        strName = "ART_ADD_POISON";
+    else if( nIndexMax == 1 )
+        strName = "ART_ADD_COLD";
+    else if( nIndexMax == 2 )
+        strName = "ART_ADD_FIRE";
+    else if( nIndexMax == 3 )
+        strName = "ART_ADD_ELECTRIC";
+    else // if( nIndexMax == 4 )
+        strName = "ART_ADD_SPIRIT";
+    if( nPercentMax >= 41 )
+        nPercentMax = 50;
+    else if( nPercentMax >= 18 )
+        nPercentMax = 20;
+    else
+        nPercentMax = 10;
+    strFullName.Format("%s%d", strName, nPercentMax);
+    return strFullName;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function string MixTrap(unit uHero)
+{
+    string strName;
+    int nDamage, nIndex;
+    int nAlchemySkill;
+    
+    __PrintValues();
+
+    nDamage = 0;
+    if( nAlchemyRegHP < -100 || nAlchemyRegMana < -100 )
+    {
+        nAlchemyTrapType = eTrapTypeBomb;
+    }
+    else
+    {
+        nAlchemyTrapType = eTrapTypeHold;
+    }
+ // dodaj mineraly
+    for(nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+    {
+        nDamage += arrTMPProtP[nIndex]  * 10 + arrTMPProtT[nIndex] * 2;
+    }
+// dodaj punkty
+    for(nIndex = 0; nIndex < ePointsCnt; nIndex++)
+    {
+        nDamage += arrTMPPointP[nIndex] * 10 + arrTMPPointT[nIndex] * 2;
+    }
+// dodaj parametry
+    for(nIndex = 0; nIndex < eParamsCnt - 1; nIndex++) // bez staminy
+    {
+        if( arrTMPParamP[nIndex] > 0 )
+        {
+            nDamage += arrTMPParamP[nIndex];
+        }
+        if( arrTMPParamT[nIndex] > 0 )
+        {
+            nDamage += arrTMPParamT[nIndex];
+        }
+    }
+// dodaj mane        
+    if( nAlchemyRegMana != 0 )
+    {
+        nDamage += abs(nAlchemyRegMana/10);
+    }
+
+    nAlchemySkill = uHero.GetUnitValues().GetSkill(eSkillAlchemy);
+    nAlchemySkill+= 10;
+// zmienic wartosci czynnikiem (nAlchemySkill / 20)
+    nDamage *= nAlchemySkill;        
+    nDamage /= 20;
+
+    if( nAlchemyTrapType == eTrapTypeHold )
+    {
+        if( nAlchemyTicks > 3 * 60 * 30 )
+        {
+            if( nDamage <= 50 )  
+                return "TRAP_HOLD_01";
+            else if( nDamage <= 90 )  
+                return "TRAP_HOLD_02";
+            else if( nDamage <= 150 )  
+                return "TRAP_HOLD_03";
+            else if( nDamage <= 300 )  
+                return "TRAP_HOLD_04";
+            else if( nDamage <= 500 )  
+                return "TRAP_HOLD_05";
+            else if( nDamage <= 800 )  
+                return "TRAP_HOLD_06";
+            else if( nDamage <= 1000 )  
+                return "TRAP_HOLD_07";
+            else // if( nDamage <= 1500 )  
+                return "TRAP_HOLD_08";
+        }
+        else
+        {
+// przeskalowanie damage na zwykle pulapki
+            nDamage *= 10;
+            nDamage /= 4;
+            if( nDamage <= 100 )  
+                return "TRAP_01";
+            else if( nDamage <= 200 )  
+                return "TRAP_02";
+            else if( nDamage <= 400 )  
+                return "TRAP_03";
+            else if( nDamage <= 700 )  
+                return "TRAP_04";
+            else if( nDamage <= 1000 )  
+                return "TRAP_05";
+            else if( nDamage <= 1500 )  
+                return "TRAP_06";
+            else if( nDamage <= 2000 )  
+                return "TRAP_07";
+            else // if( nDamage <= 4000 )  
+                return "TRAP_08";
+        }
+    }  
+// nAlchemyTrapType == eTrapTypeBomb
+// przeskalowanie damage na bomby
+    nDamage *= 100;
+    nDamage /= 16;
+    if( nDamage <= 300 )  
+        return "TRAP_BOMB_01";
+    else if( nDamage <= 450 )  
+        return "TRAP_BOMB_02";
+    else if( nDamage <= 700 )  
+        return "TRAP_BOMB_03";
+    else if( nDamage <= 1000 )  
+        return "TRAP_BOMB_04";
+    else if( nDamage <= 2000 )  
+        return "TRAP_BOMB_05";
+    else if( nDamage <= 4000 )  
+        return "TRAP_BOMB_06";
+    else if( nDamage <= 8000 )  
+        return "TRAP_BOMB_07";
+    else // if( nDamage <= 10000 )  
+        return "TRAP_BOMB_08";
+    return "TRAP_BOMB_01";
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void CopyTMPParToObjectParams(unit uHero, string strObjectID, EquipmentValues eqVal,object pChangedParams, int nCount)
+{
+    int i;
+    PotionArtefactParamsSet ptParSet;
+    TrapParamsSet trParSet;
+    int nAlchemySkill;
+    int nHoldTicks;
+
+    nAlchemySkill = uHero.GetUnitValues().GetSkill(eSkillAlchemy);
+    nAlchemySkill+= 10;
+
+    //TRACE("Copying  \n");
+    if(IsPotionArtefact(strObjectID) && (pChangedParams != null))
+    {
+        ptParSet = CastChangedPotionArtefactParams(strObjectID, pChangedParams);
+// mnozenie poszczegolnych wartosci przez wspoczynnik skilla ( nAlchemySkill/20 )
+        for(i=0;i<ePointsCnt;i++)
+        {
+            arrTMPPointT[i] = MAX(!!arrTMPPointT[i], arrTMPPointT[i] * nAlchemySkill / 20);
+            ptParSet.SetAddPoint(i, arrTMPPointT[i]);
+        }
+            
+        for(i=0;i<eParamsCnt;i++)
+        {
+            arrTMPParamT[i] = MAX(!!arrTMPParamT[i], arrTMPParamT[i] * nAlchemySkill / 20);
+            ptParSet.SetAddParam(i, arrTMPParamT[i]);
+        }
+            
+        for(i=0;i<eProtectSpirit;i++)
+        {
+            arrTMPProtT[i] = MAX(!!arrTMPProtT[i], arrTMPProtT[i] * nAlchemySkill / 20);
+            ptParSet.SetAddProtect(i, arrTMPProtT[i]);
+        }
+        
+        
+        ptParSet.SetRegenerateHP(nAlchemyRegHP * nAlchemySkill / 20);
+        ptParSet.SetRegenerateMana(nAlchemyRegMana * nAlchemySkill / 20);
+        ptParSet.SetPotionFlags(nAlchemyFlags); 
+        
+        if( (nAlchemyTicks) > 0 && (nAlchemyTicks * nAlchemySkill / 20) < (5 * 30) )
+        {
+            ptParSet.SetPotionTicks(5 * 30);
+        }
+        else
+        {
+            ptParSet.SetPotionTicks(nAlchemyTicks * nAlchemySkill / 20);
+        }
+    }
+    else if(IsTrap(strObjectID) && (pChangedParams != null))
+    {
+        trParSet = CastChangedTrapParams(strObjectID, pChangedParams);
+// mnozenie poszczegolnych wartosci przez wspoczynnik skilla ( nAlchemySkill/20 )
+//        nHoldTicks = trParSet.GetHoldTicks();
+//        if(nHoldTicks && nAlchemyTicks > 0 && nHoldTicks + (nAlchemyTicks * nAlchemySkill / 20) < (5 * 30) )
+//        {
+//            trParSet.SetHoldTicks(5 * 30);
+//        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsWeaponUpgradeArtefact(string strObjectID)
+{
+    SpecialArtefactParams itemSpecialParams;
+    object pChangedParams;
+       
+    if( !IsSpecialArtefact(strObjectID) )
+        return false;
+        
+    itemSpecialParams = GetSpecialArtefactParams(strObjectID, pChangedParams);
+    if (itemSpecialParams.GetSpecialArtefactType() == eTypeJoinArtefact)
+        return true;
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsKeyArtefact(string strObjectID)
+{
+    SpecialArtefactParams itemSpecialParams;
+    object pChangedParams;
+       
+    if( !IsSpecialArtefact(strObjectID) )
+        return false;
+        
+    itemSpecialParams = GetSpecialArtefactParams(strObjectID, pChangedParams);
+    if (itemSpecialParams.GetSpecialArtefactType() == eTypeKeyArtefact)
+        return true;
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsMineral(string strObjectID)
+{
+    object pChangedParams;   
+    
+    if( !IsPotionArtefact(strObjectID) )
+        return false;
+
+    if( GetPotionArtefactParams(strObjectID, pChangedParams).GetPotionFlags() & 0x40000 ) // ePotionMineral
+        return true;
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+// mineraly ktore nie daja zadnego protection i sa przydatne tylko do robienia pulapek
+function int IsMineralWithNoProtection(string strObjectID)
+{
+    object pChangedParams;
+    int nTicks;
+    
+    if( !IsPotionArtefact(strObjectID) )
+    {
+        return false;
+    }
+    if( !(GetPotionArtefactParams(strObjectID, pChangedParams).GetPotionFlags() & 0x40000) ) // ePotionMineralOnlyForBombs
+    {
+        return false;
+    }
+    
+    if( GetPotionArtefactParams(strObjectID, pChangedParams).GetPotionTicks() > 0 ) // protekcja tymczasowa
+    {
+        return true;
+    }
+/*    if( !strcmp(strObjectID, "ING_65") || // Calcite
+        !strcmp(strObjectID, "ING_71") || // Haematite
+        !strcmp(strObjectID, "ING_73") || // Desert Rose
+        !strcmp(strObjectID, "ING_74") || // Mica
+        !strcmp(strObjectID, "ING_75") || // Pyrite
+        !strcmp(strObjectID, "ING_78") || // Yellowroot
+        !strcmp(strObjectID, "ING_79") || // Yellowroot
+        !strcmp(strObjectID, "ING_80") )  // Yellowroot
+    {
+    }*/
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsAnimalRemain(string strObjectID)
+{
+    object pChangedParams;   
+    
+    if( !IsPotionArtefact(strObjectID) )
+        return false;
+
+    if( GetPotionArtefactParams(strObjectID, pChangedParams).GetPotionFlags() & 0x20000 ) // ePlantAnimalRemain
+        return true;
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsPlant(string strObjectID)
+{
+    object pChangedParams;   
+    
+    if( !IsPotionArtefact(strObjectID) )
+        return false;
+
+    if( GetPotionArtefactParams(strObjectID, pChangedParams).GetPotionFlags() & 0x10000 ) // ePotionPlant
+        return true;
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CountValueInArray(unit uHero, int nValue, int arrInput[])
+{
+    int nIndex, nSum, nCount;
+    string strObjectID;
+    EquipmentValues eqVal;
+    object pChangedParams;
+    
+    nSum = 0;
+    for( nIndex = 0; nIndex < arrInput.GetSize(); nIndex++ )
+    {
+        if( arrInput[nIndex] == nValue )
+        {
+            uHero.GetAlchemyItem(nIndex, strObjectID, eqVal, pChangedParams, nCount);
+            nSum += nCount;
+        }
+    }
+    return nSum;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetFinalPrice(int nBasePrice, unit pHero)
+{
+    int nAlchemySkill;
+
+    if( !pHero || !pHero.IsHeroUnit() )
+    {
+        __ASSERT_FALSE();
+        return 1;
+    }
+    nAlchemySkill = pHero.GetUnitValues().GetSkill(eSkillAlchemy);
+    return nBasePrice * (10 + nAlchemySkill) / 10; // nFinalPrice = nBasePrice * (1 + 0.1 * nAlchemySkill)
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetPotionPrice(string strObjectID, object pChangedParams)
+{
+    if( IsPotionArtefact(strObjectID) )
+    {
+        return GetPotionArtefactParams(strObjectID, pChangedParams).GetPrice();
+    }
+    __ASSERT_FALSE();
+    return 1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetWeaponUpgradePrice(string strObjectID, object pChangedParams)
+{
+    if( IsSpecialArtefact(strObjectID) && (GetSpecialArtefactParams(strObjectID, pChangedParams).GetSpecialArtefactType() == eTypeJoinArtefact) )
+    {
+        return GetSpecialArtefactParams(strObjectID, pChangedParams).GetPrice();
+    }
+    __ASSERT_FALSE();
+    return 1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetIngredientPrice(string strObjectID, object pChangedParams)
+{
+    if (IsPotionArtefact(strObjectID)) // 
+    {
+        return GetPotionPrice(strObjectID, pChangedParams);
+    }
+    else if (IsSpecialArtefact(strObjectID) && (GetSpecialArtefactParams(strObjectID, pChangedParams).GetSpecialArtefactType() == eTypeJoinArtefact) )
+    {
+        return GetWeaponUpgradePrice(strObjectID, pChangedParams);
+    }
+    __ASSERT_FALSE();
+    return 1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void SetPotionPrice(string strObjectID, EquipmentValues eqVal, object pChangedParams, int nFinalPrice)
+{
+    PotionArtefactParamsSet ptParSet;
+    if(IsPotionArtefact(strObjectID) && (pChangedParams != null))
+    {
+        ptParSet = CastChangedPotionArtefactParams(strObjectID, pChangedParams);
+        ptParSet.SetPrice(nFinalPrice); 
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void SetTrapPrice(string strObjectID, EquipmentValues eqVal, object pChangedParams, int nFinalPrice)
+{
+    TrapParamsSet trParSet;
+    if(IsTrap(strObjectID) && (pChangedParams != null))
+    {
+        trParSet = CastChangedTrapParams(strObjectID, pChangedParams);
+        trParSet.SetPrice(nFinalPrice); 
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int DecideAboutResult(unit uHero)
+{
+    int nIndex;
+    string strObjectID;
+    int nCount;
+    EquipmentValues eqVal;
+    object pChangedParams;
+    int arrInputType[5];
+    int nMineralCount, nMineralWithNoProtectionCount, nAnimalRemainCount, nPlantCount, nPotionCount;
+    
+    for(nIndex = 0; nIndex <= eAlchemySlotInputLast; nIndex++)
+    {
+        uHero.GetAlchemyItem(nIndex, strObjectID, eqVal, pChangedParams, nCount);
+        if(nCount == 0)
+            arrInputType[nIndex] = eInputEmpty;
+// IsMineralWithNoProtection powinno byc przed IsMineral
+        else if( IsMineralWithNoProtection(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputPotionMineralWithNoProtection;
+        }
+        else if( IsMineral(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputPotionMineral;
+        }
+        else if( IsAnimalRemain(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputPotionAnimalRemain;
+        }
+        else if( IsPlant(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputPotionPlant;
+        }
+// IsPotionArtefact powinno byc uruchamiane dopiero po IsMineral, IsAnimalRemain
+// i IsPlant bo nie sprawdza flag
+        else if( IsPotionArtefact(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputPotion;
+        }
+        else if( IsEquipment(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputUnknown;
+        }
+        else if( IsKeyArtefact(strObjectID) )
+        {
+            arrInputType[nIndex] = eInputUnknown;
+        }
+        else if (IsCustomArtefact(strObjectID))
+        {
+            arrInputType[nIndex] = eInputUnknown;
+        }
+        else
+        {
+            arrInputType[nIndex] = eInputUnknown;
+        }
+    }  
+
+    nMineralCount                 = CountValueInArray(uHero, eInputPotionMineral, arrInputType);
+    nMineralWithNoProtectionCount = CountValueInArray(uHero, eInputPotionMineralWithNoProtection, arrInputType);
+    nAnimalRemainCount            = CountValueInArray(uHero, eInputPotionAnimalRemain, arrInputType);
+    nPlantCount                   = CountValueInArray(uHero, eInputPotionPlant, arrInputType);
+    nPotionCount                  = CountValueInArray(uHero, eInputPotion, arrInputType); 
+
+    if( nPotionCount + nMineralCount + nMineralWithNoProtectionCount + nAnimalRemainCount + nPlantCount == 0 )
+        return eResultUnknown;
+
+    if( nPotionCount )
+        return eResultPotion;
+    if( nAnimalRemainCount + nPlantCount > nMineralCount + nMineralWithNoProtectionCount )
+        return eResultPotion;
+    if( nMineralCount >= nMineralWithNoProtectionCount )
+        return eResultWeaponUpgrade;
+    if( nMineralCount < nMineralWithNoProtectionCount )
+        return eResultTrap;
+    return eResultTrap;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MakeAlchemyResult(unit uHero, int bCalcFormulaArtefact)
+{
+    int nIndex, nSlotIndex, nCount, nResult;
+    int nBasePrice;  // suma cen gotowanych skladnikow
+    int nFinalPrice; // cena wynikowego przedmiotu
+    string strFormulaName;
+    
+    string strObjectID, strName;
+    EquipmentValues eqVal;
+    object pChangedParams;
+    PotionArtefactParams itemPotionParams;
+    SpecialArtefactParams itemSpecialParams;
+    CustomArtefactParams itemCustomParams;
+    TrapParams itemTrapParams;
+    PotionArtefactParamsSet resultPotionParams;
+    SpecialArtefactParamsSet resultSpecialParams;
+    CustomArtefactParamsSet resultCustomParams;
+    TrapParamsSet resultTrapParams;
+    
+    
+    InitializeTMPPar();
+    ASSERT(uHero.GetAlchemyItemCount(eAlchemySlotResult) == 0);
+    
+    nBasePrice = 0;
+    //temp - kopiujemy wartosci itemów do tablicy tmpParam
+    nSlotIndex = -1;
+    for (nIndex = 0; nIndex <= eAlchemySlotInputLast; nIndex++)
+    {
+        if (uHero.GetAlchemyItemCount(nIndex) > 0)
+        {
+            uHero.GetAlchemyItem(nIndex, strObjectID, eqVal, pChangedParams, nCount);
+            if(nCount>0)
+            {
+                CopyObjectParamsToTMPPar(strObjectID, eqVal, pChangedParams, nCount);
+                nSlotIndex = nIndex;
+            }
+            nBasePrice += uHero.GetAlchemyItemCount(nIndex) * GetIngredientPrice(strObjectID, pChangedParams);
+        }
+    }
+    if (nSlotIndex < 0)
+        return false;
+
+    nFinalPrice = GetFinalPrice(nBasePrice, uHero);
+    nResult = DecideAboutResult(uHero);
+    if( nResult == eResultPotion )
+    {
+        MixPotion();
+        uHero.CreateAlchemyResult(MakeBottle(), 1, true, null, null, null);
+        uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+        CopyTMPParToObjectParams(uHero, strObjectID, eqVal, pChangedParams, nCount);
+        SetPotionPrice(strObjectID, eqVal, pChangedParams, nFinalPrice);
+        uHero.SetAlchemyResultFormulaName("translateNewPotion");
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseAlchemyToCreateAPotion, uHero);
+        if( IsPermanentPotion() )
+        {
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseAlchemyToCreateAPermanentPotion, uHero);
+        }
+    }
+    else if( nResult == eResultWeaponUpgrade )
+    {
+        strName = MixWeaponUpgrade(uHero);
+        strFormulaName = "translate";
+        strFormulaName.Append(strName);
+        uHero.CreateAlchemyResult(strName, 1, false, null, null, null);
+        uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+        uHero.SetAlchemyResultFormulaName(strFormulaName);
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseAlchemyToCreateAWeaponEnchancer, uHero);
+    }
+    else if( nResult == eResultTrap )
+    {
+        strName = MixTrap(uHero);
+        TRACE("trap: %s\n", strName);
+        strFormulaName = "translate";
+        strFormulaName.Append(strName);
+        uHero.CreateAlchemyResult(strName, 1, false, null, null, null);
+        uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+        //CopyTMPParToObjectParams(uHero, strObjectID, eqVal, pChangedParams, nCount);
+        //SetTrapPrice(strObjectID, eqVal, pChangedParams, nFinalPrice);
+        uHero.SetAlchemyResultFormulaName(strFormulaName);
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseAlchemyToCreateABomb, uHero);
+    }
+    else // eResultUnknown
+    {
+        __ASSERT_FALSE();
+        return false;
+    }
+    
+         
+     /*
+    // ponizej utworzyc nowy item  na podstawie tyego co wyszlo w arrTMPPar
+    if (IsEquipment(strObjectID))//weapon
+    {
+        uHero.CreateAlchemyResult(strObjectID, 1, false, null, eqVal, null);
+        uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+        eqVal.SetWeaponExtraDamagePercent(37);
+        eqVal.SetWeaponExtraDamageType(eDamagePoison);
+    }
+    else if (IsPotionArtefact(strObjectID))
+    {
+        uHero.CreateAlchemyResult("POTION_HEALING_03", nCount, true, strObjectID, null, pChangedParams);
+        uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+        resultPotionParams = CastChangedPotionArtefactParams(strObjectID, pChangedParams);
+        
+        
+        resultPotionParams.SetPotionFlags(resultPotionParams.GetPotionFlags() | ePotionClearPoison);
+        resultPotionParams.SetRegenerateHP(resultPotionParams.GetRegenerateHP()*2);
+        //itp.
+    }
+    else if (IsSpecialArtefact(strObjectID))
+    {
+        itemSpecialParams = GetSpecialArtefactParams(strObjectID, pChangedParams);
+        if (itemSpecialParams.GetSpecialArtefactType() == eTypeJoinArtefact)
+        {
+            uHero.CreateAlchemyResult("ART_ADD_FIRE10", 1, true, strObjectID, null, pChangedParams);
+            uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+            resultSpecialParams = CastChangedSpecialArtefactParams(strObjectID, pChangedParams);
+            resultSpecialParams.SetJoinAddValue(resultSpecialParams.GetJoinAddValue()*150/100);
+        }
+        else
+        {
+            ASSERT(itemSpecialParams.GetSpecialArtefactType() == eTypeKeyArtefact);
+            uHero.CreateAlchemyResult(strObjectID, 1, true, null, null, null);
+            uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+            resultSpecialParams = CastChangedSpecialArtefactParams(strObjectID, pChangedParams);
+            resultSpecialParams.SetLockLevel(resultSpecialParams.GetLockLevel() + 2);
+        }
+    }
+    else if (IsCustomArtefact(strObjectID))
+    {
+        itemCustomParams = GetCustomArtefactParams(strObjectID, pChangedParams);
+        //if (itemCustomParams.GetCustomParam1() == 1234)
+        uHero.CreateAlchemyResult("ART_MONEY", 1, true, null, null, null);
+        uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+        resultSpecialParams = CastChangedSpecialArtefactParams(strObjectID, pChangedParams);
+        resultSpecialParams.SetMoney(213);
+    }
+    else if (IsTrap(strObjectID))
+    {
+        itemTrapParams = GetTrapParams(strObjectID, pChangedParams);
+        if (itemTrapParams.GetType() == eTrapTypeHold)
+        {
+            uHero.CreateAlchemyResult(strObjectID, 1, true, null, null, null);
+            uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+            resultTrapParams = CastChangedTrapParams(strObjectID, pChangedParams);
+            resultTrapParams.SetDamage(resultTrapParams.GetDamage()*2);
+            resultTrapParams.SetHoldTicks(resultTrapParams.GetHoldTicks()*3);
+            resultTrapParams.GetMissileParams().SetMinDamage(eDamageElectric, 100);
+            resultTrapParams.GetMissileParams().SetMaxDamage(eDamageElectric, 100);
+        }
+        else
+        {
+            ASSERT(itemTrapParams.GetType() == eTrapTypeBomb);
+            uHero.CreateAlchemyResult("TRAP_BOMB_01", 1, true, null, null, null);
+            uHero.GetAlchemyItem(eAlchemySlotResult, strObjectID, eqVal, pChangedParams, nCount);
+            resultTrapParams = CastChangedTrapParams(strObjectID, pChangedParams);
+            resultTrapParams.SetDamage(resultTrapParams.GetDamage()*4);
+            resultTrapParams.SetMissileID("MIS_PUSH_WAVE");
+            resultTrapParams.GetMissileParams().Copy(GetMissileParams("MIS_PUSH_WAVE"));
+            resultTrapParams.GetMissileParams().SetMissileFlags(0);
+            resultTrapParams.GetMissileParams().SetMinDamage(eDamagePiercing, 100);
+            resultTrapParams.GetMissileParams().SetMaxDamage(eDamagePiercing, 100);
+            resultTrapParams.GetMissileParams().SetMinDamage(eDamageElectric, 100);
+            resultTrapParams.GetMissileParams().SetMaxDamage(eDamageElectric, 100);
+        }
+    }
+    */
+
+    for (nIndex = 0; nIndex <= eAlchemySlotInputLast; nIndex++)
+    {
+        if (uHero.GetAlchemyItemCount(nIndex) > 0)
+        {
+            uHero.GetAlchemyItem(nIndex, strObjectID, eqVal, pChangedParams, nCount);
+/*            if (IsCustomArtefact(strObjectID))
+            {
+                uHero.SetAlchemyItemResult(nIndex, 0, true, nCount, 1);
+            }
+            else*/
+            {
+                uHero.SetAlchemyItemResult(nIndex, nCount, true, nCount, 0);
+            }
+        }
+    }
+    
+    uHero.SetAlchemyItemResult(eAlchemySlotResult, 0, false, 0, 2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //RPGCOMPUTE_ALCHEMY_ECH

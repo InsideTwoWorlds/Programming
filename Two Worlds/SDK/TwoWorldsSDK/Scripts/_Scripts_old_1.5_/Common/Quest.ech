@@ -1,0 +1,957 @@
+
+#include "Enums.ech"
+#include "Messages.ech"
+#include "Stealing.ech"
+#include "Achievements.ech"
+
+#define DEFAULT_MARKER "MARKER"
+#define MARKER_DEFAULT "MARKER"
+#define MARKER_ENEMY "MARKER_ENEMY"
+#define GET_DIF GetCampaign().EventGetDifficultyLevel()
+
+#define MASK(a) 1<<a
+consts
+{
+    eConsoleTextTime = 120;
+}
+function int IsDay()
+{
+    int nTime;
+    nTime = GetCampaign().GetDayTime();
+    if(nTime>20 &&nTime<237)return true;
+    return false;
+}
+function void SetConsoleTextItem(unit uUnit, string strItem, string strTranslate)
+{
+    string str;
+    stringW strLine;
+    stringW strText;
+    stringW strN;                
+                
+    strText.Copy("");
+    strN.Copy(" ");
+    
+    strText.Translate(strTranslate);
+    strText.Append(strN);
+    str.Format("translate%s",GetRealObjectName(strItem));
+    strLine.Translate(str);
+    strText.Append(strLine);
+    GetPlayerInterface(uUnit.GetHeroPlayerNum()).SetConsoleText(strText,eConsoleTextTime,true,true);
+}
+function void SetConsoleTextRemoveItem(unit uUnit, string strItem)
+{
+    stringW strText;
+    strText.FormatTrl("translateItemReceived",1);
+    GetPlayerInterface(uUnit.GetHeroPlayerNum()).SetConsoleText(strText,eConsoleTextTime,true);
+}
+
+function void AddMoney(unit uUnit,int nMoney)
+{
+    int i;
+    stringW strText;
+    i=uUnit.GetMoney();
+    if(i+nMoney<0) nMoney=-i;
+    i=i+nMoney;
+    
+    uUnit.SetMoney(i);
+    
+    if(!nMoney) return;
+    if(nMoney>0) strText.FormatTrl("translateGoldReceived",nMoney);
+    else strText.FormatTrl("translateGoldSpent",-nMoney);
+    GetPlayerInterface(uUnit.GetHeroPlayerNum()).SetConsoleText(strText,eConsoleTextTime,true);
+}
+
+
+/*
+    eGuildNone =0;
+    eGuildMages = 1;
+    eGuildMerchants = 3;
+    eGuildWarriors = 4;
+    eGuildAliances = 5;
+    eGuildOrcs = 6;
+
+*/
+function void SetConsoleTextAddReputation(unit uUnit, int nGuild,int nPoints)
+{
+    stringW strText;
+    if(nGuild==1 && nPoints>0)strText.FormatTrl("translateRep201Incr",1);
+    if(nGuild==2 && nPoints>0)strText.FormatTrl("translateRep202Incr",1);
+    if(nGuild==3 && nPoints>0)strText.FormatTrl("translateRep203Incr",1);
+    if(nGuild==4 && nPoints>0)strText.FormatTrl("translateRep204Incr",1);
+    if(nGuild==5 && nPoints>0)strText.FormatTrl("translateRep205Incr",1);
+    if(nGuild==7 && nPoints>0)strText.FormatTrl("translateRep207Incr",1);
+    if(nGuild==8 && nPoints>0)strText.FormatTrl("translateRep208Incr",1);
+    
+    GetPlayerInterface(uUnit.GetHeroPlayerNum()).SetConsoleText(strText,eConsoleTextTime,true);
+}
+function void AddExpPoints(unit uUnit,int nExpPoints)
+{
+    int i;
+    stringW strText;
+    if(nExpPoints<1)return;
+    i=uUnit.GetUnitValues().GetExperiencePoints();
+    i=i+nExpPoints;
+    uUnit.GetUnitValues().SetExperiencePoints(i);
+    uUnit.UpdateChangedUnitValues();
+   
+    strText.FormatTrl("translateAddedExpPoints",nExpPoints);
+    GetPlayerInterface(uUnit.GetHeroPlayerNum()).SetConsoleText(strText,eConsoleTextTime,true);
+}           
+function void AddSkillPoints(unit uUnit,int nSkillPoints)
+{
+    int i;
+    stringW strText;
+    if(nSkillPoints<1)return;
+    i=uUnit.GetUnitValues().GetSkillPoints();
+    i=i+nSkillPoints;
+    uUnit.GetUnitValues().SetSkillPoints(i);
+    uUnit.UpdateChangedUnitValues();
+   
+    if(nSkillPoints==1)  strText.FormatTrl("translateAddedSkillPoint",1);
+    else strText.FormatTrl("translateAddedSkillPoints",nSkillPoints);
+    GetPlayerInterface(uUnit.GetHeroPlayerNum()).SetConsoleText(strText,eConsoleTextTime);
+}
+
+function int IsUnitNearPoint(unit uUnit, mission pMission, int nX, int nY, int nRangeG)
+{
+    if (uUnit.DistanceTo(pMission, nX, nY) <= G2A(nRangeG))
+    {
+        return true;
+    }
+    return false;
+}
+
+function int IsHeroNearPoint(mission pMission, int nX, int nY, int nRangeG)
+{
+    return IsUnitNearPoint(GetCampaign().GetPlayerHeroUnit(0), pMission, nX, nY, nRangeG);   
+}
+
+
+function int IsHeroNearUnit(unit uUnit2, int nRangeG)
+{
+    return IsHeroNearPoint(uUnit2.GetMission(), uUnit2.GetLocationX(), uUnit2.GetLocationY(), nRangeG);
+}
+
+
+
+function int IsUnitNearMarker(mission pMission,unit uUnit, string strMarker, int nMarkerNum, int nRangeG)
+{
+    int nX, nY;
+    
+    if (!pMission.GetMarker(strMarker, nMarkerNum, nX, nY))
+    {
+        return false;
+    }
+    return IsUnitNearPoint(uUnit, pMission, nX, nY, nRangeG);
+}
+
+function int IsUnitNearMarker(int nMission, unit uUnit, string strMarker, int nMarkerNum, int nRangeG)
+{
+    mission pMission;
+    pMission = GetCampaign().GetMission(nMission);
+    return IsUnitNearMarker(pMission,uUnit, strMarker, nMarkerNum, nRangeG);
+}
+
+function unit CreateObjectAtMarker(mission pMission,string strObject,string strMarker, int nMarker,int nOffsetX, int nOffsetY, int nAngle)
+{
+    int nX, nY;
+    unit uObject;
+    
+    if (pMission.GetMarker(strMarker, nMarker, nX, nY))
+    {
+        uObject = pMission.CreateObject(strObject, nX+(nOffsetX*128), nY+(nOffsetY*128), 0, nAngle);
+        return uObject;
+    }
+    return null;
+}
+function unit CreateObjectAtMarker(int nMission,string strObject,string strMarker, int nMarker,int nOffsetX, int nOffsetY, int nAngle)
+{
+    mission pMission;
+    pMission = GetCampaign().GetMission(nMission);
+    return CreateObjectAtMarker(pMission,strObject,strMarker, nMarker,nOffsetX, nOffsetY, nAngle);
+}
+
+
+function string GetTrap(int nType, int nLevel)
+{
+    string strName, strTMP;
+    int nSuffix;
+    //int nMagic;
+    if(nType<1 ||nType>3) 
+    {
+        nSuffix=Rand(10);
+        if(nSuffix==0)nType=1;
+        else if(nSuffix==1)nType=2;
+        else nType=3;
+    }
+    
+    nSuffix = 1+Rand(MIN(nLevel/2,8));
+    if(nType==1) strName.Format("TRAP_%02d",nSuffix);
+    else if(nType==2) strName.Format("TRAP_HOLD_%02d",nSuffix);
+    else strName.Format("TRAP_BOMB_%02d",nSuffix);
+    return strName;
+    
+}
+
+function string GetWeapon(int nType, int nLevel, int bLeftHand,int nMagic2)
+{
+    string strName, strTMP;
+    int nSuffix;
+    int nMagic;
+    
+    if(!Rand(25))nMagic=1; else nMagic=0;
+    if(nMagic2>0)nMagic = MIN(2,nMagic2);
+    if(nType==eBreaker)
+    {
+        nLevel=5+Rand(6)*5;
+        strName.Format("WP_BREAKER_%02d(10,0)",nLevel);
+        return strName;
+    }
+    if(nType==eKnife)
+    {
+        nLevel=MIN(nLevel,36);
+        nLevel=MAX(1,nLevel);
+        strName.Format("WP_DAGGER_%02d(%d,0)",nLevel,nLevel);
+        return strName;
+    }
+
+    if(bLeftHand && ((nType>=eClub1 && nType<=eClub5)||nType==ePoleArm)) nType = Rand(eSword+1);
+    
+    
+    if(nType>=eClub1 && nType<=eClub5)
+    { 
+        nLevel=MAX(1,nLevel/5);// rozdzki co 5 lewel generuje sie kolejna  XXXMD
+        nLevel=MIN(5,nLevel);
+        strName.Format("WP_STAFF_%d%d(%d,0)",nType-eClub1,nLevel,nLevel*5);
+        return strName;
+    }
+    if(nType==eBow)
+    { 
+        if(nLevel>24) {nLevel = 15 + Rand(10);nMagic=MAX(1,nMagic);}//magiczny luk oznacza dodatki do  skilli i parametrow
+        if(nLevel<=6) nSuffix=nLevel;
+        else if(nLevel<=12) nSuffix=nLevel-6+10;
+        else if(nLevel<=18) nSuffix=nLevel-12+20;
+        else nSuffix=nLevel-18+30;
+        if (nSuffix == 0) nSuffix = 1; // (p) do poprawienia
+        strName.Format("WP_BOW_%02d(%d,%d)",nSuffix, nLevel, nMagic);
+        return strName;
+    }
+    if(nLevel<1)nLevel=1;
+    if(nLevel>54)nLevel=54;
+    if(nType==eAxe) strName = "WP_AXE_";
+    else if(nType==eMace) strName = "WP_MACE_";
+    else if(nType==ePoleArm) strName = "WP_POLE_ARM_";
+    else strName="WP_SWORD_";
+    nSuffix=(nLevel-1)/6;
+    if(nSuffix>8)nSuffix=8;
+    
+    if(bLeftHand)//zamiana  broni 2 recznych na najblizsze jednoreczne
+    {
+        if(nType==eAxe && nSuffix==2 ||nSuffix==8){nSuffix--;nLevel-=6;}
+        if(nType==eMace && nSuffix==2 ||nSuffix==3){nSuffix=1;nLevel = 8;}
+        if(nType==eSword && nSuffix==6 ||nSuffix==7){nSuffix = 5;nLevel=34;}
+        if(nType==eSword && nSuffix==2){nSuffix=1;nLevel=8;}
+    }
+    
+    
+    strTMP.Format("%s%d(%d,%d)",strName,nSuffix,nLevel,nMagic);
+    return strTMP;
+}
+function string GetWeapon(int nType, int nLevel)
+{
+   return GetWeapon(nType, nLevel,false,0);
+}
+function string GetWeapon(int nType, int nLevel, int bLeftHand)
+{
+   return GetWeapon(nType, nLevel,bLeftHand,0);
+}
+
+function string GetEquipment(int nType, int nLevel, int nMagic2)
+{
+    string strName, strTMP;
+    int nSuffix, nMagic;
+    
+    if(!Rand(25))nMagic=1; else nMagic=0;
+    if(nMagic2>0)nMagic = MIN(nMagic2,2);
+    
+    
+    if(nType==eRing)
+    {
+        if(!nMagic)nMagic=1;
+        strName.Format("AR_RING_0%d(%d,%d)",1+Rand(9),nLevel, nMagic);
+        return strName;
+    }
+    if(nType==eRobe)
+    {
+        nMagic=Rand(10);
+        if(nMagic==0)nSuffix=1;
+        if(nMagic==1)nSuffix=2;
+        if(nMagic==2)nSuffix=3;
+        if(nMagic==3)nSuffix=4;
+        if(nMagic==4)nSuffix=11;
+        if(nMagic==5)nSuffix=12;
+        if(nMagic==6)nSuffix=15;
+        if(nMagic==7)nSuffix=23;
+        if(nMagic==8)nSuffix=24;
+        if(nSuffix<10)strName.Format("ROBE_0(%d,2,%d)",nLevel,nSuffix);
+        else strName.Format("ROBE_1(%d,2,%d)",nLevel,nSuffix);
+        return strName;
+    }
+
+    if(nLevel>41){nLevel=10+Rand(30);nMagic=1;}
+    
+    
+    if(nType>=eHelmet && nType<=eBoots)
+    {   
+        nSuffix=0;
+        if(nLevel<12) nSuffix=1;                             //LE
+        if(nLevel>=4 && nLevel<24) nSuffix+=2;             //CH
+        if(nLevel>=10 && nLevel<30) nSuffix+=4;         //HP
+        if(nLevel>=19 && nLevel<42) nSuffix+=8;       //CH+HP
+        
+        if(nSuffix==1) nSuffix=0;//LE+CH
+        else if(nSuffix==3) nSuffix=Rand(2);//LE+CH
+        else if(nSuffix==7) nSuffix=Rand(3);//LE+CH+HP
+        else if(nSuffix==6) nSuffix=1+Rand(2);//CH+HP
+        else if(nSuffix==14) nSuffix=1+Rand(3);//CH+HP+PL
+        else if(nSuffix==12) nSuffix=2+Rand(2);//HP+PL
+        else nSuffix=3; //PL
+        
+    }
+    else if(nType==eShield)
+    {
+        
+        if(nLevel<=6) nSuffix=0; 
+        if(nLevel>6 && nLevel<=12) nSuffix=Rand(2);  
+        if(nLevel>12 && nLevel<=18) nSuffix=Rand(3);
+        if(nLevel>18 && nLevel<=24)nSuffix=Rand(4);
+        if(nLevel>24 && nLevel<=30)nSuffix=1+Rand(3);
+        if(nLevel>30 && nLevel<=36)nSuffix=2+Rand(2);
+        if(nLevel>36)nSuffix=3;
+    
+    }
+
+    
+//    0-5 | 6-11 | 12-23 | 24-29 | 30-35 | 36-47      pozion
+//     0  | 0,1  | 0,1,2 | 1,2,3 |  2,3  |   3        typ ekwipunku
+
+
+    strName="NULL";
+    if(nType==eShield)
+    {    
+        if(nSuffix==0) strName.Format("AR_BUCKLER(%d,%d)",nLevel, nMagic);
+        if(nSuffix==1) strName.Format("AR_ROUNDSHIELD(%d,%d)",nLevel, nMagic);
+        if(nSuffix==2) strName.Format("AR_SHIELD(%d,%d)",nLevel, nMagic);
+        if(nSuffix==3) strName.Format("AR_TOWERSHIELD(%d,%d)",nLevel, nMagic);
+    }
+    if(nType==eHelmet)
+    {    
+        if(nSuffix==0) strName.Format("AR_LEATHER_HELMET(%d,%d)",nLevel, nMagic);
+        if(nSuffix==1) strName.Format("AR_CHAIN_HELMET(%d,%d)",nLevel, nMagic);
+        if(nSuffix==2) strName.Format("AR_HALF_PLATE_HELMET(%d,%d)",nLevel, nMagic);
+        if(nSuffix==3) strName.Format("AR_PLATE_HELMET(%d,%d)",nLevel, nMagic);
+    }
+    if(nType==eArmour)
+    {    
+        if(nSuffix==0) strName.Format("AR_LEATHER_ARMOUR(%d,%d)",nLevel, nMagic);
+        if(nSuffix==1) strName.Format("AR_CHAIN_ARMOUR(%d,%d)",nLevel, nMagic);
+        if(nSuffix==2) strName.Format("AR_HALF_PLATE_ARMOUR(%d,%d)",nLevel, nMagic);
+        if(nSuffix==3) strName.Format("AR_PLATE_ARMOUR(%d,%d)",nLevel, nMagic);
+    }
+    if(nType==eGloves)
+    {    
+        if(nSuffix==0) strName.Format("AR_LEATHER_GLOVES(%d,%d)",nLevel, nMagic);
+        if(nSuffix==1) strName.Format("AR_CHAIN_GLOVES(%d,%d)",nLevel, nMagic);
+        if(nSuffix==2) strName.Format("AR_HALF_PLATE_GLOVES(%d,%d)",nLevel, nMagic);
+        if(nSuffix==3) strName.Format("AR_PLATE_GLOVES(%d,%d)",nLevel, nMagic);
+    }
+    if(nType==eTrousers)
+    {    
+        if(nSuffix==0) strName.Format("AR_LEATHER_TROUSERS(%d,%d)",nLevel, nMagic);
+        if(nSuffix==1) strName.Format("AR_CHAIN_TROUSERS(%d,%d)",nLevel, nMagic);
+        if(nSuffix==2) strName.Format("AR_HALF_PLATE_TROUSERS(%d,%d)",nLevel, nMagic);
+        if(nSuffix==3) strName.Format("AR_PLATE_TROUSERS(%d,%d)",nLevel, nMagic);
+    }
+    if(nType==eBoots)
+    {    
+
+        if(nSuffix==0) strName.Format("AR_LEATHER_BOOTS(%d,%d)",nLevel, nMagic);
+        if(nSuffix==1) strName.Format("AR_CHAIN_BOOTS(%d,%d)",nLevel, nMagic);
+        if(nSuffix==2) strName.Format("AR_HALF_PLATE_BOOTS(%d,%d)",nLevel, nMagic);
+        if(nSuffix==3) strName.Format("AR_PLATE_BOOTS(%d,%d)",nLevel, nMagic);
+    }
+    if(nType==eQuiver)
+    {    
+        if(nLevel>24) { nLevel = 15 + Rand(10); nMagic=MAX(1,nMagic);}
+        if(nLevel<=6) nSuffix=nLevel;
+        else if(nLevel<=12) nSuffix=nLevel-6+10;
+        else if(nLevel<=18) nSuffix=nLevel-12+20;
+        else nSuffix=nLevel-18+30;
+        if (nSuffix == 0) nSuffix = 1; // (p) do poprawienia
+        strName.Format("AR_QUIVER_%02d(%d,%d)",nSuffix, nLevel, nMagic);
+    }
+   return strName;
+}
+function string GetEquipment(int nType, int nLevel)
+{
+    return GetEquipment(nType, nLevel, 0);
+}
+
+/*    eFirstPotion =1001;
+    ePotionHealing2 = 1001;
+    ePotionHealing3 = 1002;
+    ePotionSkillTime1 = 1003;
+    ePotionSkillTime2 = 1004;
+    ePotionSkillTime3 = 1005;
+    ePotionSkillTime4 = 1006;
+    ePotionSkillTime5 = 1007;
+    ePotionSkill1 = 1008;
+    ePotionSkill2 = 1009;
+    ePotionSkill3 = 1010;
+    ePotionSkill4 = 1011;
+    ePotionSkill5 = 1012;
+    ePotionPoison = 1013;*/
+function int IsPotionActive(int nPotion)
+{
+    int nActive;
+    nActive=0;
+    GetCampaign().CommandMessage(nPotion, nActive);
+    return nActive;
+}
+function string GetWeaponEnchancer(int nLockLevel)
+{
+    int i;
+    string strObject;
+    
+    if(nLockLevel<2)i=Rand(60);  // od poziomu zamka zalezy co w srodku skrzyni
+    else if(nLockLevel<=4)i=Rand(90);
+    else i=Rand(100);
+    
+    if(i<11) strObject = "ART_ADD_POISON10";        //11%
+    else if(i<22) strObject = "ART_ADD_FIRE10";    //11
+    else if(i<33) strObject = "ART_ADD_COLD10";    //11
+    else if(i<44) strObject = "ART_ADD_ELECTRIC10";//11        
+    else if(i<60) strObject = "ART_ADD_SPIRIT10"; //16%
+
+    else if(i<65) strObject = "ART_ADD_POISON20";  //5%
+    else if(i<70) strObject = "ART_ADD_FIRE20";
+    else if(i<77) strObject = "ART_ADD_COLD20";
+    else if(i<80) strObject = "ART_ADD_ELECTRIC20";//5%
+    else if(i<90) strObject = "ART_ADD_SPIRIT20";//10%
+
+    else if(i<92) strObject = "ART_ADD_COLD50";    //2%
+    else if(i<94) strObject = "ART_ADD_FIRE50";
+    else if(i<96) strObject = "ART_ADD_ELECTRIC50";
+    else if(i<98) strObject = "ART_ADD_SPIRIT50";
+    else strObject = "ART_ADD_POISON50";
+    return strObject;
+}
+function string GetPotion()
+{
+    int i;
+    string strObject;
+    i=Rand(96);
+    
+    if(i<30) strObject = "POTION_MANA_01";
+    else if(i<50) strObject = "POTION_MANA_02";
+    else if(i<60) strObject = "POTION_MANA_03";
+    else if(i<70) strObject = "POTION_HEALING_01";
+    else if(i<80) strObject = "POTION_HEALING_02";
+    else if(i<90) strObject = "POTION_HEALING_03";
+    else if(i<91) strObject = "POTION_SKILL_TIME_01";
+    else if(i<92) strObject = "POTION_SKILL_TIME_02";
+    else if(i<93) strObject = "POTION_SKILL_TIME_03";
+    else if(i<94) strObject = "POTION_SKILL_TIME_04";
+    else if(i<95) strObject = "POTION_SKILL_TIME_05";
+    else 
+    {
+        i=Rand(50);
+        if(i<45) strObject = "POTION_POISON_01";
+        else if(i<46) strObject = "POTION_SKILL_01";
+        else if(i<47) strObject = "POTION_SKILL_02";
+        else if(i<48) strObject = "POTION_SKILL_03";
+        else if(i<49) strObject = "POTION_SKILL_04";
+        else strObject = "POTION_SKILL_05";
+    }
+    
+    return strObject;        
+}
+
+
+function string GetMagicCardString_AllCards(int nLockLevel)
+{
+        int i;
+        string strObject;
+
+        if(nLockLevel<=2)i=Rand(18);  // od poziomu zamka zalezy co w srodku skrzyni
+        if(nLockLevel<=3)i=Rand(36);
+        if(nLockLevel<=4)i=Rand(51);
+        if(nLockLevel<=5)i=Rand(63);
+        else i=Rand(73);
+        
+        
+        if(!Rand(50)&&nLockLevel>2)//boosters
+        {
+            i=Rand(8);
+            if(i<2) return "MAGIC_BOOST_DAMAGE";
+            else if(i<4) return  "MAGIC_BOOST_TIME";
+            else if(i<5) return  "MAGIC_BOOST_MANA";
+            else if(i<6) return  "MAGIC_BOOST_LEVEL";
+            else         return  "MAGIC_BOOST_SUMMON";
+        }
+// ring 1
+        if     (i<1)  strObject = "MAGIC_LIGHTING";
+        else if(i<2)  strObject = "MAGIC_HEAL";
+        else if(i<3)  strObject = "MAGIC_BLESS";
+        else if(i<4) strObject = "MAGIC_ICEBOLT";
+        else if(i<5) strObject = "MAGIC_CONFUSION";
+        else if(i<6) strObject = "MAGIC_SUMMON_REAPER";
+        else if(i<7) strObject = "MAGIC_FIREBOLT";
+        else if(i<8) strObject = "MAGIC_FIREWALL";
+        else if(i<9) strObject = "MAGIC_OVERPOWER";
+        else if(i<10) strObject = "MAGIC_SUMMON_MINION";
+        else if(i<11) strObject = "MAGIC_SPIKES";
+        else if(i<12) strObject = "MAGIC_CHAINS";
+        else if(i<13) strObject = "MAGIC_RUSTWEAPON";
+        else if(i<14) strObject = "MAGIC_IRONSKIN";
+        else if(i<15) strObject = "MAGIC_POISONBLADE";
+        else if(i<16) strObject = "MAGIC_CORPSECONVERSION";
+        else if(i<17) strObject = "MAGIC_BONEARMOUR";
+        else if(i<18) strObject = "MAGIC_SUMMON_SKELETON";
+        
+// ring 2        
+        else if(i<19)  strObject = "MAGIC_DESTROYUNDEAD";
+        else if(i<20)  strObject = "MAGIC_PUSH";
+        else if(i<21)  strObject = "MAGIC_CONCENTRATION";
+        else if(i<22)  strObject = "MAGIC_SHIELDOFMAGIC";
+        else if(i<23) strObject = "MAGIC_FREEZINGWAVE";
+        else if(i<24) strObject = "MAGIC_SHADOW";
+        else if(i<25) strObject = "MAGIC_ICESHIELD";
+        else if(i<26) strObject = "MAGIC_SUMMON_SPIDER";
+        else if(i<27) strObject = "MAGIC_FIREBALL";
+        else if(i<28) strObject = "MAGIC_FIRERING";
+        else if(i<29) strObject = "MAGIC_FIRESHIELD";
+        else if(i<30) strObject = "MAGIC_MAGICHAMMER";
+        else if(i<31) strObject = "MAGIC_RUSTARMOUR";
+        else if(i<32) strObject = "MAGIC_SUMMON_STONEGOLEM";
+        else if(i<33) strObject = "MAGIC_POISONDART";
+        else if(i<34) strObject = "MAGIC_DEADHANDS";
+        else if(i<35) strObject = "MAGIC_POISONSHIELD";
+        else if(i<36) strObject = "MAGIC_SUMMON_ARCHER";
+
+// ring 3        
+        else if(i<37)  strObject = "MAGIC_REGENERATION";
+        else if(i<38)  strObject = "MAGIC_LIGHTINGSHIELD";
+        else if(i<39) strObject = "MAGIC_ICERAY";
+        else if(i<40) strObject = "MAGIC_UNSUMMON";
+        else if(i<41) strObject = "MAGIC_SUMMON_WYVERN";
+        else if(i<42) strObject = "MAGIC_FIRESPRAY";
+        else if(i<43) strObject = "MAGIC_FIREFIELD";
+        else if(i<44) strObject = "MAGIC_SUMMON_HELLWARRIOR";
+        else if(i<45) strObject = "MAGIC_STONEWALL";
+        else if(i<46) strObject = "MAGIC_ADAMANTIUM";
+        else if(i<47) strObject = "MAGIC_SUMMON_IRONGOLEM";
+        else if(i<48) strObject = "MAGIC_POISONCLOUD";
+        else if(i<49) strObject = "MAGIC_DISEASE";
+        else if(i<50) strObject = "MAGIC_LEECHAURA";
+        else if(i<51) strObject = "MAGIC_SUMMON_GHOUL";
+               
+// ring 4
+        else if(i<52) strObject = "MAGIC_PUSH_WAVE";
+        else if(i<53) strObject = "MAGIC_AID";
+        else if(i<54) strObject = "MAGIC_SUMMON_AIR_ELEMENTAL";
+        else if(i<55) strObject = "MAGIC_PROTFROMFIRE";
+        else if(i<56) strObject = "MAGIC_SUMMON_SCORPIO";
+        else if(i<57) strObject = "MAGIC_FIREWAVE";
+        else if(i<58) strObject = "MAGIC_CHAOSRAGE";
+        else if(i<59) strObject = "MAGIC_SUMMON_DEVIL";
+        else if(i<60) strObject = "MAGIC_ERUPTION";
+        else if(i<61) strObject = "MAGIC_IVY";
+        else if(i<62) strObject = "MAGIC_EARTHBLESSING";
+        else if(i<63) strObject = "MAGIC_NECROPOWER";        
+// ring 5        
+        else if(i<64) strObject = "MAGIC_LIGHTINGSTORM";
+        else if(i<65) strObject = "MAGIC_STRENGTHOFGOD";
+        else if(i<66) strObject = "MAGIC_RESURRECTION";
+        else if(i<67) strObject = "MAGIC_BLIZZARD";
+        else if(i<68) strObject = "MAGIC_SUMMONINGAURA";
+        else if(i<69) strObject = "MAGIC_METEOR";
+        else if(i<70) strObject = "MAGIC_SUMMON_HELLMASTER";
+        else if(i<71) strObject = "MAGIC_REFLECTINGSHIELD";
+        else if(i<72) strObject = "MAGIC_SUMMON_ADAMEGOLEM";
+        else strObject = "MAGIC_AURAOFDEATH";        
+//--------------------------------------------------------------
+        return strObject;
+}
+//***********************************************************************************
+//*********  N A G R O D Y **********************************************************
+//***********************************************************************************
+
+function string CreateGoldString(int nLevel)
+{    
+    int i;
+    string strObject;
+    i=Rand(1+nLevel);
+    if(i<3)strObject = "ART_MONEY5";
+    else if(i<5) strObject ="ART_MONEY10";
+    else if(i<9) strObject ="ART_MONEY20";
+    else if(i<15) strObject ="ART_MONEY50";
+    else if(i<19) strObject ="ART_MONEY100";
+    else if(i<23) strObject ="ART_MONEY200";
+    else if(i<25) strObject ="ART_MONEY500";
+    else strObject ="ART_MONEY20";
+    return strObject;
+
+}
+function string CreateRewardString(int nLevel, int bAddGold, int nLockLevel)
+{    
+    int i,v;
+    string strObject,strTMP;
+    if(bAddGold && !Rand(4))
+    {
+        return CreateGoldString(nLevel);
+    }
+    
+    v = Rand(97+5);//+5 spowodowalo zwiekszenie szansy dodatkow do broni z 10% na 15%
+   
+    if (v<11)
+    {
+        strObject ="LOCKPICK";
+        return strObject;
+    }
+    if (v<40)
+    {
+        if(nLevel>30 && Rand(2))// zeby na wyzszych poziomach nie robily sie same platy.
+        {
+            nLevel=15+Rand(15);
+        }
+        i=Rand(170);
+        if(i<20)strObject = GetEquipment(eArmour, nLevel);
+        else if(i<40) strObject = GetEquipment(eHelmet, nLevel);
+        else if(i<60) strObject = GetEquipment(eGloves, nLevel);
+        else if(i<70) strObject = GetEquipment(eQuiver, nLevel);
+        else if(i<80) strObject = GetEquipment(eBoots, nLevel);
+        else if(i<100) strObject = GetEquipment(eTrousers, nLevel);
+        else if(i<110) strObject = GetEquipment(eRobe, nLevel);
+        else if(i<120) strObject = GetTrap(0, nLevel);
+        else if(i<130) strObject = GetEquipment(eRing, nLevel);
+        else if(i<135) strObject = GetWeapon(eKnife+Rand(2), nLevel,false);
+        else if(i<155) strObject = GetWeapon(Rand(eBreaker+1), nLevel,false);
+        else strObject = GetWeapon(Rand(eBow+1), nLevel,false);
+        
+        return strObject;
+        //TRACE("             i dla Equipm. ma wartoœæ: %d                                        \n",i);
+        
+    }
+    else if(v<70)
+    {   
+        strObject=GetPotion(); 
+        return strObject;
+        //TRACE("             i dla napoju ma wartoœæ: %d                                        \n",i);
+    }
+    else if(v<77)//bylo 20% zamienione na 7% poprzez zwiekszenie potionów
+    {
+        if(nLockLevel<1) return "LOCKPICK";
+        return GetMagicCardString_AllCards(nLockLevel);
+    }
+    else if(v<87)//mineraly
+    {
+        i=Rand(100);
+        if(i==0)strObject = "ING_34";
+        else if(i==1)strObject = "ING_39";
+        else if(i<5)strObject = "ING_40";
+        else if(i<10)strObject = "ING_51";
+        else strObject.Format("ING_%d",61+Rand(20));
+        return strObject;
+    }
+    else //15%
+    {
+        if(nLockLevel<1) return "LOCKPICK";
+        return GetWeaponEnchancer(nLockLevel);
+    }
+    return "ART_MONEY5";
+}
+function string CreateRewardString(int nLevel, int bAddGold)
+{
+    return CreateRewardString(nLevel, bAddGold,10);
+}
+function void LockSkill(unit uUnit, int nSkill, int bLock)
+{
+    if ((nSkill >= eFirstPassiveSkill) && (nSkill <= eLastPassiveSkill))
+    {
+        if (bLock)
+        {
+            uUnit.GetUnitValues().SetLockedPassiveSkills(uUnit.GetUnitValues().GetLockedPassiveSkills() | (1 << (nSkill - eFirstPassiveSkill)));
+        }
+        else
+        {
+            uUnit.GetUnitValues().SetLockedPassiveSkills(uUnit.GetUnitValues().GetLockedPassiveSkills() & ~(1 << (nSkill - eFirstPassiveSkill)));
+            ProcessSkillAchievements(uUnit);
+        }
+    }
+    else if ((nSkill >= eFirstActiveSkill) && (nSkill <= eLastActiveSkill))
+    {
+        if (bLock)
+        {
+            uUnit.GetUnitValues().SetLockedActiveSkills(uUnit.GetUnitValues().GetLockedActiveSkills() | (1 << (nSkill - eFirstActiveSkill)));
+        }
+        else
+        {
+            uUnit.GetUnitValues().SetLockedActiveSkills(uUnit.GetUnitValues().GetLockedActiveSkills() & ~(1 << (nSkill - eFirstActiveSkill)));
+            ProcessSkillAchievements(uUnit);
+        }
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+}
+
+function int IsLockedSkill(unit uUnit, int nSkill)
+{
+    if ((nSkill >= eFirstPassiveSkill) && (nSkill <= eLastPassiveSkill))
+    {
+        if (uUnit.GetUnitValues().GetLockedPassiveSkills() & (1 << (nSkill - eFirstPassiveSkill)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if ((nSkill >= eFirstActiveSkill) && (nSkill <= eLastActiveSkill))
+    {
+        if (uUnit.GetUnitValues().GetLockedActiveSkills() & (1 << (nSkill - eFirstActiveSkill)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    __ASSERT_FALSE();
+    return false;
+}
+
+function void LockSkill(unit uUnit, int nSkill)
+{
+    LockSkill(uUnit, nSkill, true);
+}
+
+function void UnlockSkill(unit uUnit, int nSkill)
+{
+    LockSkill(uUnit, nSkill, false);
+}
+
+
+function void LockAllSkills(unit uUnit)
+{
+    int nSkill;
+    
+    uUnit.GetUnitValues().SetLockedPassiveSkills(0);
+    uUnit.GetUnitValues().SetLockedActiveSkills(0);
+    for (nSkill = eFirstNormalSkill; nSkill < eSkillsCnt; nSkill++)
+    {
+        LockSkill(uUnit, nSkill);
+    }
+}
+
+function unit GetHeroMulti()
+{
+    int i; 
+    for(i=0;i<8;i++)
+    {
+        if (IsPlayer(i))
+            return GetCampaign().GetPlayerHeroUnit(i);
+    }
+    return null;
+}
+
+function unit GetHero(int nHero)
+{
+    if (!IsPlayer(nHero)) return null;
+    return GetCampaign().GetPlayerHeroUnit(nHero);
+}
+
+function unit GetHero()
+{
+    return GetHero(0);
+}
+
+function int GetHeroesAvgLevel() 
+{
+    
+    int nLevel;
+    int n;
+    int i;
+
+    nLevel = 0;
+    n = 0;
+    for (i = 0; i < GetPlayersCnt(); i++) 
+    {
+        if (IsPlayer(i)) 
+        {
+            nLevel += GetCampaign().GetPlayerHeroUnit(i).GetUnitValues().GetLevel();
+            n++;
+        }
+    }
+    
+    if (!n) return 0;
+    return nLevel / n;
+
+}
+
+//=================================================================================
+consts
+{
+    eMaxEscapeUnits=99;
+}
+unit auEscapeUnit[eMaxEscapeUnits];
+int nEscapeUnits;
+int nEscapeUnitsCounter;
+function void InitEscapeUnits()
+{
+    nEscapeUnitsCounter=0;
+    nEscapeUnits=0;
+}
+    
+function void EscapeUnitAdd(unit uUnit)
+{
+    if(nEscapeUnits>=eMaxEscapeUnits-1) return;
+    auEscapeUnit[nEscapeUnits]=uUnit;
+    nEscapeUnits++;
+}
+function void EscapeUnitRemove(int i)
+{
+    auEscapeUnit[i].RemoveObject();
+    nEscapeUnits--;
+    auEscapeUnit[i]=auEscapeUnit[nEscapeUnits];
+}
+
+function void EscapeUnitRemoveAll()
+{
+    int i;
+    for(i=0;i<nEscapeUnits;i++) auEscapeUnit[i].RemoveObject;
+    nEscapeUnits=0;
+}
+function void EscapeUnitCheck()
+{
+    unit uHero;
+    mission uMission;
+    int i,nX,nY;
+    
+    nEscapeUnitsCounter++;
+    if(nEscapeUnitsCounter<10)return;
+    nEscapeUnitsCounter=0;
+    uHero = GetHero();
+    uMission = uHero.GetMission();
+    for(i=0;i<nEscapeUnits;i++) 
+    {
+        if(auEscapeUnit[i].GetMission()==uMission)
+         if(IsHeroNearUnit(auEscapeUnit[i], 20))
+         {
+             nX=Rand(127)*256;
+             nY=Rand(127)*256;
+             auEscapeUnit[i].CommandMove(nX,nY,0);
+          }
+         else
+         {
+             EscapeUnitRemove(i);
+             i--;
+         }
+    }
+}
+
+
+
+function void OpenGate(mission pMission,int nMarker,int bImmediately)
+{
+    unit uUnit;
+    int nX, nY;
+    
+    if (pMission.GetMarker(DEFAULT_MARKER, nMarker, nX, nY))
+    {
+        uUnit = pMission.GetNotTransientPassive(nX,nY);
+        uUnit.SetGateOpen(true,bImmediately);
+        //if(uUnit)TRACE("                                                     OPEN GATE %d  \n", nMarker);
+        //else TRACE("                                                     OPEN GATE %d - can't find theGate!   \n", nMarker);
+    }
+}
+//===========================================================================================
+function void CloseGate(mission pMission,int nMarker,int bImmediately)
+{
+    unit uUnit;
+    int nX, nY;
+    
+    if (pMission.GetMarker(DEFAULT_MARKER, nMarker, nX, nY))
+    {
+        uUnit = pMission.GetNotTransientPassive(nX,nY);
+        uUnit.SetGateOpen(false,bImmediately);
+        //if(uUnit)TRACE("                                                     CLOSE GATE %d  \n", nMarker);
+        //else TRACE("                                                     CLOSE GATE %d - can't find theGate!   \n", nMarker);
+    }
+}
+//======================================================================            
+function string GetSimpleMagicCardString(int i)
+{
+ if(i==1)return "MAGIC_LIGHTING";
+ if(i==2)return "MAGIC_FIREBALL"; 
+ if(i==3)return "MAGIC_ICEBOLT";
+ if(i==4)return "MAGIC_MAGICHAMMER";
+ return "MAGIC_POISONDART";
+}
+function string GetPowerUpCardString(int i)
+{
+ if(i==1)return "MAGIC_BOOST_DAMAGE";
+ if(i==2)return "MAGIC_BOOST_TIME";
+ if(i==3)return "MAGIC_BOOST_LEVEL";
+ if(i==4)return "MAGIC_BOOST_SUMMON";
+ return "MAGIC_BOOST_MANA";           
+}
+
+/*
+eMageShoolAir = 1;
+    eMageShoolFire = 2;
+    eMageShoolWater = 3;
+    eMageShoolEarth = 4;
+    eMageShoolNecro = 5;
+    
+*/
+
+function string GetMagicCardString(int nSchool, int nLevel)
+{
+    int a,b;
+    a=1;b=MIN(15,MAX(2,nLevel/2));
+    return SelectRandomMagicCard(nSchool, a, b);
+}
+//======================================================================            
+function int GetPointInRange(int nX, int nY, int nRangeMin, int nRangeMax, mission pMission, int &nTargetX, int &nTargetY) {
+
+    int nCount;
+    int nAngle;
+    int nRange;
+
+    nCount = 0;
+    
+    do {
+    
+        nAngle = Rand(256);
+        nRange = Rand(nRangeMax - nRangeMin) + nRangeMin;
+        TurnRadiusByAngle(nRange,nAngle,nTargetX,nTargetY);
+        nTargetX += nX;
+        nTargetY += nY;    
+        
+        if (pMission == null) return true;
+        if (pMission.IsGoodPointForUnit(nTargetX,nTargetY)) return true;
+        nCount++;
+
+    } while (nCount < 32);
+
+    return false;
+
+}            
+
+
+//======================================================================            

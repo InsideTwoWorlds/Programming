@@ -1,0 +1,6 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Polanie3\MayaPlugin\Precision]
+"N_ROT_LQ"="0.0025"
+"N_ROT_HQ"="0.0003"
+"N_ROT_TR"="0.01"

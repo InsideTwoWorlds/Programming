@@ -1,0 +1,3490 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> EarthC functions </title>
+</head>
+<body>
+<hr>
+<links_begin><pre><big>
+<a href="#string"><strong>string</strong></a>
+<a href="#stringW"><strong>stringW</strong></a>
+<a href="#array"><strong>array</strong></a>
+<a href="#object"><strong>object</strong></a>
+   <a href="#basescript"><strong>basescript</strong></a>
+        <a href="#campaign"><strong>campaign</strong></a>
+        <a href="#global"><strong>global</strong></a>
+        <a href="#mission"><strong>mission</strong></a>
+        <a href="#playerinterface"><strong>playerinterface</strong></a>
+   <a href="#unit"><strong>unit</strong></a>
+        <a href="#hero"><strong>hero</strong></a>
+   <a href="#EquipmentParams"><strong>EquipmentParams</strong></a>
+   <a href="#EquipmentValues"><strong>EquipmentValues</strong></a>
+   <a href="#WeaponParams"><strong>WeaponParams</strong></a>
+   <a href="#MagicClubParams"><strong>MagicClubParams</strong></a>
+   <a href="#MagicCardParams"><strong>MagicCardParams</strong></a>
+   <a href="#MissileParams"><strong>MissileParams</strong></a>
+        <a href="#MissileParamsSet"><strong>MissileParamsSet</strong></a>
+   <a href="#MissileValues"><strong>MissileValues</strong></a>
+   <a href="#UnitParams"><strong>UnitParams</strong></a>
+   <a href="#UnitValues"><strong>UnitValues</strong></a>
+   <a href="#SpecialArtefactParams"><strong>SpecialArtefactParams</strong></a>
+        <a href="#SpecialArtefactParamsSet"><strong>SpecialArtefactParamsSet</strong></a>
+   <a href="#CustomArtefactParams"><strong>CustomArtefactParams</strong></a>
+        <a href="#CustomArtefactParamsSet"><strong>CustomArtefactParamsSet</strong></a>
+   <a href="#PotionArtefactParams"><strong>PotionArtefactParams</strong></a>
+        <a href="#PotionArtefactParamsSet"><strong>PotionArtefactParamsSet</strong></a>
+   <a href="#PotionValues"><strong>PotionValues</strong></a>
+   <a href="#TrapParams"><strong>TrapParams</strong></a>
+        <a href="#TrapParamsSet"><strong>TrapParamsSet</strong></a>
+   <a href="#RPGCompute"><strong>RPGCompute</strong></a>
+</big></pre><links_end>
+<br>
+<objects_begin>
+<a name="string">
+<hr>
+<string>
+<big><strong>string</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<string_functions_begin>
+public:
+void Copy(string)
+int  GetLength()
+int  IsEmpty()
+int  GetAt(int)
+void Append(string)
+void Append(int)
+int  Compare(string)
+int  CompareNoCase(string)
+int  EqualNoCase(string)
+int  ReverseFind(int)
+int  ReverseFind(int, int)
+int  Find(int)
+int  Find(int, int)
+void Right(int)
+void Left(int)
+void Mid(int)
+void Mid(int, int)
+void Replace(string, string)
+void ReplaceNoCase(string, string)
+void TrimLeft()
+void TrimRight()
+void Format(string, int)
+void Format(string, string)
+void Format(string, int, int)
+void Format(string, int, string)
+void Format(string, string, int)
+void Format(string, string, string)
+void Format(string, int, int, int)
+void Format(string, int, int, string)
+void Format(string, int, string, int)
+void Format(string, int, string, string)
+void Format(string, string, int, int)
+void Format(string, string, int, string)
+void Format(string, string, string, int)
+void Format(string, string, string, string)
+void Format(string, int, int, int, int)
+void Format(string, int, int, int, string)
+void Format(string, int, int, string, int)
+void Format(string, int, int, string, string)
+void Format(string, int, string, int, int)
+void Format(string, int, string, int, string)
+void Format(string, int, string, string, int)
+void Format(string, int, string, string, string)
+void Format(string, string, int, int, int)
+void Format(string, string, int, int, string)
+void Format(string, string, int, string, int)
+void Format(string, string, int, string, string)
+void Format(string, string, string, int, int)
+void Format(string, string, string, int, string)
+void Format(string, string, string, string, int)
+void Format(string, string, string, string, string)
+void Format(string, int, int, int, int, int)
+void Format(string, int, int, int, int, string)
+void Format(string, int, int, int, string, int)
+void Format(string, int, int, int, string, string)
+void Format(string, int, int, string, int, int)
+void Format(string, int, int, string, int, string)
+void Format(string, int, int, string, string, int)
+void Format(string, int, int, string, string, string)
+void Format(string, int, string, int, int, int)
+void Format(string, int, string, int, int, string)
+void Format(string, int, string, int, string, int)
+void Format(string, int, string, int, string, string)
+void Format(string, int, string, string, int, int)
+void Format(string, int, string, string, int, string)
+void Format(string, int, string, string, string, int)
+void Format(string, int, string, string, string, string)
+void Format(string, string, int, int, int, int)
+void Format(string, string, int, int, int, string)
+void Format(string, string, int, int, string, int)
+void Format(string, string, int, int, string, string)
+void Format(string, string, int, string, int, int)
+void Format(string, string, int, string, int, string)
+void Format(string, string, int, string, string, int)
+void Format(string, string, int, string, string, string)
+void Format(string, string, string, int, int, int)
+void Format(string, string, string, int, int, string)
+void Format(string, string, string, int, string, int)
+void Format(string, string, string, int, string, string)
+void Format(string, string, string, string, int, int)
+void Format(string, string, string, string, int, string)
+void Format(string, string, string, string, string, int)
+void Format(string, string, string, string, string, string)
+void Format(string, int, int, int, int, int, int)
+void Format(string, int, int, int, int, int, string)
+void Format(string, int, int, int, int, string, int)
+void Format(string, int, int, int, int, string, string)
+void Format(string, int, int, int, string, int, int)
+void Format(string, int, int, int, string, int, string)
+void Format(string, int, int, int, string, string, int)
+void Format(string, int, int, int, string, string, string)
+void Format(string, int, int, string, int, int, int)
+void Format(string, int, int, string, int, int, string)
+void Format(string, int, int, string, int, string, int)
+void Format(string, int, int, string, int, string, string)
+void Format(string, int, int, string, string, int, int)
+void Format(string, int, int, string, string, int, string)
+void Format(string, int, int, string, string, string, int)
+void Format(string, int, int, string, string, string, string)
+void Format(string, int, string, int, int, int, int)
+void Format(string, int, string, int, int, int, string)
+void Format(string, int, string, int, int, string, int)
+void Format(string, int, string, int, int, string, string)
+void Format(string, int, string, int, string, int, int)
+void Format(string, int, string, int, string, int, string)
+void Format(string, int, string, int, string, string, int)
+void Format(string, int, string, int, string, string, string)
+void Format(string, int, string, string, int, int, int)
+void Format(string, int, string, string, int, int, string)
+void Format(string, int, string, string, int, string, int)
+void Format(string, int, string, string, int, string, string)
+void Format(string, int, string, string, string, int, int)
+void Format(string, int, string, string, string, int, string)
+void Format(string, int, string, string, string, string, int)
+void Format(string, int, string, string, string, string, string)
+void Format(string, string, int, int, int, int, int)
+void Format(string, string, int, int, int, int, string)
+void Format(string, string, int, int, int, string, int)
+void Format(string, string, int, int, int, string, string)
+void Format(string, string, int, int, string, int, int)
+void Format(string, string, int, int, string, int, string)
+void Format(string, string, int, int, string, string, int)
+void Format(string, string, int, int, string, string, string)
+void Format(string, string, int, string, int, int, int)
+void Format(string, string, int, string, int, int, string)
+void Format(string, string, int, string, int, string, int)
+void Format(string, string, int, string, int, string, string)
+void Format(string, string, int, string, string, int, int)
+void Format(string, string, int, string, string, int, string)
+void Format(string, string, int, string, string, string, int)
+void Format(string, string, int, string, string, string, string)
+void Format(string, string, string, int, int, int, int)
+void Format(string, string, string, int, int, int, string)
+void Format(string, string, string, int, int, string, int)
+void Format(string, string, string, int, int, string, string)
+void Format(string, string, string, int, string, int, int)
+void Format(string, string, string, int, string, int, string)
+void Format(string, string, string, int, string, string, int)
+void Format(string, string, string, int, string, string, string)
+void Format(string, string, string, string, int, int, int)
+void Format(string, string, string, string, int, int, string)
+void Format(string, string, string, string, int, string, int)
+void Format(string, string, string, string, int, string, string)
+void Format(string, string, string, string, string, int, int)
+void Format(string, string, string, string, string, int, string)
+void Format(string, string, string, string, string, string, int)
+void Format(string, string, string, string, string, string, string)
+void Format(string, int, int, int, int, int, int, int)
+void Format(string, string, string, string, string, string, string, string)
+void Format(string, int, int, int, int, int, int, int, int)
+void Format(string, string, string, string, string, string, string, string, string)
+void Format(string, int, int, int, int, int, int, int, int, int)
+void Format(string, string, string, string, string, string, string, string, string, string)
+void Format(string, int, int, int, int, int, int, int, int, int, int)
+void Format(string, string, string, string, string, string, string, string, string, string, string)
+<string_functions_public_end>
+<string_functions_end>
+</pre>
+<a name="stringW">
+<hr>
+<stringW>
+<big><strong>stringW</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<stringW_functions_begin>
+public:
+void Copy(stringW)
+void Copy(string)
+int  IsEmpty()
+void Append(stringW)
+int  Translate(string)
+void Format(stringW, int)
+void Format(stringW, stringW)
+void Format(stringW, int, int)
+void Format(stringW, int, stringW)
+void Format(stringW, stringW, int)
+void Format(stringW, stringW, stringW)
+void Format(stringW, int, int, int)
+void Format(stringW, int, int, stringW)
+void Format(stringW, int, stringW, int)
+void Format(stringW, int, stringW, stringW)
+void Format(stringW, stringW, int, int)
+void Format(stringW, stringW, int, stringW)
+void Format(stringW, stringW, stringW, int)
+void Format(stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int)
+void Format(stringW, int, int, int, stringW)
+void Format(stringW, int, int, stringW, int)
+void Format(stringW, int, int, stringW, stringW)
+void Format(stringW, int, stringW, int, int)
+void Format(stringW, int, stringW, int, stringW)
+void Format(stringW, int, stringW, stringW, int)
+void Format(stringW, int, stringW, stringW, stringW)
+void Format(stringW, stringW, int, int, int)
+void Format(stringW, stringW, int, int, stringW)
+void Format(stringW, stringW, int, stringW, int)
+void Format(stringW, stringW, int, stringW, stringW)
+void Format(stringW, stringW, stringW, int, int)
+void Format(stringW, stringW, stringW, int, stringW)
+void Format(stringW, stringW, stringW, stringW, int)
+void Format(stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int, int)
+void Format(stringW, int, int, int, int, stringW)
+void Format(stringW, int, int, int, stringW, int)
+void Format(stringW, int, int, int, stringW, stringW)
+void Format(stringW, int, int, stringW, int, int)
+void Format(stringW, int, int, stringW, int, stringW)
+void Format(stringW, int, int, stringW, stringW, int)
+void Format(stringW, int, int, stringW, stringW, stringW)
+void Format(stringW, int, stringW, int, int, int)
+void Format(stringW, int, stringW, int, int, stringW)
+void Format(stringW, int, stringW, int, stringW, int)
+void Format(stringW, int, stringW, int, stringW, stringW)
+void Format(stringW, int, stringW, stringW, int, int)
+void Format(stringW, int, stringW, stringW, int, stringW)
+void Format(stringW, int, stringW, stringW, stringW, int)
+void Format(stringW, int, stringW, stringW, stringW, stringW)
+void Format(stringW, stringW, int, int, int, int)
+void Format(stringW, stringW, int, int, int, stringW)
+void Format(stringW, stringW, int, int, stringW, int)
+void Format(stringW, stringW, int, int, stringW, stringW)
+void Format(stringW, stringW, int, stringW, int, int)
+void Format(stringW, stringW, int, stringW, int, stringW)
+void Format(stringW, stringW, int, stringW, stringW, int)
+void Format(stringW, stringW, int, stringW, stringW, stringW)
+void Format(stringW, stringW, stringW, int, int, int)
+void Format(stringW, stringW, stringW, int, int, stringW)
+void Format(stringW, stringW, stringW, int, stringW, int)
+void Format(stringW, stringW, stringW, int, stringW, stringW)
+void Format(stringW, stringW, stringW, stringW, int, int)
+void Format(stringW, stringW, stringW, stringW, int, stringW)
+void Format(stringW, stringW, stringW, stringW, stringW, int)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int, int, int)
+void Format(stringW, int, int, int, int, int, stringW)
+void Format(stringW, int, int, int, int, stringW, int)
+void Format(stringW, int, int, int, int, stringW, stringW)
+void Format(stringW, int, int, int, stringW, int, int)
+void Format(stringW, int, int, int, stringW, int, stringW)
+void Format(stringW, int, int, int, stringW, stringW, int)
+void Format(stringW, int, int, int, stringW, stringW, stringW)
+void Format(stringW, int, int, stringW, int, int, int)
+void Format(stringW, int, int, stringW, int, int, stringW)
+void Format(stringW, int, int, stringW, int, stringW, int)
+void Format(stringW, int, int, stringW, int, stringW, stringW)
+void Format(stringW, int, int, stringW, stringW, int, int)
+void Format(stringW, int, int, stringW, stringW, int, stringW)
+void Format(stringW, int, int, stringW, stringW, stringW, int)
+void Format(stringW, int, int, stringW, stringW, stringW, stringW)
+void Format(stringW, int, stringW, int, int, int, int)
+void Format(stringW, int, stringW, int, int, int, stringW)
+void Format(stringW, int, stringW, int, int, stringW, int)
+void Format(stringW, int, stringW, int, int, stringW, stringW)
+void Format(stringW, int, stringW, int, stringW, int, int)
+void Format(stringW, int, stringW, int, stringW, int, stringW)
+void Format(stringW, int, stringW, int, stringW, stringW, int)
+void Format(stringW, int, stringW, int, stringW, stringW, stringW)
+void Format(stringW, int, stringW, stringW, int, int, int)
+void Format(stringW, int, stringW, stringW, int, int, stringW)
+void Format(stringW, int, stringW, stringW, int, stringW, int)
+void Format(stringW, int, stringW, stringW, int, stringW, stringW)
+void Format(stringW, int, stringW, stringW, stringW, int, int)
+void Format(stringW, int, stringW, stringW, stringW, int, stringW)
+void Format(stringW, int, stringW, stringW, stringW, stringW, int)
+void Format(stringW, int, stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, stringW, int, int, int, int, int)
+void Format(stringW, stringW, int, int, int, int, stringW)
+void Format(stringW, stringW, int, int, int, stringW, int)
+void Format(stringW, stringW, int, int, int, stringW, stringW)
+void Format(stringW, stringW, int, int, stringW, int, int)
+void Format(stringW, stringW, int, int, stringW, int, stringW)
+void Format(stringW, stringW, int, int, stringW, stringW, int)
+void Format(stringW, stringW, int, int, stringW, stringW, stringW)
+void Format(stringW, stringW, int, stringW, int, int, int)
+void Format(stringW, stringW, int, stringW, int, int, stringW)
+void Format(stringW, stringW, int, stringW, int, stringW, int)
+void Format(stringW, stringW, int, stringW, int, stringW, stringW)
+void Format(stringW, stringW, int, stringW, stringW, int, int)
+void Format(stringW, stringW, int, stringW, stringW, int, stringW)
+void Format(stringW, stringW, int, stringW, stringW, stringW, int)
+void Format(stringW, stringW, int, stringW, stringW, stringW, stringW)
+void Format(stringW, stringW, stringW, int, int, int, int)
+void Format(stringW, stringW, stringW, int, int, int, stringW)
+void Format(stringW, stringW, stringW, int, int, stringW, int)
+void Format(stringW, stringW, stringW, int, int, stringW, stringW)
+void Format(stringW, stringW, stringW, int, stringW, int, int)
+void Format(stringW, stringW, stringW, int, stringW, int, stringW)
+void Format(stringW, stringW, stringW, int, stringW, stringW, int)
+void Format(stringW, stringW, stringW, int, stringW, stringW, stringW)
+void Format(stringW, stringW, stringW, stringW, int, int, int)
+void Format(stringW, stringW, stringW, stringW, int, int, stringW)
+void Format(stringW, stringW, stringW, stringW, int, stringW, int)
+void Format(stringW, stringW, stringW, stringW, int, stringW, stringW)
+void Format(stringW, stringW, stringW, stringW, stringW, int, int)
+void Format(stringW, stringW, stringW, stringW, stringW, int, stringW)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW, int)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int, int, int, int)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int, int, int, int, int)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int, int, int, int, int, int)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(stringW, int, int, int, int, int, int, int, int, int, int)
+void Format(stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(string, int)
+void Format(string, stringW)
+void Format(string, int, int)
+void Format(string, int, stringW)
+void Format(string, stringW, int)
+void Format(string, stringW, stringW)
+void Format(string, int, int, int)
+void Format(string, int, int, stringW)
+void Format(string, int, stringW, int)
+void Format(string, int, stringW, stringW)
+void Format(string, stringW, int, int)
+void Format(string, stringW, int, stringW)
+void Format(string, stringW, stringW, int)
+void Format(string, stringW, stringW, stringW)
+void Format(string, int, int, int, int)
+void Format(string, int, int, int, stringW)
+void Format(string, int, int, stringW, int)
+void Format(string, int, int, stringW, stringW)
+void Format(string, int, stringW, int, int)
+void Format(string, int, stringW, int, stringW)
+void Format(string, int, stringW, stringW, int)
+void Format(string, int, stringW, stringW, stringW)
+void Format(string, stringW, int, int, int)
+void Format(string, stringW, int, int, stringW)
+void Format(string, stringW, int, stringW, int)
+void Format(string, stringW, int, stringW, stringW)
+void Format(string, stringW, stringW, int, int)
+void Format(string, stringW, stringW, int, stringW)
+void Format(string, stringW, stringW, stringW, int)
+void Format(string, stringW, stringW, stringW, stringW)
+void Format(string, int, int, int, int, int)
+void Format(string, int, int, int, int, stringW)
+void Format(string, int, int, int, stringW, int)
+void Format(string, int, int, int, stringW, stringW)
+void Format(string, int, int, stringW, int, int)
+void Format(string, int, int, stringW, int, stringW)
+void Format(string, int, int, stringW, stringW, int)
+void Format(string, int, int, stringW, stringW, stringW)
+void Format(string, int, stringW, int, int, int)
+void Format(string, int, stringW, int, int, stringW)
+void Format(string, int, stringW, int, stringW, int)
+void Format(string, int, stringW, int, stringW, stringW)
+void Format(string, int, stringW, stringW, int, int)
+void Format(string, int, stringW, stringW, int, stringW)
+void Format(string, int, stringW, stringW, stringW, int)
+void Format(string, int, stringW, stringW, stringW, stringW)
+void Format(string, stringW, int, int, int, int)
+void Format(string, stringW, int, int, int, stringW)
+void Format(string, stringW, int, int, stringW, int)
+void Format(string, stringW, int, int, stringW, stringW)
+void Format(string, stringW, int, stringW, int, int)
+void Format(string, stringW, int, stringW, int, stringW)
+void Format(string, stringW, int, stringW, stringW, int)
+void Format(string, stringW, int, stringW, stringW, stringW)
+void Format(string, stringW, stringW, int, int, int)
+void Format(string, stringW, stringW, int, int, stringW)
+void Format(string, stringW, stringW, int, stringW, int)
+void Format(string, stringW, stringW, int, stringW, stringW)
+void Format(string, stringW, stringW, stringW, int, int)
+void Format(string, stringW, stringW, stringW, int, stringW)
+void Format(string, stringW, stringW, stringW, stringW, int)
+void Format(string, stringW, stringW, stringW, stringW, stringW)
+void Format(string, int, int, int, int, int, int)
+void Format(string, int, int, int, int, int, stringW)
+void Format(string, int, int, int, int, stringW, int)
+void Format(string, int, int, int, int, stringW, stringW)
+void Format(string, int, int, int, stringW, int, int)
+void Format(string, int, int, int, stringW, int, stringW)
+void Format(string, int, int, int, stringW, stringW, int)
+void Format(string, int, int, int, stringW, stringW, stringW)
+void Format(string, int, int, stringW, int, int, int)
+void Format(string, int, int, stringW, int, int, stringW)
+void Format(string, int, int, stringW, int, stringW, int)
+void Format(string, int, int, stringW, int, stringW, stringW)
+void Format(string, int, int, stringW, stringW, int, int)
+void Format(string, int, int, stringW, stringW, int, stringW)
+void Format(string, int, int, stringW, stringW, stringW, int)
+void Format(string, int, int, stringW, stringW, stringW, stringW)
+void Format(string, int, stringW, int, int, int, int)
+void Format(string, int, stringW, int, int, int, stringW)
+void Format(string, int, stringW, int, int, stringW, int)
+void Format(string, int, stringW, int, int, stringW, stringW)
+void Format(string, int, stringW, int, stringW, int, int)
+void Format(string, int, stringW, int, stringW, int, stringW)
+void Format(string, int, stringW, int, stringW, stringW, int)
+void Format(string, int, stringW, int, stringW, stringW, stringW)
+void Format(string, int, stringW, stringW, int, int, int)
+void Format(string, int, stringW, stringW, int, int, stringW)
+void Format(string, int, stringW, stringW, int, stringW, int)
+void Format(string, int, stringW, stringW, int, stringW, stringW)
+void Format(string, int, stringW, stringW, stringW, int, int)
+void Format(string, int, stringW, stringW, stringW, int, stringW)
+void Format(string, int, stringW, stringW, stringW, stringW, int)
+void Format(string, int, stringW, stringW, stringW, stringW, stringW)
+void Format(string, stringW, int, int, int, int, int)
+void Format(string, stringW, int, int, int, int, stringW)
+void Format(string, stringW, int, int, int, stringW, int)
+void Format(string, stringW, int, int, int, stringW, stringW)
+void Format(string, stringW, int, int, stringW, int, int)
+void Format(string, stringW, int, int, stringW, int, stringW)
+void Format(string, stringW, int, int, stringW, stringW, int)
+void Format(string, stringW, int, int, stringW, stringW, stringW)
+void Format(string, stringW, int, stringW, int, int, int)
+void Format(string, stringW, int, stringW, int, int, stringW)
+void Format(string, stringW, int, stringW, int, stringW, int)
+void Format(string, stringW, int, stringW, int, stringW, stringW)
+void Format(string, stringW, int, stringW, stringW, int, int)
+void Format(string, stringW, int, stringW, stringW, int, stringW)
+void Format(string, stringW, int, stringW, stringW, stringW, int)
+void Format(string, stringW, int, stringW, stringW, stringW, stringW)
+void Format(string, stringW, stringW, int, int, int, int)
+void Format(string, stringW, stringW, int, int, int, stringW)
+void Format(string, stringW, stringW, int, int, stringW, int)
+void Format(string, stringW, stringW, int, int, stringW, stringW)
+void Format(string, stringW, stringW, int, stringW, int, int)
+void Format(string, stringW, stringW, int, stringW, int, stringW)
+void Format(string, stringW, stringW, int, stringW, stringW, int)
+void Format(string, stringW, stringW, int, stringW, stringW, stringW)
+void Format(string, stringW, stringW, stringW, int, int, int)
+void Format(string, stringW, stringW, stringW, int, int, stringW)
+void Format(string, stringW, stringW, stringW, int, stringW, int)
+void Format(string, stringW, stringW, stringW, int, stringW, stringW)
+void Format(string, stringW, stringW, stringW, stringW, int, int)
+void Format(string, stringW, stringW, stringW, stringW, int, stringW)
+void Format(string, stringW, stringW, stringW, stringW, stringW, int)
+void Format(string, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(string, int, int, int, int, int, int, int)
+void Format(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(string, int, int, int, int, int, int, int, int)
+void Format(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(string, int, int, int, int, int, int, int, int, int)
+void Format(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void Format(string, int, int, int, int, int, int, int, int, int, int)
+void Format(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int)
+void FormatTrl(string, stringW)
+void FormatTrl(string, int, int)
+void FormatTrl(string, int, stringW)
+void FormatTrl(string, stringW, int)
+void FormatTrl(string, stringW, stringW)
+void FormatTrl(string, int, int, int)
+void FormatTrl(string, int, int, stringW)
+void FormatTrl(string, int, stringW, int)
+void FormatTrl(string, int, stringW, stringW)
+void FormatTrl(string, stringW, int, int)
+void FormatTrl(string, stringW, int, stringW)
+void FormatTrl(string, stringW, stringW, int)
+void FormatTrl(string, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int)
+void FormatTrl(string, int, int, int, stringW)
+void FormatTrl(string, int, int, stringW, int)
+void FormatTrl(string, int, int, stringW, stringW)
+void FormatTrl(string, int, stringW, int, int)
+void FormatTrl(string, int, stringW, int, stringW)
+void FormatTrl(string, int, stringW, stringW, int)
+void FormatTrl(string, int, stringW, stringW, stringW)
+void FormatTrl(string, stringW, int, int, int)
+void FormatTrl(string, stringW, int, int, stringW)
+void FormatTrl(string, stringW, int, stringW, int)
+void FormatTrl(string, stringW, int, stringW, stringW)
+void FormatTrl(string, stringW, stringW, int, int)
+void FormatTrl(string, stringW, stringW, int, stringW)
+void FormatTrl(string, stringW, stringW, stringW, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int, int)
+void FormatTrl(string, int, int, int, int, stringW)
+void FormatTrl(string, int, int, int, stringW, int)
+void FormatTrl(string, int, int, int, stringW, stringW)
+void FormatTrl(string, int, int, stringW, int, int)
+void FormatTrl(string, int, int, stringW, int, stringW)
+void FormatTrl(string, int, int, stringW, stringW, int)
+void FormatTrl(string, int, int, stringW, stringW, stringW)
+void FormatTrl(string, int, stringW, int, int, int)
+void FormatTrl(string, int, stringW, int, int, stringW)
+void FormatTrl(string, int, stringW, int, stringW, int)
+void FormatTrl(string, int, stringW, int, stringW, stringW)
+void FormatTrl(string, int, stringW, stringW, int, int)
+void FormatTrl(string, int, stringW, stringW, int, stringW)
+void FormatTrl(string, int, stringW, stringW, stringW, int)
+void FormatTrl(string, int, stringW, stringW, stringW, stringW)
+void FormatTrl(string, stringW, int, int, int, int)
+void FormatTrl(string, stringW, int, int, int, stringW)
+void FormatTrl(string, stringW, int, int, stringW, int)
+void FormatTrl(string, stringW, int, int, stringW, stringW)
+void FormatTrl(string, stringW, int, stringW, int, int)
+void FormatTrl(string, stringW, int, stringW, int, stringW)
+void FormatTrl(string, stringW, int, stringW, stringW, int)
+void FormatTrl(string, stringW, int, stringW, stringW, stringW)
+void FormatTrl(string, stringW, stringW, int, int, int)
+void FormatTrl(string, stringW, stringW, int, int, stringW)
+void FormatTrl(string, stringW, stringW, int, stringW, int)
+void FormatTrl(string, stringW, stringW, int, stringW, stringW)
+void FormatTrl(string, stringW, stringW, stringW, int, int)
+void FormatTrl(string, stringW, stringW, stringW, int, stringW)
+void FormatTrl(string, stringW, stringW, stringW, stringW, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int, int, int)
+void FormatTrl(string, int, int, int, int, int, stringW)
+void FormatTrl(string, int, int, int, int, stringW, int)
+void FormatTrl(string, int, int, int, int, stringW, stringW)
+void FormatTrl(string, int, int, int, stringW, int, int)
+void FormatTrl(string, int, int, int, stringW, int, stringW)
+void FormatTrl(string, int, int, int, stringW, stringW, int)
+void FormatTrl(string, int, int, int, stringW, stringW, stringW)
+void FormatTrl(string, int, int, stringW, int, int, int)
+void FormatTrl(string, int, int, stringW, int, int, stringW)
+void FormatTrl(string, int, int, stringW, int, stringW, int)
+void FormatTrl(string, int, int, stringW, int, stringW, stringW)
+void FormatTrl(string, int, int, stringW, stringW, int, int)
+void FormatTrl(string, int, int, stringW, stringW, int, stringW)
+void FormatTrl(string, int, int, stringW, stringW, stringW, int)
+void FormatTrl(string, int, int, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, stringW, int, int, int, int)
+void FormatTrl(string, int, stringW, int, int, int, stringW)
+void FormatTrl(string, int, stringW, int, int, stringW, int)
+void FormatTrl(string, int, stringW, int, int, stringW, stringW)
+void FormatTrl(string, int, stringW, int, stringW, int, int)
+void FormatTrl(string, int, stringW, int, stringW, int, stringW)
+void FormatTrl(string, int, stringW, int, stringW, stringW, int)
+void FormatTrl(string, int, stringW, int, stringW, stringW, stringW)
+void FormatTrl(string, int, stringW, stringW, int, int, int)
+void FormatTrl(string, int, stringW, stringW, int, int, stringW)
+void FormatTrl(string, int, stringW, stringW, int, stringW, int)
+void FormatTrl(string, int, stringW, stringW, int, stringW, stringW)
+void FormatTrl(string, int, stringW, stringW, stringW, int, int)
+void FormatTrl(string, int, stringW, stringW, stringW, int, stringW)
+void FormatTrl(string, int, stringW, stringW, stringW, stringW, int)
+void FormatTrl(string, int, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, stringW, int, int, int, int, int)
+void FormatTrl(string, stringW, int, int, int, int, stringW)
+void FormatTrl(string, stringW, int, int, int, stringW, int)
+void FormatTrl(string, stringW, int, int, int, stringW, stringW)
+void FormatTrl(string, stringW, int, int, stringW, int, int)
+void FormatTrl(string, stringW, int, int, stringW, int, stringW)
+void FormatTrl(string, stringW, int, int, stringW, stringW, int)
+void FormatTrl(string, stringW, int, int, stringW, stringW, stringW)
+void FormatTrl(string, stringW, int, stringW, int, int, int)
+void FormatTrl(string, stringW, int, stringW, int, int, stringW)
+void FormatTrl(string, stringW, int, stringW, int, stringW, int)
+void FormatTrl(string, stringW, int, stringW, int, stringW, stringW)
+void FormatTrl(string, stringW, int, stringW, stringW, int, int)
+void FormatTrl(string, stringW, int, stringW, stringW, int, stringW)
+void FormatTrl(string, stringW, int, stringW, stringW, stringW, int)
+void FormatTrl(string, stringW, int, stringW, stringW, stringW, stringW)
+void FormatTrl(string, stringW, stringW, int, int, int, int)
+void FormatTrl(string, stringW, stringW, int, int, int, stringW)
+void FormatTrl(string, stringW, stringW, int, int, stringW, int)
+void FormatTrl(string, stringW, stringW, int, int, stringW, stringW)
+void FormatTrl(string, stringW, stringW, int, stringW, int, int)
+void FormatTrl(string, stringW, stringW, int, stringW, int, stringW)
+void FormatTrl(string, stringW, stringW, int, stringW, stringW, int)
+void FormatTrl(string, stringW, stringW, int, stringW, stringW, stringW)
+void FormatTrl(string, stringW, stringW, stringW, int, int, int)
+void FormatTrl(string, stringW, stringW, stringW, int, int, stringW)
+void FormatTrl(string, stringW, stringW, stringW, int, stringW, int)
+void FormatTrl(string, stringW, stringW, stringW, int, stringW, stringW)
+void FormatTrl(string, stringW, stringW, stringW, stringW, int, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, int, stringW)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int, int, int, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int, int, int, int, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int, int, int, int, int, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+void FormatTrl(string, int, int, int, int, int, int, int, int, int, int)
+void FormatTrl(string, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW, stringW)
+<stringW_functions_public_end>
+<stringW_functions_end>
+</pre>
+<a name="array">
+<hr>
+<array>
+<big><strong>array</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<array_functions_begin>
+public:
+int  GetSize()
+void SetSize(int)
+void RemoveAll()
+void RemoveAll(int)
+int  Add(TYPE)
+int  ElementAt(int)
+void SetAt(int, int)
+void SetAtGrow(int, TYPE)
+void InsertAt(int, TYPE)
+void RemoveAt(int)
+int  Append(array)
+void Copy(array)
+void Sort(int)
+void SortWithKeys(array, int, int)
+int  InsertInSorted(int)
+int  FindInSorted(int)
+<array_functions_public_end>
+<array_functions_end>
+</pre>
+<a name="object">
+<hr>
+<objectXX>
+<big><strong>object</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<object_functions_begin>
+private:
+void TraceDbg(string strString)
+void TraceDbg(stringW szString)
+void TraceDbg(int nValue)
+void TraceDbg(unit uItem)
+int  Rand(int nRand)
+int  sqrt(int nVal)
+int  sqrt(int nX, int nY)
+int  sqrt(int nX, int nY, int nZ)
+void TurnRadiusByAngle(int nR, int nAngle, int& pDx, int& pDy)
+int  Distance(int nX, int nY, int nX2, int nY2)
+int  DistanceSqrt(int nX, int nY, int nX2, int nY2)
+int  Distance(mission pWorld1, int nX, int nY, mission pWorld2, int nX2, int nY2)
+int  DistanceSqrt(mission pWorld1, int nX, int nY, mission pWorld2, int nX2, int nY2)
+int  IsPointNearLevelBorder(mission pWorld, int nX, int nY, int nMargin)
+void AppendPartiesArray(array pArr1, array pArr2)
+array GetSinglePartyArray(int nPartyNum)
+void GetObjectName(string strObjectID, stringW& pName)
+void GetObjectName(unit uObject, stringW& pName)
+campaign GetCampaign()
+int  IsEquipment(string strObjectID)
+int  IsWeapon(string strObjectID)
+int  IsMagicCard(string strObjectID)
+int  IsMagicClub(string strObjectID)
+int  IsStoreable(string strObjectID)
+int  IsUnitBase(string strObjectID)
+int  IsUnit(string strObjectID)
+int  IsSimplePassive(string strObjectID)
+int  IsPassive(string strObjectID)
+int  IsArtefact(string strObjectID)
+int  IsSpecialArtefact(string strObjectID)
+int  IsCustomArtefact(string strObjectID)
+int  IsPotionArtefact(string strObjectID)
+int  IsAlchemyFormulaArtefact(string strObjectID)
+int  IsTrap(string strObjectID)
+int  IsMissile(string strObjectID)
+int  IsTeleport(string strObjectID)
+int  IsConnectionTeleport(string strObjectID)
+int  IsStaticTeleport(string strObjectID)
+int  IsDynamicTeleport(string strObjectID)
+EquipmentParams GetEquipmentParams(string strObjectID)
+WeaponParams GetWeaponParams(string strObjectID)
+MagicCardParams GetMagicCardParams(string strObjectID)
+int  GetMagicCardMissileParamsCount(string strObjectID)
+MissileParams GetMagicCardMissileParams(string strObjectID, int nIndex)
+MagicClubParams GetMagicClubParams(string strObjectID)
+SpecialArtefactParams GetSpecialArtefactParams(string strObjectID, object pChangedParams)
+SpecialArtefactParamsSet CastChangedSpecialArtefactParams(string strObjectID, object pChangedParams)
+CustomArtefactParams GetCustomArtefactParams(string strObjectID, object pChangedParams)
+CustomArtefactParamsSet CastChangedCustomArtefactParams(string strObjectID, object pChangedParams)
+PotionArtefactParams GetPotionArtefactParams(string strObjectID, object pChangedParams)
+PotionArtefactParamsSet CastChangedPotionArtefactParams(string strObjectID, object pChangedParams)
+TrapParams GetTrapParams(string strObjectID, object pChangedParams)
+TrapParamsSet CastChangedTrapParams(string strObjectID, object pChangedParams)
+MissileParams GetTrapAmmoMissileParams(string strObjectID, object pChangedParams)
+UnitParams GetUnitParams(string strObjectID)
+MissileParams GetMissileParams(string strObjectID)
+string GetQuiverAmmoID(string strObjectID)
+string GetWeaponAmmoID(string strObjectID)
+int  GetInventoryWeight(string strObjectID, object pChangedParams)
+int  FillEquipmentIDNames(int, int, int, int, int, int, int, int, int, array)
+string SelectRandomMagicCard(int nMagicSchool, int nMinRequiredMagicSchoolSkill, int nMaxRequiredMagicSchoolSkill)
+int  CheckFileExist(string strFile)
+int  sscanf(string pszString, string strFormat, int& pVal1)
+int  sscanf(string pszString, string strFormat, int& pVal1, int& pVal2)
+int  sscanf(string pszString, string strFormat, int& pVal1, int& pVal2, int& pVal3)
+int  strlen(string strString)
+int  strcmp(string pszString1, string strString2)
+int  stricmp(string pszString1, string strString2)
+int  strncmp(string pszString1, string strString2, int nCount)
+int  strnicmp(string pszString1, string strString2, int nCount)
+int  strchr(string strString, int cChar)
+int  strrchr(string strString, int cChar)
+int  GetChar(string strString, int nIndex)
+int  CheckTranslate(string strTranslate)
+int  ReadTextFile(string strFile, array pArrText, int bParseFile)
+void __DevExecuteConsole(string strCommand)
+array GetStaticIntArray(int nIndex)
+int  IsStaticIntArray(int nIndex)
+void DestroyStaticIntArray(int nIndex)
+array GetStaticStringArray(int nIndex)
+int  IsStaticStringArray(int nIndex)
+void DestroyStaticStringArray(int nIndex)
+array GetStaticStringWArray(int nIndex)
+int  IsStaticStringWArray(int nIndex)
+void DestroyStaticStringWArray(int nIndex)
+int  GetObjectMeshFlags(string strObjectID)
+int  GetObjectCustomFlags(string strObjectID)
+<object_functions_private_end>
+<object_functions_end>
+</pre>
+<big>Enums</big>
+<pre>
+<object_enums_begin>
+  eDefaultStateDelay
+Distances:
+  e1m
+  e10cm
+  e20cm
+  e25cm
+  e30cm
+  e40cm
+  e50cm
+  e60cm
+  e70cm
+  e75cm
+  e80cm
+  e90cm
+  e1_5m
+  e2m
+  e2_5m
+  e3m
+  e4m
+  e5m
+  e6m
+  e7m
+  e8m
+  e9m
+  e10m
+  e15m
+  e20m
+  e30m
+Damage types:
+  eDamagePiercing
+  eDamageSlashing
+  eDamageBludgeoning
+  eDamageCold
+  eDamageFire
+  eDamageElectric
+  eDamageSpirit
+  eDamagePoison
+  eDamagesCnt
+  eFirstPhysicalDamage
+  eLastPhysicalDamage
+  ePhysicalDamagesCnt
+  eFirstMagicalDamage
+  eLastMagicalDamage
+  eMagicalDamagesCnt
+Protect types:
+  eProtectPhysical
+  eProtectCold
+  eProtectFire
+  eProtectElectric
+  eProtectSpirit
+  eProtectsCnt
+  eFirstMagicalProtect
+Physical protect types:
+  eProtectPhysicalPiercing
+  eProtectPhysicalSlashing
+  eProtectPhysicalBludgeoning
+  eFirstProtectPhysical
+Skill types:
+  eSkillAttack
+  eSkillDefence
+  eSkillParry
+  eSkillSwimming
+  eSkillStability
+  eSkillStrongHand
+  eSkillCriticalHit
+  eSkillDoubleBlade
+  eSkillKnockDown
+  eSkillHorseRiding
+  eSkillFastAiming
+  eSkillArchery
+  eSkillCloseDistanceShoot
+  eSkillPrecizeAiming
+  eSkillStoneSkin
+  eSkillLockPicking
+  eSkillAlchemy
+  eSkillAirMagic
+  eSkillFireMagic
+  eSkillWaterMagic
+  eSkillEarthMagic
+  eSkillNecromancyMagic
+  eSkillBerserk
+  eSkillDefensiveFight
+  eSkillDirtyTrick
+  eSkillStun
+  eSkillSwordBrake
+  eSkillDismountFromHorse
+  eSkillPullShield
+  eSkillKnifeDeathStrike
+  eSkillDeadlyPiruet
+  eSkillBurn
+  eSkillShieldTrick
+  eSkillDisarmingArrow
+  eSkillMultiArrows
+  eSkillPiercing
+  eSkillArrowOfDust
+  eSkillSneak
+  eSkillStealing
+  eSkillSetTrap
+  eSkillsCnt
+  eFirstNormalSkill
+  eFirstPassiveSkill
+  eLastPassiveSkill
+  ePassiveSkillsCnt
+  eFirstActiveSkill
+  eLastActiveSkill
+  eActiveSkillsCnt
+  eFirstAttackSkill
+  eLastAttackSkill
+  eFirstMagicSkill
+  eLastMagicSkill
+  eMagicSkillsCnt
+Params types:
+  ePointsVitality
+  ePointsDexterity
+  ePointsStrength
+  ePointsMagic
+  ePointsCnt
+  eParamHP
+  eParamDamage
+  eParamAttack
+  eParamDefence
+  eParamMana
+  eParamStamina
+  eParamsCnt
+Subobjects slots:
+  eSlotRightHand
+  eSlotLeftHand
+  eSlotArmourHelmet
+  eSlotArmourBody
+  eSlotArmourGloves
+  eSlotArmourTrousers
+  eSlotArmourBoots
+  eSlotQuiver
+  eSlotKnife
+  eSlotRing0
+  eSlotRing1
+  eSlotRing2
+  eSlotRing3
+  eSlotsCnt
+  eEqSlotNumMask
+  eBlockedEqSlotNumMask
+  eBlockedEqSlotNumShift
+Magic schools (same like skills):
+  eAirMagicSchool
+  eFireMagicSchool
+  eWaterMagicSchool
+  eEarthMagicSchool
+  eNecromancyMagicSchool
+  eMagicSchoolsCnt
+Number of magic slots:
+  eMagicSlotsCnt
+Max powerUp per slot:
+  eMaxPowerUpMagicCardsCnt
+Magic card types:
+  eMagicCardTypePowerUp
+  eMagicCardTypeMissile
+  eMagicCardTypeSummon
+  eMagicCardTypeWeapons
+  eMagicCardTypeGenericOnUnit
+  eMagicCardTypesCnt
+Magic card target types:
+  eMagicCardCommandTypeDirect
+  eMagicCardCommandTypeObject
+  eMagicCardCommandTypesCnt
+Magic card flags:
+  eMagicCardFlagAutoAttackEnemy
+  eMagicCardFlagAutoCastWhenAttacked
+  eMagicCardFlagAutoCastBeforeFight
+  eMagicCardFlagAutoCastDuringFight
+  eMagicCardFlagTalkEnemyMakeMagic
+  eMagicCardFlagTalkHeroMakeMagic
+  eMagicCardFlagTalkHeroMakeHealMagic
+  eMagicCardFlagTalkUnitForHeroMakeMagic
+Types of eMagicCardTypePowerUp:
+  eMagicCardPowerUpDamage
+  eMagicCardPowerUpMagicTime
+  eMagicCardPowerUpUsedMana
+  eMagicCardPowerUpMagicLevel
+  eMagicCardPowerUpSummonLevel
+  eMagicCardPowerUpCnt
+Alchemy slots:
+  eAlchemySlotInput0
+  eAlchemySlotInput1
+  eAlchemySlotInput2
+  eAlchemySlotInput3
+  eAlchemySlotInput4
+  eAlchemySlotResult
+  eAlchemySlotsCnt
+  eAlchemySlotInputLast
+  eAlchemySlotInputCnt
+Equipment types:
+  eEqTypeWeapon
+  eEqTypeArmour
+  eEqTypeShield
+  eEqTypeQuiver
+  eEqTypeRing
+  eEqTypeMagicClub
+  eEqTypeMagicCard
+  eEqTypeTorch
+  eEqTypesCnt
+Equipment flags:
+  eEquipmentCantBePullShield
+  eEquipmentBlockDrawHelmetSlot
+  eEquipmentBlockDrawLegsSlot
+  eEquipmentBlockDrawAllSlotsExceptHands
+  eEquipmentBlockUseBowCrossbowWeapon
+  eEquipmentBlockUseTwoWeapons
+  eEquipmentBlockSwimming
+  eEquipmentBlockDrawHairHandsFeetsSlot
+  eEquipmentStopLoopedSoundOnKilled
+  eEquipmentImpossibleToSell
+  eEquipmentNameFromMesh
+Shop price types:
+  ePriceTypeEqWeapon
+  ePriceTypeEqArmour
+  ePriceTypeEqShield
+  ePriceTypeEqQuiver
+  ePriceTypeEqRing
+  ePriceTypeEqMagicClub
+  ePriceTypeEqMagicCard
+  ePriceTypeEqSpecial
+  ePriceTypeTrap
+  ePriceTypeTeleport
+  ePriceTypePotionArtefact
+  ePriceTypeJoinArtefact
+  ePriceTypeKeyArtefact
+  ePriceTypeCustomArtefact
+  ePriceTypeOtherArtefact
+  ePriceTypesCnt
+  ePriceTypeEqFirst
+event GetCommandState - nCommand:
+  eCommandSetArmedMode
+  eCommandSkillSneak
+Target types modifiers:
+  eTargetTypeModifierLivings
+  eTargetTypeModifierUndead
+  eTargetTypeModifierGreenskins
+  eTargetTypeModifierGolems
+  eTargetTypeModifierDemons
+  eTargetTypeModifierDragons
+  eTargetTypeModifierElementals
+  eTargetTypeModifierMagicalCreatures
+  eTargetTypeModifierOnHorse
+  eTargetTypeModifiersCnt
+  eTargetTypeModifierTypeMask
+  eTargetTypeModifierLivingAnimalMask
+Missile types:
+  eMissileTypeDirect
+  eMissileTypeShoot
+  eMissileTypeShootImmediate
+  eMissileTypeTargetPlace
+  eMissileTypeLaser
+  eMissileTypeMeteor
+  eMissileTypeLightingStorm
+  eMissileTypeTimedHit
+  eMissileTypeFireWall
+  eMissileTypeFireRing
+  eMissileTypeFireField
+  eMissileTypeTrap
+  eMissileTypeShootFireWall
+  eMissileTypesCnt
+Missile flags:
+  eMissileConvertDamageToHP
+  eMissileHitPushed
+  eMissileFollowTarget
+  eMissileTargetZObject
+  eMissileHitForNoDamage
+Weapon types:
+  eWeaponKnife
+  eWeaponSword
+  eWeaponAxe
+  eWeaponMace
+  eWeaponSpear
+  eWeaponBow
+  eWeaponCrossbow
+  eWeaponMagicClub
+  eWeaponsCnt
+Force field types:
+  eForcefieldNone
+  eForcefieldPerlin
+  eForcefieldFreshnellRed
+  eForcefieldFreshnellGreen
+  eForcefieldFreshnellBlue
+  eForcefieldElectric
+  eForcefieldRust
+  eForcefieldMirror
+Weapon flags:
+  eWeaponFlatShootOnly
+  eWeaponCanBeBroken
+  eWeaponCanBrakeSword
+  eWeaponBrokenSword
+  eWeaponCantBeDisarmedByShot
+  eWeaponUseTrail
+IsTargetInAttackRange return value:
+  eNotInRange
+  eInRangeTooClose
+  eInRangeBadHit
+  eInRangeBadAngleBeta
+  eInRangeBadAngleAlpha
+  eInRangeGoodHit
+Fight actions:
+  eFightActionNothing
+  eFightActionStrike
+  eFightActionStrikeCritical
+  eFightActionStrikeStun
+  eFightActionStrikeStunLeftHand
+  eFightActionStrikeStunBothHands
+  eFightActionStrikeShieldTrick
+  eFightActionStrikeDeadlyPiruet
+  eFightActionStrikeKnifeDeathStrike
+  eFightActionStrikeNotHit
+  eFightActionDirtyTrick
+  eFightActionDismountFromHorse
+  eFightActionPullShield
+  eFightActionPullShieldLeftHand
+  eFightActionPullShieldBothHands
+  eFightActionBrakeSword
+  eFightActionBurn
+  eFightActionDodge
+  eFightActionParry
+  eFightActionStepLeft
+  eFightActionStepRight
+  eFightActionStepForward
+  eFightActionStepBack
+  eFightActionHit
+  eFightActionHitFall
+  eFightActionHitBurn
+  eFightActionHitByKnifeDeathStrike
+  eFightActionHitDismountedFromHorse
+  eFightActionHitPushed
+  eFightActionHitDirtyTricked
+  eFightActionHitStunned
+  eFightActionHitLooseWeapon
+  eFightActionShoot
+  eFightActionShootCloseDistance
+  eFightActionShootDisarmingArrow
+  eFightActionShootMultiArrows
+  eFightActionShootPiercing
+  eFightActionShootArrowOfDust
+PotionFlags values:
+  ePotionClearPoison
+  ePotionBlockPoison
+  ePotionChaosEnemyParties
+  ePotionFreezeEffect
+  ePotionStopMovingEffect
+  ePotionBerserk
+  ePotionDirtyTrick
+  ePotionArrowOfDust
+  ePotionHoldingTrap
+  ePotionStun
+  ePotionSlowDown
+  ePotionNotUsable
+SearchUnit - nTargetTypeMask:
+  eTargetTypeUnitBase
+  eTargetTypeUnit
+  eTargetTypeLand
+  eTargetTypeAir
+  eTargetTypeDamagableOnly
+  eTargetTypeArmedOnly
+  eTargetTypeUnarmedOnly
+  eTargetTypeLive
+  eTargetTypeDead
+  eTargetTypeAttackingSummonedUnitOwner
+SearchUnit - nSortType:
+  eSortTypeNone
+  eSortTypeRange
+  eSortTypeHP
+  eSortTypeHPPercent
+Parties nums and types:
+  eAnyPartyNum
+  ePartiesTypeAll
+  ePartiesTypeEnemy
+  ePartiesTypeAllNotOurs
+PlayDialog - nDialogFlags/PlayCutscene - nCutsceneFlags:
+  ePauseCallingScriptState
+  ePauseCallingScriptTimers
+  ePauseAllScriptsState
+  ePauseAllScriptsTimers
+  eFadeInOut
+  eDisableInterface
+  eHideInterface
+  eCanEscapeCutscene
+  eEndEventOnStartFadeOut
+  eNotPlayDialogWaves
+  eDefDialogFlags
+  eDefCutsceneFlags
+SetInterfaceOptions - nOptions:
+  eNoQuestsDialog
+  eNoReputationDialog
+  eNoCommandsDialog
+  eNoMapDialog
+  eNoPlayersDialog
+  eNoMenuButton
+  eNoSkillsDialog
+  eNoMagicDialog
+  eNoInventoryDialog
+Cutscene/Dialog fadeIn/Out ticks:
+  eFadeCutsceneTicks
+  eFadeDialogTicks
+Quest states:
+  eQuestStateInactive
+  eQuestStateActive
+  eQuestStateSolved
+  eQuestStateFailed
+Various values:
+  eInvalidDistanceBetweenMissions
+GetUnitTypeFlags:
+  eUnitTypeRunAwayFromUnits
+SpecialArtefact types:
+  eTypeMoneyArtefact
+  eTypeJoinArtefact
+  eTypeKeyArtefact
+Trap types:
+  eTrapTypeHold
+  eTrapTypeBomb
+Teleport types:
+  eTeleportTypeConnection
+  eTeleportTypeStatic
+  eTeleportTypeDynamic
+Hero flags:
+  eHeroGenderMale
+  eHeroGenderFemale
+  eHeroGenderMaleElf
+  eHeroGenderFemaleElf
+  eHeroTypeCampaign
+  eHeroTypeRPG
+  eHeroTypePVP
+OpenHeroDialog - hero dialog mode
+  eHeroDlgModeSkills
+  eHeroDlgModeInventory
+  eHeroDlgModeMagic
+  eHeroDlgModeQuests
+  eHeroDlgModeReputation
+  eHeroDlgModesCnt
+PlayHeroTalk - talkNum:
+  eHeroTalkAddExperienceLevel
+  eHeroTalkOpenContainer
+  eHeroTalkFailOpenLock
+  eHeroTalkOpenDeadBody
+  eHeroTalkPickupItem
+  eHeroTalkEnterUnderground
+  eHeroTalkResurrected
+  eHeroTalkHit
+  eHeroTalkDying
+  eHeroTalkKilledEnemy
+  eHeroTalkSpotByMonsterEnemy
+  eHeroTalkSpotByLivingEnemy
+  eHeroTalkMakeMagic
+  eHeroTalkMakeHealMagic
+  eHeroTalkEnemyMakeMagic
+  eHeroTalkStartRaining
+  eHeroTalkSnowing
+  eHeroTalkEnterWater
+  eHeroTalkLaught
+  eHeroTalkCallHorse
+  eHeroTalkStartJump
+  eHeroTalkEndJumpFall
+  eHeroTalkCustom1
+  eHeroTalkCustom2
+  eHeroTalkCustom3
+  eHeroTalkCustom4
+  eHeroTalkCustom5
+  eHeroTalksCnt
+PlayWave - volumeIndex:
+  eSoundVolumeTypeFX
+  eSoundVolumeTypeUnit
+  eSoundVolumeTypeEnviroment
+  eSoundVolumeTypeMusicTrack
+  eSoundVolumeTypeInterface
+SetForcedSoundEAXEnvironment - nEnvironment:
+  eSoundEnvironmentGeneric
+  eSoundEnvironmentPaddedCell
+  eSoundEnvironmentRoom
+  eSoundEnvironmentBathroom
+  eSoundEnvironmentLivingroom
+  eSoundEnvironmentStoneRoom
+  eSoundEnvironmentAuditorium
+  eSoundEnvironmentConcertHall
+  eSoundEnvironmentCave
+  eSoundEnvironmentArena
+  eSoundEnvironmentHangar
+  eSoundEnvironmentCarpetedHallway
+  eSoundEnvironmentHallway
+  eSoundEnvironmentStoneCorridor
+  eSoundEnvironmentAlley
+  eSoundEnvironmentForest
+  eSoundEnvironmentCity
+  eSoundEnvironmentMountains
+  eSoundEnvironmentQuarry
+  eSoundEnvironmentPlain
+  eSoundEnvironmentParkinglot
+  eSoundEnvironmentSewerPipe
+  eSoundEnvironmentUnderWater
+  eSoundEnvironmentDrugged
+  eSoundEnvironmentDizzy
+  eSoundEnvironmentPsychotic
+  eSoundEnvironmentCustom0
+  eSoundEnvironmentCustom1
+  eSoundEnvironmentCustom2
+  eSoundEnvironmentCustom3
+  eSoundEnvironmentCustom4
+  eSoundEnvironmentCustom5
+  eSoundEnvironmentCustom6
+  eSoundEnvironmentCustom7
+  eSoundEnvironmentCustom8
+  eSoundEnvironmentCustom9
+  eSoundEnvironmentCustom10
+  eSoundEnvironmentCustom11
+  eSoundEnvironmentCustom12
+  eSoundEnvironmentCustom13
+  eSoundEnvironmentCustom14
+  eSoundEnvironmentCustom15
+GetMeshSlotPosition - nSlotNum
+  eSlotBPlug0
+  eSlotBPlug1
+  eSlotBPlug2
+  eSlotBPlug3
+  eSlotBPlug4
+  eSlotBPlug5
+  eSlotBPlug6
+  eSlotBPlug7
+  eSlotPlace0
+  eSlotPlace1
+  eSlotPlace2
+  eSlotPlace3
+  eSlotPlace4
+  eSlotPlace5
+  eSlotPlace6
+  eSlotPlace7
+  eSlotCenter
+  eSlotSelection
+  eSlotHit
+  eSlotGround
+  eSlotFXEffect
+  eSlotTrack0
+  eSlotTrack1
+  eSlotTrack2
+  eSlotTrack3
+  eSlotWeaponBeg0
+  eSlotWeaponEnd0
+  eSlotWeaponBeg1
+  eSlotWeaponEnd1
+  eSlotSit
+  eSlotSleep
+MessageBox nButtons and result:
+  MB_OKCANCEL
+  MB_OK
+  MB_YESNOCANCEL
+  MB_YESNO
+  MB_RETRYCANCEL
+  MB_ABORTRETRYIGNORE
+  IDOK
+  IDCANCEL
+  IDYES
+  IDNO
+  IDRETRY
+  IDABORT
+  IDIGNORE
+AddHeroNetworkGameModePoints nGameMode:
+  eGameModePointsMonsterkilling
+  eGameModePointsHorseracing
+  eGameModePointsFlagcapturing
+  eGameModePointsPlayerkilling
+  eGameModePointsHorsesstealing
+GetObjectMeshFlags return:
+  eNoShadowMesh
+  eNoAlphaDistance
+  eNotDrawAsSubobject
+  eEqMeshHaveLevelVersion
+  eEqMeshHaveUnitTypeVersion
+  eCastStencilShadows
+  eEqMeshHaveTextureVersion
+  eTransparentCameraBoxes
+  eSetSkinColorOnSubobject
+  eDrawGhost
+  eHideDuringRain
+  eForceHigherBoxes
+<object_enums_end>
+</pre>
+<a name="basescript">
+<hr>
+<basescript>
+<big><strong>basescript</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<basescript_functions_begin>
+public:
+int  GetPlayersCnt()
+int  IsPlayer(int nPlayer)
+playerinterface GetPlayerInterface(int nPlayerNum)
+int  GetLocalPlayerNum()
+void LoadScript(string strScriptFile)
+string GetScriptFile()
+int  GetScriptUID()
+int  GetNextScriptUID()
+void SetStateDelay(int nDelay)
+int  GetStateDelay()
+void ExecuteState()
+void SetAttribute(int nKey, int nValue)
+void SetAttribute(string strKey, int nValue)
+void SetAttribute(int nKey, string strValue)
+void SetAttribute(string pszKey, string strValue)
+void ResetAttribute(int nKey)
+void ResetAttribute(string strKey)
+void ResetAttributes()
+int  GetAttribute(int nKey, int& pValue)
+int  GetAttribute(string strKey, int& pValue)
+int  GetAttribute(int nKey, string& pszValue)
+int  GetAttribute(string strKey, string& pszValue)
+void SetTimer(int nTimer, int nTimerTicks)
+void SetTimerStep(int nTimer, int nTimerStep)
+int  GetTimer(int nTimer)
+int  GetTimerStep(int nTimer)
+void EventTimer(int nTimer)
+void CommandDebug(string strDebugCommand)
+int  CommandMessage(int nMsg)
+int  CommandMessage(int nMsg, int nP1)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3)
+int  CommandMessageGet(int nMsg, int& pP1)
+int  CommandMessageGet(int nMsg, int& pP1, int& pP2, int& pP3)
+int  CommandMessage(int nMsg, string strP1)
+int  CommandMessageGet(int nMsg, string& pszP1)
+int  CommandMessage(int nMsg, unit uP1)
+int  CommandMessageGet(int nMsg, unit uP1)
+int  CommandMessage(int nMsg, int nP1, string strP2)
+int  CommandMessageGet(int nMsg, int nP1, string& pszP2)
+int  CommandMessage(int nMsg, int nP1, unit uP2)
+int  CommandMessageGet(int nMsg, int nP1, unit uP2)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3, int nP4)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3, int nP4, int nP5)
+int  CommandMessage(int nMsg, int nP1, int nP2, int nP3, int nP4, int nP5, int nP6)
+<basescript_functions_public_end>
+private:
+void SetState(int nState)
+void SetState(int nState, int nDelay)
+<basescript_functions_private_end>
+<basescript_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<basescript_commands_begin>
+int  Initialize()
+int  Uninitialize()
+int  Message(int)
+int  Message(int, int)
+int  Message(int, int, int, int)
+int  MessageGet(int, int&)
+int  MessageGet(int, int&, int&, int&)
+int  Message(int, string)
+int  MessageGet(int, string&)
+int  Message(int, unit)
+int  MessageGet(int, unit)
+int  Message(int, int, string)
+int  MessageGet(int, int, string&)
+int  Message(int, int, unit)
+int  MessageGet(int, int, unit)
+int  Message(int, int, int, int, int)
+int  Message(int, int, int, int, int, int)
+int  Message(int, int, int, int, int, int, int)
+int  CommandDebug(string)
+<basescript_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<basescript_events_begin>
+int  Timer0()
+int  Timer1()
+int  Timer2()
+int  Timer3()
+int  Timer4()
+int  Timer5()
+int  Timer6()
+int  Timer7()
+int  Timer8()
+int  Timer9()
+int  Artefact(unit, unit, int)
+int  GetHeroShopPricePercents(unit, unit, int&, int&)
+int  OpenContainerObject(unit, unit, int, int, int&, int&, int&)
+int  CloseContainerObject(unit, unit, int, int)
+int  StartTalkWithDialogUnit(unit, unit, int)
+int  EndTalkDialog(int, int, int)
+int  EndChatDialog(int)
+int  EndMessageBox(int, int)
+int  EndCutscene(int, int)
+int  ClickGateByUnit(unit, unit, int, int, int&, int&, int&)
+int  AddedUnit(unit, int)
+int  RemovedUnit(unit, unit, int)
+int  PassiveDestroyed(unit, unit)
+int  UsedDynamicTeleport(unit)
+int  RemovedDynamicTeleport(unit)
+int  CustomMakeAlchemyResult(unit, int&)
+int  GetNewNetworkPlayerCreatePos(int, int, int&, int&, int&)
+int  CreatedNewNetworkPlayer(int, int, int, int)
+int  RemovedNetworkPlayer(int)
+int  OnLoadLevel(mission, int)
+int  OnUnloadLevel(mission)
+int  OnStartedTrading(unit)
+int  OnEndedTrading(unit)
+<basescript_events_end>
+</pre>
+<a name="campaign">
+<hr>
+<campaign>
+<big><strong>campaign</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<campaign_functions_begin>
+public:
+campaign GetThis()
+void LoadLevelsHeadersCache(string strLevelsCacheFile)
+void CleanupLevelsHeadersCache()
+void CreateMission(string pszLevel, string strScript, int nWorldNum)
+void EndGame()
+int  EventGetDifficultyLevel()
+int  IsNetworkGame()
+int  IsNetworkChannelGame()
+unit GetPlayerHeroUnit(int nPlayer)
+void SetPartyEnemy(int nPartyNum, int nEnemyPartyNum)
+void SetPartyNeutral(int nPartyNum, int nNeutralPartyNum)
+int  IsPartyEnemy(int nPartyNum, int nEnemyPartyNum)
+array GetPartyEnemies(int nPartyNum)
+array GetPartyEnemies(array pArrPartiesNums)
+int  GetMissionsCnt()
+mission GetMission(int nMissionNum)
+int  GetGlobalScriptsCnt()
+global GetGlobalScript(int nIndex)
+global AddGlobalScript(string strScriptFile)
+global AddGlobalScript(string strScriptFile, int bExecuteFirstState)
+mission FindMissionScript(int nScriptUID)
+global FindGlobalScript(int nScriptUID)
+basescript FindScript(int nScriptUID)
+void LoadRPGComputeScript(string strScriptFile)
+void SetLevelsHorizon(string strFile)
+void SetPentagram(string strPentaConfig)
+void SetDrawPentagramStrength(int nPercent)
+int  GetGameTick()
+int  GetGameSec()
+int  GetDayTime()
+void SetDayTime(int nTime)
+void SetDayLength(int nDayLength, int nSunRise, int nSunSet)
+void SetWind(int nWindSpeed, int nWindDir)
+void SetWind(int nWindSpeed, int nWindDir, string strWindWav, int nWindWavVolume)
+void SetWindWav(string strWindWav, int nWindWavVolume)
+void SetWindWavVolume(int nWindWavVolume)
+void SetRain(int nRainIntensity)
+void SetRain(int nRainIntensity, string strRainWav, int nRainWavVolume)
+void SetRainWav(string strRainWav, int nRainWavVolume)
+void SetRainWavVolume(int nRainWavVolume)
+void SetSnow(int nSnowIntensity)
+void LoadLevelConfiguration(string strConfigFile, int bLoadDayState, int bLoadSkyTextures, int nMorphTicks)
+int  IsMorphingDayNightSkyTexture(int nAddBeforeTicks)
+void SetSkyBoxColorFadeFromFog(int bSet)
+void SetEndOfTheWorldMargin(int nSmallMarginA, int nWideMarginA)
+void SetEngineFarPlanePercent(int nFarPlanePercent)
+int  GetFillChannelLevelsListCommonPlayerAttribute(int nKey, int& pValue)
+int  GetFillChannelLevelsListCommonPlayerAttribute(string strKey, int& pValue)
+int  GetFillChannelLevelsListCommonPlayerAttribute(int nKey, string strValue)
+int  GetFillChannelLevelsListCommonPlayerAttribute(string pszKey, string strValue)
+int  GetFillChannelLevelsListSelectedHeroFlags()
+void CreateNewNetworkGame(string pszGameScriptFile, string pszGameScriptParam, string strGameMissionName)
+void SetEndOfTheWorldSouthMargin(int nSmallMarginA, int nWideMarginA)
+void SetEndOfTheWorldNorthMargin(int nSmallMarginA, int nWideMarginA)
+void SetEndOfTheWorldEastMargin(int nSmallMarginA, int nWideMarginA)
+void SetEndOfTheWorldWestMargin(int nSmallMarginA, int nWideMarginA)
+void SetLimitedWorldStepRange(int nRange)
+int  IsCampaignGame()
+int  IsMainMenuCutscene()
+<campaign_functions_public_end>
+<campaign_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<campaign_commands_begin>
+int  InitializeCampaign(int, string)
+int  FillNetworkChannelLevelsList(string, array, array, array, array, array, array, array)
+int  FillNetworkXMissionsList(int, array, array, array, array, array, array, array, array)
+int  FillNetworkXMissionModes(string, array, array, array)
+int  FillNetworkMissionsList(array, array, array, array, array, array, array, array)
+int  FillNetworkMissionModes(string, array, array)
+int  BonusCode(string)
+<campaign_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<campaign_events_begin>
+int  GetDifficultyLevel()
+int  GetSaveGameNameOld(mission, stringW&)
+int  GetSaveGameName(mission, int, stringW&)
+<campaign_events_end>
+</pre>
+<a name="global">
+<hr>
+<global>
+<big><strong>global</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<global_functions_begin>
+public:
+global GetThis()
+void RemoveGlobalScript()
+int  IsScriptRemoved()
+<global_functions_public_end>
+<global_functions_end>
+</pre>
+<a name="mission">
+<hr>
+<mission>
+<big><strong>mission</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<mission_functions_begin>
+public:
+mission GetThis()
+int  GetMissionScriptsCnt()
+mission GetMissionScript(int nIndex)
+mission AddMissionScript(string strScriptFile)
+mission AddMissionScript(string strScriptFile, int bExecuteFirstState)
+void RemoveMissionScript()
+int  IsScriptRemoved()
+void SetPositionOnCampaignTexture(int nX, int nY)
+void SetHorizonOffset(int nX, int nY)
+void AddNeighbourDistantLandLevel(string strLevel, int nDx, int nDy)
+void LoadLevel()
+void UnloadLevel()
+int  IsLevelLoaded()
+int  WasLevelLoaded()
+int  GetMissionNum()
+int  GetWorldTick()
+int  IsUndergroundLevel()
+int  GetMarker(string strMarkerID, int nNum, int& pX, int& pY)
+int  GetMarker(string strMarkerID, int nNum, int& pX, int& pY, int& pZ, int& pAngle)
+int  GetMarker(string strMarkerID, int nNum, int& pX, int& pY, int& pZ, int& pAngle, string& pData)
+int  GetMarker(string strMarkerID, int nNum, string& pData)
+int  HaveMarker(string strMarkerID, int nNum)
+int  GetMaxMarkerNum(string strMarkerID)
+void FillMarkersNums(string strMarkerID, array pArrMarkers)
+void GetMarkersCount(string strMarkerID)
+int  GetMarkersCountInRange(string strMarkerID, int nX, int nY, int nRange)
+void FillMarkersInRange(string strID, int nX, int nY, int nRangeA, array pArrMarkerIDs, array pArrMarkerNums, int bClearArr)
+void FillMarkersInRange(array pArrSortedIDs, int nX, int nY, int nRangeA, array pArrMarkerIDs, array pArrMarkerNums, int bClearArr)
+unit GetObjectMarker(string strMarkerID, int nNum)
+void AddMarker(string pszMarkerID, int nNum, int nX, int nY, int nZ, int nAngle, string strData)
+void SetMarker(string strMarkerID, int nNum, int nX)
+void SetMarker(string strMarkerID, int nNum, int nX, int nY, int nZ, int nAngle)
+void SetMarker(string pszMarkerID, int nNum, int nX, int nY, int nZ, int nAngle, string strData)
+void SetMarker(string pszMarkerID, int nNum, string strData)
+void RemoveMarker(string strMarkerID, int nNum)
+string GetLevelInfoText()
+int  GetLandHeight(int nX, int nY)
+int  GetEAXEnvironment(int nX, int nY)
+int  IsGoodPointForUnit(int nX, int nY)
+unit CreateObject(string strObjectID, int nX, int nY, int nZ, int nAlpha)
+unit CreateSoundObject(string strObjectID, int nX, int nY, int nZ, int nAlpha, int nLoopsCnt)
+unit CreateHero(int nPlayerNum, int nX, int nY, int nZ, int nAlpha)
+unit GetUnit(int nX, int nY)
+unit GetUnit(int nX, int nY, int bAllowDead)
+unit GetHouseFromPoint(int nX, int nY)
+unit GetHouseFromPoint(int nX, int nY, int bReturnMainHouse)
+unit FindNearestGate(int nX, int nY, int nRange)
+unit GetExternalDoorForHouseFromPoint(int nX, int nY)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange, array pArrParties)
+int  GetWorldWidth()
+int  GetWorldHeight()
+int  IsUnitInArea(int nX, int nY, int nRange, array pArrTargetParties)
+int  IsUnitInArea(int nX, int nY, int nRange, int nTargetTypeMask, string strTargetUnitID, array pArrTargetParties)
+int  CountUnitsInArea(int nX, int nY, int nRange, array pArrTargetParties)
+int  CountUnitsInArea(int nX, int nY, int nRange, int nTargetTypeMask, string strTargetUnitID, array pArrTargetParties)
+int  SearchUnitsInArea(int nX, int nY, int nRange, array pArrTargetParties)
+int  SearchUnitsInArea(int nX, int nY, int nRange, int nTargetTypeMask, array pArrTargetParties)
+int  SearchObjectsInArea(int nX, int nY, int nRange, string strTargetObjectID)
+int  GetSearchUnitsInAreaCount()
+unit GetSearchUnitInArea(int nIndex)
+void ClearSearchUnitsInAreaArray()
+int  ReplaceObjectsInArea(int nX, int nY, int nRange, string pszObjectID, string strWithObjectID)
+mission GetUpperConnectedMission()
+mission GetLowerConnectedMission()
+mission GetLeftConnectedMission()
+mission GetRightConnectedMission()
+mission GetUpConnectedMission()
+mission GetDownConnectedMission()
+mission GetLeftUpConnectedMission()
+mission GetRightUpConnectedMission()
+mission GetLeftDownConnectedMission()
+mission GetRightDownConnectedMission()
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+void PlayPositionWave(string strWave, int nX, int nY, int nMinDistA, int nMaxDistA)
+void PlayPositionWave(string strWave, int nX, int nY, int nMinDistA, int nMaxDistA, int nVolumeIndex)
+void PlayPositionWave(string strWave, unit uWaveObject, int nMinDistA, int nMaxDistA)
+void PlayPositionWave(string strWave, unit uWaveObject, int nMinDistA, int nMaxDistA, int nVolumeIndex)
+int  AddMapSign(int nX, int nY, int nSignNum, int nTicks)
+void RemoveMapSign(int nX, int nY)
+void RemoveMapSign(int nMapSignID)
+int  IsAnyGoodPointForUnit(int nX, int nY, int nRange)
+unit GetNotTransientPassive(int nX, int nY)
+unit GetArtefact(int nX, int nY, int bEqualPos)
+unit GetTrap(int nX, int nY, int bEqualPos)
+unit GetDynamicTeleport(int nX, int nY, int bEqualPos)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange, int bRemoveNotSearched, int bRemoveNotEmpty)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange, array pArrParties, int bRemoveNotSearched, int bRemoveNotEmpty)
+void RemoveKilledUnitsOutsideStepRange()
+void RemoveKilledUnitsOutsideStepRange(array pArrParties)
+void RemoveKilledUnitsOutsideStepRange(int bRemoveNotSearched, int bRemoveNotEmpty)
+void RemoveKilledUnitsOutsideStepRange(array pArrParties, int bRemoveNotSearched, int bRemoveNotEmpty)
+<mission_functions_public_end>
+<mission_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<mission_commands_begin>
+int  Combo1(int)
+int  Combo2(int)
+int  Combo3(int)
+int  Combo4(int)
+int  Combo5(int)
+int  Combo6(int)
+<mission_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<mission_events_begin>
+int  SpecialLevelFlags()
+<mission_events_end>
+</pre>
+<a name="playerinterface">
+<hr>
+<playerinterface>
+<big><strong>playerinterface</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<playerinterface_functions_begin>
+public:
+int  GetPlayerNum()
+stringW GetPlayerName()
+stringW GetPlayerGuildName()
+void SetInterfaceOptions(int nOptions)
+void ShowMissionFailedLoadDialog()
+void PlayCutscene(int nScriptUID, int nCutsceneUID, int nCutsceneFlags, mission pMission, string strTrackName)
+int  GetPlayCutsceneFadeInDelay(mission pMission)
+void FadeInScreen(int nTicks, int nR, int nG, int nB)
+void FadeOutScreen(int nTicks, int nR, int nG, int nB)
+void PlayVideoCutscene(string strVideoFile, int bPauseGame, int bEndGameAfter)
+void SetConsoleText(string strText)
+void SetConsoleText(stringW szText)
+void SetConsoleText(string strText, int nTicks)
+void SetConsoleText(stringW szText, int nTicks)
+void SetConsoleText(string strText, int nTicks, int bAddToCurrText)
+void SetConsoleText(stringW szText, int nTicks, int bAddToCurrText)
+void SetConsoleText(string strText, int nTicks, int bAddToCurrText, int bReplaceInCurrText)
+void SetConsoleText(stringW szText, int nTicks, int bAddToCurrText, int bReplaceInCurrText)
+void SetConsole2Text(string strText)
+void SetConsole2Text(stringW szText)
+void SetConsole2Text(string strText, int nTicks)
+void SetConsole2Text(stringW szText, int nTicks)
+void SetConsole2Text(string strText, int nTicks, int bAddToCurrText)
+void SetConsole2Text(stringW szText, int nTicks, int bAddToCurrText)
+void SetConsole2Text(string strText, int nTicks, int bAddToCurrText, int bReplaceInCurrText)
+void SetConsole2Text(stringW szText, int nTicks, int bAddToCurrText, int bReplaceInCurrText)
+void SetLowConsoleText(string strText)
+void SetLowConsoleText(stringW szText)
+void SetLowConsoleText(string strText, int nTicks)
+void SetLowConsoleText(stringW szText, int nTicks)
+void SetLowConsoleText(string strText, int nTicks, int bAddToCurrText)
+void SetLowConsoleText(stringW szText, int nTicks, int bAddToCurrText)
+void SetLowConsoleText(string strText, int nTicks, int bAddToCurrText, int bReplaceInCurrText)
+void SetLowConsoleText(stringW szText, int nTicks, int bAddToCurrText, int bReplaceInCurrText)
+void PrintConsoleText(string strText)
+void PrintConsoleText(stringW szText)
+void EnableInterface(int bEnable)
+void ShowInterface(int bShow)
+void ShowInterface(int bShowInterface, int bShowIngameGraphics)
+int  AddMapSign(mission pMission, int nX, int nY, int nSignNum, int nTicks)
+void RemoveMapSign(mission pMission, int nX, int nY)
+void RemoveMapSign(mission pMission, int nMapSignID)
+void PlayWave(string strWave)
+void PlayWave(string strWave, int nVolumeIndex, int nDelayTicks)
+void PlayPositionWave(string strWave, mission pMission, int nX, int nY, int nMinDistA, int nMaxDistA)
+void PlayPositionWave(string strWave, mission pMission, int nX, int nY, int nMinDistA, int nMaxDistA, int nVolumeIndex)
+void PlayPositionWave(string strWave, unit uWaveObject, int nMinDistA, int nMaxDistA)
+void PlayPositionWave(string strWave, unit uWaveObject, int nMinDistA, int nMaxDistA, int nVolumeIndex)
+void RemoveDelayedWaves()
+void PlayGameMusic(string strMusic)
+int  IsPlayingGameMusic()
+void StopGameMusic()
+int  IsPlayMusicEnabled()
+void SetForcedSoundEAXEnvironment(int nEnviroment)
+void ResetGraphicFogOfWar(mission pMission, int nX, int nY, int nRange)
+void OpenHeroDialog(int nMode, unit uWithObject)
+void MessageBox(string strText, int nButtons, int bPauseGame, int nScriptUID, int nMessageUID)
+void MessageBox(stringW szText, int nButtons, int bPauseGame, int nScriptUID, int nMessageUID)
+void PlayDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, int nR, int nG, int nB, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, int nR, int nG, int nB, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, int nR, int nG, int nB, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, int nR, int nG, int nB, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, int nR, int nG, int nB, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayDialog(int nScriptUID, int nDialogUID, int nDialogFlags, int nDisabledEventsMask, int nR, int nG, int nB, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+int  IsPlayingDialog()
+void LookAt(mission pMission, int nX, int nY, int nZ, int nAngle, int nViewAngle, int nLookAtTicks)
+void DelayedLookAt(mission pMission, int nX, int nY, int nZ, int nAngle, int nViewAngle, int bClockWise, int nDelayTicks, int nLookAtTicks)
+void StopLookAt()
+void GetCameraPos(int& pX, int& pY, int& pZ, int& pAngle, int& pViewAngle)
+void SetDreamlandEntranceState(int nEffectPercent)
+void SetQuestsDirTitle(int nQuestsDirUID, string strQuestsDirTitle)
+void SetQuestsDirTitle(int nQuestsDirUID, stringW pszQuestsDirTitle)
+void AddQuest(int nQuestsDirUID, int nQuestUID, string pszTitle, string pszDescription, string strTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY, int nState)
+void AddQuest(int nQuestsDirUID, int nQuestUID, stringW pszTitle, stringW pszDescription, stringW pszTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY, int nState)
+void AddQuest(int nQuestsDirUID, int nQuestUID, string strTitle, stringW pszDescription, stringW pszTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY, int nState)
+void AddQuest(int nQuestsDirUID, int nQuestUID, string pszTitle, string strDescription, stringW pszTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY, int nState)
+void AddQuest(int nQuestsDirUID, int nQuestUID, string pszTitle, stringW pszDescription, string strTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY, int nState)
+void RemoveQuest(int nQuestUID)
+void SetQuestTitle(int nQuestUID, string strTitle)
+void SetQuestTitle(int nQuestUID, stringW pszTitle)
+void SetQuestDescription(int nQuestUID, string strDescription)
+void SetQuestDescription(int nQuestUID, stringW pszDescription)
+void SetQuestTooltipDescription(int nQuestUID, string strTooltipDescription)
+void SetQuestTooltipDescription(int nQuestUID, stringW pszTooltipDescription)
+void SetQuestQuestsMapIconNum(int nQuestUID, int nQuestsMapIconNum)
+void SetQuestMapIconNum(int nQuestUID, int nMapIconNum)
+void SetQuestMinVisibleZoomPercent(int nQuestUID, int nPercent)
+void SetQuestMaxVisibleZoomPercent(int nQuestUID, int nPercent)
+void SetQuestPosition(int nQuestUID, int nX, int nY)
+void SetQuestPosition(int nQuestUID, mission pMission, int nX, int nY)
+void SetQuestState(int nQuestUID, int nState)
+int  GetQuestState(int nQuestUID)
+void SetBlinkQuestButton(int bSet)
+void AddCampaignLocation(int nLocationUID, string strTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY)
+void AddCampaignLocation(int nLocationUID, string strTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, int nMinVisibleZoomPercent, int nMaxVisibleZoomPercent, mission pMission, int nX, int nY)
+void AddCampaignLocation(int nLocationUID, stringW pszTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, mission pMission, int nX, int nY)
+void AddCampaignLocation(int nLocationUID, stringW pszTooltipDescription, int nQuestsMapIconNum, int nMapIconNum, int nMinVisibleZoomPercent, int nMaxVisibleZoomPercent, mission pMission, int nX, int nY)
+void RemoveCampaignLocation(int nLocationUID)
+void SetCampaignLocationTooltipDescription(int nLocationUID, string strTooltipDescription)
+void SetCampaignLocationTooltipDescription(int nLocationUID, stringW pszTooltipDescription)
+void SetCampaignLocationQuestsMapIconNum(int nLocationUID, int nQuestsMapIconNum)
+void SetCampaignLocationMapIconNum(int nLocationUID, int nMapIconNum)
+void SetCampaignLocationMinVisibleZoomPercent(int nLocationUID, int nPercent)
+void SetCampaignLocationMaxVisibleZoomPercent(int nLocationUID, int nPercent)
+void SetCampaignLocationPosition(int nLocationUID, int nX, int nY)
+void SetCampaignLocationPosition(int nLocationUID, mission pMission, int nX, int nY)
+void XBOXSetAchievement(int nId)
+int  XBOXGetAchievement(int nId)
+void XBOXSetRichPresence(int nId)
+void EndGame(stringW pszMessage)
+int  IsLocalHeroXPadControlled()
+void SetCustomCommandsDialogButtonDefSkill(int nMode, int nButton, int nSkill)
+void SetCustomCommandsDialogButtonDefSkillPrior(int nMode, int nButton, int nSkillPrior)
+void SetCustomCommandsDialogButtonDefMagic(int nMode, int nButton, int nMagicSlotNum)
+void SetCustomCommandsDialogButtonDefObject(int nMode, int nButton, string strObjectID)
+int  GetLocalHeroTripWalkLen()
+int  GetLocalHeroTripSwimLen()
+int  GetLocalHeroTripHorseLen()
+int  GetLocalHeroJumpMaxLen()
+int  GetLocalHeroJumpsNum()
+int  GetLocalHeroBackJumpsNum()
+void SetCustomCommandsDialogSelectedButton(int nButton)
+<playerinterface_functions_public_end>
+<playerinterface_functions_end>
+</pre>
+<a name="unit">
+<hr>
+<unit>
+<big><strong>unit</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<unit_functions_begin>
+public:
+unit GetThis()
+void ChangedCommandState()
+int  GetLandHeight(int nX, int nY)
+int  GetLocationX()
+int  GetLocationY()
+int  GetLocationZ()
+void GetLocation(int& pX, int& pY)
+void GetLocation(int& pX, int& pY, int& pZ)
+int  GetDirectionAlpha()
+int  DistanceTo(int nX, int nY)
+int  DistanceTo(mission pMission, int nX, int nY)
+int  DistanceTo(unit uTarget)
+int  AngleTo(int nX, int nY)
+int  AngleTo(mission pMission, int nX, int nY)
+int  AngleTo(unit uTarget)
+int  GetRelativeAngleTo(int nX, int nY)
+int  GetRelativeAngleTo(mission pMission, int nX, int nY)
+int  GetRelativeAngleTo(unit uTarget)
+int  GetAngleDiff(int nAngle)
+int  GetTargetDirectionDiff(unit uTarget)
+int  IsLive()
+int  IsStored()
+string GetObjectIDName()
+int  GetHP()
+int  GetMaxHP()
+int  GetCurrPoison()
+int  CanBeHitAndDamaged()
+int  IsUnitBase()
+int  IsUnit()
+int  IsHeroUnit()
+int  IsShopUnit()
+int  IsLandMove()
+int  IsFlyableMove()
+int  IsImmobileUnit()
+int  IsAirObject()
+int  IsLandObject()
+int  IsTypeFlyableWithLandMode()
+int  IsFlyableOnLand()
+int  IsImmobileUnitOrCantMoveInCurrentState()
+int  IsKnifeDeathStrikeResistant()
+int  IsHouse()
+int  IsHorseUnit()
+int  IsRideableHorseUnit()
+int  IsSimplePassive()
+int  IsPassive()
+int  IsRollingStone()
+int  IsArtefact()
+int  IsEquipmentArtefact()
+int  IsPotionArtefact()
+int  IsSpecialArtefact()
+int  IsCustomArtefact()
+int  IsAlchemyFormulaArtefact()
+int  IsTrap()
+int  IsGate()
+int  IsHouse()
+int  IsTeleport()
+int  IsConnectionTeleport()
+int  IsStaticTeleport()
+int  IsDynamicTeleport()
+int  IsContainer()
+unit GetHorseRider()
+unit GetHorse()
+int  GetUnitTypeFlags()
+int  GetGameTick()
+int  GetWorldTick()
+int  GetWorldWidth()
+int  GetWorldHeight()
+mission GetMission()
+int  IsTheSameMission(unit uTarget)
+int  IsTheSameMission(mission pMission)
+int  IsNearLevelBorder(int nMargin)
+int  IsNearLevelBorder(int nX, int nY, int nMargin)
+int  IsMoving()
+int  IsMovingTurning()
+int  IsTrueMovingOrTurning()
+int  IsPreparingToMove()
+int  IsFlyableLanding()
+void GetMoveTarget(int& pX, int& pY)
+int  IsMovingOneStep()
+int  IsInJumpingState()
+void SetRunMode(int bSet)
+void SetAutoRunMode(int bSet)
+int  GetHorseMoveSpeed()
+void SetHorseChangeSpeed(int nSpeedDir, int nStrengthPercent)
+int  GetHorseChangeSpeed()
+int  GetHorseRunSpeedPercent()
+void SetHorseMoveBack()
+int  IsHorseMovingBack()
+void SetHorseTurnMoving(int nTurnDir, int nStrengthPercent)
+void SetCustomIdleAnim(int nCustomIdleNum)
+int  SetEventAttackByOtherUnit(unit uAttacker)
+void SetPartyNum(int nPartyNum)
+void SetIsInParty(int nPartyNum, int bSet)
+int  IsInParty(int nPartyNum)
+array GetPartiesNums()
+array GetEnemiesParties()
+int  IsEnemy(unit uTarget)
+int  SearchUnits(array pArrTargetParties)
+int  SearchUnits(array pArrTargetParties, int nSortType)
+int  SearchUnits(array pArrTargetParties, int nTargetTypeMask, int nSortType)
+int  SearchUnits(array pArrTargetParties, int nTargetTypeMask, int nSortType, int bReverseSort, int nMaxCount, int nFromPosX, int nFromPosY, int nFromPosZ, int nFromAngleDir, int nSightRangeA, int nSightAngle, int nEarRangeA)
+int  SearchUnits(int nSimpleRangeA, array pArrTargetParties)
+int  SearchUnits(int nSimpleRangeA, array pArrTargetParties, int nSortType)
+int  SearchUnits(int nSimpleRangeA, array pArrTargetParties, int nTargetTypeMask, int nSortType)
+int  SearchUnits(int nSimpleRangeA, array pArrTargetParties, int nTargetTypeMask, int nSortType, int bReverseSort, int nMaxCount, int nFromPosX, int nFromPosY, int nFromPosZ)
+int  GetSearchUnitsCount()
+unit GetSearchUnit(int nIndex)
+void ClearSearchUnitsArray()
+unit SearchOneUnit(int nTargetTypeMask, array pArrTargetParties)
+void SetTimedLife(int nTicks)
+int  GetTimedLifeTicks()
+int  IsKillingAnim()
+void SetIsSummonedUnit(int bSet)
+int  IsSummonedUnit()
+int  IsObjectInSightOrHearRange(unit uTarget, int bFullAngleRange)
+int  GetSightRange()
+int  GetSightAngle()
+int  GetEarRange()
+void SetAlarmModeUnit(int bSet)
+int  IsAlarmModeUnit()
+void SetEventAlarmEnemy(unit uTarget)
+void SetHitForcefield(int nType, int nAmount, int nTicks)
+UnitParams GetUnitParams()
+UnitValues GetUnitValues()
+int  GetMana()
+int  GetMaxMana()
+int  GetUnitLevel()
+int  GetEquipmentCount()
+int  GetEquipmentOnIndex(int nIndex, EquipmentParams pEquipmentParams, EquipmentValues pEquipmentValues)
+string GetEquipmentIDOnIndex(int nIndex)
+EquipmentParams GetEquipmentParamsOnIndex(int nIndex)
+EquipmentValues GetEquipmentValuesOnIndex(int nIndex)
+int  HaveEquipmentOnSlot(int nSlotNum)
+int  GetEquipmentOnSlot(int nSlotNum, EquipmentParams pEquipmentParams, EquipmentValues pEquipmentValues)
+string GetEquipmentIDOnSlot(int nSlotNum)
+EquipmentParams GetEquipmentParamsOnSlot(int nSlotNum)
+EquipmentValues GetEquipmentValuesOnSlot(int nSlotNum)
+int  GetWeaponCount()
+int  GetWeaponOnIndex(int nIndex, WeaponParams pWeaponParams, EquipmentValues pEquipmentValues)
+int  GetWeaponOnIndex(int nIndex, WeaponParams pWeaponParams, EquipmentValues pEquipmentValues, MissileParams pMissileParams)
+WeaponParams GetWeaponParamsOnIndex(int nIndex)
+EquipmentValues GetWeaponValuesOnIndex(int nIndex)
+MissileParams GetWeaponMissileParamsOnIndex(int nIndex)
+int  HaveWeaponOnSlot(int nSlotNum)
+int  GetWeaponOnSlot(int nSlotNum, WeaponParams pWeaponParams, EquipmentValues pEquipmentValues)
+int  GetWeaponOnSlot(int nSlotNum, WeaponParams pWeaponParams, EquipmentValues pEquipmentValues, MissileParams pMissileParams)
+WeaponParams GetWeaponParamsOnSlot(int nSlotNum)
+EquipmentValues GetWeaponValuesOnSlot(int nSlotNum)
+MissileParams GetWeaponMissileParamsOnSlot(int nSlotNum)
+int  HaveMagicClub()
+int  GetMagicClub(MagicClubParams pMagicClubParams, EquipmentValues pEquipmentValues)
+MagicClubParams GetMagicClubParams()
+EquipmentValues GetMagicClubValues()
+int  GetMagicCardOnSlotCount(int nMagicSlotNum)
+int  GetMagicCardOnSlot(int nMagicSlotNum, MagicCardParams pMagicCardParams, EquipmentValues pMagicCardValues)
+MagicCardParams GetMagicCardParamsOnSlot(int nMagicSlotNum)
+EquipmentValues GetMagicCardValuesOnSlot(int nMagicSlotNum)
+string GetMagicCardIDOnSlot(int nMagicSlotNum)
+int  GetPowerUpMagicCardOnSlotCount(int nMagicSlotNum)
+int  GetPowerUpMagicCardOnSlot(int nMagicSlotNum, int nIndex, int& pCount, MagicCardParams pMagicCardParams, EquipmentValues pMagicCardValues)
+int  GetPowerUpMagicCardCountOnSlot(int nMagicSlotNum, int nIndex)
+MagicCardParams GetPowerUpMagicCardParamsOnSlot(int nMagicSlotNum, int nIndex)
+EquipmentValues GetPowerUpMagicCardValuesOnSlot(int nMagicSlotNum, int nIndex)
+int  GetPotionsCount()
+PotionValues GetPotionValues(int nIndex)
+int  FindPotionWithFlags(int nFlags)
+int  FindPotionWithCustomObjectID(string strObjectID)
+PotionValues AddPotionValues()
+PotionValues AddPotionValues(string strPotionEffectID)
+PotionValues AddPotionValues(PotionValues pValuesInit)
+PotionValues AddPotionValues(PotionValues pValuesInit, string strPotionEffectID)
+void RemovePotionValues(int nIndex)
+int  HaveAvailableSkill(int nSkillIndex)
+void UpdateChangedUnitValues()
+int  IsFrozen()
+int  IsStoppedMoving()
+int  IsFrozenOrStoppedMoving()
+int  GetFreezeTicks()
+int  GetStopMovingTicks()
+void SetFreezeTicks(int nTicks)
+void SetStopMovingTicks(int nTicks)
+int  IsAttacking()
+int  IsAttackingInFightAction()
+int  IsMovingAndStrikeAttack()
+int  HaveWeapon()
+int  HaveDirectFightWeapon()
+int  HaveShootWeapon()
+int  HaveUsableWeapon()
+int  HaveTwoWeapons()
+int  HaveWeaponPossibleToBrake()
+int  GetAttackRange()
+int  GetAttackMinRange()
+unit GetAttackTarget()
+int  GetCurrentFightAction()
+int  GetPreviousFightAction()
+int  HaveFightActionAnimation(int nFightAction)
+int  HaveFightActionAnimation(int nFightAction, unit uTarget)
+int  HaveShootFightActionAnimation(int nFightAction, unit uTarget)
+int  IsSettingArmedMode()
+int  CanSetArmedMode()
+int  IsSettingToArmedMode()
+int  IsSettingToUnarmedMode()
+int  IsInArmedMode()
+int  IsInArmedModeWithWeapon()
+int  IsInArmedModeWithUsableWeapon()
+int  GetCurrShootChance()
+int  IsOnHorse()
+int  IsMakingMagic()
+int  CanUseMagicCard(int nMagicSlotNum, int bCheckMana, int bCheckDelay)
+int  CanMakeMagic(int nMagicSlotNum, int bCheckMana, int bCheckDelay)
+int  CanMakeMagic(unit uTarget, int nMagicSlotNum, int bCheckMana, int bCheckDelay)
+int  IsMagicTargetInRange(unit uTarget, int nMagicSlotNum)
+int  GetMagicCastRange(int nMagicSlotNum)
+void ResurrectUnitByMagic(unit uTarget)
+int  SetNextAttackSkill(int nSkillNum)
+int  SetNextAttackSkill(int nSkillNum, int bSecondHand)
+int  GetNextAttackSkill()
+int  GetNextAttackSkillBySecondHand()
+int  CanMakeActiveSkill(int nSkillNum, int bSecondHand, unit uTarget)
+void SetBerserkTicks(int nTicks)
+int  IsInBerserkMode()
+int  CanSetTrap(int nTrapID, int nTrapItemNumber, int bCheckAnim)
+int  HaveSetTrapAnim()
+int  IsSettingSneakMode()
+int  IsInSneakMode()
+int  CanMakeSkillKnifeDeathStrike(unit uTarget)
+int  CanMakeSkillStealing(unit uTarget)
+void OnStealingDetected(unit uByUnit)
+int  CanStartDirectFightAction(unit uTarget)
+void PrepareBeforeDialogTalk(int nAngle)
+void FinishAfterDialogTalk()
+int  IsInDialogTalk()
+void PrepareBeforeDialogChat()
+void FinishAfterDialogChat()
+int  IsInDialogChat()
+void StartDialogTalkAnim(int nBodyAnim, int nHeadAnim)
+void StopDialogTalkAnim()
+void PauseDialogTalkHeadAnim(int bPause)
+int  CanMountOnHorse(unit uTarget)
+int  HavePlaceToStealEquipment(unit uTarget, int nSlotNum)
+void StealEquipmentFromObject(unit uTarget, int nSlotNum)
+int  HaveCustomWorkAnim(int nWorkAnimNum, int bCheckUnarmedMode)
+int  IsMakingCustomWork()
+int  GetMakingCustomWorkAnimNum()
+void SetHeadCustomIdleAnim(int nHeadCustomIdleNum)
+void SetHeadAngle(int nAlpha, int nBeta, int bResetOnAction)
+void GetCurrHeadAngle(int& pAlpha, int& pBeta)
+void CommandStop()
+void CommandMove(int, int, int)
+void CommandMoveXYZA(int, int, int, int)
+void CommandTurn(int)
+void CommandUpdateHeroPos()
+void CommandMoveOneStepForward(int)
+void CommandMoveOneStepBack(int)
+void CommandMoveOneStepLeft(int)
+void CommandMoveOneStepRight(int)
+void CommandMoveStepInDirection(int)
+void CommandStopMovingStep()
+void CommandStartJump()
+void CommandMoveHorseSpeedUp(int)
+void CommandMoveHorseStopSpeedUp()
+void CommandMoveHorseSlowDown(int)
+void CommandMoveHorseStopSlowDown()
+void CommandMoveHorseMoveBack(int)
+void CommandMoveHorseStopMoveBack()
+void CommandMoveHorseQuickStop()
+void CommandMoveHorseTurnLeft(int)
+void CommandMoveHorseTurnRight(int)
+void CommandMoveHorseStopTurn()
+void CommandAttack(unit)
+void CommandStrikeAttack(unit, int)
+void eCommandShootAttackManualPrepare()
+void CommandShootAttackManualFire(unit, int, int, int)
+void CommandTurnToCamera(int, int, int)
+void CommandMoveAttack(int, int, int)
+void CommandSetArmedMode(int)
+void CommandMountOnHorse(unit)
+void CommandUnmountFromHorse()
+void CommandCallHorse()
+void CommandPrepareBeforeDialogTalk(int)
+void CommandFinishAfterDialogTalk()
+void CommandPrepareBeforeDialogChat()
+void CommandFinishAfterDialogChat()
+void CommandStartDialogTalkAnim(int, int, int)
+void CommandStopDialogTalkAnim()
+void CommandPauseDialogTalkHeadAnim(int)
+void CommandClickEventOnGate(unit)
+void CommandMakeCustomWork(int, int, int, int, string)
+void CommandMagicCardDirect(int)
+void CommandMagicCardObject(unit, int, int, int, int, int, int)
+void CommandSkillBerserk()
+void CommandSkillDefensiveFight()
+void CommandSkillDirtyTrick(unit, int)
+void CommandSkillStun(unit, int)
+void CommandSkillSwordBrake(unit, int)
+void CommandSkillDismountFromHorse(unit, int)
+void CommandSkillPullShield(unit, int)
+void CommandSkillKnifeDeathStrike(unit, int)
+void CommandSkillDeadlyPiruet(unit, int)
+void CommandSkillBurn(unit, int)
+void CommandSkillShieldTrick(unit, int)
+void CommandSkillDisarmingArrow()
+void CommandSkillMultiArrows()
+void CommandSkillPiercing()
+void CommandSkillArrowOfDust()
+void CommandSkillSneak(int)
+void CommandSkillStealing(unit)
+void CommandSkillSetTrap(int, int, int, int, string)
+void eCommandSkillStunSecondHand(unit, int)
+void eCommandSkillPullShieldSecondHand(unit, int)
+void CommandUseObjectFromInventory(int, int, int, int, string)
+void CommandUsePrevWeapon()
+void CommandUseNextWeapon()
+void CommandUseRegenerateHPPotion()
+void CommandUseRegenerateManaPotion()
+void CommandJoinInventoryObjects(int, int, int)
+void CommandSetInventoryObjectPos(int, int, int)
+void CommandMoveSubObjectToInventory(int, int, int, int)
+void CommandMoveSubObjectFromSlotToSlot(int, int, int)
+void CommandMoveMagicFromSlotToInventory(int, int, int)
+void CommandMoveMagicFromSlotToSlot(int, int, int, int)
+void MoveInventoryToAlchemyItem(int, int, int, int, string)
+void MoveAlchemyItemToInventory(int, int, int, int, string)
+void MoveAlchemyItemFromSlotToSlot(int, int, int, int, string)
+void MakeAlchemy()
+void CommandAddAlchemyResultFormula(int, string)
+void CommandSetAlchemyFormulaName(int, string)
+void CommandDeleteAlchemyFormula(int)
+void CommandLoadAlchemyFormula(int)
+void CommandUnloadAlchemyFormula(int)
+void CommandMoveAlchemyFormulaUp(int)
+void CommandMoveAlchemyFormulaDown(int)
+void CommandAutoArrangeInventory()
+void CommandDropSubObject(int)
+void CommandDropMoney(int)
+void CommandDropInventory(string, int)
+void CommandDropMagicFromSlot(int, int, int)
+void DropAlchemyItem(int, int, int)
+void CommandPickUpObject(unit)
+void CommandUnablePickUpObject(unit)
+void CommandSwitchObject(unit)
+void CommandTalkWithDialogUnit(unit)
+void CommandOpenContainerObject(unit, int, int, int)
+void CommandGetObjectFromContainer(unit, int, int, int, int, string)
+void CommandGetAllFromContainer(unit)
+void CommandPutObjectToContainer(unit, int, int, int, int, string)
+void CommandOpenTeleport(unit)
+void CommandTeleportToActiveTargetTeleport(unit)
+void CommandSetPoint(int, int, int)
+void CommandSetSkill(int, int, int)
+void CommandUserNoParam0()
+void CommandUserNoParam1()
+void CommandUserNoParam2()
+void CommandUserNoParam3()
+void CommandUserNoParam4()
+void CommandUserNoParam5()
+void CommandUserNoParam6()
+void CommandUserNoParam7()
+void CommandUserNoParam8()
+void CommandUserNoParam9()
+void CommandUserOneParam0(int)
+void CommandUserOneParam1(int)
+void CommandUserOneParam2(int)
+void CommandUserOneParam3(int)
+void CommandUserOneParam4(int)
+void CommandUserOneParam5(int)
+void CommandUserOneParam6(int)
+void CommandUserOneParam7(int)
+void CommandUserOneParam8(int)
+void CommandUserOneParam9(int)
+void CommandUserObject0(unit)
+void CommandUserObject1(unit)
+void CommandUserObject2(unit)
+void CommandUserObject3(unit)
+void CommandUserObject4(unit)
+void CommandUserObject5(unit)
+void CommandUserObject6(unit)
+void CommandUserObject7(unit)
+void CommandUserObject8(unit)
+void CommandUserObject9(unit)
+void CommandUserPoint0(int, int, int)
+void CommandUserPoint1(int, int, int)
+void CommandUserPoint2(int, int, int)
+void CommandUserPoint3(int, int, int)
+void CommandUserPoint4(int, int, int)
+void CommandUserPoint5(int, int, int)
+void CommandUserPoint6(int, int, int)
+void CommandUserPoint7(int, int, int)
+void CommandUserPoint8(int, int, int)
+void CommandUserPoint9(int, int, int)
+void CommandBeginRecord()
+void CommandEndRecord()
+void CommandExecuteRecord()
+void CommandBeginQuickRecord()
+void CommandEndQuickRecord()
+void CommandRepeatExecution()
+int  SetImmediatePosition(int nX, int nY, int nZ, int nAlpha, int bSetIfNotFree)
+int  SetImmediatePosition(int nX, int nY, int nZ, int nAlpha, int bSetIfNotFree, int nDelay)
+int  SetImmediatePosition(mission pMission, int nX, int nY, int nZ, int nAlpha, int bSetIfNotFree)
+int  SetImmediatePosition(mission pMission, int nX, int nY, int nZ, int nAlpha, int bSetIfNotFree, int nDelay)
+void ResurrectUnit()
+void SetArtefactScriptNum(int nNum)
+int  GetArtefactScriptNum()
+void SetArtefactScriptOwnerUID(int nOwnerUID)
+int  GetArtefactScriptOwnerUID()
+void SetArtefactRange(int nRangeA)
+int  GetArtefactRange()
+void SetArtefactMoney(int nMoney)
+int  GetArtefactMoney()
+EquipmentValues GetArtefactEquipmentValues()
+string GetArtefactEquipmentIDName()
+int  AddInventory(string strObjectID, int bDropForNoPlace)
+int  AddInventory(string strObjectID, int bDropForNoPlace, int& pItemNumber, unit uDropObject)
+int  IsObjectInInventory(string strObjectID)
+int  IsObjectInInventory(string strObjectID, int bCheckSubObjects)
+int  RemoveObjectFromInventory(string strObjectID, int bDrop)
+int  RemoveObjectFromInventory(string strObjectID, int bDrop, int bCheckSubObjects)
+int  RemoveObjectFromInventory(string strObjectID, int bDrop, int bCheckSubObjects, int nRemoveCnt)
+int  RemoveObjectFromInventory(int nItemIndex, int nRemoveCnt, int bDrop)
+int  GetObjectInInventoryCount(string strObjectID)
+int  GetObjectInInventoryCount(string strObjectID, int bCheckSubObjects)
+int  CountAllObjectsInInventory()
+int  GetInventorySize()
+int  IsFreePlaceForObjectInInventory(string strObjectID)
+int  FindItemNumberInInventory(int nItemNumber)
+int  FindItemNumberInSubObjectSlot(int nItemNumber)
+string GetInventoryObjectID(int nItemIndex)
+int  GetInventoryObjectCount(int nItemIndex)
+EquipmentValues GetInventoryEquipmentValues(int nItemIndex)
+int  GetKeyArtefactsInInventoryCount(int nLockFlags, int bAnyFlag)
+int  GetKeyArtefactsInInventoryCount(int nLockFlags, int bAnyFlag, int nLockLevel, int bLessOrEqualLevel, int bGreaterOrEqualLevel)
+int  FindKeyArtefactInInventory(int nLockFlags, int bAnyFlag, int& pItemIndex, int& pLockFlags, int& pLockLevel)
+int  FindKeyArtefactInInventory(int nLockFlags, int bAnyFlag, int nLockLevel, int bLessOrEqualLevel, int bGreaterOrEqualLevel, int& pItemIndex, int& pLockFlags, int& pLockLevel)
+void AddHP(int nAddHP)
+void SetHP(int nHP)
+void AddMana(int nAddMana)
+void SetMana(int nMana)
+void HealPoison()
+void RemoveObject()
+void KillObject()
+void SetRemoveOnUnloadLevel(int bSet)
+int  IsRemoveOnUnloadLevel()
+void SetIsDialogUnit(int nType, int nScriptUID, int nDialogUID)
+void SetIsDialogUnit(int nType, int nScriptUID, int nDialogUID, int nStartRangeA)
+void ResetIsDialogUnit()
+int  IsDialogUnit()
+int  GetDialogUnitStartDialogRangeA()
+void InitTrap()
+void InitTrap(unit uByUnit, int nAddDamage, int nAddTicks)
+int  GetTrapAddDamage()
+int  GetTrapAddTicks()
+void SetGateOpen(int bOpen)
+void SetGateOpen(int bOpen, int bImmediate)
+void SetGateOpen(int bOpen, int bImmediate, int bAutoCloseGate)
+int  IsGateOpen()
+int  IsGateOpening()
+int  IsGateOpenNotClosing()
+int  IsGateClosed()
+int  IsGateClosing()
+void SetGateScriptOwnerUID(int nScriptUID)
+int  GetGateScriptOwnerUID()
+void PlayAnim(int nAnimFrameStart, int nAnimFrameEnd)
+void StartLoopedAnim(int nAnimFrameStart, int nAnimFrameEnd)
+void StopLoopedAnim()
+void SetAnimFrame(int nAnimFrame)
+void SetInterfaceFlagSetExperiencePoints(int bSet)
+void SetInterfaceFlagSetInventory(int bSet)
+void SetInterfaceFlagSetMagic(int bSet)
+void StartRollingStone()
+int  AddObjectToShop(string strObjectID)
+int  IsObjectInShop(string strObjectID)
+void RemoveObjectFromShop(string strObjectID)
+void RemoveObjectFromShop(int nItemIndex)
+void RemoveAllObjectsFromShop()
+int  GetObjectInShopCount(string strObjectID)
+int  GetObjectsInShopCount()
+string GetShopObjectID(int nItemIndex)
+EquipmentValues GetShopEquipmentValues(int nItemIndex)
+void EnableShop(int bEnable)
+int  IsShopEnabled()
+void SetShopBuyPriceTypePercent(int nPriceType, int nPercent)
+int  GetShopBuyPriceTypePercent(int nPriceType)
+void SetShopSellPriceTypePercent(int nPriceType, int nPercent)
+int  GetShopSellPriceTypePercent(int nPriceType)
+void SetShopScriptOwnerUID(int nScriptUID)
+void SetCustomObjectParticleNum(int nNum)
+int  GetCustomObjectParticleNum()
+void AddMagicCard(string strMagicCardID, int nMagicSlotNum)
+void AddMagicCard(string strMagicCardID, int nMagicSlotNum, int nLevel, int nClass, int nMeshNum)
+void RemoveMagicCards(int nMagicSlotNum)
+void RemoveMagicCards(int nMagicSlotNum, int bNormal, int bPowerUp)
+void SetAttribute(int nKey, int nValue)
+void SetAttribute(string strKey, int nValue)
+void SetAttribute(int nKey, string strValue)
+void SetAttribute(string pszKey, string strValue)
+void ResetAttribute(int nKey)
+void ResetAttribute(string strKey)
+void ResetAttributes()
+int  GetAttribute(int nKey, int& pValue)
+int  GetAttribute(string strKey, int& pValue)
+int  GetAttribute(int nKey, string& pszValue)
+int  GetAttribute(string strKey, string& pszValue)
+void SetPlayersCommonAttribute(int nKey, int nValue)
+void SetPlayersCommonAttribute(string strKey, int nValue)
+void SetPlayersCommonAttribute(int nKey, string strValue)
+void SetPlayersCommonAttribute(string pszKey, string strValue)
+void ResetPlayersCommonAttribute(int nKey)
+void ResetPlayersCommonAttribute(string strKey)
+void ResetPlayersCommonAttributes()
+int  GetPlayersCommonAttribute(int nKey, int& pValue)
+int  GetPlayersCommonAttribute(string strKey, int& pValue)
+int  GetPlayersCommonAttribute(int nKey, string& pszValue)
+int  GetPlayersCommonAttribute(string strKey, string& pszValue)
+void SetConnectionTeleportDestination(unit uTeleport)
+void SetConnectionTeleportDestination(mission pMission, int nX, int nY, int nZ, int nAlpha)
+int  HaveConnectionTeleportDestination()
+void ActivateTeleport(int bActivateSource, int bActivateTarget, int nQuestsMapIconNum, int nMapIconNum, string strTooltipDescription)
+void ActivateTeleport(int bActivateSource, int bActivateTarget, int nQuestsMapIconNum, int nMapIconNum, string strTooltipDescription, int nMapMinVisibleZoomPercent, int nMapMaxVisibleZoomPercent)
+int  IsTeleportActiveSource()
+int  IsTeleportActiveTarget()
+void EnableTeleport(int bEnable)
+int  IsTeleportEnabled()
+void LoadScript(string strScript)
+int  GetHeroPlayerNum()
+void MountOnHorse(unit uHorse)
+int  IsObjectInHouse()
+int  IsObjectInHouse(unit uHouse)
+unit GetHouseWithObject()
+unit GetMainHouse()
+unit GetMainHouse(int bReturnThis)
+int  GetHouseExternalDoorsCount()
+unit GetHouseExternalDoor(int nIndex)
+int  GetHouseInternalDoorsCount()
+unit GetHouseInternalDoor(int nIndex)
+int  GetCustomFlags()
+int  GetObjectMarkerNum()
+void TurnParticlePassive(int bTurnOn)
+int  IsTurnParticlePassive()
+string GetObjectCreateString()
+void SetContainerScriptOwnerUID(int nScriptUID)
+int  GetContainerScriptOwnerUID()
+int  AddObjectToContainer(string strObjectID)
+int  IsObjectInContainer(string strObjectID)
+int  GetObjectInContainerCount(string strObjectID)
+int  GetObjectsInContainerCount()
+void RemoveObjectFromContainer(string strObjectID)
+void RemoveAllObjectsFromContainer()
+void SetDeadBodyScriptOwnerUID(int nScriptUID)
+int  AddObjectsFromParamsToDeadBody()
+int  AddObjectsFromParamsToDeadBody(int nMaxCnt)
+int  AddObjectToDeadBody(string strObjectID)
+int  IsObjectInDeadBody(string strObjectID)
+int  GetObjectInDeadBodyCount(string strObjectID)
+int  GetObjectsInDeadBodyCount()
+void RemoveObjectFromDeadBody(string strObjectID)
+void RemoveAllObjectsFromDeadBody()
+void SetUnitContainerScriptOwnerUID(int nScriptUID)
+int  AddObjectToUnitContainer(string strObjectID)
+int  IsObjectInUnitContainer(string strObjectID)
+int  GetObjectInUnitContainerCount(string strObjectID)
+int  GetObjectsInUnitContainerCount()
+void RemoveObjectFromUnitContainer(string strObjectID)
+void RemoveAllObjectsFromUnitContainer()
+int  GetLockLevel()
+int  GetLockFlags()
+int  WasObjectOpen()
+int  WasObjectOpen(unit uByHero)
+int  GetAlchemyItemCount(int nSlotIndex)
+int  GetAlchemyItem(int nSlotIndex, string& pszObjectID, EquipmentValues pEquipmentValues, object pChangedParams, int& pCount)
+void CreateAlchemyResult(string pszObjectID, int nCount, int bCreateChangedParams, string strCopyFromObjectID, EquipmentValues pCopyFromEquipmentValues, object pCopyFromChangedParams)
+void SetAlchemyItemResult(int nSlotIndex, int nRemoveCount, int bAddToFormula, int nFormulaCnt, int nCookingEffectNum)
+void SetAlchemyResultFormulaName(string strName)
+int  HaveMeshSlot(int nSlotNum)
+int  GetMeshSlotPosition(int nSlotNum, int& pX, int& pY, int& pZ, int& pAlpha)
+void SetNPCNameNum(int nNum)
+int  GetNPCNameNum()
+void SetNotRenderObjectNow(int bSet)
+int  GetMoney()
+void SetMoney(int nMoney)
+int  GetHeroFlags()
+int  GetHeroInitSkillPoints(int nSkill)
+int  IsHeroTypeRPG()
+int  IsHeroTypePVP()
+int  GetHeroNetworkRankPoints()
+void AddHeroNetworkRankPoints(int nPoints)
+void AddHeroNetworkGameModePoints(int nType, int nPoints)
+int  GetHeroNetworkGuildRankPoints()
+void AddHeroNetworkGuildRankPoints(int nPoints)
+int  GetHeroNetworkGuildNum()
+void SetHeroNetworkTeamNum(int nTeamNum)
+int  GetHeroNetworkTeamNum()
+void SetHeroNetworkColor(int nColor)
+void PlayHeroTalk(int nTalkNum)
+void SetDynamicHoldObject(unit uTarget, int bHoldAlpha, int bHoldZ)
+void SetStoneWallTicks(unit uTarget, int nTicks)
+void SetUnitMapSignNum(int nNum)
+int  IsNoRouteTarget(int nX, int nY, int nZ, int bNotIfMovingToTarget)
+int  GetLastAttackEnemyTick()
+int  GetTicksSinceLastAttackEnemy()
+void SetGateLockForUnits(int bSet)
+void SetGateUnlockParamsForUnits(int bSet)
+int  IsUnitInsideExternalDoorGate(unit uUnit)
+void SetBlockHeroAttackCommands(int bSet)
+int  IsInTheSameParty(unit uTarget)
+void SetSummonedUnitOwner(unit uOwner)
+unit GetSummonedUnitOwner()
+void CalcMoveToNearUnitPos(unit uTarget, int nDist, int& pX, int& pY)
+int  IsMovingAndSettingArmedMode()
+unit GetLastHorse()
+void SetFreezeTicks(int nTicks, int bStopByHit)
+void SetStopMovingTicks(int nTicks, int bStopByHit)
+int  IsPseudoFlyableUnit()
+int  GetCurrMaxShootChance()
+<unit_functions_public_end>
+private:
+void SetStateDelay(int nDelay)
+int  GetStateDelay()
+void SetState(int nState)
+void SetState(int nState, int nDelay)
+void SetTimer(int nTimerTicks)
+void EndCommand(int bResult)
+void CallMoveToPoint(int nX, int nY, int nZ)
+void CallMoveToPoint(int nX, int nY, int nZ, int nAlpha)
+void CallMoveOneStep(int nStepDirection, int nAlpha)
+void CallMoveStepInDirection(int nAlpha)
+void CallMoveHorseInDirection(int nAlpha)
+void CallStopCurrentAction()
+void StopCurrentActionImmediate()
+void CallTurnToAngle(int nAngle)
+void CallStartJumping()
+void CallFlyableLand()
+void CallFlyableLand(int nAlpha)
+void CallFlyableSetHeight(int nZ)
+void CallFlyableSetHeight(int nZ, int nAngle)
+void CallFlyableRaise()
+void CallFlyableFlyToPoint(int nX, int nY, int nZ)
+void CallFlyableFlyToPoint(int nX, int nY, int nZ, int nAngle)
+void CallAttackTarget(unit uTarget, int bBySkillKnifeDeathStrike)
+void CallMakeStrikeAttack(unit uTarget, int nCameraAngle)
+void CallMakeShootAttackManualPrepare()
+void CallMakeShootAttackManualFire(unit uTarget)
+int  IsTargetInAttackRange(unit uTarget, int bBySkillKnifeDeathStrike)
+int  FindFreePointForTargetDirectFight(unit uTarget, int& pX, int& pY, int& pZ)
+int  FindFreePointForTargetStealing(unit uTarget, int& pX, int& pY, int& pZ)
+void SetAttackTarget(unit uTarget)
+void OnBeginAttackTarget(unit uTarget, int bByMagic)
+void StepTurnNoAnimToAttackTarget(unit uTarget)
+void CallSetArmedMode(int bArmed)
+void CallMoveAndSetToArmedMode(int nX, int nY, int nZ)
+void CallContinueMovingAndSetToArmedMode(int bArmed)
+void SetMoveStepInDirectionAfterCommand(int bAllow, int nAlphaAngle)
+void TurnToCamera(int nAlpha, int nBeta)
+int  CallMakeMagic(int nMagicSlotNum)
+int  CallMakeMagic(unit uTarget, int nTargetPosX, int nTargetPosY, int nMagicSlotNum, int nShootAlpha, int nShootBeta)
+void SetCurrTrap(int nTrapID, int nTrapItemNumber)
+int  FindPlaceToSetTrap(int nX, int nY, int nZ, int& pX, int& pY, int& pZ)
+int  IsInGoodPlaceToSetTrap(int nX, int nY, int nZ)
+void CallSetTrap(int nX, int nY, int nZ)
+void CallSetTrapAhead()
+int  IsSettingTrap()
+int  CanSetSneakMode()
+void CallSetSneakMode(int bSet)
+int  StartGateClickEvent(unit uTarget, int bFirstCall)
+int  GetPlaceToMountOnHorse(unit uTarget, int& pX, int& pY, int& pZ, int& pAlpha)
+int  IsInGoodPlaceToMountOnHorse(unit uTarget)
+void CallMountOnHorse(unit uTarget)
+int  IsMountingOnHorse()
+void CallUnmountFromHorse()
+int  IsUnmountingFromHorse()
+int  IsInGoodPlaceToUnmountFromHorse()
+void CallCallHorse()
+int  IsCallingHorse()
+int  IsTargetInSkillStealingRange(unit uTarget)
+void CallMakeSkillStealing(unit uTarget)
+int  IsMakingSkillStealing()
+void SetCurrCustomWorkParams(int nWorkAnimNum, int nLoopsCnt, int nWorkSubObjectID)
+void SetCurrCustomWorkParams(int nWorkAnimNum, int nLoopsCnt, string strWorkSubObjectID)
+void CallMakeCustomWork()
+int  NeedTurnToGateOrContainerObject(unit uTarget, int nX, int nY)
+void CallTurnToGateOrContainerObject(unit uTarget, int nX, int nY)
+int  IsTurningToGateOrContainerObject()
+int  CanOpenGate(unit uGate, int bCheckCanStart)
+void CallMakeShootAttackAutoPrepare(unit uTarget)
+void CallMakeShootAttackAutoFire()
+void CallPrepareManualTargetMagic(int nMagicSlotNum)
+<unit_functions_private_end>
+<unit_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<unit_commands_begin>
+int  Initialize()
+int  Uninitialize()
+int  Stop()
+int  Move(int, int, int)
+int  MoveXYZA(int, int, int, int)
+int  Turn(int)
+int  HeroPos()
+int  MoveOneStepForward(int)
+int  MoveOneStepBack(int)
+int  MoveOneStepLeft(int)
+int  MoveOneStepRight(int)
+int  MoveStepInDirection(int)
+int  StopMovingStep()
+int  StartJump()
+int  MoveHorseSpeedUp(int)
+int  MoveHorseStopSpeedUp()
+int  MoveHorseSlowDown(int)
+int  MoveHorseStopSlowDown()
+int  MoveHorseMoveBack(int)
+int  MoveHorseStopMoveBack()
+int  MoveHorseQuickStop()
+int  MoveHorseTurnLeft(int)
+int  MoveHorseTurnRight(int)
+int  MoveHorseStopTurn()
+int  Attack(unit)
+int  StrikeAttack(unit, int)
+int  ShootAttackManualPrepare()
+int  ShootAttackManualFire(unit, int, int, int)
+int  TurnToCamera(int, int, int)
+int  MoveAttack(int, int, int)
+int  SetArmedMode(int)
+int  MountOnHorse(unit)
+int  UnmountFromHorse()
+int  CallHorse()
+int  PrepareBeforeDialogTalk(int)
+int  FinishAfterDialogTalk()
+int  PrepareBeforeDialogChat()
+int  FinishAfterDialogChat()
+int  StartDialogTalkAnim(int, int, int)
+int  StopDialogTalkAnim()
+int  PauseDialogTalkHeadAnim(int)
+int  ClickEventOnGate(unit)
+int  MakeCustomWork(int, int, int, int, int)
+int  MagicCardDirect(int)
+int  MagicCardObject(unit, int, int, int, int, int, int)
+int  SkillBerserk()
+int  SkillDefensiveFight()
+int  SkillDirtyTrick(unit, int)
+int  SkillStun(unit, int)
+int  SkillSwordBrake(unit, int)
+int  SkillDismountFromHorse(unit, int)
+int  SkillPullShield(unit, int)
+int  SkillKnifeDeathStrike(unit, int)
+int  SkillDeadlyPiruet(unit, int)
+int  SkillBurn(unit, int)
+int  SkillShieldTrick(unit, int)
+int  SkillDisarmingArrow()
+int  SkillMultiArrows()
+int  SkillPiercing()
+int  SkillArrowOfDust()
+int  SkillSneak(int)
+int  SkillStealing(unit)
+int  SkillSetTrap(int, int, int, int, int)
+int  SkillStunSecondHand(unit, int)
+int  SkillPullShieldSecondHand(unit, int)
+int  UseObjectFromInventory(int, int, int, int, int)
+int  UsePrevWeapon()
+int  UseNextWeapon()
+int  UseRegenerateHPPotion()
+int  UseRegenerateManaPotion()
+int  JoinInventoryObjects(int, int, int)
+int  SetInventoryObjectPos(int, int, int)
+int  MoveSubObjectToInventory(int, int, int, int)
+int  MoveSubObjectFromSlotToSlot(int, int, int)
+int  MoveMagicFromSlotToInventory(int, int, int)
+int  MoveMagicFromSlotToSlot(int, int, int, int)
+int  MoveInventoryToAlchemyItem(int, int, int, int, int)
+int  MoveAlchemyItemToInventory(int, int, int, int, int)
+int  MoveAlchemyItemFromSlotToSlot(int, int, int, int, int)
+int  MakeAlchemy()
+int  AddAlchemyResultFormula(int, string)
+int  SetAlchemyFormulaName(int, string)
+int  DeleteAlchemyFormula(int)
+int  LoadAlchemyFormula(int)
+int  UnloadAlchemyFormula(int)
+int  MoveAlchemyFormulaUp(int)
+int  MoveAlchemyFormulaDown(int)
+int  AutoArrangeInventory()
+int  DropSubObject(int)
+int  DropMoney(int)
+int  DropInventory(int, int)
+int  DropMagicFromSlot(int, int, int)
+int  DropAlchemyItem(int, int, int)
+int  PickUpObject(unit)
+int  UnablePickUpObject(unit)
+int  SwitchObject(unit)
+int  TalkWithDialogUnit(unit)
+int  OpenContainerObject(unit, int, int, int)
+int  GetObjectFromContainer(unit, int, int, int, int, int)
+int  GetAllFromContainer(unit)
+int  PutObjectToContainer(unit, int, int, int, int, int)
+int  OpenTeleport(unit)
+int  TeleportToActiveTargetTeleport(unit)
+int  SetPoint(int, int, int)
+int  SetSkill(int, int, int)
+int  PutObjectToTradeContainer(int, int, int, int, int)
+int  GetObjectFromTradeContainer(int, int, int, int, int)
+int  GetAllFromTradeContainer()
+int  DecideAboutTrade(int)
+int  PlayerLeftTrade()
+int  ShootAttackAutoPrepare(unit)
+int  ShootAttackAutoFire()
+int  UseMagicCardOnSlot(int, int, int, int, int)
+int  PrepareManualTargetMagic(int)
+int  StopCurrentAction()
+int  Reserved5()
+int  Reserved6()
+int  Reserved7()
+int  Reserved8()
+int  Reserved9()
+int  UserNoParam0()
+int  UserNoParam1()
+int  UserNoParam2()
+int  UserNoParam3()
+int  UserNoParam4()
+int  UserNoParam5()
+int  UserNoParam6()
+int  UserNoParam7()
+int  UserNoParam8()
+int  UserNoParam9()
+int  UserOneParam0(int)
+int  UserOneParam1(int)
+int  UserOneParam2(int)
+int  UserOneParam3(int)
+int  UserOneParam4(int)
+int  UserOneParam5(int)
+int  UserOneParam6(int)
+int  UserOneParam7(int)
+int  UserOneParam8(int)
+int  UserOneParam9(int)
+int  UserObject0(unit)
+int  UserObject1(unit)
+int  UserObject2(unit)
+int  UserObject3(unit)
+int  UserObject4(unit)
+int  UserObject5(unit)
+int  UserObject6(unit)
+int  UserObject7(unit)
+int  UserObject8(unit)
+int  UserObject9(unit)
+int  UserPoint0(int, int, int)
+int  UserPoint1(int, int, int)
+int  UserPoint2(int, int, int)
+int  UserPoint3(int, int, int)
+int  UserPoint4(int, int, int)
+int  UserPoint5(int, int, int)
+int  UserPoint6(int, int, int)
+int  UserPoint7(int, int, int)
+int  UserPoint8(int, int, int)
+int  UserPoint9(int, int, int)
+int  CommandXXX()
+<unit_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<unit_events_begin>
+int  Timer()
+int  GetCommandState(int)
+int  OnHit(unit)
+int  OnStartKilledObjectAnim()
+int  OnAttackByOtherUnit(unit)
+int  OnStartDirectFightActionByEnemy(unit)
+int  OnLoadLevel(mission)
+int  OnUnloadLevel(mission)
+int  AlarmEnemy(unit)
+<unit_events_end>
+</pre>
+<a name="hero">
+<hr>
+<hero>
+<big><strong>hero</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<hero_functions_begin>
+public:
+hero GetThis()
+void UseMagicCardOnSlot(int dwMagicID, int nCount, int nMagicSlotNum)
+<hero_functions_public_end>
+private:
+void MoveSubObjectToInventory(int nSlotNum, int nPosX, int nPosY, int nToItemNumber)
+void MoveSubObjectFromSlotToSlot(int nSlotNum, int nToSlotNum, int bSlotParam)
+void MoveMagicFromSlotToInventory(int nMagicSlotNum, int bPowerUp, int nItemNumber)
+void MoveMagicFromSlotToSlot(int nMagicSlotNum, int nToMagicSlotNum, int bPowerUp, int nItemNumber)
+void UseObjectFromInventory(int nItemNumber, int nToSlotNum, int bSlotParam, int nItemID, int bShowUseEffect)
+void UsePrevWeapon()
+void UseNextWeapon()
+void UseRegenerateHPPotion()
+void UseRegenerateManaPotion()
+void JoinInventoryObjects(int nFromItemNumber, int nToItemNumber)
+void SetInventoryObjectPos(int nItemNumber, int nPosX, int nPosY)
+void AutoArrangeInventory()
+void DropSubObject(int nSlotNum)
+void DropMoney(int nMoney)
+void DropInventory(int nItemNumber, int nItemID)
+void DropMagicFromSlot(int nMagicSlotNum, int bPowerUp, int nItemNumber)
+void DropAlchemyItem(int nSlotIndex)
+void MoveInventoryToAlchemyItem(int nItemNumber, int nToSlotIndex, int nItemID)
+void MoveAlchemyItemToInventory(int nSlotIndex, int nPosX, int nPosY, int nToItemNumber)
+void MoveAlchemyItemFromSlotToSlot(int nSlotIndex, int nToSlotIndex)
+void MakeAlchemy()
+void AddAlchemyResultFormula(string strFormulaName)
+void SetAlchemyFormulaName(int nFormulaNumber, string strFormulaName)
+void DeleteAlchemyFormula(int nFormulaNumber)
+void LoadAlchemyFormula(int nFormulaNumber)
+void UnloadAlchemyFormula(int nFormulaNumber)
+void MoveAlchemyFormulaUp(int nFormulaNumber)
+void MoveAlchemyFormulaDown(int nFormulaNumber)
+void PickUpObject(unit uTarget)
+int  IsObjectInPickUpRange(unit uTarget)
+int  CanPickUpObject(unit uTarget)
+void SwitchObject(unit uTarget)
+int  IsObjectInSwitchRange(unit uTarget)
+int  CanSwitchObject(unit uTarget)
+void SetPoint(int nPointIndex, int bIncrease, int nMinPoint)
+void SetSkill(int nSkillIndex, int bIncrease, int nMinSkill)
+int  IsDialogUnitInTalkRange(unit uDialogUnit)
+void StartTalkWithDialogUnit(unit uDialogUnit)
+int  IsOpenContainerObjectType(unit uContainerObject, int bCheckCanStart)
+int  IsContainerObjectInOpenRange(unit uShopUnit)
+int  StartOpenContainerObject(unit uContainerObject, int bFirstCall)
+void GetObjectFromContainer(unit uContainer, int nItemNumber, int nPosXY, int nToItemNumber, int bToSlot, int nItemID)
+void GetAllFromContainer(unit uContainer)
+void PutObjectToContainer(unit uContainer, int nItemNumber, int nFromSlotIndex, int nFromMagicSlot, int bFromSlot, int nItemID)
+void OpenTeleport(unit uSourceTeleport)
+void TeleportToActiveTargetTeleport(unit uTargetTeleport)
+void PutObjectToTradeContainer(int nItemNumber, int nFromSlotIndex, int nFromMagicSlot, int bFromSlot, int nItemID)
+void GetObjectFromTradeContainer(int nItemNumber, int nPosXY, int nToItemNumber, int bToSlot, int nItemID)
+void GetAllFromTradeContainer()
+void DecideAboutTrade(int bAgree)
+void PlayerLeftTrade()
+<hero_functions_private_end>
+<hero_functions_end>
+</pre>
+<a name="EquipmentParams">
+<hr>
+<EquipmentParams>
+<big><strong>EquipmentParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<EquipmentParams_functions_begin>
+public:
+int  GetType()
+int  GetSlotNumMask()
+int  GetUnitEquipmentMask()
+int  GetEquipmentFlags()
+int  GetInventoryWeight()
+int  GetRequiredStrength()
+int  GetRequiredDexterity()
+int  GetRequiredMagic()
+int  GetPhysicalArmour(int)
+int  GetParry()
+<EquipmentParams_functions_public_end>
+<EquipmentParams_functions_end>
+</pre>
+<a name="EquipmentValues">
+<hr>
+<EquipmentValues>
+<big><strong>EquipmentValues</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<EquipmentValues_functions_begin>
+public:
+void Copy(EquipmentValues)
+int  GetLevel()
+void SetLevel(int)
+int  GetClass()
+void SetClass(int)
+int  GetPrice()
+void SetPrice(int)
+int  GetMultiplied()
+void SetMultiplied(int)
+int  GetMultiplied2()
+void SetMultiplied2(int)
+int  GetMeshNum()
+void SetMeshNum(int)
+int  GetMeshColor(int)
+void SetMeshColor(int, int)
+int  GetRequiredLevel()
+void SetRequiredLevel(int)
+int  GetPhysicalArmour()
+void SetPhysicalArmour(int)
+int  GetParry()
+void SetParry(int)
+int  GetAddPoint(int)
+void SetAddPoint(int, int)
+int  GetAddParam(int)
+void SetAddParam(int, int)
+int  GetAddProtect(int)
+void SetAddProtect(int, int)
+int  GetAddSkill(int)
+void SetAddSkill(int, int)
+int  GetWeaponVarMin()
+void SetWeaponVarMin(int)
+int  GetWeaponVarMax()
+void SetWeaponVarMax(int)
+int  GetWeaponExtraDamagePercent()
+void SetWeaponExtraDamagePercent(int)
+int  GetWeaponExtraDamageType()
+void SetWeaponExtraDamageType(int)
+int  GetForceFieldType()
+void SetForceFieldType(int)
+int  GetWeaponExtraExplosionType()
+void SetWeaponExtraExplosionType(int)
+int  GetWeaponTrailNormalColor()
+void SetWeaponTrailNormalColor(int)
+int  GetWeaponTrailHitColor()
+void SetWeaponTrailHitColor(int)
+int  GetCurrMana()
+void SetCurrMana(int)
+<EquipmentValues_functions_public_end>
+<EquipmentValues_functions_end>
+</pre>
+<a name="WeaponParams">
+<hr>
+<WeaponParams>
+<big><strong>WeaponParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<WeaponParams_functions_begin>
+public:
+int  GetMinDamage(int)
+int  GetMaxDamage(int)
+int  GetTargetTypeModifier(int)
+int  GetTargetTypeModifierMulFromHorse()
+int  GetPriceModifier()
+int  GetWeaponType()
+int  GetWeaponFlags()
+int  GetFightRangeA()
+int  GetMinRangeA()
+int  GetMaxRangeA()
+int  GetShootChanceValue()
+<WeaponParams_functions_public_end>
+<WeaponParams_functions_end>
+</pre>
+<a name="MagicClubParams">
+<hr>
+<MagicClubParams>
+<big><strong>MagicClubParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<MagicClubParams_functions_begin>
+public:
+int  GetMagicSchool()
+int  GetRequiredMagicSchoolSkill()
+int  GetAddMagicSchoolSkill(int)
+int  GetMaxMana()
+int  GetManaFullRegenerationTicks()
+<MagicClubParams_functions_public_end>
+<MagicClubParams_functions_end>
+</pre>
+<a name="MagicCardParams">
+<hr>
+<MagicCardParams>
+<big><strong>MagicCardParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<MagicCardParams_functions_begin>
+public:
+int  GetMagicType()
+int  GetCommandType()
+int  GetMagicSchool()
+int  GetRequiredMagicSchoolSkill()
+int  GetMagicFlags()
+int  GetUsedMana()
+int  GetCastRangeA()
+int  GetPowerUpType()
+int  GetPowerUpValue()
+int  GetTargetTypeModifier(int)
+int  GetTargetTypeModifierMulFromHorse()
+int  GetSummonTicks()
+<MagicCardParams_functions_public_end>
+<MagicCardParams_functions_end>
+</pre>
+<a name="MissileParams">
+<hr>
+<MissileParams>
+<big><strong>MissileParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<MissileParams_functions_begin>
+public:
+int  GetMinDamage(int)
+int  GetMaxDamage(int)
+int  GetMissileType()
+int  GetMissileFlags()
+int  GetQuiverMissileMask()
+int  GetDamageRangeA()
+int  GetDamageAngle()
+int  GetFireRingSizeA()
+int  GetSpeed()
+int  GetMissileTicks()
+int  GetMissileHitTicks()
+int  GetRangeHitSpeedA()
+int  GetTargetForcefieldType()
+int  GetTargetForcefieldAmount()
+int  GetTargetForcefieldTicks()
+int  GetRagDollForcePercent()
+int  GetCustomParam1()
+int  GetCustomParam2()
+<MissileParams_functions_public_end>
+<MissileParams_functions_end>
+</pre>
+<a name="MissileParamsSet">
+<hr>
+<MissileParamsSet>
+<big><strong>MissileParamsSet</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<MissileParamsSet_functions_begin>
+public:
+void Copy(MissileParams)
+void Copy(MissileParamsSet)
+void SetMinDamage(int, int)
+void SetMaxDamage(int, int)
+void SetMissileType(int)
+void SetMissileFlags(int)
+void SetQuiverMissileMask(int)
+void SetDamageRangeA(int)
+void SetDamageAngle(int)
+void SetFireRingSizeA(int)
+void SetSpeed(int)
+void SetMissileTicks(int)
+void SetMissileHitTicks(int)
+void SetRangeHitSpeedA(int)
+void SetTargetForcefieldType(int)
+void SetTargetForcefieldAmount(int)
+void SetTargetForcefieldTicks(int)
+void SetRagDollForcePercent(int)
+void SetCustomParam1(int)
+void SetCustomParam2(int)
+<MissileParamsSet_functions_public_end>
+<MissileParamsSet_functions_end>
+</pre>
+<a name="MissileValues">
+<hr>
+<MissileValues>
+<big><strong>MissileValues</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<MissileValues_functions_begin>
+public:
+void Copy(MissileValues)
+int  GetDamage(int)
+void SetDamage(int, int)
+int  GetTargetTypeModifier(int)
+void SetTargetTypeModifier(int, int)
+int  GetDamageRangeA()
+void SetDamageRangeA(int)
+int  GetMissileTicks()
+void SetMissileTicks(int)
+int  GetArmourKnowledge()
+void SetArmourKnowledge(int)
+int  GetMissShoot()
+void SetMissShoot(int)
+int  GetDisarmingArrow()
+void SetDisarmingArrow(int)
+int  GetPiercingPercent()
+void SetPiercingPercent(int)
+int  GetArrowOfDust()
+void SetArrowOfDust(int)
+int  GetMakeMagicGenericOnTarget()
+void SetMakeMagicGenericOnTarget(int)
+int  GetLightingStormMaxHitCnt()
+void SetLightingStormMaxHitCnt(int)
+int  GetTargetForcefieldType()
+void SetTargetForcefieldType(int)
+int  GetTargetForcefieldAmount()
+void SetTargetForcefieldAmount(int)
+int  GetTargetForcefieldTicks()
+void SetTargetForcefieldTicks(int)
+int  GetExtraExplosionType()
+void SetExtraExplosionType(int)
+int  GetHitInfoColor()
+void SetHitInfoColor(int)
+<MissileValues_functions_public_end>
+<MissileValues_functions_end>
+</pre>
+<a name="UnitParams">
+<hr>
+<UnitParams>
+<big><strong>UnitParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<UnitParams_functions_begin>
+public:
+int  GetMaxHP()
+int  GetUnitEquipmentMask()
+int  GetAvailablePassiveSkillsMask()
+int  GetAvailableActiveSkillsMask()
+int  GetTargetTypeModifier()
+int  GetInitParam(int)
+int  GetInitProtect(int)
+int  GetPhysicalProtectModifier(int)
+int  GetMakeMagicDelayTicks()
+int  GetAutoCastMagicProbability()
+int  GetStrikeDelayTicks()
+int  GetBreakStrikeChancePercent()
+int  GetBreakOtherChancePercent()
+int  GetBlockedActiveSkillsMask()
+<UnitParams_functions_public_end>
+<UnitParams_functions_end>
+</pre>
+<a name="UnitValues">
+<hr>
+<UnitValues>
+<big><strong>UnitValues</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<UnitValues_functions_begin>
+public:
+void Copy(UnitValues)
+int  GetLevel()
+void SetLevel(int)
+int  GetExperiencePoints()
+void SetExperiencePoints(int)
+int  GetParamPoints()
+void SetParamPoints(int)
+int  GetSkillPoints()
+void SetSkillPoints(int)
+int  GetBasicPoint(int)
+void SetBasicPoint(int, int)
+int  GetPoint(int)
+void SetPoint(int, int)
+int  GetBasicParam(int)
+void SetBasicParam(int, int)
+int  GetParam(int)
+void SetParam(int, int)
+int  GetBasicProtect(int)
+void SetBasicProtect(int, int)
+int  GetProtect(int)
+void SetProtect(int, int)
+int  GetBasicSkill(int)
+void SetBasicSkill(int, int)
+int  GetSkill(int)
+void SetSkill(int, int)
+int  GetLockedPassiveSkills()
+void SetLockedPassiveSkills(int)
+int  GetLockedActiveSkills()
+void SetLockedActiveSkills(int)
+int  GetMaxInventoryWeight()
+void SetMaxInventoryWeight(int)
+int  GetCurrHP()
+void SetCurrHP(int)
+int  GetCurrMana()
+void SetCurrMana(int)
+int  GetStrikeDelayTicks()
+void SetStrikeDelayTicks(int)
+int  GetCurrStrikeDelay()
+void SetCurrStrikeDelay(int)
+int  GetSkillChanceMaxValue()
+void SetSkillChanceMaxValue(int)
+int  GetSkillChanceValue()
+void SetSkillChanceValue(int)
+int  GetSkillChanceUnloadValue()
+void SetSkillChanceUnloadValue(int)
+int  GetSkillChanceUnloadTicks()
+void SetSkillChanceUnloadTicks(int)
+int  GetSkillChanceUnloadTick()
+void SetSkillChanceUnloadTick(int)
+<UnitValues_functions_public_end>
+<UnitValues_functions_end>
+</pre>
+<a name="SpecialArtefactParams">
+<hr>
+<SpecialArtefactParams>
+<big><strong>SpecialArtefactParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<SpecialArtefactParams_functions_begin>
+public:
+int  GetInventoryWeight()
+int  GetInventorySizeX()
+int  GetInventorySizeY()
+int  GetMaxCountInOneInventoryPos()
+int  GetPrice()
+int  GetMeshColor()
+string GetPickupEffectID()
+int  GetCustomParam1()
+int  GetCustomParam2()
+int  GetSpecialArtefactType()
+int  GetMoney()
+int  GetJoinEquipmentType()
+int  GetJoinValueType()
+int  GetJoinAddValue()
+int  GetJoinEffectNum()
+int  GetLockLevel()
+int  GetLockFlags()
+<SpecialArtefactParams_functions_public_end>
+<SpecialArtefactParams_functions_end>
+</pre>
+<a name="SpecialArtefactParamsSet">
+<hr>
+<SpecialArtefactParamsSet>
+<big><strong>SpecialArtefactParamsSet</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<SpecialArtefactParamsSet_functions_begin>
+public:
+void Copy(SpecialArtefactParams)
+void Copy(SpecialArtefactParamsSet)
+void SetInventoryWeight(int)
+void SetInventorySizeX(int)
+void SetInventorySizeY(int)
+void SetMaxCountInOneInventoryPos(int)
+void SetPrice(int)
+void SetMeshColor(int)
+void SetPickupEffectID(string)
+void SetCustomParam1(int)
+void SetCustomParam2(int)
+void SetSpecialArtefactType(int)
+void SetMoney(int)
+void SetJoinEquipmentType(int)
+void SetJoinValueType(int)
+void SetJoinAddValue(int)
+void SetJoinEffectNum(int)
+void SetLockLevel(int)
+void SetLockFlags(int)
+<SpecialArtefactParamsSet_functions_public_end>
+<SpecialArtefactParamsSet_functions_end>
+</pre>
+<a name="CustomArtefactParams">
+<hr>
+<CustomArtefactParams>
+<big><strong>CustomArtefactParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<CustomArtefactParams_functions_begin>
+public:
+int  GetInventoryWeight()
+int  GetInventorySizeX()
+int  GetInventorySizeY()
+int  GetMaxCountInOneInventoryPos()
+int  GetPrice()
+int  GetMeshColor()
+string GetPickupEffectID()
+int  GetCustomParam1()
+int  GetCustomParam2()
+<CustomArtefactParams_functions_public_end>
+<CustomArtefactParams_functions_end>
+</pre>
+<a name="CustomArtefactParamsSet">
+<hr>
+<CustomArtefactParamsSet>
+<big><strong>CustomArtefactParamsSet</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<CustomArtefactParamsSet_functions_begin>
+public:
+void Copy(CustomArtefactParams)
+void Copy(CustomArtefactParamsSet)
+void SetInventoryWeight(int)
+void SetInventorySizeX(int)
+void SetInventorySizeY(int)
+void SetMaxCountInOneInventoryPos(int)
+void SetPrice(int)
+void SetMeshColor(int)
+void SetPickupEffectID(string)
+void SetCustomParam1(int)
+void SetCustomParam2(int)
+<CustomArtefactParamsSet_functions_public_end>
+<CustomArtefactParamsSet_functions_end>
+</pre>
+<a name="PotionArtefactParams">
+<hr>
+<PotionArtefactParams>
+<big><strong>PotionArtefactParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<PotionArtefactParams_functions_begin>
+public:
+int  GetInventoryWeight()
+int  GetInventorySizeX()
+int  GetInventorySizeY()
+int  GetMaxCountInOneInventoryPos()
+int  GetPrice()
+int  GetMeshColor()
+string GetPickupEffectID()
+int  GetCustomParam1()
+int  GetCustomParam2()
+int  GetPotionFlags()
+int  GetPotionTicks()
+int  GetRegenerateHP()
+int  GetRegenerateMana()
+int  GetAddPoint(int)
+int  GetAddParam(int)
+int  GetAddProtect(int)
+int  GetAddSkill(int)
+string GetUseEffectID()
+string GetTimedEffectID()
+string GetEndTimedEffectID()
+<PotionArtefactParams_functions_public_end>
+<PotionArtefactParams_functions_end>
+</pre>
+<a name="PotionArtefactParamsSet">
+<hr>
+<PotionArtefactParamsSet>
+<big><strong>PotionArtefactParamsSet</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<PotionArtefactParamsSet_functions_begin>
+public:
+void Copy(PotionArtefactParams)
+void Copy(PotionArtefactParamsSet)
+void SetInventoryWeight(int)
+void SetInventorySizeX(int)
+void SetInventorySizeY(int)
+void SetMaxCountInOneInventoryPos(int)
+void SetPrice(int)
+void SetMeshColor(int)
+void SetPickupEffectID(string)
+void SetCustomParam1(int)
+void SetCustomParam2(int)
+void SetPotionFlags(int)
+void SetPotionTicks(int)
+void SetRegenerateHP(int)
+void SetRegenerateMana(int)
+void SetAddPoint(int, int)
+void SetAddParam(int, int)
+void SetAddProtect(int, int)
+void SetAddSkill(int, int)
+void SetUseEffectID(string)
+void SetTimedEffectID(string)
+void SetEndTimedEffectID(string)
+<PotionArtefactParamsSet_functions_public_end>
+<PotionArtefactParamsSet_functions_end>
+</pre>
+<a name="PotionValues">
+<hr>
+<PotionValues>
+<big><strong>PotionValues</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<PotionValues_functions_begin>
+public:
+void Copy(PotionValues)
+int  GetPotionTicks()
+void SetPotionTicks(int)
+int  GetPotionFlags()
+void SetPotionFlags(int)
+int  GetAddPoint(int)
+void SetAddPoint(int, int)
+int  GetAddParam(int)
+void SetAddParam(int, int)
+int  GetAddProtect(int)
+void SetAddProtect(int, int)
+int  GetAddSkill(int)
+void SetAddSkill(int, int)
+int  GetHPRegenerationSpeedUpPercent()
+void SetHPRegenerationSpeedUpPercent(int)
+int  GetStrengthUpPercent()
+void SetStrengthUpPercent(int)
+int  GetManaAsHPPercent()
+void SetManaAsHPPercent(int)
+int  GetExtraHP()
+void SetExtraHP(int)
+int  GetReflectDamagePercent()
+void SetReflectDamagePercent(int)
+int  GetReflectDamageArmourPercent()
+void SetReflectDamageArmourPercent(int)
+int  GetDamage(int)
+void SetDamage(int, int)
+int  GetTargetTypeModifier(int)
+void SetTargetTypeModifier(int, int)
+int  GetDamageRangeA()
+void SetDamageRangeA(int)
+int  GetDamageTicks()
+void SetDamageTicks(int)
+int  GetDamagePartiesType()
+void SetDamagePartiesType(int)
+int  GetLeechHP()
+void SetLeechHP(int)
+int  GetLeechHPTargetTypeModifiersMask()
+void SetLeechHPTargetTypeModifiersMask(int)
+int  GetTrapTicks()
+void SetTrapTicks(int)
+int  GetWeaponsForceFieldType()
+void SetWeaponsForceFieldType(int)
+int  GetMagicEnhanceMissileDamageUpPercent()
+void SetMagicEnhanceMissileDamageUpPercent(int)
+int  GetMagicEnhanceManaUseUpPercent()
+void SetMagicEnhanceManaUseUpPercent(int)
+int  GetMagicEnhanceSummonAddLevels()
+void SetMagicEnhanceSummonAddLevels(int)
+int  GetMagicEnhanceSummonAddCount()
+void SetMagicEnhanceSummonAddCount(int)
+string GetCustomObjectID()
+void SetCustomObjectID(string)
+<PotionValues_functions_public_end>
+<PotionValues_functions_end>
+</pre>
+<a name="TrapParams">
+<hr>
+<TrapParams>
+<big><strong>TrapParams</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<TrapParams_functions_begin>
+public:
+int  GetInventoryWeight()
+int  GetInventorySizeX()
+int  GetInventorySizeY()
+int  GetMaxCountInOneInventoryPos()
+int  GetPrice()
+int  GetMeshColor()
+int  GetTypeFlags()
+int  GetTrapLevel()
+int  GetDamage()
+int  GetHoldTicks()
+string GetMissileID()
+string GetPickupEffectID()
+int  GetCustomParam1()
+int  GetCustomParam2()
+MissileParams GetMissileParams()
+<TrapParams_functions_public_end>
+<TrapParams_functions_end>
+</pre>
+<a name="TrapParamsSet">
+<hr>
+<TrapParamsSet>
+<big><strong>TrapParamsSet</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<TrapParamsSet_functions_begin>
+public:
+void Copy(TrapParams)
+void Copy(TrapParamsSet)
+void SetInventoryWeight(int)
+void SetInventorySizeX(int)
+void SetInventorySizeY(int)
+void SetMaxCountInOneInventoryPos(int)
+void SetPrice(int)
+void SetMeshColor(int)
+void SetTypeFlags(int)
+void SetTrapLevel(int)
+void SetDamage(int)
+void SetHoldTicks(int)
+void SetMissileID(string)
+void SetCustomParam1(int)
+void SetCustomParam2(int)
+MissileParamsSet GetMissileParams()
+<TrapParamsSet_functions_public_end>
+<TrapParamsSet_functions_end>
+</pre>
+<a name="RPGCompute">
+<hr>
+<RPGCompute>
+<big><strong>RPGCompute</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<RPGCompute_functions_begin>
+private:
+MissileValues GetEmptyMissileValues()
+PotionValues GetEmptyPotionValues()
+<RPGCompute_functions_private_end>
+<RPGCompute_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<RPGCompute_commands_begin>
+int  Initialize()
+int  InitEquipment(EquipmentValues, EquipmentParams, int, int, int)
+int  InitWeapon(EquipmentValues, WeaponParams, int, int, int)
+int  InitBrokenWeapon(EquipmentValues, WeaponParams, EquipmentValues, WeaponParams)
+int  InitMagicClub(EquipmentValues, MagicClubParams, int, int, int)
+int  InitBrokenMagicClub(EquipmentValues, MagicClubParams, EquipmentValues, MagicClubParams)
+int  InitMagicCard(EquipmentValues, MagicCardParams, int, int, int)
+int  InitUnit(unit, UnitParams, UnitValues, int)
+int  InitMissile(unit, MissileValues, MissileParams, EquipmentValues, WeaponParams, unit)
+int  InitMagicMissile(unit, int, MissileValues, MissileParams)
+int  InitOtherMissile(unit, int, MissileValues, MissileParams)
+int  GetMagicParamObjectNumber(unit, int, int)
+int  GetMagicCastRange(unit, int)
+int  GetMagicManaUse(unit, int)
+int  GetMagicSummonCount(unit, int)
+int  GetMagicMaxSummonCount(unit, int)
+int  GetMagicSummonLevels(unit, int, int&, int&, int&, int&, int&)
+int  FinishMagicSummonedUnit(unit, int, unit)
+int  InitMagicWeapons(unit, int, EquipmentValues, WeaponParams, EquipmentValues, WeaponParams, int&)
+int  CanMakeMagic(unit, int)
+int  CanMakeMagicMissileOnTarget(unit, int, unit)
+int  CanMakeMagicGenericOnUnit(unit, int, unit)
+int  GetMagicGenericOnUnitRange(unit, int, int&, int&, int&)
+int  MakeMagicGenericOnUnit(unit, int, unit)
+int  FinishMakingMagic(unit, int, unit)
+int  AddPermanentPotion(unit, PotionArtefactParams)
+int  UpdateChangedUnitValues(unit)
+int  CanStartDirectFightAction(unit, unit)
+int  GetDirectFightAction(unit, unit, int, int&)
+int  SelectDirectFightStrikeAnim(unit, unit, int)
+int  GetNextSequenceDirectFightAction(unit, unit, int, int, int)
+int  GetDirectFightActionOnStartActionByEnemy(unit, unit, int, int&, int&)
+int  OnEndDirectFightAction(unit, unit, int, int, int&)
+int  OnHitSuccess(unit, unit, int, int, int, int)
+int  GetHitFightAction(unit, unit, int, int, int&, int&)
+int  GetShootAction(unit, unit, int&, int&, int&, int&, int&, int&)
+int  CanUseTwoWeapons(unit)
+int  GetHPDamageOnTarget(MissileValues, unit, int, int&, int&)
+int  GetPoisonHPDamage(int&, int&)
+int  GetExperiencePointsForLevel(int)
+int  OnSetLevel(unit, int, int)
+int  CanIncreasePoint(unit, int)
+int  IncreasePoint(unit, int, int)
+int  CanIncreaseSkill(unit, int, int&)
+int  IncreaseSkill(unit, int, int)
+int  SetNextAttackSkill(unit, int, int)
+int  CanMakeActiveSkillOld(unit, int, int, unit, int&)
+int  MakeActiveSkill(unit, int, int, unit)
+int  GetSkillSetTrapValues(unit, int&, int&)
+int  GetSkillSneakValues(unit, int&, int&, int&)
+int  GetSkillDustEffectID(unit, int, string&)
+int  GetSkillHorseRidingValues(unit, int&, int&, int&, int&, int&)
+int  GetHitCollidedByHorseDamage(unit, unit, int&, int&)
+int  CanJoinInventoryEquipments(unit, EquipmentParams, EquipmentValues, EquipmentValues)
+int  JoinInventoryEquipments(unit, EquipmentParams, EquipmentValues, EquipmentValues, EquipmentValues)
+int  CanJoinInventoryWeapons(unit, WeaponParams, EquipmentValues, EquipmentValues)
+int  JoinInventoryWeapons(unit, WeaponParams, EquipmentValues, EquipmentValues, EquipmentValues)
+int  CanJoinInventoryEquipmentWithSpecialArtefact(unit, EquipmentParams, EquipmentValues, SpecialArtefactParams)
+int  JoinInventoryEquipmentWithSpecialArtefact(unit, EquipmentParams, EquipmentValues, SpecialArtefactParams)
+int  CanJoinInventoryWeaponWithSpecialArtefact(unit, WeaponParams, EquipmentValues, SpecialArtefactParams)
+int  JoinInventoryWeaponWithSpecialArtefact(unit, WeaponParams, EquipmentValues, SpecialArtefactParams)
+int  GetHeroShopPricePercents(unit, unit, int&, int&)
+int  DefaultEventOpenContainerObject(unit, unit, int, int, int&, int&, int&)
+int  DefaultEventCloseContainerObject(unit, unit, int, int)
+int  DefaultEventClickGateByUnit(unit, unit, int, int, int&, int&, int&)
+int  CanStartOpenLock(unit, unit, int&)
+int  CanUseInventoryItemInAlchemyOld(unit, string, EquipmentValues, object, int&)
+int  MakeAlchemyResult(unit, int)
+int  GetObjectInfoText(unit, int, int, UnitValues, string, EquipmentValues, object, stringW, int, stringW&)
+int  GetPointInfoTextOld(unit, int, stringW&)
+int  GetSkillInfoText(unit, int, stringW&)
+int  GetInventoryUnitInfoText(unit, stringW&, stringW&)
+int  GetInventoryUnitStatTextOld(unit, int, int&, int&, stringW&)
+int  GetReputationInfoText(unit, stringW&)
+int  GetHeroSelectionInfo(unit, unit, object, stringW, int&, int&, int&, int&, stringW&)
+int  GetHeroSelectionLockInfo(unit, unit, object, int&, int&)
+int  GetInventoryUnitStatText(unit, int, int&, int&, stringW&, stringW&)
+int  CanUseInventoryItemInAlchemy(unit, string, EquipmentValues, object, int&, int&)
+int  GetPointInfoText(unit, int, stringW&, stringW&)
+int  CanMakeActiveSkill(unit, int, int, unit, int&, int&)
+int  GetDisplayShootChanceValues(unit, int&, int&, int&)
+<RPGCompute_commands_end>
+</pre>
+<objects_end>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

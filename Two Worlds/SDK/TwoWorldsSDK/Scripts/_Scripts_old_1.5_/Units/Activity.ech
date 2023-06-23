@@ -1,0 +1,1983 @@
+#ifndef UNITS_ACTIVITY_ECH
+#define UNITS_ACTIVITY_ECH
+
+#include "..\\Common\\Enums.ech"
+#include "..\\Common\\UnitInfo.ech"
+
+state MakingCustomWork;
+
+state MovingToMarkerWork;
+state TurningDuringWork;
+state MovingToBed;
+state TurningBeforeSleep;
+state MovingToChair;
+state TurningBeforeSit;
+state MovingToQuestMarker;
+
+// attributes
+#define WORK_MARKER_ATTRIBUTE                    "PWM"
+#define WORK_MARKER_NUMBER_ATTRIBUTE             "PWMN"
+#define BED_NUMBER_ATTRIBUTE                     "PBN1"
+#define CHAIR_NUMBER_ATTRIBUTE                   "PCN"
+
+// male workers
+#define MARKER_PRAY                              "MARKER_PRAY"
+#define MARKER_WOODCUT                           "MARKER_WOODCUT"
+#define MARKER_BROOM                             "MARKER_BROOM"
+#define MARKER_KNEEL                             "MARKER_KNEEL"
+#define MARKER_PITCHFORK                         "MARKER_PICHFORK"
+#define MARKER_SCYTHE                            "MARKER_SCYTHE"
+#define MARKER_PINAXE                            "MARKER_PINAXE"
+#define MARKER_SITTING                           "MARKER_SITING"
+#define MARKER_LAY_DOWN                          "MARKER_LAY_DOWN"
+#define MARKER_READ                              "MARKER_DESK"
+// bandit workers
+#define MARKER_B_WOODCUT                         "MARKER_B_WOODCUT"
+#define MARKER_B_KNEEL                           "MARKER_B_KNEEL"
+#define MARKER_B_SITTING                         "MARKER_B_SITING"
+// female workers
+#define MARKER_F_DANCE                           "MARKER_F_DANCE"
+#define MARKER_F_COOK                            "MARKER_F_COOK"
+#define MARKER_F_PRAY                            "MARKER_F_PRAY"
+#define MARKER_F_BROOM                           "MARKER_F_BROOM"
+#define MARKER_F_KNEEL                           "MARKER_F_KNEEL"
+// special workers
+#define MARKER_TAVERN                            "MARKER_TAVERN"
+// guard
+#define MARKER_WORK_GUARD                        "MARKER_DUMMY"
+// quest units
+#define MARKER_Q_FINDDESK                        "MARKER_Q_FINDDESK"
+#define MARKER_Q_FINDCHAIR                       "MARKER_Q_FINDCHAIR"
+#define MARKER_Q_FINDBED                         "MARKER_Q_FINDBED"
+#define MARKER_Q_SITTING                         "MARKER_Q_SITING"
+#define MARKER_Q_KNEEL                           "MARKER_Q_KNEEL"
+#define MARKER_Q_LAY_DOWN                        "MARKER_Q_LAY_DOWN"
+#define MARKER_Q_TRAINING                        "MARKER_Q_TRAINING"
+#define MARKER_Q_WOODCUT                         "MARKER_Q_WOODCUT"
+#define MARKER_Q_PINAXE                          "MARKER_Q_PINEAXE"
+#define MARKER_Q_EMPTY                           "MARKER_Q_EMPTY" 
+
+#define MARKER_SLEEP                             "MARKER_SLEEP"
+#define MARKER_CHAIR                             "MARKER_CHAIR"
+#define MARKER_QUEST_START                       "MARKER_QUEST_START"    // na tym markerze tworzymy giverow
+
+int    m_nCommandMoveCalls;
+int    m_nMakeCustomWorkTicks;
+int    m_nLastUpdateHouseDoorTick;
+function void RandomMove(int nNextState);
+function void UpdateHouseDoor(int bSleeping);
+
+//======================================
+
+consts {
+
+    // nextstate
+    eNoState                        = 0;
+    eMovingToMarkerWork             = 1;
+    eMovingToBed                    = 2;
+    eMovingToChair                  = 3;
+    eTurningDuringWork              = 4;
+    eTurningBeforeSleep             = 5;
+    eTurningBeforeSit               = 6;
+    eMovingToQuestMarker            = 7;
+
+    eMaxSearchUnits                 = 30;
+
+    eSearchWorkMarkersRangeA        = 1024;
+    eSearchWorkUnitsRangeA          = 3 * eSearchWorkMarkersRangeA;
+
+    eSearchBedMarkersRangeA         = 1024;
+    eSearchBedUnitsRangeA           = 3 * eSearchBedMarkersRangeA;
+    eSleepRangeA                    = 64;
+    eSleepAnimation                 = 2;
+
+    eSearchChairMarkersRangeA       = 1024;
+    eSearchChairUnitsRangeA         = 3 * eSearchChairMarkersRangeA;
+    eSitRangeA                      = 64;
+    eSitAnimation                   = 1;
+
+    eSearchDeskMarkersRangeA        = 1024;
+    eSearchDeskUnitsRangeA          = 3 * eSearchDeskMarkersRangeA;
+
+    eQuestMarkerRangeA              = M2A(5);
+
+    eMaxCommandMoveCalls            = 5;
+    eRandomMoveRangeA               = 256;
+
+    eUnknownMarkerType              = 0;
+    eMarkerWorkerMale               = 1;
+    eMarkerWorkerFemale             = 2;
+    eMarkerBartender                = 3;
+    eMarkerWorkerGuard              = 5;
+    eMarkerWorkerCamper             = 6;
+
+    eStringArrayWorkerMale          = 0;
+    eStringArrayWorkerFemale        = 1;
+    eStringArrayWorkerCamper        = 2;
+    eStringArrayMarkersNames        = 3;
+    eIntArrayMarkersNumbers         = 0;
+    eIntArrayHumanParty             = 1;
+    
+    eUnknownWorker                  = 0;
+    eWorkerBartender                = 1;
+    eWorkerReader                   = 3;
+    eWorkerStandard                 = 4;
+
+    eMakeCustomWorkTicksMin         = 3 * 30;
+    eMakeCustomWorkTicksMax         = 10 * 30;
+
+    eUpdateHouseDoorInterval        = 10 * 30;
+
+}
+
+//======================================
+// uwaga!!! druga taka sama funkcja jest w Common\\Quest.ech
+
+function int IsDay()
+{
+    int nTime;
+    nTime = GetCampaign().GetDayTime();
+    if(nTime>20 &&nTime<237)return true;
+    return false;
+}
+
+function int IsInActivityState() {
+    
+    if (state == MovingToMarkerWork || state == TurningDuringWork || state == MovingToBed || state == TurningBeforeSleep || state == MovingToChair || state == TurningBeforeSit || state == MovingToQuestMarker) return true;
+    return false;
+
+}
+
+//======================================
+
+function void InitializeHumanPartyArray(int anArray[]) {
+
+    int i;
+    if (anArray.GetSize() > 0) return;
+    for (i = ePartyHumans; i <= ePartyLastVillage; i++) anArray.Add(i);
+    
+}
+
+function void SearchHumanUnits(int nRange) {
+
+    InitializeHumanPartyArray(GetStaticIntArray(eIntArrayHumanParty));
+    SearchUnits(nRange,GetStaticIntArray(eIntArrayHumanParty));
+
+}
+
+//======================================
+// attributes
+
+function int GetExternalActivity() {
+
+    return GetExternalActivity(GetThis());
+    
+}
+
+function int GetUnitType() {
+
+    return GetUnitType(GetThis());
+    
+}
+
+function int IsFemale() {
+
+    return IsFemale(GetThis());
+    
+}
+
+function int IsCamper() {
+
+    return IsCamper(GetThis());
+    
+}
+
+function int IsGuard() {
+
+    return IsGuard(GetThis());
+    
+}
+
+function int GetQuestUnitNumber() {
+
+    return GetQuestUnitNumber(GetThis());
+    
+}
+
+//======================================
+// work attributes
+
+function void SetWorkMarker(unit uUnit, string strMarker, int nMarker) {
+
+    uUnit.SetAttribute(WORK_MARKER_ATTRIBUTE,strMarker);
+    uUnit.SetAttribute(WORK_MARKER_NUMBER_ATTRIBUTE,nMarker);
+
+}
+
+function void GetWorkMarker(unit uUnit, string &strMarker, int &nMarker) {
+    
+    uUnit.GetAttribute(WORK_MARKER_ATTRIBUTE,strMarker);
+    uUnit.GetAttribute(WORK_MARKER_NUMBER_ATTRIBUTE,nMarker);
+
+}
+
+function void SetWorkMarker(string strMarker, int nMarker) {
+
+    SetWorkMarker(GetThis(),strMarker,nMarker);
+
+}
+
+function void GetWorkMarker(string &strMarker, int &nMarker) {
+
+    GetWorkMarker(GetThis(),strMarker,nMarker);
+    
+}
+
+function int IsWorking(unit uUnit) {
+
+    string strMarker;
+    int nMarker;
+    
+    GetWorkMarker(uUnit,strMarker,nMarker);
+    if (strMarker.EqualNoCase("") || (nMarker == 0)) return false;
+    return true;
+
+}
+
+function int IsWorking() {
+
+    return IsWorking(GetThis());
+    
+}
+
+function int HasWorkAnimation(unit uUnit) {
+
+    int nAnimation;
+
+    if (!uUnit.IsMakingCustomWork()) return false;
+    nAnimation = uUnit.GetMakingCustomWorkAnimNum();
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("HasWorkAnimation %d          \n",nAnimation);
+#endif
+
+    if (nAnimation == 3) return true; // pray
+    if (nAnimation == 4) return true; // woodcut
+    if (nAnimation == 6) return true; // broom
+    if (nAnimation == 7) return true; // kneel
+    if (nAnimation == 8) return true; // pitchfork
+    if (nAnimation == 9) return true; // scythe
+    if (nAnimation == 10) return true; // pinaxe
+    if (nAnimation == 11) return true; // sitting
+    if (nAnimation == 12) return true; // sitting
+    if (nAnimation == 13) return true; // sitting
+    if (nAnimation == 15) return true; // guard
+    if (nAnimation == 16) return true; // guard
+    if (nAnimation == 17) return true; // guard
+    if (nAnimation == 18) return true; // laying
+    if (nAnimation == 19) return true; // laying
+    if (nAnimation == 20) return true; // read 
+    if (nAnimation == 21) return true; // read     
+    return false;    
+
+}
+
+function int HasWorkAnimation() {
+
+    return HasWorkAnimation(GetThis());
+    
+}
+
+//======================================
+// bed attributes
+
+function void SetBedNumber(unit uUnit, int nBed) {
+
+    uUnit.SetAttribute(BED_NUMBER_ATTRIBUTE,nBed);
+
+}
+
+function void SetBedNumber(int nBed) {
+
+    SetBedNumber(GetThis(),nBed);
+    
+}
+
+function int GetBedNumber(unit uUnit) {
+
+    int nBed;
+    uUnit.GetAttribute(BED_NUMBER_ATTRIBUTE,nBed);
+    return nBed;
+    
+}
+
+function int GetBedNumber() {
+
+    return GetBedNumber(GetThis());
+    
+}
+
+function int IsSleeping(unit uUnit) {
+
+    if (GetBedNumber(uUnit) == 0) return false;
+    return true;
+    
+}
+
+function int IsSleeping() {
+
+    return IsSleeping(GetThis());
+    
+}
+
+function int HasSleepAnimation(unit uUnit) {
+
+    if (!uUnit.IsMakingCustomWork()) return false;
+    if (uUnit.GetMakingCustomWorkAnimNum() == eSleepAnimation) return true;
+    return false;    
+
+}
+
+function int HasSleepAnimation() {
+
+    return HasSleepAnimation(GetThis());
+    
+}
+
+function int IsDoingNothing(unit uUnit) {
+
+    string strMarker;
+    int nMarker;
+    GetWorkMarker(uUnit,strMarker,nMarker);
+    if (strMarker.EqualNoCase(MARKER_Q_EMPTY)) return true;
+    return false;
+
+}
+
+function int IsDoingNothing() {
+
+    return IsDoingNothing(GetThis());
+
+}
+
+//======================================
+// chair attributes
+
+function void SetChairNumber(unit uUnit, int nChair) {
+
+    uUnit.SetAttribute(CHAIR_NUMBER_ATTRIBUTE,nChair);
+
+}
+
+function void SetChairNumber(int nChair) {
+
+    SetChairNumber(GetThis(),nChair);
+    
+}
+
+function int GetChairNumber(unit uUnit) {
+
+    int nChair;
+    uUnit.GetAttribute(CHAIR_NUMBER_ATTRIBUTE,nChair);
+    return nChair;
+    
+}
+
+function int GetChairNumber() {
+
+    return GetChairNumber(GetThis());
+    
+}
+
+function int IsSitting(unit uUnit) {
+
+    if (GetChairNumber(uUnit) == 0) return false;
+    return true;
+    
+}
+
+function int IsSitting() {
+
+    return IsSitting(GetThis());
+    
+}
+
+function int HasSitAnimation(unit uUnit) {
+
+    if (!uUnit.IsMakingCustomWork()) return false;
+    if (uUnit.GetMakingCustomWorkAnimNum() == eSitAnimation) return true;
+    return false;    
+
+}
+
+function int HasSitAnimation() {
+
+    return HasSitAnimation(GetThis());
+    
+}
+
+//======================================
+// activity
+
+function int FindTarget() {
+
+    int bTarget;
+
+    if (HaveMagicDistanceWeapon() && (Rand(100) < GetAutoCastMagicProbabilitySearchTarget()))
+    {    
+        bTarget = FindMagicAttackTarget();
+    }
+    if (!bTarget && HaveUsableWeapon())
+    {
+        bTarget = FindNothingTarget();
+    }
+
+    return bTarget;
+
+}
+
+function void ResetActivity() {
+
+//    if (!HasWorkAnimation()) SetWorkMarker("",0);
+//    if (!HasSleepAnimation()) SetBedNumber(0);
+//    if (!HasSitanimation()) SetChairNumber(0);   
+    SetWorkMarker("",0);
+    SetBedNumber(0);
+    SetChairNumber(0);   
+    m_nCommandMoveCalls = 0; 
+
+}
+
+//======================================
+// work markers
+
+function void InitializeWorkMarkersArray(string astrMarkers[], int nMarkerType) {
+
+    if (astrMarkers.GetSize() > 0) return;
+    
+    if (nMarkerType == eMarkerWorkerMale) {
+
+        astrMarkers.Add(MARKER_B_KNEEL);
+        astrMarkers.Add(MARKER_B_SITTING);
+        astrMarkers.Add(MARKER_B_WOODCUT);
+        astrMarkers.Add(MARKER_BROOM);
+        astrMarkers.Add(MARKER_READ);
+        astrMarkers.Add(MARKER_KNEEL);
+        astrMarkers.Add(MARKER_LAY_DOWN);
+        astrMarkers.Add(MARKER_PITCHFORK);
+        astrMarkers.Add(MARKER_PINAXE);
+        astrMarkers.Add(MARKER_PRAY);
+        astrMarkers.Add(MARKER_SCYTHE);
+        astrMarkers.Add(MARKER_SITTING);
+        astrMarkers.Add(MARKER_WOODCUT);
+
+    }
+
+    if (nMarkerType == eMarkerWorkerFemale) {
+    
+        astrMarkers.Add(MARKER_F_DANCE);
+        astrMarkers.Add(MARKER_F_COOK);
+        astrMarkers.Add(MARKER_F_PRAY);
+        astrMarkers.Add(MARKER_F_BROOM);
+        astrMarkers.Add(MARKER_F_KNEEL);
+    
+    }
+
+    if (nMarkerType == eMarkerWorkerCamper) {
+
+        astrMarkers.Add(MARKER_WORK_GUARD);    
+        astrMarkers.Add(MARKER_B_WOODCUT);
+        astrMarkers.Add(MARKER_B_KNEEL);
+        astrMarkers.Add(MARKER_B_SITTING);
+        astrMarkers.Add(MARKER_BROOM);
+        astrMarkers.Add(MARKER_READ);
+        astrMarkers.Add(MARKER_KNEEL);
+        astrMarkers.Add(MARKER_LAY_DOWN);
+        astrMarkers.Add(MARKER_PITCHFORK);
+        astrMarkers.Add(MARKER_PINAXE);
+        astrMarkers.Add(MARKER_PRAY);
+        astrMarkers.Add(MARKER_SCYTHE);
+        astrMarkers.Add(MARKER_SITTING);
+        astrMarkers.Add(MARKER_WOODCUT);
+    
+    }
+
+    astrMarkers.Sort(true);
+
+}
+
+function void SearchWorkMarkersInRange(mission pMission, int nX, int nY, int nRange, int nMarkerType) {
+
+    // male workers
+    if (nMarkerType == eMarkerWorkerMale) {
+        InitializeWorkMarkersArray(GetStaticStringArray(eStringArrayWorkerMale),eMarkerWorkerMale);
+        pMission.FillMarkersInRange(GetStaticStringArray(eStringArrayWorkerMale),nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+    }
+
+    // female workers
+    if (nMarkerType == eMarkerWorkerFemale) {
+        InitializeWorkMarkersArray(GetStaticStringArray(eStringArrayWorkerFemale),eMarkerWorkerFemale);
+        pMission.FillMarkersInRange(GetStaticStringArray(eStringArrayWorkerFemale),nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+    }
+
+    // bartender
+    if (nMarkerType == eMarkerBartender) {
+        pMission.FillMarkersInRange(MARKER_TAVERN,nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+    }
+
+    // guard
+    if (nMarkerType == eMarkerWorkerGuard) {
+        pMission.FillMarkersInRange(MARKER_WORK_GUARD,nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+    }
+
+    // campers
+    if (nMarkerType == eMarkerWorkerCamper) {
+        InitializeWorkMarkersArray(GetStaticStringArray(eStringArrayWorkerCamper),eMarkerWorkerCamper);
+        pMission.FillMarkersInRange(GetStaticStringArray(eStringArrayWorkerCamper),nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+    }
+    
+}
+
+function int IsWorkMarkerFree(string strMarker, int nMarker) {
+
+    int i;
+    int count;
+    string strWorkMarker;
+    int nWorkMarker;
+
+//    TRACE("IsWorkMarkerFree %s %d:                \n",strMarker,nMarker);
+
+    count = GetSearchUnitsCount();
+    for (i = 0; i < count; i++) {
+        GetWorkMarker(GetSearchUnit(i),strWorkMarker,nWorkMarker);
+//        TRACE("%s %d                       \n",strWorkMarker,nWorkMarker);
+        if (strWorkMarker.EqualNoCase(strMarker) && (nWorkMarker == nMarker)) return false;        
+    }
+
+    return true;
+
+}
+
+function int FindFreeMarkerWork(string astrMarkers[], int anMarkers[], string &strMarker, int &nMarker) {
+
+    int n;
+
+    while (astrMarkers.GetSize()) {
+
+        n = Rand(astrMarkers.GetSize());
+        if (IsWorkMarkerFree(astrMarkers[n],anMarkers[n])) {
+            strMarker = astrMarkers[n];
+            nMarker = anMarkers[n];
+            return true;
+        }
+        astrMarkers.RemoveAt(n);
+        anMarkers.RemoveAt(n);    
+    }
+
+    return false;
+
+}
+
+function int FindFreeMarkerWork(string &strMarker, int &nMarker) {
+
+    int nMarkerType;
+    int nType;
+    
+    nType = GetUnitType();        
+  
+    if (nType == eUnitTypeBartender) nMarkerType = eMarkerBartender;
+    else if (IsCamper()) nMarkerType = eMarkerWorkerCamper;
+    else if (IsGuard()) nMarkerType = eMarkerWorkerGuard;
+    else if (IsFemale()) nMarkerType = eMarkerWorkerFemale;
+    else nMarkerType = eMarkerWorkerMale;  
+                              
+    SearchWorkMarkersInRange(GetMission(),GetLocationX(),GetLocationY(),eSearchWorkMarkersRangeA,nMarkerType);
+    SearchHumanUnits(eSearchWorkUnitsRangeA);
+    return FindFreeMarkerWork(GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),strMarker,nMarker);
+
+}
+
+//======================================
+// bed markers
+
+function void SearchBedMarkersInRange(mission pMission, int nX, int nY, int nRange) {
+
+    pMission.FillMarkersInRange(MARKER_SLEEP,nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+
+}
+
+function int IsBedFree(int nBed) {
+
+    int i;
+    int count;
+
+ //   TRACE("IsBed:                \n");
+
+    count = GetSearchUnitsCount();
+    for (i = 0; i < count; i++) {
+   //     TRACE("%d                 \n",GetBedNumber(GetSearchUnit(i)));
+        if (GetBedNumber(GetSearchUnit(i)) == nBed) return false;
+    }
+
+    return true;
+
+}
+
+function int FindNearestBed(int anMarkers[]) {
+
+    mission pMission;
+    int nMyX, nMyY;    
+    int nX, nY;
+    int nMin;    
+    int nDist;
+    int nBed;
+    int i;
+
+    pMission = GetMission();
+    
+    if (!pMission.GetMarker(MARKER_QUEST_START,GetQuestUnitNumber(),nMyX,nMyY)) {
+        __ASSERT_FALSE();
+        return 0;    
+    }
+    
+    nMin = eSearchChairMarkersRangeA;
+    nBed = 0;
+    
+    for (i = 0; i < anMarkers.GetSize(); i++) {
+    
+        if (!pMission.GetMarker(MARKER_SLEEP,anMarkers[i],nX,nY)) continue;
+        nDist = Distance(nMyX,nMyY,nX,nY);
+        if (nDist < nMin) {
+            nMin = nDist;
+            nBed = anMarkers[i];
+        }
+            
+    }
+        
+    if (IsBedFree(nBed)) return nBed;
+    return 0;        
+
+}
+
+function int FindFreeBed(int anMarkers[]) {
+
+    int nBed;
+    int n;
+
+    if (GetExternalActivity() == eEActivityQuestUnit) return FindNearestBed(anMarkers);
+
+    while (anMarkers.GetSize()) {
+
+        n = Rand(anMarkers.GetSize());
+        if (IsBedFree(anMarkers[n])) {            
+            nBed = anMarkers[n];
+            anMarkers.RemoveAll();
+            return nBed;
+        }
+        anMarkers.RemoveAt(n);    
+    }
+
+    return 0;
+
+}
+
+function int FindFreeBed() {
+       
+    SearchBedMarkersInRange(GetMission(),GetLocationX(),GetLocationY(),eSearchBedMarkersRangeA);
+    SearchHumanUnits(eSearchBedUnitsRangeA);
+    return FindFreeBed(GetStaticIntArray(eIntArrayMarkersNumbers));
+
+}
+
+//======================================
+// chair markers
+
+function void SearchChairMarkersInRange(mission pMission, int nX, int nY, int nRange) {
+
+    pMission.FillMarkersInRange(MARKER_CHAIR,nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+
+}
+
+function int IsChairFree(int nChair) {
+
+    int i;
+    int count;
+
+//    TRACE("IsChairFree:                \n");
+
+    count = GetSearchUnitsCount();
+    for (i = 0; i < count; i++) {
+//        TRACE("%d                 \n",GetChairNumber(GetSearchUnit(i)));
+        if (GetChairNumber(GetSearchUnit(i)) == nChair) return false;
+    }
+
+    return true;
+
+}
+
+function int FindNearestChair(int anMarkers[]) {
+
+    mission pMission;
+    int nMyX, nMyY;    
+    int nX, nY;
+    int nMin;    
+    int nDist;
+    int nChair;
+    int i;
+
+    pMission = GetMission();
+    
+    if (!pMission.GetMarker(MARKER_QUEST_START,GetQuestUnitNumber(),nMyX,nMyY)) {
+        __ASSERT_FALSE();
+        return 0;    
+    }
+    
+    nMin = eSearchChairMarkersRangeA;
+    nChair = 0;
+        
+    for (i = 0; i < anMarkers.GetSize(); i++) {
+    
+        if (!pMission.GetMarker(MARKER_CHAIR,anMarkers[i],nX,nY)) continue;
+        nDist = Distance(nMyX,nMyY,nX,nY);
+        if (nDist < nMin) {
+            nMin = nDist;
+            nChair = anMarkers[i];
+        }
+            
+    }
+
+    if (IsChairFree(nChair)) return nChair;
+    return 0;
+      
+}
+
+function int FindFreeChair(int anMarkers[]) {
+
+    int nChair;
+    int n;
+
+    if (GetExternalActivity() == eEActivityQuestUnit) return FindNearestChair(anMarkers);
+    
+    while (anMarkers.GetSize()) {
+
+        n = Rand(anMarkers.GetSize());
+        if (IsChairFree(anMarkers[n])) {
+            nChair = anMarkers[n];
+            anMarkers.RemoveAll();
+            return nChair;
+        }
+        anMarkers.RemoveAt(n);    
+    }
+    
+    return 0;
+
+}
+
+function int FindFreeChair() {
+
+    SearchChairMarkersInRange(GetMission(),GetLocationX(),GetLocationY(),eSearchChairMarkersRangeA);
+    SearchHumanUnits(eSearchChairUnitsRangeA);
+    return FindFreeChair(GetStaticIntArray(eIntArrayMarkersNumbers));
+
+}
+
+//======================================
+// desk markers
+
+function void SearchDeskMarkersInRange(mission pMission, int nX, int nY, int nRange) {
+
+    pMission.FillMarkersInRange(MARKER_READ,nX,nY,nRange,GetStaticStringArray(eStringArrayMarkersNames),GetStaticIntArray(eIntArrayMarkersNumbers),true);
+
+}
+
+function int IsDeskFree(int nDesk) {
+
+    int i;
+    int count;
+    string strMarker;
+    int nMarker;
+
+//    TRACE("IsDeskFree:                \n");
+
+    count = GetSearchUnitsCount();
+    for (i = 0; i < count; i++) {
+        GetWorkMarker(GetSearchUnit(i),strMarker,nMarker);
+        if (strMarker.EqualNoCase(MARKER_READ) && (nMarker == nDesk)) return false;        
+    }
+
+    return true;
+
+}
+
+function int FindNearestDesk(int anMarkers[]) {
+
+    mission pMission;
+    int nMyX, nMyY;    
+    int nX, nY;
+    int nMin;    
+    int nDist;
+    int nDesk;
+    int i;
+
+    pMission = GetMission();
+    
+    if (!pMission.GetMarker(MARKER_QUEST_START,GetQuestUnitNumber(),nMyX,nMyY)) {
+        __ASSERT_FALSE();
+        return 0;    
+    }
+    
+    nMin = eSearchDeskMarkersRangeA;
+    nDesk = 0;
+    
+    for (i = 0; i < anMarkers.GetSize(); i++) {
+    
+        if (!pMission.GetMarker(MARKER_READ,anMarkers[i],nX,nY)) continue;
+        nDist = Distance(nMyX,nMyY,nX,nY);
+        if (nDist < nMin) {
+            nMin = nDist;
+            nDesk = anMarkers[i];
+        }
+            
+    }
+        
+    if (IsDeskFree(nDesk)) return nDesk;
+    return 0;        
+
+}
+
+function int FindFreeDesk(int anMarkers[]) {
+
+    int nDesk;
+    int n;
+
+    if (GetExternalActivity() == eEActivityQuestUnit) return FindNearestDesk(anMarkers);
+
+    while (anMarkers.GetSize()) {
+
+        n = Rand(anMarkers.GetSize());
+        if (IsDeskFree(anMarkers[n])) {
+            nDesk = anMarkers[n];
+            anMarkers.RemoveAll();
+            return nDesk;
+        }
+        anMarkers.RemoveAt(n);    
+    }
+
+    return 0;
+
+}
+
+function int FindFreeDesk() {
+
+    SearchDeskMarkersInRange(GetMission(),GetLocationX(),GetLocationY(),eSearchDeskMarkersRangeA);
+    SearchHumanUnits(eSearchDeskUnitsRangeA);
+    return FindFreeDesk(GetStaticIntArray(eIntArrayMarkersNumbers));
+
+}
+
+//======================================
+// common 
+
+function void SetMovingState(int nMovingState) {
+
+   if (nMovingState == eMovingToMarkerWork) {
+        state MovingToMarkerWork;
+    }
+    else if (nMovingState == eMovingToBed) {
+        state MovingToBed;
+    }
+    else if (nMovingState == eMovingToChair) {
+        state MovingToChair;
+    }
+    else if (nMovingState == eMovingToQuestMarker) {
+        state MovingToQuestMarker;
+    }
+    else {
+        state Moving;
+    }
+
+}
+
+function int CheckCommandMoveCalls(int nNextState) {
+
+    m_nCommandMoveCalls++;
+    
+    if (m_nCommandMoveCalls >= eMaxCommandMoveCalls) {
+        m_nCommandMoveCalls = 0;
+        RandomMove(nNextState);
+        return true;
+    }
+    
+    return false;    
+
+}
+
+function void MoveToTargetCircle(int nX, int nY, int nMinRange, int nMaxRange, int nNextState) {
+
+    int nCount;
+    int nAngle;
+    int nRange;
+    int nTargetX, nTargetY;
+
+    if (CheckCommandMoveCalls(nNextState)) return;
+
+    nCount = 0;
+    
+    do {
+    
+        nAngle = Rand(256);
+        nRange = Rand(nMaxRange - nMinRange) + nMinRange;
+        TurnRadiusByAngle(nRange,nAngle,nTargetX,nTargetY);
+        nTargetX += nX;
+        nTargetY += nY;    
+        nCount++;
+    
+    } while ((nCount < 10) && (!GetMission().IsGoodPointForUnit(nTargetX,nTargetY)));
+
+    CallMoveToPoint(nTargetX,nTargetY,0);
+    SetMovingState(nNextState);
+ 
+}
+
+function void MoveToTarget(int nX, int nY, int nNextState) {
+
+    if (CheckCommandMoveCalls(nNextState)) return;
+
+    CallMoveToPoint(nX,nY,0);
+    SetMovingState(nNextState);    
+
+}
+
+function void RandomMove(int nNextState) {
+
+    MoveToTargetCircle(GetLocationX(),GetLocationY(),0,eRandomMoveRangeA,nNextState);
+
+}
+
+function int HasBadAngle(int nX, int nY, int nRelativeAngle, int nGoodAngle) {
+
+    if (ABS(((GetRelativeAngleTo(nX,nY) + 256) % 256) - nRelativeAngle) > nGoodAngle) return true;
+    return false;
+
+}
+
+function void UpdateAngle(int nX, int nY, int nRelativeAngle, int nNextState) {
+
+    m_nCommandMoveCalls = 0;   
+    CallTurnToAngle((AngleTo(nX,nY) + nRelativeAngle) % 256);
+
+    if (nNextState == eTurningDuringWork) {
+        state TurningDuringWork;
+    }
+    else if (nNextState == eTurningBeforeSleep) {
+        state TurningBeforeSleep;
+    }
+    else if (nNextState == eTurningBeforeSit) {
+        state TurningBeforeSit;
+    }
+    else {
+        state Turning;
+    }
+
+}
+
+function void SetAnimation(int nWorkAnimNum, string strWorkSubObjectID) {
+
+    m_nCommandMoveCalls = 0;   
+  
+    if (!HaveCustomWorkAnim(nWorkAnimNum,true)) {
+#ifdef ACTIVITY_DEBUG
+        TRACE("animation %d %s not found! female %d            \n",nWorkAnimNum,strWorkSubObjectID,IsFemale());
+#endif
+        state Nothing;
+        return;
+    }
+
+    if (nWorkAnimNum == eSleepAnimation) UpdateHouseDoor(true);
+
+    SetCurrCustomWorkParams(nWorkAnimNum,-1,strWorkSubObjectID);
+    CallMakeCustomWork();
+    state MakingCustomWork;
+    SetStateDelay(20);
+
+}
+
+function void ResetAnimation() {
+
+    m_nCommandMoveCalls = 0;   
+
+    if (!IsMakingCustomWork()) return;
+    SetCurrCustomWorkParams(-1,-1,-1);
+    CallMakeCustomWork();
+    state Nothing;
+
+
+}
+
+//======================================
+// work
+
+function void GetWorkRangeA(string strMarker, int nMarker, int &nWorkRange, int &nTooCloseRange) {
+
+    string str;
+    str = strMarker;
+
+    if (str.EqualNoCase(MARKER_PRAY)) {
+        nWorkRange = 64;
+        nTooCloseRange = 1;
+    }
+    else if (str.EqualNoCase(MARKER_WOODCUT) || str.EqualNoCase(MARKER_B_WOODCUT) || str.EqualNoCase(MARKER_Q_WOODCUT)) {
+        nWorkRange = 150;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_TAVERN)) {
+        nWorkRange = 16;
+        nTooCloseRange = -1;
+    }    
+    else if (str.EqualNoCase(MARKER_BROOM)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_KNEEL) || str.EqualNoCase(MARKER_B_KNEEL) || str.EqualNoCase(MARKER_Q_KNEEL)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_PITCHFORK)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_SCYTHE)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_PINAXE) || str.EqualNoCase(MARKER_Q_PINAXE)) {
+        nWorkRange = 150;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_SITTING) || str.EqualNoCase(MARKER_B_SITTING) || str.EqualNoCase(MARKER_Q_SITTING)) {            
+        nWorkRange = 150;
+        nTooCloseRange = 128;
+    }
+    else if (str.EqualNoCase(MARKER_LAY_DOWN) || str.EqualNoCase(MARKER_Q_LAY_DOWN)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_READ)) {
+        nWorkRange = 64;
+        nTooCloseRange = -1;
+    }
+    else if (str.EqualNoCase(MARKER_F_DANCE)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_F_PRAY)) {
+        nWorkRange = 64;
+        nTooCloseRange = 1;
+    }
+    else if (str.EqualNoCase(MARKER_F_COOK)) {
+        nWorkRange = 64;
+        nTooCloseRange = 1;
+    }
+    else if (str.EqualNoCase(MARKER_F_BROOM)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_F_KNEEL)) {
+        nWorkRange = 192;
+        nTooCloseRange = 64;
+    }
+    else if (str.EqualNoCase(MARKER_WORK_GUARD) || str.EqualNoCase(MARKER_Q_TRAINING)) {
+        nWorkRange = 64;
+        nTooCloseRange = 1;
+    }
+
+}
+
+function void GetCustomWorkAnimation(int &nWorkAnimNum, string &strWorkSubObjectID) {
+
+    string strMarker;
+    int nMarker;
+    int n;
+    
+    GetWorkMarker(strMarker,nMarker);
+
+    strWorkSubObjectID = "";
+    if (strMarker.EqualNoCase(MARKER_PRAY)) {
+        nWorkAnimNum = 3;
+    }
+    else if (strMarker.EqualNoCase(MARKER_WOODCUT) || strMarker.EqualNoCase(MARKER_B_WOODCUT) || strMarker.EqualNoCase(MARKER_Q_WOODCUT)) {
+        nWorkAnimNum = 4;
+        if (Rand(2)) strWorkSubObjectID = "AXE1";
+        else strWorkSubObjectID = "AXE2";
+    }
+    else if (strMarker.EqualNoCase(MARKER_TAVERN)) {
+        nWorkAnimNum = 5;
+    }
+    else if (strMarker.EqualNoCase(MARKER_BROOM)) {
+        nWorkAnimNum = 6;
+        strWorkSubObjectID = "BROOM";
+    }
+    else if (strMarker.EqualNoCase(MARKER_KNEEL) || strMarker.EqualNoCase(MARKER_B_KNEEL) || strMarker.EqualNoCase(MARKER_Q_KNEEL)) {
+        nWorkAnimNum = 7;
+    }
+    else if (strMarker.EqualNoCase(MARKER_PITCHFORK)) {
+        nWorkAnimNum = 8;
+        strWorkSubObjectID = "PICHFORK";
+    }
+    else if (strMarker.EqualNoCase(MARKER_SCYTHE)) {
+        nWorkAnimNum = 9;
+        strWorkSubObjectID = "SCYTHEA";
+    }
+    else if (strMarker.EqualNoCase(MARKER_PINAXE) || strMarker.EqualNoCase(MARKER_Q_PINAXE)) {
+        nWorkAnimNum = 10;
+        strWorkSubObjectID = "PINEAXE";
+    }
+    else if (strMarker.EqualNoCase(MARKER_SITTING) || strMarker.EqualNoCase(MARKER_B_SITTING) || strMarker.EqualNoCase(MARKER_Q_SITTING)) {            
+        n = Rand(5);
+        if (n == 0) {
+            nWorkAnimNum = 11;
+            strWorkSubObjectID = "";            
+        }
+        if (n == 1) {
+            nWorkAnimNum = 12;
+            strWorkSubObjectID = "STICK";            
+        }
+        if (n == 2) {
+            nWorkAnimNum = 13;
+            strWorkSubObjectID = "BOTTLE1";            
+        }
+        if (n == 3) {
+            nWorkAnimNum = 13;
+            strWorkSubObjectID = "BOTTLE2";
+        }
+        if (n == 4) {
+            nWorkAnimNum = 13;
+            strWorkSubObjectID = "BOTTLE3";            
+        }
+    }
+    else if (strMarker.EqualNoCase(MARKER_LAY_DOWN) || strMarker.EqualNoCase(MARKER_Q_LAY_DOWN)) {
+        if (Rand(2)) nWorkAnimNum = 18;
+        else nWorkAnimNum = 19;
+    }
+    else if (strMarker.EqualNoCase(MARKER_READ)) {
+        if (Rand(2)) nWorkAnimNum = 20;
+        else nWorkAnimNum = 21;
+    }    
+    else if (strMarker.EqualNoCase(MARKER_F_DANCE)) {
+        nWorkAnimNum = 0;    
+    }
+    else if (strMarker.EqualNoCase(MARKER_F_PRAY)) {
+        nWorkAnimNum = 3;    
+    }
+    else if (strMarker.EqualNoCase(MARKER_F_COOK)) {
+        nWorkAnimNum = 4;    
+    }
+    else if (strMarker.EqualNoCase(MARKER_F_BROOM)) {
+        nWorkAnimNum = 6;    
+        strWorkSubObjectID = "BROOM";
+    }
+    else if (strMarker.EqualNoCase(MARKER_F_KNEEL)) {
+        nWorkAnimNum = 7;    
+    }
+    else if (strMarker.EqualNoCase(MARKER_WORK_GUARD) || strMarker.EqualNoCase(MARKER_Q_TRAINING)) {
+        strWorkSubObjectID = "SWORD_WOOD";        
+        n = Rand(3);
+        if (n == 0) {
+            nWorkAnimNum = 15;            
+        }
+        if (n == 1) {
+            nWorkAnimNum = 16;                 
+        }
+        if (n == 2) {
+            nWorkAnimNum = 17;                    
+        }    
+    }
+
+}
+
+function int GetWorkerTypeByMarker(string strMarker) {
+
+    string str;
+    str = strMarker;
+
+    if (str.EqualNoCase(MARKER_PRAY)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_WOODCUT) || str.EqualNoCase(MARKER_B_WOODCUT) || str.EqualNoCase(MARKER_Q_WOODCUT)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_TAVERN)) return eWorkerBartender;
+    else if (str.EqualNoCase(MARKER_BROOM)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_KNEEL) || str.EqualNoCase(MARKER_B_KNEEL) || str.EqualNoCase(MARKER_Q_KNEEL)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_PITCHFORK)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_SCYTHE)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_PINAXE) || str.EqualNoCase(MARKER_Q_PINAXE)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_SITTING) || str.EqualNoCase(MARKER_B_SITTING) || str.EqualNoCase(MARKER_Q_SITTING)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_LAY_DOWN) || str.EqualNoCase(MARKER_Q_LAY_DOWN)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_READ)) return eWorkerReader;
+    else if (str.EqualNoCase(MARKER_F_DANCE)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_F_PRAY)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_F_COOK)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_F_BROOM)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_F_KNEEL)) return eWorkerStandard;
+    else if (str.EqualNoCase(MARKER_WORK_GUARD) || str.EqualNoCase(MARKER_Q_TRAINING)) return eWorkerStandard;
+   
+    return eUnknownWorker;
+
+}
+
+function void UpdateBartender() {
+
+    int nX, nY;
+    int nDist;
+    string strMarker;
+    int nMarker;
+    int nWorkRange, nTooCloseRange;
+    int nWorkAnimNum;
+    string strWorkSubObjectID;
+    unit uTavern;
+    
+    GetWorkMarker(strMarker,nMarker);
+    
+    if (GetMission().GetMarker(strMarker,nMarker,nX,nY)) {           
+
+        GetWorkRangeA(strMarker,nMarker,nWorkRange,nTooCloseRange);
+        nDist = DistanceTo(nX,nY);
+        uTavern = GetMission().GetObjectMarker(strMarker,nMarker);
+        ASSERT(uTavern != null);
+        
+        if (nDist > nWorkRange) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateBartender: bad range %d %d                           \n",nWorkRange,nDist);
+#endif
+            MoveToTarget(nX,nY,eMovingToMarkerWork);
+        }
+        else if (HasBadAngle(uTavern.GetLocationX(),uTavern.GetLocationY(),0,24)) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateBartender: bad angle %d                           \n",ABS(GetRelativeAngleTo(nX,nY) - 0));
+#endif
+            UpdateAngle(uTavern.GetLocationX(),uTavern.GetLocationY(),0,eTurningDuringWork);
+        }
+        else if (!IsMovingTurning() && (!IsMakingCustomWork())) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateBartender: no animation                            \n");
+#endif
+            GetCustomWorkAnimation(nWorkAnimNum,strWorkSubObjectID);
+            SetAnimation(nWorkAnimNum,strWorkSubObjectID);
+        }
+        
+    }
+    else {
+    
+        SetWorkMarker("",0);
+        state Nothing;
+    
+    }
+
+}
+
+function void UpdateReader() {
+
+    int nX, nY, nZ, nAngle;
+    int nDist;
+    string strMarker;
+    int nMarker;
+    int nWorkRange, nTooCloseRange;
+    int nWorkAnimNum;
+    string strWorkSubObjectID;
+    unit uDesk;
+    int nHasSlot;
+    
+    GetWorkMarker(strMarker,nMarker);
+    uDesk = GetMission().GetObjectMarker(strMarker,nMarker);
+    
+    if (uDesk) {           
+    
+        uDesk.GetMeshSlotPosition(eSlotPlace1,nX,nY,nZ,nAngle);
+        if (nX == 0 && nY == 0) {
+            nX = uDesk.GetLocationX();
+            nY = uDesk.GetLocationY();
+            nHasSlot = false;
+//            __ASSERT_FALSE();
+#ifdef ACTIVITY_DEBUG
+            TRACE("%s has no SlotPlace1!                \n",uDesk.GetObjectCreateString());
+#endif
+        }
+        else nHasSlot = true;
+
+        GetWorkRangeA(strMarker,nMarker,nWorkRange,nTooCloseRange);
+        nDist = DistanceTo(nX,nY);
+        
+        if (nDist > nWorkRange) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateReader: bad range %d %d                           \n",nWorkRange,nDist);
+#endif
+            MoveToTarget(nX,nY,eMovingToMarkerWork);
+        }
+        else if (nHasSlot && (HasBadAngle(uDesk.GetLocationX(),uDesk.GetLocationY(),0,5))) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateReader: bad angle                            \n");
+#endif
+//            SetImmediatePosition(nX,nY,0,GetDirectionAlpha(),true);
+            UpdateAngle(uDesk.GetLocationX(),uDesk.GetLocationY(),0,eTurningDuringWork);
+        }
+        else if (!IsMovingTurning() && (!IsMakingCustomWork())) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateReader: no animation                            \n");
+#endif
+            GetCustomWorkAnimation(nWorkAnimNum,strWorkSubObjectID);
+            SetAnimation(nWorkAnimNum,strWorkSubObjectID);
+        }
+        
+    }
+    else {
+    
+        SetWorkMarker("",0);
+        state Nothing;
+    
+    }
+
+}
+
+function void UpdateStandardWorker() {
+
+    int nX, nY;
+    int nDist;
+    string strMarker;
+    int nMarker;
+    int nWorkRange, nTooCloseRange;
+    int nWorkAnimNum;
+    string strWorkSubObjectID;
+    
+    GetWorkMarker(strMarker,nMarker);
+    
+    if (GetMission().GetMarker(strMarker,nMarker,nX,nY)) {           
+
+        GetWorkRangeA(strMarker,nMarker,nWorkRange,nTooCloseRange);
+        nDist = DistanceTo(nX,nY);
+        
+        if ((nDist > nWorkRange) || (nDist < nTooCloseRange) || (!GetMission().IsGoodPointForUnit(GetLocationX(),GetLocationY()))) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateStandardWorker: bad range %d %d %d                           \n",nWorkRange,nTooCloseRange,nDist);
+#endif
+            if (nTooCloseRange != -1) MoveToTargetCircle(nX,nY,nTooCloseRange,nWorkRange,eMovingToMarkerWork);
+            else MoveToTarget(nX,nY,eMovingToMarkerWork);
+        }
+        else if (HasBadAngle(nX,nY,0,5)) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateStandardWorker: bad angle                            \n");
+#endif
+            UpdateAngle(nX,nY,0,eTurningDuringWork);
+        }
+        else if (!IsMovingTurning() && (!IsMakingCustomWork())) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateStandardWorker: no animation                            \n");
+#endif
+            GetCustomWorkAnimation(nWorkAnimNum,strWorkSubObjectID);
+            SetAnimation(nWorkAnimNum,strWorkSubObjectID);
+        }
+        
+    }
+    else {
+    
+        SetWorkMarker("",0);
+        state Nothing;
+    
+    }
+
+}
+
+function void UpdateCustomWork() {
+
+    string strMarker;
+    int nMarker;
+    int nType;
+    
+    GetWorkMarker(strMarker,nMarker);    
+    nType = GetWorkerTypeByMarker(strMarker);
+    if (nType == eWorkerBartender) UpdateBartender();    
+    else if (nType == eWorkerReader) UpdateReader();
+    else if (nType == eWorkerStandard) UpdateStandardWorker();
+    else {
+
+        SetWorkMarker("",0);
+        state Nothing;
+        
+    }
+    
+}
+
+function int SetCustomWork(int nWorkingOrSitting) {
+
+    string strMarker;
+    int nMarker;
+                
+    if (nWorkingOrSitting) {
+        if ((IsWorking() && (state != Nothing)) || IsSleeping()) return true;
+        if (IsSleeping() || HasSleepAnimation()) {
+            CommandStop();
+            ResetAnimation();
+            return true;
+        }
+    }
+    else {
+        if (IsWorking() && (state != Nothing)) return true;
+        if (IsSleeping() || IsSitting() || HasSleepAnimation() || HasSitAnimation()) {
+            CommandStop();
+            ResetAnimation();
+            return true;
+        }    
+    }
+
+    if (FindFreeMarkerWork(strMarker,nMarker)) {
+        SetWorkMarker(strMarker,nMarker);
+        UpdateCustomWork();
+        return true;        
+    }
+
+    return false;
+
+}
+
+function int SetCustomWork() {
+
+    return SetCustomWork(false);
+    
+}
+
+//======================================
+// doing nothing
+
+function void UpdateDoingNothing() {
+
+    int nX, nY;
+    int nDist;
+    string strMarker;
+    int nMarker;
+    int nWorkRange, nTooCloseRange;
+    int nWorkAnimNum;
+    string strWorkSubObjectID;
+        
+    if (GetMission().GetMarker(MARKER_QUEST_START,GetQuestUnitNumber(),nX,nY)) {           
+
+        nDist = DistanceTo(nX,nY);
+        
+        if ((nDist > eQuestMarkerRangeA) || (!GetMission().IsGoodPointForUnit(GetLocationX(),GetLocationY()))) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateDoingNothing: bad range %d %d                           \n",eQuestMarkerRangeA,nDist);
+#endif
+            MoveToTarget(nX,nY,eMovingToQuestMarker);
+        }
+        else {
+            state Nothing;        
+        }
+        
+    }
+    else {
+    
+        SetWorkMarker("",0);
+        state Nothing;
+    
+    }
+
+}
+
+//======================================
+// sleep
+
+function void UpdateSleep() {
+
+    int nX, nY, nZ, nAngle;
+    int nBed;
+    unit uBed;
+    int nHasSlot;
+    
+    nBed = GetBedNumber();
+    uBed = GetMission().GetObjectMarker(MARKER_SLEEP,nBed);
+    
+    if (uBed) {           
+
+        uBed.GetMeshSlotPosition(eSlotSleep,nX,nY,nZ,nAngle);
+        if (nX == 0 && nY == 0) {
+            nX = uBed.GetLocationX();
+            nY = uBed.GetLocationY();
+            nHasSlot = false;
+//            __ASSERT_FALSE();
+#ifdef ACTIVITY_DEBUG
+            TRACE("%s has no SlotSleep!                \n",uBed.GetObjectCreateString());
+#endif
+        }
+        else nHasSlot = true;
+
+        if (DistanceTo(nX,nY) > eSleepRangeA) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateSleep: bad range %d                           \n",DistanceTo(nX,nY));
+#endif
+            MoveToTarget(nX,nY,eMovingToBed);
+        }
+        else if (nHasSlot && (HasBadAngle(uBed.GetLocationX(),uBed.GetLocationY(),128,5))) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateSleep: bad angle                            \n");
+#endif
+//            SetImmediatePosition(nX,nY,0,GetDirectionAlpha(),true);
+            UpdateAngle(uBed.GetLocationX(),uBed.GetLocationY(),128,eTurningBeforeSleep);
+        }        
+        else if (!IsMovingTurning() && (!IsMakingCustomWork())) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateSleep: no animation                            \n");
+#endif
+            SetAnimation(eSleepAnimation,"");
+        }
+        
+    }
+    else {
+    
+        SetBedNumber(0);
+        state Nothing;
+    
+    }
+    
+}
+
+function int SetSleep() {
+
+    int nBed;
+        
+    if (IsSleeping() && (state != Nothing)) return true;
+    if (IsWorking() || IsSitting() || HasWorkAnimation() || HasSitAnimation()) {
+        CommandStop();
+        ResetAnimation();
+        return true;
+    }
+
+//    TRACE("SetSleep %d                \n",GetCustomFlags());
+    nBed = FindFreeBed();
+    if (nBed) {
+        SetBedNumber(nBed);
+        UpdateSleep();
+        return true;
+    }
+
+    return false;
+
+}
+
+//======================================
+// sit
+
+function void UpdateSit() {
+
+    int nX, nY, nZ, nAngle;
+    int nChair;
+    unit uChair;
+    int nHasSlot;
+    
+    nChair = GetChairNumber();
+    uChair = GetMission().GetObjectMarker(MARKER_CHAIR,nChair);
+    
+    if (uChair) {           
+
+        uChair.GetMeshSlotPosition(eSlotSit,nX,nY,nZ,nAngle);
+        if (nX == 0 && nY == 0) {
+            nX = uChair.GetLocationX();   
+            nY = uChair.GetLocationY();   
+            nHasSlot = false;
+//            __ASSERT_FALSE();
+#ifdef ACTIVITY_DEBUG
+            TRACE("%s has no SlotSit!                \n",uChair.GetObjectCreateString());
+#endif
+        }
+        else nHasSlot = true;
+
+        if (DistanceTo(nX,nY) > eSitRangeA) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateSit: bad range %d                           \n",DistanceTo(nX,nY));
+#endif
+            MoveToTarget(nX,nY,eMovingToChair);
+        }
+        else if (nHasSlot && (HasBadAngle(uChair.GetLocationX(),uChair.GetLocationY(),128,5))) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateSit: bad angle                            \n");
+#endif
+//            SetImmediatePosition(nX,nY,0,GetDirectionAlpha(),true);
+            UpdateAngle(uChair.GetLocationX(),uChair.GetLocationY(),128,eTurningBeforeSit);
+        }
+        else if (!IsMovingTurning() && (!IsMakingCustomWork())) {
+#ifdef ACTIVITY_DEBUG
+            TRACE("UpateSit: no animation                            \n");
+#endif
+            SetAnimation(eSitAnimation,"");
+        }
+        
+    }
+    else {
+    
+        SetChairNumber(0);
+        state Nothing;
+    
+    }
+    
+}
+
+function int SetSit(int nWorkingOrSitting) {
+
+    int nChair;
+            
+    if (nWorkingOrSitting) {
+        if (IsSitting() || (IsWorking() && (state != Nothing))) return true;
+        if (IsSleeping() || HasSleepAnimation()) {
+            CommandStop();
+            ResetAnimation();
+            return true;
+        }            
+    }            
+    else {
+        if (IsSitting() && (state != Nothing)) return true;
+        if (IsWorking() || IsSleeping() || HasWorkAnimation() || HasSleepAnimation()) {
+            CommandStop();
+            ResetAnimation();
+            return true;
+        }    
+    }       
+    
+//    TRACE("SetSit %d                \n",GetCustomFlags());
+    nChair = FindFreeChair();
+    if (nChair) {
+        SetChairNumber(nChair);
+        UpdateSit();
+        return true;    
+    }
+    
+    return false;
+    
+}
+
+function int SetSit() {
+
+    return SetSit(false);
+    
+}
+
+//======================================
+
+state MovingToMarkerWork {
+
+#ifdef ACTIVITY_DEBUG
+    string strMarker;
+    int nMarker;    
+    GetWorkMarker(strMarker,nMarker);
+    TRACE("MovingToMarkerWork %s %d                         \n",strMarker,nMarker);
+#endif
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateCustomWork();
+    }
+
+}
+
+state TurningDuringWork {
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("TurningDuringWork                          \n");
+#endif
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || IsStartingMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateCustomWork();
+    }
+    
+}
+
+//======================================
+
+state MovingToBed {
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("MovingToBed                            \n");
+#endif
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateSleep();
+    }
+
+}
+
+state TurningBeforeSleep {
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("TurningBeforeSleep                          \n");
+#endif
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || IsStartingMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateSleep();
+    }
+    
+}
+
+//======================================
+
+state MovingToChair {
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("MovingToChair                            \n");
+#endif
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateSit();
+    }
+
+}
+
+state TurningBeforeSit {
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("TurningBeforeSit                          \n");
+#endif
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || IsStartingMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateSit();
+    }
+    
+}
+
+//======================================
+
+state MovingToQuestMarker {
+
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+
+    if (IsMoving() || FindTarget()) {
+        return state;
+    }
+    else {
+        UpdateDoingNothing();
+    }
+
+}
+
+//======================================
+
+function int SetQuestUnitSleep() {
+
+    if (!GetMission().HaveMarker(MARKER_Q_FINDBED,GetQuestUnitNumber())) return false;
+    return SetSleep();
+    
+}
+
+function string ChooseQuestUnitWorkMarker(int nNumber) {
+
+    mission pMission;
+    string astrMarkers[];
+
+    astrMarkers.RemoveAll();
+    pMission = GetMission();
+    
+    astrMarkers.Add(MARKER_Q_EMPTY);
+    if (pMission.HaveMarker(MARKER_Q_FINDCHAIR,nNumber)) astrMarkers.Add(MARKER_Q_FINDCHAIR);
+    if (pMission.HaveMarker(MARKER_Q_FINDDESK,nNumber)) astrMarkers.Add(MARKER_Q_FINDDESK);
+    if (pMission.HaveMarker(MARKER_Q_SITTING,nNumber)) astrMarkers.Add(MARKER_Q_SITTING);
+    if (pMission.HaveMarker(MARKER_Q_KNEEL,nNumber)) astrMarkers.Add(MARKER_Q_KNEEL);
+    if (pMission.HaveMarker(MARKER_Q_LAY_DOWN,nNumber)) astrMarkers.Add(MARKER_Q_LAY_DOWN);
+    if (pMission.HaveMarker(MARKER_Q_TRAINING,nNumber)) astrMarkers.Add(MARKER_Q_TRAINING);
+    if (pMission.HaveMarker(MARKER_Q_WOODCUT,nNumber)) astrMarkers.Add(MARKER_Q_WOODCUT);
+    if (pMission.HaveMarker(MARKER_Q_PINAXE,nNumber)) astrMarkers.Add(MARKER_Q_PINAXE);
+
+    if (astrMarkers.GetSize()) return astrMarkers[Rand(astrMarkers.GetSize())];
+    return "";
+
+}
+
+function int SetQuestUnitCustomWork() {
+
+    string strMarker;
+    int nDesk;
+    
+    strMarker = ChooseQuestUnitWorkMarker(GetQuestUnitNumber());            
+
+#ifdef ACTIVITY_DEBUG
+    TRACE("marker |%s|                     \n",strMarker);
+#endif
+
+    if (strMarker.EqualNoCase("")) {    
+        state Nothing;
+        return false;
+    
+    }
+    else if (strMarker.EqualNoCase(MARKER_Q_EMPTY)) {
+        SetWorkMarker(MARKER_Q_EMPTY,GetQuestUnitNumber());        
+        UpdateDoingNothing();
+        return true;
+    }
+    else if (strMarker.EqualNoCase(MARKER_Q_FINDCHAIR)) {
+        return SetSit();    
+    }       
+    else if (strMarker.EqualNoCase(MARKER_Q_FINDDESK)) {
+        nDesk = FindFreeDesk();
+        if (nDesk) {
+            SetWorkMarker(MARKER_READ,nDesk);        
+            UpdateCustomWork();
+            return true;
+        }
+        else {
+            state Nothing;
+            return false;
+        }
+    }       
+    else {
+        SetWorkMarker(strMarker,GetQuestUnitNumber());
+        UpdateCustomWork();
+        return true;        
+    }
+
+    return false;
+
+}
+
+function int UpdateQuestUnitActivity() {
+
+    int nCurrentWork;
+    int nFlag;
+        
+    m_nMakeCustomWorkTicks--;
+    if ((m_nMakeCustomWorkTicks > 0 && m_nMakeCustomWorkTicks < eMakeCustomWorkTicksMax && (state != Nothing || IsDoingNothing())) || (!IsDay() && IsSleeping() && HasSleepAnimation())) return true;
+    
+//    ResetActivity();
+    CommandStop();
+    ResetAnimation();
+    
+    if (!IsDay() && SetQuestUnitSleep()) nFlag = true;
+    else nFlag = SetQuestUnitCustomWork();
+    
+    if (nFlag) {
+        m_nMakeCustomWorkTicks = Rand(eMakeCustomWorkTicksMax - eMakeCustomWorkTicksMin) + eMakeCustomWorkTicksMin;
+        return true;
+    }
+    return false;
+
+}
+
+//======================================
+
+function int IsHeroInsideHouse(unit uHouse) {
+
+    int i;
+    for (i = 0; i < GetCampaign().GetPlayersCnt(); i++) {
+        if (!GetCampaign().IsPlayer(i)) continue;
+        if (GetCampaign().GetPlayerHeroUnit(i).GetHouseWithObject() == uHouse) return true;    
+    }
+    return false;
+
+}
+
+function void UpdateHouseDoor(int bSleeping) {
+
+    int nLastX;
+    int nLastY;
+    unit uHouse;
+    unit uDoor;
+    int nInside;
+    int nOpen;
+    int nTicks;
+    
+    if (bSleeping) {    
+    
+        uHouse = GetMission().GetHouseFromPoint(GetLocationX(),GetLocationY());
+        if (uHouse == null) return;
+        uDoor = uHouse.GetHouseExternalDoor(0);
+        if (uDoor == null) return;
+
+        // jesli hero w srodku to nie mozemy go tam zamknac
+        if (IsHeroInsideHouse(uHouse)) return;
+
+        // jesli ma ustawiona flage, ze byly lockpickowane to nie mozemy zamknac
+        if (GetDoorState(uDoor) == eDoorLockpicked) return;        
+        GetCampaign().CommandMessage(eMsgRegisterSingleDoor,uDoor);
+        SetDoorState(uDoor,eDoorClosed);
+    
+    }
+    else {
+
+        if (!GetStandardDialogNumber(GetThis()) && !IsQuestUnit(GetThis())) return;
+
+        nTicks = GetCampaign().GetGameTick();
+        if (nTicks - m_nLastUpdateHouseDoorTick < eUpdateHouseDoorInterval && nTicks > eUpdateHouseDoorInterval) return;
+        m_nLastUpdateHouseDoorTick = GetCampaign().GetGameTick();
+
+        uHouse = GetMission().GetHouseFromPoint(GetLocationX(),GetLocationY());
+        if (uHouse == null) return;
+        uDoor = uHouse.GetHouseExternalDoor(0);
+        if (uDoor == null) return;
+    
+        // jesli ma ustawiona flage, ze byly lockpickowane to nie musimy otwierac
+        if (GetDoorState(uDoor) == eDoorLockpicked) return;
+        GetCampaign().CommandMessage(eMsgRegisterSingleDoor,uDoor);
+        SetDoorState(uDoor,eDoorOpen);
+    
+    }
+               
+}
+
+//======================================
+
+function int UpdateActivity() {
+
+    int nActivity;
+
+    nActivity = GetExternalActivity();
+    
+    if (IsMovingTurning() || IsInArmedMode() || IsPreparingToDialog()) return false;
+    if (IsShopUnit() && GetNearestHeroA(GetThis(),M2A(2)) != null) return false;
+    if (!HasSleepAnimation()) UpdateHouseDoor(false);
+
+    if (nActivity == eEActivityWorking) return SetCustomWork();
+    if (nActivity == eEActivitySleeping) return SetSleep();
+    if (nActivity == eEActivitySitting) return SetSit();
+    if (nActivity == eEActivityQuestUnit) return UpdateQuestUnitActivity();    
+
+    if (nActivity != eEActivityControlledByUnit) {
+        ResetActivity();
+        return false;
+    }
+
+    if (!IsDay()) return SetSleep();
+    return SetCustomWork();
+/*    
+    if (Rand(2)) {
+        if (!SetSit(false)) return SetCustomWork(false);        
+    }
+    else {
+        if (!SetCustomWork(false)) return SetSit(false);        
+    }
+*/    
+    return true;
+
+}
+
+//======================================
+
+#endif

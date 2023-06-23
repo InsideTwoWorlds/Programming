@@ -1,0 +1,514 @@
+// Editor.WriteLevelsScript Map_%c%02d.lnd 9 12 A01 A02 A03 A04 A05 A06 A11 A12 B01 B02 B03 B04 B05 C01 C02 C03 C04 D01 D02 D03 D04 E01 E02 E03 E04 F01 F02 F03 F04 G01 G02 G03 G04 H01 H02 H03 H04 H08 H09 H10 H11 H12 I01 I02 I03 I04 I08 I09 I10 I11 I12
+
+// Map_C05.lnd
+Editor.LoadLevel Map_C05.lnd
+Editor.SetConnectedLevels null Map_D05.lnd Map_C06.lnd null
+Editor.SaveRaw Saveteren.raw 16 0 4608 6144 1024 2048   2   140
+@genlnd.txt
+Editor.SaveLevel 1
+
+
+// Map_D05.lnd
+Editor.LoadLevel Map_D05.lnd
+Editor.SetConnectedLevels Map_C05.lnd Map_E05.lnd Map_D06.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 2048   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E05.lnd
+Editor.LoadLevel Map_E05.lnd
+Editor.SetConnectedLevels Map_D05.lnd Map_F05.lnd Map_E06.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 2048   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F05.lnd
+Editor.LoadLevel Map_F05.lnd
+Editor.SetConnectedLevels Map_E05.lnd Map_G05.lnd Map_F06.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 2048   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G05.lnd
+Editor.LoadLevel Map_G05.lnd
+Editor.SetConnectedLevels Map_F05.lnd Map_H05.lnd Map_G06.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 2048   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_H05.lnd
+Editor.LoadLevel Map_H05.lnd
+Editor.SetConnectedLevels Map_G05.lnd Map_I05.lnd Map_H06.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3584 2048   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_I05.lnd
+Editor.LoadLevel Map_I05.lnd
+Editor.SetConnectedLevels Map_H05.lnd null Map_I06.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 4096 2048   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B06.lnd
+Editor.LoadLevel Map_B06.lnd
+Editor.SetConnectedLevels null Map_C06.lnd Map_B07.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C06.lnd
+Editor.LoadLevel Map_C06.lnd
+Editor.SetConnectedLevels Map_B06.lnd Map_D06.lnd Map_C07.lnd Map_C05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D06.lnd
+Editor.LoadLevel Map_D06.lnd
+Editor.SetConnectedLevels Map_C06.lnd Map_E06.lnd Map_D07.lnd Map_D05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E06.lnd
+Editor.LoadLevel Map_E06.lnd
+Editor.SetConnectedLevels Map_D06.lnd Map_F06.lnd Map_E07.lnd Map_E05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F06.lnd
+Editor.LoadLevel Map_F06.lnd
+Editor.SetConnectedLevels Map_E06.lnd Map_G06.lnd Map_F07.lnd Map_F05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G06.lnd
+Editor.LoadLevel Map_G06.lnd
+Editor.SetConnectedLevels Map_F06.lnd Map_H06.lnd Map_G07.lnd Map_G05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_H06.lnd
+Editor.LoadLevel Map_H06.lnd
+Editor.SetConnectedLevels Map_G06.lnd Map_I06.lnd Map_H07.lnd Map_H05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3584 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_I06.lnd
+Editor.LoadLevel Map_I06.lnd
+Editor.SetConnectedLevels Map_H06.lnd null Map_I07.lnd Map_I05.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 4096 2560   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_A07.lnd
+Editor.LoadLevel Map_A07.lnd
+Editor.SetConnectedLevels null Map_B07.lnd Map_A08.lnd null
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 0 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B07.lnd
+Editor.LoadLevel Map_B07.lnd
+Editor.SetConnectedLevels Map_A07.lnd Map_C07.lnd Map_B08.lnd Map_B06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C07.lnd
+Editor.LoadLevel Map_C07.lnd
+Editor.SetConnectedLevels Map_B07.lnd Map_D07.lnd Map_C08.lnd Map_C06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D07.lnd
+Editor.LoadLevel Map_D07.lnd
+Editor.SetConnectedLevels Map_C07.lnd Map_E07.lnd Map_D08.lnd Map_D06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E07.lnd
+Editor.LoadLevel Map_E07.lnd
+Editor.SetConnectedLevels Map_D07.lnd Map_F07.lnd Map_E08.lnd Map_E06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F07.lnd
+Editor.LoadLevel Map_F07.lnd
+Editor.SetConnectedLevels Map_E07.lnd Map_G07.lnd Map_F08.lnd Map_F06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G07.lnd
+Editor.LoadLevel Map_G07.lnd
+Editor.SetConnectedLevels Map_F07.lnd Map_H07.lnd Map_G08.lnd Map_G06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_H07.lnd
+Editor.LoadLevel Map_H07.lnd
+Editor.SetConnectedLevels Map_G07.lnd Map_I07.lnd null Map_H06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3584 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_I07.lnd
+Editor.LoadLevel Map_I07.lnd
+Editor.SetConnectedLevels Map_H07.lnd null null Map_I06.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 4096 3072   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_A08.lnd
+Editor.LoadLevel Map_A08.lnd
+Editor.SetConnectedLevels null Map_B08.lnd Map_A09.lnd Map_A07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 0 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B08.lnd
+Editor.LoadLevel Map_B08.lnd
+Editor.SetConnectedLevels Map_A08.lnd Map_C08.lnd Map_B09.lnd Map_B07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C08.lnd
+Editor.LoadLevel Map_C08.lnd
+Editor.SetConnectedLevels Map_B08.lnd Map_D08.lnd Map_C09.lnd Map_C07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D08.lnd
+Editor.LoadLevel Map_D08.lnd
+Editor.SetConnectedLevels Map_C08.lnd Map_E08.lnd Map_D09.lnd Map_D07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E08.lnd
+Editor.LoadLevel Map_E08.lnd
+Editor.SetConnectedLevels Map_D08.lnd Map_F08.lnd Map_E09.lnd Map_E07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F08.lnd
+Editor.LoadLevel Map_F08.lnd
+Editor.SetConnectedLevels Map_E08.lnd Map_G08.lnd Map_F09.lnd Map_F07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G08.lnd
+Editor.LoadLevel Map_G08.lnd
+Editor.SetConnectedLevels Map_F08.lnd null Map_G09.lnd Map_G07.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 3584   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_A09.lnd
+Editor.LoadLevel Map_A09.lnd
+Editor.SetConnectedLevels null Map_B09.lnd Map_A10.lnd Map_A08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 0 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B09.lnd
+Editor.LoadLevel Map_B09.lnd
+Editor.SetConnectedLevels Map_A09.lnd Map_C09.lnd Map_B10.lnd Map_B08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C09.lnd
+Editor.LoadLevel Map_C09.lnd
+Editor.SetConnectedLevels Map_B09.lnd Map_D09.lnd Map_C10.lnd Map_C08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D09.lnd
+Editor.LoadLevel Map_D09.lnd
+Editor.SetConnectedLevels Map_C09.lnd Map_E09.lnd Map_D10.lnd Map_D08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E09.lnd
+Editor.LoadLevel Map_E09.lnd
+Editor.SetConnectedLevels Map_D09.lnd Map_F09.lnd Map_E10.lnd Map_E08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F09.lnd
+Editor.LoadLevel Map_F09.lnd
+Editor.SetConnectedLevels Map_E09.lnd Map_G09.lnd Map_F10.lnd Map_F08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G09.lnd
+Editor.LoadLevel Map_G09.lnd
+Editor.SetConnectedLevels Map_F09.lnd null Map_G10.lnd Map_G08.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 4096   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_A10.lnd
+Editor.LoadLevel Map_A10.lnd
+Editor.SetConnectedLevels null Map_B10.lnd null Map_A09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 0 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B10.lnd
+Editor.LoadLevel Map_B10.lnd
+Editor.SetConnectedLevels Map_A10.lnd Map_C10.lnd Map_B11.lnd Map_B09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C10.lnd
+Editor.LoadLevel Map_C10.lnd
+Editor.SetConnectedLevels Map_B10.lnd Map_D10.lnd Map_C11.lnd Map_C09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D10.lnd
+Editor.LoadLevel Map_D10.lnd
+Editor.SetConnectedLevels Map_C10.lnd Map_E10.lnd Map_D11.lnd Map_D09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E10.lnd
+Editor.LoadLevel Map_E10.lnd
+Editor.SetConnectedLevels Map_D10.lnd Map_F10.lnd Map_E11.lnd Map_E09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F10.lnd
+Editor.LoadLevel Map_F10.lnd
+Editor.SetConnectedLevels Map_E10.lnd Map_G10.lnd Map_F11.lnd Map_F09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G10.lnd
+Editor.LoadLevel Map_G10.lnd
+Editor.SetConnectedLevels Map_F10.lnd null Map_G11.lnd Map_G09.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 4608   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B11.lnd
+Editor.LoadLevel Map_B11.lnd
+Editor.SetConnectedLevels null Map_C11.lnd Map_B12.lnd Map_B10.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 5120   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C11.lnd
+Editor.LoadLevel Map_C11.lnd
+Editor.SetConnectedLevels Map_B11.lnd Map_D11.lnd Map_C12.lnd Map_C10.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 5120   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D11.lnd
+Editor.LoadLevel Map_D11.lnd
+Editor.SetConnectedLevels Map_C11.lnd Map_E11.lnd Map_D12.lnd Map_D10.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 5120   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E11.lnd
+Editor.LoadLevel Map_E11.lnd
+Editor.SetConnectedLevels Map_D11.lnd Map_F11.lnd Map_E12.lnd Map_E10.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 5120   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F11.lnd
+Editor.LoadLevel Map_F11.lnd
+Editor.SetConnectedLevels Map_E11.lnd Map_G11.lnd Map_F12.lnd Map_F10.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 5120   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G11.lnd
+Editor.LoadLevel Map_G11.lnd
+Editor.SetConnectedLevels Map_F11.lnd null Map_G12.lnd Map_G10.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 5120   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_B12.lnd
+Editor.LoadLevel Map_B12.lnd
+Editor.SetConnectedLevels null Map_C12.lnd null Map_B11.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 512 5632   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_C12.lnd
+Editor.LoadLevel Map_C12.lnd
+Editor.SetConnectedLevels Map_B12.lnd Map_D12.lnd null Map_C11.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1024 5632   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_D12.lnd
+Editor.LoadLevel Map_D12.lnd
+Editor.SetConnectedLevels Map_C12.lnd Map_E12.lnd null Map_D11.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 1536 5632   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_E12.lnd
+Editor.LoadLevel Map_E12.lnd
+Editor.SetConnectedLevels Map_D12.lnd Map_F12.lnd null Map_E11.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2048 5632   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_F12.lnd
+Editor.LoadLevel Map_F12.lnd
+Editor.SetConnectedLevels Map_E12.lnd Map_G12.lnd null Map_F11.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 2560 5632   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+
+// Map_G12.lnd
+Editor.LoadLevel Map_G12.lnd
+Editor.SetConnectedLevels Map_F12.lnd null null Map_G11.lnd
+Editor.LoadRaw GENteren.raw 16 0 4608 6144 3072 5632   16   140
+@genlnd.txt
+editor.AddZToAll -14
+Editor.SaveLevel 1
+
+

@@ -1,0 +1,1415 @@
+#ifndef _P_QUEST_ACTIONS_
+#define _P_QUEST_ACTIONS_
+
+#include "PQuestUnits.ech"
+
+//======================================        
+
+consts {
+
+    eNoActivation             = 0;
+    eActivationPromote        = 1;
+    eActivationTake           = 2;
+    eActivationDisable        = 3;
+    eActivationSolve          = 4;
+    eActivationClose          = 5;
+    eActivationFailClose      = 6;
+    
+    eNoAction                 = 0;
+    eActionOpen               = 1;
+    eActionClose              = 2;
+    eActionNPCGo              = 3;
+    eActionNPCTeleport        = 4;
+    eActionNPCCreate          = 5;
+    eActionNPCRemove          = 6;
+    eActionNPCKill            = 7;
+    eActionNPCDialog          = 8;
+    eActionNPCChangeParty     = 9;
+    eActionObjectCreate       = 10;
+    eActionObjectAdd          = 11;
+    eActionObjectRemove       = 12;
+    eActionEnemyCreate        = 13;
+    eActionChangeRelations    = 14;    
+    eActionKillArea           = 15;
+    eActionClearArea          = 16;
+    eActionShowLocation       = 17;
+    eActionEffectCreate       = 18;
+    eActionSetWorldState      = 19;
+    eActionPlayCutscene       = 20;
+    eActionTeleportHero       = 30;
+    eActionActivateLevel      = 31;
+    eActionDisableTown        = 32;
+
+    // delayed actions
+    eActionKillAreaDelayed    = 101;
+
+    // special action
+    eActionAlreadyDone        = 213;
+
+    eActionKillAreaDelay      = 30 * 60;
+
+    eNoRelation               = 0;
+    eRelationPassive          = 1;
+    eRelationAggressive       = 2;
+
+    eSpecialPartyHero         = 123;
+
+    eActionObjectCreateRangeA = M2A(4);
+
+}
+
+//======================================        
+
+#define CUTSCENE_FILENAME    "Video\\Cut%d.wmv"
+
+int anActivationQuest[];
+int anActivationType[];
+int anActivationWhen[];
+int anActivationParam[];
+int nActivationsNumber;
+
+int anActionType[];
+int anActionQuest[];
+int anActionWhen[];    
+int anActionMission[];
+int anActionUnitMapping[];
+int anActionMarker[];
+int anActionParam1[];
+int anActionParam2[];
+int anActionParam3[];
+int anActionParam4[];
+string astrActionString[];
+string astrActionContainer[];
+int anActionDelay[];
+int anActionTimer[];
+int nCurrentAction;
+
+int anOnLoadLevelActions[];
+int nOnLoadLevelActionsNumber;
+
+int anDelayedActions[];
+int nDelayedActionsNumber;
+
+function void DoQuestAction(int nQuestNum, int nWhen, int nMission, unit uHero);
+function void DoOnLoadLevelAction(int nAction);
+function void DoDelayedAction(int nAction);
+
+//======================================        
+// debug
+
+#ifdef USE_COMMAND_DEBUG
+
+function int CheckSingleQuestAction(int nAction) {
+
+    int nType;
+    int nMapping;
+
+    if (anActionWhen[nAction] == eDontKnowWhen) {
+        TRACE("Action %d: don't know when                              \n",nAction);
+        return false;
+    }
+    
+    nType = anActionType[nAction];
+    
+    if (nType == eNoAction) return true;
+    if (nType == eActionOpen) {
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_GATE,anActionMarker[nAction])) {
+            TRACE("Action Open %d: can't find %s %d in mission %d                 \n",nAction,MARKER_GATE,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        return true;                        
+    }
+    if (nType == eActionClose) {
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_GATE,anActionMarker[nAction])) {
+            TRACE("Action Close %d: can't find %s %d in mission %d                 \n",nAction,MARKER_GATE,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        return true;                        
+    }
+    if (nType == eActionNPCGo) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Go %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        nMapping = anActionUnitMapping[nAction];
+        if (!GetCampaign().GetMission(anUnitMission[nMapping]).HaveMarker(MARKER_ACTION_GO,anActionMarker[nAction])) {
+            TRACE("Action Go %d: can't find %s %d in mission %d                 \n",nAction,MARKER_ACTION_GO,anActionMarker[nAction],anUnitMission[nMapping]);
+            return false;
+        }    
+        return true;        
+    }
+    if (nType == eActionNPCTeleport) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Teleport %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_ACTION_TELEPORT_UNIT,anActionMarker[nAction])) {
+            TRACE("Action Teleport %d: can't find %s %d in mission %d                 \n",nAction,MARKER_ACTION_TELEPORT_UNIT,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        return true;        
+    }
+    if (nType == eActionNPCCreate) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Create %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionNPCRemove) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Remove %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionNPCKill) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Kill %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionNPCDialog) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Dialog %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionNPCChangeParty) {
+        if (anActionUnitMapping[nAction] == eNoMapping) {
+            TRACE("Action Change Party %d: can't find unit                          \n",nAction);
+            return false;
+        }
+        if (anActionParam1[nAction] < 0) {
+            TRACE("Action Change Party %d: party = %d                                    \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionObjectCreate) {
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_ACTION_CREATE_OBJECT,anActionMarker[nAction])) {
+            TRACE("Action Object Create %d: can't find %s %d in mission %d                 \n",nAction,MARKER_ACTION_CREATE_OBJECT,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        return true;
+    }
+    if (nType == eActionObjectAdd) {
+        if (GetContainerMapping(astrActionContainer[nAction]) == eNoMapping) {
+            TRACE("Action Object Add %d: can't find container %s                         \n",nAction,astrActionContainer[nAction]);        
+            return false;
+        }
+        if (anActionParam1[nAction] <= 0) {
+            TRACE("Action Object Add %d: quantity = %d                                  \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionObjectRemove) {
+        if (GetContainerMapping(astrActionContainer[nAction]) == eNoMapping) {
+            TRACE("Action Object Remove %d: can't find container %s                         \n",nAction,astrActionContainer[nAction]);        
+            return false;
+        }
+        if (anActionParam1[nAction] <= 0) {
+            TRACE("Action Object Remove %d: quantity = %d                                  \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionEnemyCreate) {
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_ACTION_CREATE_ENEMY,anActionMarker[nAction])) {
+            TRACE("Action Enemy Create %d: can't find %s %d in mission %d                 \n",nAction,MARKER_ACTION_CREATE_ENEMY,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        if (anActionParam2[nAction] < 0) {
+            TRACE("Action Enemy Create %d: party = %d                          \n",nAction,anActionParam2[nAction]);
+            return false;
+        }
+        if (anActionParam3[nAction] < 0) {
+            TRACE("Action Enemy Create %d: quantity = %d                          \n",nAction,anActionParam3[nAction]);
+            return false;
+        }
+        if (anActionParam4[nAction] < 0) {
+            TRACE("Action Enemy Create %d: level = %d                          \n",nAction,anActionParam4[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionChangeRelations) {
+        if (anActionParam1[nAction] < 0) {
+            TRACE("Action Change Relations %d: party1 = %d                          \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        if (anActionParam2[nAction] < 0) {
+            TRACE("Action Change Relations %d: party2 = %d                          \n",nAction,anActionParam2[nAction]);
+            return false;
+        }
+        if (anActionParam3[nAction] < 0) {
+            TRACE("Action Change Relations %d: relations = %d                          \n",nAction,anActionParam3[nAction]);
+            return false;
+        }        
+        return true;        
+    }
+    if (nType == eActionKillArea) {
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_ACTION_KILL_AREA,anActionMarker[nAction])) {
+            TRACE("Action Kill Area %d: can't find %s %d in mission %d                 \n",nAction,MARKER_ACTION_KILL_AREA,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        if (anActionParam1[nAction] < 0) {
+            TRACE("Action Kill Area %d: party = %d                          \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        if (anActionParam2[nAction] <= 0) {
+            TRACE("Action Kill Area %d: range = %d                          \n",nAction,anActionParam2[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionClearArea) {
+        if (!GetCampaign().GetMission(anActionMission[nAction]).HaveMarker(MARKER_ACTION_CLEAR_AREA,anActionMarker[nAction])) {
+            TRACE("Action Clear Area %d: can't find %s %d in mission %d                 \n",nAction,MARKER_ACTION_CLEAR_AREA,anActionMarker[nAction],anActionMission[nAction]);
+            return false;
+        }    
+        if (anActionParam1[nAction] < 0) {
+            TRACE("Action Clear Area %d: party = %d                          \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        if (anActionParam2[nAction] <= 0) {
+            TRACE("Action Clear Area %d: range = %d                          \n",nAction,anActionParam2[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionShowLocation) {
+        if (!FindLocation(astrActionString[nAction])) {
+            TRACE("Action Show Location %d: can't find location %s                      \n",nAction,astrActionString[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionEffectCreate) {
+        if (anActionParam1[nAction] < 0) {
+            TRACE("Action Effect Create %d: x = %d                          \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        if (anActionParam2[nAction] <= 0) {
+            TRACE("Action Effect Create %d: y = %d                          \n",nAction,anActionParam2[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionSetWorldState) {
+        if (anActionParam1[nAction] < 1 || anActionParam1[nAction] > 3) {
+            TRACE("Action Set World State %d: area = %d                          \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        if (anActionParam2[nAction] < 1 || anActionParam2[nAction] > 2) {
+            TRACE("Action Set World State %d: state = %d                          \n",nAction,anActionParam2[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionPlayCutscene) {
+        if (anActionParam1[nAction] < 0) {
+            TRACE("Action Play Cutscene %d: cutscene = %d                          \n",nAction,anActionParam1[nAction]);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eActionDisableTown) {
+        if (anActionParam1[nAction] < 0 || anActionParam2[nAction] < 0) {
+            TRACE("Action Disable Town %d: x = %d y = %d                         \n",nAction,anActionParam1[nAction],anActionParam2[nAction]);
+            return false;
+        }
+        return true;
+    }
+    
+    return true;
+
+}
+
+function int CheckQuestActions() {
+
+    int i;
+    int nFlag;
+
+    nFlag = true;
+    for (i = 0; i < nCurrentAction; i++) nFlag &= CheckSingleQuestAction(i);
+    return nFlag;
+
+}
+
+function int CheckQuestActions(int nQuestNum) {
+
+    int i;
+    int nFlags;
+
+    if (nQuestNum == 0) return CheckQuestActions();
+    
+    nFlags = true;
+    for (i = 0; i < nCurrentAction; i++) if (anActionQuest[i] == nQuestNum) nFlags &= CheckSingleQuestAction(i);        
+    return nFlags;    
+
+}
+
+#endif
+
+//======================================        
+
+function void AddOnLoadLevelAction(int nAction) {
+
+    anOnLoadLevelActions.Add(nAction);
+    nOnLoadLevelActionsNumber = anOnLoadLevelActions.GetSize();
+    
+}
+
+function void RemoveOnLoadLevelAction(int nAction) {
+
+    anOnLoadLevelActions.RemoveAt(nAction);
+    nOnLoadLevelActionsNumber = anOnLoadLevelActions.GetSize();
+
+}
+
+function void DoOnLoadLevelActions(mission pMission) {
+
+    int nMission;
+    int nAction;
+    int i;
+    
+    nMission = pMission.GetMissionNum();
+    
+    for (i = 0; i < nOnLoadLevelActionsNumber; i++) {
+        nAction = anOnLoadLevelActions[i];
+        if (anActionMission[nAction] == nMission) {
+            DoOnLoadLevelAction(nAction);
+            RemoveOnLoadLevelAction(i);
+            i--;
+        }
+    }
+    
+}
+
+//======================================        
+
+function void AddDelayedAction(int nAction) {
+
+    anDelayedActions.Add(nAction);
+    nDelayedActionsNumber = anDelayedActions.GetSize();
+    
+}
+
+function void RemoveDelayedAction(int nAction) {
+
+    anDelayedActions.RemoveAt(nAction);
+    nDelayedActionsNumber = anDelayedActions.GetSize();
+
+}
+
+function void DoDelayedActions() {
+
+    int nAction;
+    int nTime;
+    int i;
+    
+    nTime = GetCampaign().GetGameTick();
+        
+    for (i = 0; i < nDelayedActionsNumber; i++) {
+        nAction = anDelayedActions[i];
+        if ((anActionTimer[nAction] + anActionDelay[nAction]) < nTime) {
+            DoDelayedAction(nAction);
+            RemoveDelayedAction(i);
+            i--;
+        }
+    }
+    
+}
+
+//======================================        
+
+function void AddActivation(int nQuestNum, int nType, int nWhen, int nParam) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActivaton(%d,%d,%d,%d)                                                 \n",nQuestNum,nType,nWhen,nParam);
+#endif
+
+    anActivationQuest.Add(nQuestNum);
+    anActivationType.Add(nType);
+    anActivationWhen.Add(nWhen);
+    anActivationParam.Add(nParam);
+    nActivationsNumber = anActivationQuest.GetSize();
+    
+}
+
+function void ActivateQuests(int nQuestNum, int nWhen, unit uHero) {
+
+    int i;
+    int nQuest;
+
+    for (i = 0; i < nActivationsNumber; i++) if ((anActivationQuest[i] == nQuestNum) && (anActivationWhen[i] == nWhen)) {
+
+        nQuest = anActivationParam[i];
+        if (anActivationType[i] == eActivationPromote) PromoteQuest(nQuest,uHero);
+        if (anActivationType[i] == eActivationTake) TakeQuest(nQuest,uHero);
+        if (anActivationType[i] == eActivationDisable) DisableQuest(nQuest,uHero);            
+        if (anActivationType[i] == eActivationSolve) SolveQuest(nQuest,uHero);            
+        if (anActivationType[i] == eActivationClose) CloseQuest(nQuest,uHero);
+        if (anActivationType[i] == eActivationFailClose) FailCloseQuest(nQuest,uHero);
+ 
+    }
+
+}
+
+//======================================        
+
+function void InsertNewAction() {
+
+    anActionType.Add(eNoAction);
+    anActionQuest.Add(eNoQuest);
+    anActionWhen.Add(eDontKnowWhen);
+    anActionMission.Add(eNoMission);
+    anActionUnitMapping.Add(eNoMapping);
+    anActionMarker.Add(eNoMarker);
+    anActionParam1.Add(0);
+    anActionParam2.Add(0);
+    anActionParam3.Add(0);
+    anActionParam4.Add(0);
+    astrActionString.Add("");
+    astrActionContainer.Add("");
+    anActionDelay.Add(0);
+    anActionTimer.Add(0);
+
+    nCurrentAction = anActionType.GetSize() - 1;
+
+}
+
+function void SetCurrentActionDelay(int nDelay) {
+
+    anActionDelay[nCurrentAction] = nDelay;
+
+}
+
+//======================================        
+
+function void AddActionOpen(int nQuestNum, int nWhen, int nMarker, int nMission) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionOpen(%d,%d,%d,%d)                                                   \n",nQuestNum,nWhen,nMarker,nMission);
+#endif
+
+    anActionType[nCurrentAction] = eActionOpen;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+          
+    nCurrentAction++;
+
+}
+
+function void AddActionClose(int nQuestNum, int nWhen, int nMarker, int nMission) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionClose(%d,%d,%d,%d)                                                 \n",nQuestNum,nWhen,nMarker,nMission);
+#endif
+
+    anActionType[nCurrentAction] = eActionClose;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+          
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCGo(int nQuestNum, int nWhen, int nUnitMapping, int nMarker) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCGo(%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nUnitMapping,nMarker);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCGo;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    anActionMarker[nCurrentAction] = nMarker;
+
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCTeleport(int nQuestNum, int nWhen, int nUnitMapping, int nMarker, int nMission, int nAngle) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCTeleport(%d,%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nUnitMapping,nMarker,nMission,nAngle);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCTeleport;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+    anActionParam1[nCurrentAction] = nAngle;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCCreate(int nQuestNum, int nWhen, int nUnitMapping) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCCreate(%d,%d,%d)                                   \n",nQuestNum,nWhen,nUnitMapping);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCCreate;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCRemove(int nQuestNum, int nWhen, int nUnitMapping) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCRemove(%d,%d,%d)                                   \n",nQuestNum,nWhen,nUnitMapping);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCRemove;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCKill(int nQuestNum, int nWhen, int nUnitMapping) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCKill(%d,%d,%d)                                   \n",nQuestNum,nWhen,nUnitMapping);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCKill;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCDialog(int nQuestNum, int nWhen, int nUnitMapping, string strDialog) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCDialog(%d,%d,%d,%s)                                   \n",nQuestNum,nWhen,nUnitMapping,strDialog);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCDialog;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    astrActionString[nCurrentAction] = strDialog;
+
+    nCurrentAction++;
+
+}
+
+function void AddActionNPCChangeParty(int nQuestNum, int nWhen, int nUnitMapping, int nParty) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionNPCChangeParty(%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nUnitMapping,nParty);
+#endif
+
+    anActionType[nCurrentAction] = eActionNPCChangeParty;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionUnitMapping[nCurrentAction] = nUnitMapping;
+    anActionParam1[nCurrentAction] = nParty;
+
+    nCurrentAction++;
+
+}
+
+function void AddActionObjectCreate(int nQuestNum, int nWhen, string strObject, int nMarker, int nMission) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionObjectCreate(%d,%d,%s,%d,%d)                                   \n",nQuestNum,nWhen,strObject,nMarker,nMission);
+#endif
+
+    anActionType[nCurrentAction] = eActionObjectCreate;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    astrActionString[nCurrentAction] = strObject;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionObjectAdd(int nQuestNum, int nWhen, string strContainer, string strObject, int nQuantity) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionObjectAdd(%d,%d,%s,%s,%d)                                   \n",nQuestNum,nWhen,strContainer,strObject,nQuantity);
+#endif
+
+    anActionType[nCurrentAction] = eActionObjectAdd;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    astrActionContainer[nCurrentAction] = strContainer;
+    astrActionString[nCurrentAction] = strObject;
+    anActionParam1[nCurrentAction] = nQuantity;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionObjectRemove(int nQuestNum, int nWhen, string strContainer, string strObject, int nQuantity) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionObjectRemove(%d,%d,%s,%s,%d)                                   \n",nQuestNum,nWhen,strContainer,strObject,nQuantity);
+#endif
+
+    anActionType[nCurrentAction] = eActionObjectRemove;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    astrActionContainer[nCurrentAction] = strContainer;
+    astrActionString[nCurrentAction] = strObject;
+    anActionParam1[nCurrentAction] = nQuantity;
+    
+    nCurrentAction++;
+
+}
+        
+function void AddActionEnemyCreate(int nQuestNum, int nWhen, int nEnemyType, int nQuantity, int nLevel, int nMarker, int nMission, int nParty) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionEnemyCreate(%d,%d,%d,",nQuestNum,nWhen,nEnemyType);
+    TRACE("%d,%d,%d,%d,%d)                                    \n",nQuantity,nLevel,nMarker,nMission,nParty);
+#endif
+
+    anActionType[nCurrentAction] = eActionEnemyCreate;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+    anActionParam1[nCurrentAction] = nEnemyType;
+    anActionParam2[nCurrentAction] = nParty;
+    anActionParam3[nCurrentAction] = nQuantity;
+    anActionParam4[nCurrentAction] = nLevel;
+    
+    nCurrentAction++;
+
+}
+
+
+function void AddActionChangeRelations(int nQuestNum, int nWhen, int nParty1, int nParty2, int nRelations) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionChangeRelations(%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nParty1,nParty2,nRelations);
+#endif
+
+    anActionType[nCurrentAction] = eActionChangeRelations;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionParam1[nCurrentAction] = nParty1;
+    anActionParam2[nCurrentAction] = nParty2;
+    anActionParam3[nCurrentAction] = nRelations;
+
+    nCurrentAction++;
+
+}
+
+function void AddActionKillArea(int nQuestNum, int nWhen, int nMarker, int nMission, int nRange, int nParty) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionKillArea(%d,%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nMarker,nMission,nRange,nParty);
+#endif
+
+    anActionType[nCurrentAction] = eActionKillArea;
+    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+    anActionParam1[nCurrentAction] = nRange;
+    anActionParam2[nCurrentAction] = nParty;
+        
+    nCurrentAction++;
+
+}
+
+function void AddActionClearArea(int nQuestNum, int nWhen, int nMarker, int nMission, int nRange, int nParty) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionClearArea(%d,%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nMarker,nMission,nRange,nParty);
+#endif
+
+    anActionType[nCurrentAction] = eActionClearArea;
+    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+    anActionParam1[nCurrentAction] = nRange;
+    anActionParam2[nCurrentAction] = nParty;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionShowLocation(int nQuestNum, int nWhen, string strLocation) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionShowLocation(%d,%d,%s)                                   \n",nQuestNum,nWhen,strLocation);
+#endif
+
+    anActionType[nCurrentAction] = eActionShowLocation;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    astrActionString[nCurrentAction] = strLocation;
+
+    nCurrentAction++;
+
+}
+
+function void AddActionEffectCreate(int nQuestNum, int nWhen, string strEffect, int nX, int nY, int nMission) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionEffectCreate(%d,%d,%s,%d,%d,%d)                                   \n",nQuestNum,nWhen,strEffect,nX,nY,nMission);
+#endif
+
+    anActionType[nCurrentAction] = eActionEffectCreate;    
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    astrActionString[nCurrentAction] = strEffect;
+    anActionParam1[nCurrentAction] = G2A(nX) + 128;
+    anActionParam2[nCurrentAction] = G2A(nY) + 128;
+    anActionMission[nCurrentAction] = nMission;
+    
+    nCurrentAction++;
+
+}
+
+function void AddActionSetWorldState(int nQuestNum, int nWhen, int nParam) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionSetWorldState(%d,%d,%d)                                   \n",nQuestNum,nWhen,nParam);
+#endif
+
+    anActionType[nCurrentAction] = eActionSetWorldState;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionParam1[nCurrentAction] = nParam / 10;
+    anActionParam2[nCurrentAction] = nParam % 10;
+
+}
+
+function void AddActionPlayCutscene(int nQuestNum, int nWhen, int nCutscene) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionPlayCutscene(%d,%d,%d)                                   \n",nQuestNum,nWhen,nCutscene);
+#endif
+
+    anActionType[nCurrentAction] = eActionPlayCutscene;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionParam1[nCurrentAction] = nCutscene;
+
+#ifndef QUESTS_MULTI    
+    // tutaj ustawiany jest delay dla cutscen
+    if (nCutscene == 7) SetCurrentActionDelay(30 * 5); 
+    if (nCutscene == 8) SetCurrentActionDelay(30 * 5);
+#endif
+
+}
+
+function void AddActionTeleportHero(int nQuestNum, int nWhen, int nMarker, int nMission, int nAngle) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionTeleportHero(%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nMarker,nMission,nAngle);
+#endif
+
+    anActionType[nCurrentAction] = eActionTeleportHero;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMarker[nCurrentAction] = nMarker;
+    anActionMission[nCurrentAction] = nMission;
+    anActionParam1[nCurrentAction] = nAngle;
+
+}
+
+function void AddActionActivateLevel(int nQuestNum, int nWhen, string strLevel) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionActivateLevel(%d,%d,%s)                                   \n",nQuestNum,nWhen,strLevel);
+#endif
+
+    anActionType[nCurrentAction] = eActionActivateLevel;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    astrActionString[nCurrentAction] = strLevel;
+
+}
+
+function void AddActionDisableTown(int nQuestNum, int nWhen, int nX, int nY, int nMission) {
+
+    InsertNewAction();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddActionDisableTown(%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nX,nY,nMission);
+#endif
+
+    anActionType[nCurrentAction] = eActionDisableTown;
+    anActionQuest[nCurrentAction] = nQuestNum;
+    anActionWhen[nCurrentAction] = nWhen;
+    anActionMission[nCurrentAction] = nMission;
+    anActionParam1[nCurrentAction] = nX;
+    anActionParam2[nCurrentAction] = nY;
+
+}
+
+//======================================        
+
+function void ActionOpen(int nAction) {
+
+    RemoveQuestGate(anActionMission[nAction],anActionMarker[nAction]);            
+
+}
+
+function void ActionClose(int nAction) {
+
+    AddQuestGate(anActionMission[nAction],anActionMarker[nAction]);            
+
+}
+
+function void ActionNPCGo(int nAction) {
+
+    int nX, nY;
+    unit uUnit;
+    int nMarker;
+
+    uUnit = GetUnitFromMission(anActionUnitMapping[nAction]);
+    nMarker = anUnitNumber[anActionUnitMapping[nAction]];
+    if (uUnit == null) {
+        __ASSERT_FALSE();
+        return;
+    }
+    
+    if (uUnit.GetMission().GetMarker(MARKER_ACTION_GO,anActionMarker[nAction],nX,nY)) {
+        uUnit.GetMission().SetMarker(MARKER_QUEST_START,nMarker,nX,nY,0,0);
+        uUnit.CommandMoveAttack(nX,nY,0);
+        return;
+    }
+
+#ifdef QUEST_DEBUG
+    TRACE("ActionNPCGo: can't find %s %d                 \n",MARKER_ACTION_GO,anActionMarker[nAction]);
+#else
+    __ASSERT_FALSE();
+#endif
+                     
+}
+
+function void ActionNPCTeleport(int nAction) {
+
+    int nQuestNum;    
+    int nMapping;
+    
+    nQuestNum = anActionQuest[nAction];
+    nMapping = anActionUnitMapping[nAction];
+    anUnitAngle[nMapping] = anActionParam1[nAction];
+        
+    TeleportUnit(nMapping,anActionMarker[nAction],anActionMission[nAction]);
+//    UpdateQuestLogAfterNPCTeleport(nMapping);
+    
+}
+
+function void ActionNPCCreate(int nAction) {
+
+    int nQuestNum;    
+    nQuestNum = anActionQuest[nAction];
+
+    ActivateUnit(anActionUnitMapping[nAction]);
+    
+}
+
+function void ActionNPCRemove(int nAction) {
+
+    RemoveUnit(anActionUnitMapping[nAction]);
+    
+}
+
+function void ActionNPCKill(int nAction) {
+
+    KillUnit(anActionUnitMapping[nAction]);
+
+}
+
+function void ActionNPCDialog(int nAction, unit uHero) {
+
+    int nMapping;
+    unit uUnit;
+
+    nMapping = anActionUnitMapping[nAction];
+    uUnit = GetUnitFromMission(nMapping);
+    ASSERT(uUnit != null);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).PlayDialog(GetScriptUID(),eDialogQuestActionUID,astrActionString[nAction],1,uHero,uUnit);        
+    
+}
+
+function void ActionNPCChangeParty(int nAction) {
+
+    unit uUnit;
+    int nMapping;
+    
+    nMapping = anActionUnitMapping[nAction];
+    uUnit = GetUnitFromMission(nMapping);
+    if (uUnit != null) uUnit.SetPartyNum(anActionParam1[nAction]);
+    anUnitParty[nMapping] = anActionParam1[nAction];
+         
+}
+
+function void ActionObjectCreate(int nAction) {
+
+    mission pMission;
+    int nX, nY;
+    int i;
+    int nTargetX, nTargetY;
+    unit uObject;
+    int count;
+    
+    pMission = GetCampaign().GetMission(anActionMission[nAction]);
+    ASSERT(pMission != null);
+    if (pMission.IsLevelLoaded()) {
+        if (pMission.GetMarker(MARKER_ACTION_CREATE_OBJECT,anActionMarker[nAction],nX,nY)) {
+            if (anActionParam1[nAction] == 0) { // akcja singlowa, tworzymy tylko jeden obiekt
+                pMission.CreateObject(astrActionString[nAction],nX,nY,0,Rand(256));
+            }
+            else {
+                for (i = 0; i < anActionParam1[nAction]; i++) {
+                    uObject = null;
+                    count = 15;
+                    while (count > 0 && uObject == null) {
+                        GetPointInRange(nX,nY,0,eActionObjectCreateRangeA,null,nTargetX,nTargetY);
+                        uObject = pMission.CreateObject(astrActionString[nAction],nTargetX,nTargetY,0,Rand(256));
+                        count--;
+                    }
+                }
+            }
+            return;
+        }
+        __ASSERT_FALSE();
+    }
+    else {
+        AddOnLoadLevelAction(nAction);    
+    }
+
+}
+
+function void ActionObjectAdd(int nAction, unit uHero) {
+
+    int i;
+    int nLevel;
+    string strItem;
+    
+    if (astrActionString[nAction].EqualNoCase(RANDOM_ITEM)) {
+        nLevel = uHero.GetUnitLevel();
+        for (i = 0; i < anActionParam1[nAction]; i++) {
+            strItem = CreateRewardString(nLevel, false);
+            AddItemToUnit(astrActionContainer[nAction],strItem);
+            AddItemToContainer(astrActionContainer[nAction],strItem);
+        }        
+    }
+    else {
+        for (i = 0; i < anActionParam1[nAction]; i++) {
+            AddItemToUnit(astrActionContainer[nAction],astrActionString[nAction]);
+            AddItemToContainer(astrActionContainer[nAction],astrActionString[nAction]);
+        }        
+    }
+
+}
+
+function void ActionObjectRemove(int nAction) {
+
+    int i;
+    for (i = 0; i < anActionParam1[nAction]; i++) {
+        RemoveItemFromUnit(astrActionContainer[nAction],astrActionString[nAction]);
+        RemoveItemFromContainer(astrActionContainer[nAction],astrActionString[nAction]);
+    }
+
+}
+
+function void ActionEnemyCreate(int nAction) {
+    
+    mission pMission;
+    int nX, nY;        
+    
+    pMission = GetCampaign().GetMission(anActionMission[nAction]);
+    ASSERT(pMission != null);
+    if (pMission.IsLevelLoaded()) {
+        if (pMission.GetMarker(MARKER_ACTION_CREATE_ENEMY,anActionMarker[nAction],nX,nY)) {        
+            SendMessageToGlobalScripts(eMsgSetCreateEnemyParams,anActionParam1[nAction],anActionParam2[nAction],anActionParam3[nAction],anActionParam4[nAction]);
+            SendMessageToGlobalScripts(eMsgCreateEnemy,anActionMission[nAction],nX,nY);
+            return;
+        }
+        __ASSERT_FALSE();
+        
+    }
+    else {
+        AddOnLoadLevelAction(nAction);    
+    }
+
+}
+
+function void ActionChangeRelations(int nAction, unit uHero) {
+
+    int i;   
+    int nParty1, nParty2;
+
+    if ((anActionParam1[nAction] == eSpecialPartyHero) && (anActionParam2[nAction] == eSpecialPartyHero)) {
+#ifdef QUEST_DEBUG
+        TRACE("ActionChangeRelations error: both parties are hero party\n                                           ");           
+#endif
+        return;    
+    }
+
+    if (anActionParam1[nAction] == eSpecialPartyHero) {
+    
+        for (i = 0; i < GetPlayersCnt(); i++) if (uHero.IsInParty(ePartyPlayer1 + i)) break;
+        nParty1 = ePartyPlayer1 + i;
+        nParty2 = anActionParam2[nAction];
+    
+    }
+    else if (anActionParam2[nAction] == eSpecialPartyHero) {
+    
+        for (i = 0; i < GetPlayersCnt(); i++) if (uHero.IsInParty(ePartyPlayer1 + i)) break;
+        nParty1 = ePartyPlayer1 + i;
+        nParty2 = anActionParam1[nAction];
+    
+    }
+    else {
+    
+        nParty1 = anActionParam1[nAction];
+        nParty2 = anActionParam2[nAction];
+
+    }
+
+    if (anActionParam3[nAction] == eRelationPassive) GetCampaign().SetPartyNeutral(nParty1,nParty2);
+    else if (anActionParam3[nAction] == eRelationAggressive) GetCampaign().SetPartyEnemy(nParty1,nParty2);
+                     
+}
+
+function void ActionKillArea(int nAction) {
+
+    unit uUnit;
+    int i, count;
+    mission pMission;
+    int nX, nY;
+    
+    pMission = GetCampaign().GetMission(anActionMission[nAction]);
+    ASSERT(pMission != null);
+    if (pMission.IsLevelLoaded()) {
+        if (pMission.GetMarker(MARKER_ACTION_KILL_AREA,anActionMarker[nAction],nX,nY)) {        
+            pMission.SearchUnitsInArea(nX,nY,anActionParam1[nAction],GetSinglePartyArray(anActionParam2[nAction]));
+            count = pMission.GetSearchUnitsInAreaCount();
+            for (i = 0; i < count; i++) {
+                uUnit = pMission.GetSearchUnitInArea(i);
+                ASSERT(uUnit != null);
+                uUnit.KillObject();
+            }
+            pMission.ClearSearchUnitsInAreaArray();
+        }
+        __ASSERT_FALSE();
+    }
+    else {
+        AddOnLoadLevelAction(nAction);    
+    }
+    
+}
+
+
+function void ActionClearArea(int nAction) {
+
+    unit uUnit;
+    int i, count;
+    mission pMission;
+    int nX, nY;
+    
+    pMission = GetCampaign().GetMission(anActionMission[nAction]);
+    ASSERT(pMission != null);
+    if (pMission.IsLevelLoaded()) {
+        if (pMission.GetMarker(MARKER_ACTION_CLEAR_AREA,anActionMarker[nAction],nX,nY)) {        
+            pMission.SearchUnitsInArea(nX,nY,anActionParam1[nAction],GetSinglePartyArray(anActionParam2[nAction]));
+            count = pMission.GetSearchUnitsInAreaCount();
+            for (i = 0; i < count; i++) {
+                uUnit = pMission.GetSearchUnitInArea(i);
+                ASSERT(uUnit != null);
+                uUnit.RemoveObject();
+            }
+            pMission.ClearSearchUnitsInAreaArray();
+        }
+        __ASSERT_FALSE();
+    }
+    else {
+        AddOnLoadLevelAction(nAction);    
+    }
+
+}
+
+function void ActionShowLocation(int nAction, unit uHero) {
+
+#ifdef QUEST_DEBUG
+    TRACE("ActionShowLocation:  %d %s                                   \n",nAction, astrActionString[nAction]);
+#endif
+
+    ASSERT(uHero != null);
+    ShowLocation(astrActionString[nAction],uHero.GetHeroPlayerNum(),false);
+
+}
+
+function void ActionEffectCreate(int nAction) {
+
+    mission pMission;
+    int nX, nY;
+    
+    pMission = GetCampaign().GetMission(anActionMission[nAction]);
+    ASSERT(pMission != null);
+    if (pMission.IsLevelLoaded()) {
+        pMission.CreateObject(astrActionString[nAction],anActionParam1[nAction],anActionParam2[nAction],0,Rand(256));
+    }
+    else {
+        AddOnLoadLevelAction(nAction);    
+    }
+
+}
+
+function void ActionSetWorldState(int nAction) {
+
+    SendMessageToGlobalScripts(eMsgSetWorldState,anActionParam1[nAction],anActionParam2[nAction]);   
+    if (anActionParam1[nAction] == 2) {
+        if (anActionParam2[nAction] == 1) GetCampaign().SetDrawPentagramStrength(100);
+        if (anActionParam2[nAction] == 2) {
+            GetCampaign().SetDrawPentagramStrength(0);
+            GetCampaign().CommandMessage(eMsgAchievement,eAchievementDestroyThePentagram,GetHero(0)); // uwaga!!! GetHero(0) bo to tylko w singlu
+        }
+    }
+
+}
+
+function void ActionPlayCutscene(int nAction, unit uHero) {
+
+    string str;    
+    int bEndGameAfter;
+
+    bEndGameAfter = false;
+#ifndef QUESTS_MULTI    
+    if (anActionParam1[nAction] == 7 || anActionParam1[nAction] == 8) 
+    {
+        bEndGameAfter = true;
+    }
+#endif
+
+    str.Format(CUTSCENE_FILENAME,anActionParam1[nAction]);
+    GetCampaign().GetPlayerInterface(uHero.GetHeroPlayerNum()).PlayVideoCutscene(str,true,bEndGameAfter);
+    
+}
+
+function void ActionTeleportHero(int nAction) {
+
+    int i;
+    mission pMission;
+    int nX, nY;
+    
+    pMission = GetCampaign().GetMission(anActionMission[nAction]);
+    ASSERT(pMission != null);
+    
+    if (pMission.GetMarker(MARKER_ACTION_TELEPORT_UNIT,anActionMarker[nAction],nX,nY)) {
+        
+        for (i = 0; i < GetPlayersCnt(); i++) {
+            if (!IsPlayer(i)) continue;
+            if (!IsQuestTakenByHero(anActionQuest[nAction],i)) continue;
+            GetHero(i).SetImmediatePosition(pMission,nX,nY,0,anActionParam1[nAction],true);
+        }
+    
+    }    
+    else {
+        __ASSERT_FALSE();
+    }
+   
+}
+
+function void ActionActivateLevel(int nAction) {
+
+    int i;
+    
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        if (!IsPlayer(i)) continue;
+        if (!IsQuestTakenByHero(anActionQuest[nAction],i)) continue;
+        GetHero(i).SetPlayersCommonAttribute(astrActionString[nAction],true);
+    }
+
+}
+
+function void ActionDisableTown(int nAction) {
+
+    SendMessageToTownScript(GetCampaign().GetMission(anActionMission[nAction]),eMsgDisableTown,anActionParam1[nAction],anActionParam2[nAction],0);
+
+}
+
+//======================================        
+
+function void DoQuestAction(int nQuestNum, int nWhen, int nMission, unit uHero) {
+
+    int i;
+    int nType;
+               
+    for (i = 0; i < nCurrentAction; i++) if ((anActionQuest[i] == nQuestNum) && (anActionWhen[i] == nWhen)) {
+    
+#ifdef QUEST_DEBUG    
+        TRACE("DoSpecialAction - nQuestNum: %d nType: %d nMission: %d                                        \n",nQuestNum,anActionType[i],anActionMission[i]);
+#endif
+
+        if (anActionDelay[i]) {
+            anActionTimer[i] = GetCampaign().GetGameTick();
+            AddDelayedAction(i);
+            continue;        
+        }
+    
+        nType = anActionType[i];   
+        ASSERT(nType != eNoAction);
+        if (nType == eActionOpen) ActionOpen(i);
+        else if (nType == eActionClose) ActionClose(i);
+        else if (nType == eActionNPCGo) ActionNPCGo(i);
+        else if (nType == eActionNPCTeleport) ActionNPCTeleport(i);
+        else if (nType == eActionNPCCreate) ActionNPCCreate(i);
+        else if (nType == eActionNPCRemove) ActionNPCRemove(i);
+        else if (nType == eActionNPCKill) ActionNPCKill(i);
+        else if (nType == eActionNPCDialog) ActionNPCDialog(i,uHero);
+        else if (nType == eActionNPCChangeParty) ActionNPCChangeParty(i);
+        else if (nType == eActionObjectCreate) ActionObjectCreate(i);
+        else if (nType == eActionObjectAdd) ActionObjectAdd(i,uHero);
+        else if (nType == eActionObjectRemove) ActionObjectRemove(i);
+        else if (nType == eActionEnemyCreate) ActionEnemyCreate(i);                
+        else if (nType == eActionChangeRelations) ActionChangeRelations(i,uHero);
+        else if (nType == eActionKillArea) ActionKillArea(i);
+        else if (nType == eActionClearArea) ActionClearArea(i);
+        else if (nType == eActionShowLocation) ActionShowLocation(i,uHero);
+        else if (nType == eActionEffectCreate) ActionEffectCreate(i);
+        else if (nType == eActionSetWorldState) ActionSetWorldState(i);
+        else if (nType == eActionPlayCutscene) ActionPlayCutscene(i,uHero);
+        else if (nType == eActionTeleportHero) ActionTeleportHero(i);
+        else if (nType == eActionActivateLevel) ActionActivateLevel(i);        
+        else if (nType == eActionDisableTown) ActionDisableTown(i);  
+        else if (nType == eActionAlreadyDone); // akcja juz wykonana      
+        else {
+            __ASSERT_FALSE();
+        }    
+    
+    }
+    
+}
+
+function void DoOnLoadLevelAction(int nAction) {
+
+    int nType;
+            
+#ifdef QUEST_DEBUG    
+    TRACE("DoOnLoadSpecialAction - nQuestNum: %d nType: %d nMission: %d                                        \n",anActionQuest[nAction],anActionType[nAction],anActionMission[nAction]);
+#endif
+    
+    nType = anActionType[nAction];   
+    ASSERT(nType != eNoAction);
+    if (nType == eActionObjectCreate) ActionObjectCreate(nAction);
+    else if (nType == eActionEnemyCreate) ActionEnemyCreate(nAction);                
+    else if (nType == eActionKillArea) ActionKillArea(nAction);
+    else if (nType == eActionClearArea) ActionClearArea(nAction);
+    else if (nType == eActionEffectCreate) ActionEffectCreate(nAction);
+    else {
+        __ASSERT_FALSE();
+    }
+        
+}
+
+function void DoDelayedAction(int nAction) {
+
+    int nType;
+            
+#ifdef QUEST_DEBUG    
+    TRACE("DoDelayedAction - nQuestNum: %d nType: %d nMission: %d                                        \n",anActionQuest[nAction],anActionType[nAction],anActionMission[nAction]);
+#endif
+    
+    nType = anActionType[nAction];   
+    ASSERT(nType != eNoAction);
+    if (nType == eActionKillArea) ActionKillArea(nAction);
+    else if (nType == eActionTeleportHero) ActionTeleportHero(nAction);
+    else if (nType == eActionPlayCutscene) ActionplayCutscene(nAction,GetHero(0)); // uwaga!!! taka mozliwosc tylko w singlu, wiec spokojnie moze byc GetHero(0)
+    else {
+        __ASSERT_FALSE();
+    }
+    
+}
+
+//======================================        
+
+function void OpenGateOnSolveQuestKill(int nQuestNum) {
+
+    int i;               
+    for (i = 0; i < nCurrentAction; i++) 
+        if ((anActionQuest[i] == nQuestNum) && (anActionWhen[i] == eWhenQuestSolved) && (anActionType[i] == eActionOpen)) {
+            ActionOpen(i);
+            anActionType[i] = eActionAlreadyDone;        
+        }
+
+}
+
+//======================================        
+
+#endif

@@ -1,0 +1,481 @@
+#ifndef _P_LOCATIONS_
+#define _P_LOCATIONS_
+
+#define RESURRECT_LOCATION_NAME       "Shrine"
+#define MANA_REG_LOCATION_NAME        "ManaReg"
+#define CAVE_ENTRY_LOCATION_NAME      "CAVE_%s_0_%d"
+#define CAVE_EXIT_LOCATION_NAME       "CAVE_EXIT"
+#define LOCATION_QUEST_UNDERGROUND    "translateQuestsUnderground"
+
+// locations
+string astrLocationName[];
+int anLocationX[];
+int anLocationY[];
+int anLocationMission[];
+int anLocationRange[];
+int anLocationVisibleByHero[];
+int anLocationSign[];
+int nLocationsNum;
+
+//======================================        
+
+function void GetLocationZoomLevel(int nSign, int &nMin, int &nMax) {
+    
+    if (nSign==20 || nSign>=22) {nMin=-1;nMax=200;} //widac z bliska - nie dziala
+    else if (nSign==10) {nMin=150;nMax=-1;} //widac tylko z daleka -dziala
+    else {nMin=-1;nMax=-1;}//widac zawsze - dziala
+/*    
+City	10
+Gate	11 *
+Village	12
+Lake	13
+Ruins	14
+Quest Point	15
+Architectur Point	16
+Geographic Point	17
+Graveyard	18
+Camp	19
+Cave	20 *
+Oasis	21
+Shop	22
+Shrine	23 *
+Trainers 24
+Teleport 25
+*/
+}
+
+//======================================        
+
+function void AddLocationQuestUnderground(mission pMission, int nQuestNum, int nHero) {
+
+    int i;
+    int nMaxMarker;
+    int nLocation;
+    mission m;
+    int nX, nY;
+
+    if (!pMission.IsUndergroundLevel()) return;
+    m = pMission.GetUpperConnectedMission();
+    
+    ASSERT(m != null);
+
+    nMaxMarker = m.GetMaxMarkerNum(MARKER_TELEPORT);
+    nLocation = nLocationsNum + nQuestNum + eFirstQuest;
+    for (i = 1; i <= nMaxMarker; i++) 
+        if (m.GetMarker(MARKER_TELEPORT,i,nX,nY)) {
+            GetPlayerInterface(nHero).AddCampaignLocation(nLocation,LOCATION_QUEST_UNDERGROUND,eMapSignGreen,eMapSignGreen,m,nX,nY);            
+            GetPlayerInterface(nHero).SetCampaignLocationMinVisibleZoomPercent(nLocation,-1);
+            GetPlayerInterface(nHero).SetCampaignLocationMaxVisibleZoomPercent(nLocation,-1);
+            anQuestFlags[nQuestNum] |= eQuestUnderground;
+            return;
+        }
+
+}
+
+function void RemoveLocationQuestUnderground(int nQuestNum, int nHero) {
+
+    if (!(anQuestFlags[nQuestNum] & eQuestUnderground)) return;    
+    GetPlayerInterface(nHero).RemoveCampaignLocation(nLocationsNum + nQuestNum);
+    anQuestFlags[nQuestNum] &= (~eQuestUnderground);
+
+}
+
+//======================================        
+      
+function int FindLocation(string strName) {
+
+    int i;
+    for (i = 0; i < nLocationsNum; i++) if (astrLocationName[i].EqualNoCase(strName)) return i;
+    return eNoLocation;
+    
+}    
+    
+function void ShowLocation(int nLocation, int nHero, int nDisplayMessage) {
+
+    mission pMission;    
+    int nX, nY;
+    string str;
+    int nZoomMin, nZoomMax;
+    int nMinimapSign;        
+        
+    nX = G2A(anLocationX[nLocation]);
+    nY = G2A(anLocationY[nLocation]);
+    str.Format("translate%s",astrLocationName[nLocation]);         
+
+    pMission = GetCampaign().GetMission(anLocationMission[nLocation]);    
+
+    nMinimapSign = anLocationSign[nLocation];
+    if (nMinimapSign != 11 && nMinimapSign != 20 && nMinimapSign != 23 && !astrLocationName[nLocation].EqualNoCase(MANA_REG_LOCATION_NAME)) nMinimapSign = -1;
+
+    GetLocationZoomLevel(anLocationSign[nLocation],nZoomMin,nZoomMax);
+    GetPlayerInterface(nHero).AddCampaignLocation(nLocation,str,anLocationSign[nLocation],nMinimapSign,pMission,nX,nY);
+    GetPlayerInterface(nHero).SetCampaignLocationMinVisibleZoomPercent(nLocation,nZoomMin);
+    GetPlayerInterface(nHero).SetCampaignLocationMaxVisibleZoomPercent(nLocation,nZoomMax);
+
+    anLocationVisibleByHero[nLocation] |= (1 << nHero);
+
+    if (nDisplayMessage) ConsoleTextOut(nHero,FormatTranslateLocationFound(str));
+    
+}
+
+function void ShowLocation(string strName, int nHero, int nDisplayMessage) {
+    
+    int nLocation;
+    nLocation = FindLocation(strName);
+    if (nLocation != eNoLocation) ShowLocation(nLocation,nHero,nDisplayMessage);
+    
+}
+
+function void ShowLocationToAllHeroes(int nLocation) {
+
+    int i;
+    for (i = 0; i < GetPlayersCnt(); i++) 
+        if (IsPlayer(i)) ShowLocation(nLocation,i,false);
+
+}
+
+function int IsLocationVisibleByHero(int nLocation, int nHero) {
+    
+    if (anLocationVisibleByHero[nLocation] & (1 << nHero)) return true;
+    return false;
+    
+}
+
+function int IsLocationVisibleByHero(string strName, int nHero) {
+
+    int nLocation;
+    nLocation = FindLocation(strName);
+    if (nLocation == eNoLocation) return false;
+    return IsLocationVisibleByHero(nLocation,nHero);
+    
+}
+
+//======================================        
+
+// UWAGA, nie liczy lokacji defaultowo odkrytych (dla ktorych Range == 0)
+function int GetVisitedLocationsCount(int nHero)
+{
+    int nIndex, nCount;
+    nCount = 0;
+    for (nIndex = 0; nIndex < nLocationsNum; nIndex++)
+    {
+        if( (anLocationRange[nIndex] > 0) && IsLocationVisibleByHero(nIndex, nHero) )
+        {
+            nCount++;
+        }
+    }
+    return nCount;
+}
+
+// UWAGA, nie liczy lokacji defaultowo odkrytych (dla ktorych Range == 0)
+function int GetLocationsCount()
+{
+    int nIndex, nCount;
+    nCount = 0;
+    for (nIndex = 0; nIndex < nLocationsNum; nIndex++)
+    {
+        if( anLocationRange[nIndex] > 0 )
+        {
+            nCount++;
+        }
+    }
+    return nCount;
+}
+
+function int GetVisitedGraveyardsCount(int nHero)
+{
+    int nIndex, nCount;
+    nCount = 0;    
+    for (nIndex = 0; nIndex < nLocationsNum; nIndex++)
+    {
+        if( (anLocationRange[nIndex] > 0) && (anLocationSign[nIndex] == 18) && IsLocationVisibleByHero(nIndex, nHero) )
+        {
+            nCount++;
+        }
+    }
+    return nCount;
+}
+
+function int GetGraveyardsCount()
+{
+    int nIndex, nCount;
+    nCount = 0;    
+    for (nIndex = 0; nIndex < nLocationsNum; nIndex++)
+    {
+        if( (anLocationRange[nIndex] > 0) && (anLocationSign[nIndex] == 18) )
+        {
+            nCount++;
+        }
+    }
+    return nCount;   
+}
+
+function int GetVisitedDungeonsCount(int nHero)
+{
+    int nIndex, nCount;
+    int anMissions[];
+    
+    nCount = GetCampaign().GetMissionsCnt(); 
+    anMissions.SetSize(nCount);
+    for (nIndex = 0; nIndex < nCount; nIndex++)
+    {
+        anMissions[nIndex] = false;
+    }
+    nCount = 0;
+    for (nIndex = 0; nIndex < nLocationsNum; nIndex++)
+    {
+        if( (anLocationRange[nIndex] > 0) && (anLocationSign[nIndex] == 20) && 
+            IsLocationVisibleByHero(nIndex, nHero) && 
+            GetCampaign().GetMission(anLocationMission[nIndex]).IsUndergroundLevel() &&
+            !anMissions[anLocationMission[nIndex]] )
+        {
+            nCount++;
+            anMissions[anLocationMission[nIndex]] = true;
+        }
+    }
+    return nCount;     
+}
+
+function int GetDungeonsCount()
+{
+    int nIndex, nCount;
+    int anMissions[];
+    
+    nCount = GetCampaign().GetMissionsCnt(); 
+    anMissions.SetSize(nCount);
+    for (nIndex = 0; nIndex < nCount; nIndex++)
+    {
+        anMissions[nIndex] = false;
+    }
+    nCount = 0;
+    for (nIndex = 0; nIndex < nLocationsNum; nIndex++)
+    {
+        if( (anLocationRange[nIndex] > 0) && (anLocationSign[nIndex] == 20) &&
+            GetCampaign().GetMission(anLocationMission[nIndex]).IsUndergroundLevel() &&
+            !anMissions[anLocationMission[nIndex]] )
+        {
+            nCount++;
+            anMissions[anLocationMission[nIndex]] = true;
+        }
+    }
+    return nCount;     
+}
+
+function void CheckIsHeroNearLocation(unit uHero) {
+
+    int i;
+    int nMission;
+    int nHero;
+    int nVisitedLocationsCount, nLocationsCount;
+    int nVisitedGraveyardsCount, nGraveyardsCount;
+    int nVisitedDungeonsCount, nDungeonsCount;
+    int nNewLocationVisited;
+    int nNewGraveyardVisited;
+    int nNewDungeonVisited;
+
+    nNewLocationVisited  = false;
+    nNewGraveyardVisited = false;
+    nNewDungeonVisited   = false;
+    nHero = uHero.GetHeroPlayerNum();    
+    nMission = uHero.GetMission().GetMissionNum();
+    for (i = 0; i < nLocationsNum; i++)
+    {
+        if (anLocationVisibleByHero[i] & (1 << nHero))
+            continue;
+        if (anLocationMission[i] != nMission)
+            continue;
+        if (uHero.DistanceTo(G2A(anLocationX[i]),G2A(anLocationY[i])) < anLocationRange[i])
+        {
+            ShowLocation(i,nHero,true);
+            nNewLocationVisited = true;
+            if( anLocationSign[i] == 18 )
+                nNewGraveyardVisited = true;
+            if( anLocationSign[i] == 20 )
+                nNewDungeonVisited = true;
+        }
+    }
+    
+    if( nNewLocationVisited )
+    {
+        nVisitedLocationsCount = GetVisitedLocationsCount(nHero);
+        nLocationsCount = GetLocationsCount();
+//        TRACE("new location found: %d/%d\n", nVisitedLocationsCount, nLocationsCount );
+        if( nVisitedLocationsCount >= 10 )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementDiscover10Locations, uHero);
+        if( nVisitedLocationsCount >= 20 )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementDiscover20Locations, uHero);
+        if( nVisitedLocationsCount >= 50 )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementDiscover50Locations, uHero);
+        if( nVisitedLocationsCount >= nLocationsCount )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementFindAllLocationsInTheGame, uHero);
+    }
+    if( nNewGraveyardVisited )
+    {
+        nVisitedGraveyardsCount = GetVisitedGraveyardsCount(nHero);
+        nGraveyardsCount = GetGraveyardsCount();
+//        TRACE("new graveyard found: %d/%d\n", nVisitedGraveyardsCount, nGraveyardsCount );
+        if( nVisitedGraveyardsCount >= nGraveyardsCount )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementFindAllGraveyards, uHero);
+    }
+    if( nNewDungeonVisited )
+    {
+        nVisitedDungeonsCount = GetVisitedDungeonsCount(nHero);
+        nDungeonsCount = GetDungeonsCount();
+//        TRACE("new dungeon found: %d/%d\n", nVisitedDungeonsCount, nDungeonsCount );
+        if( nVisitedDungeonsCount >= 10 )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementVisit10DungeonsOrCaves, uHero);
+        if( nVisitedDungeonsCount >= 20 )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementVisit20DungeonsOrCaves, uHero);
+        if( nVisitedDungeonsCount >= nDungeonsCount )
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementVisitAllDungeonsOrCaves, uHero);
+    }
+}
+
+function void InitDangerousPlacesInMusicScript()
+{
+    int nScriptIndex, nLocationIndex;
+    for(nLocationIndex = 0; nLocationIndex < nLocationsNum; nLocationIndex++)
+    {
+        if( anLocationSign[nLocationIndex] == 18 ) // cmentarze tylko
+        {
+            for(nScriptIndex = 0; nScriptIndex < GetCampaign().GetGlobalScriptsCnt(); nScriptIndex++)
+            {
+                GetCampaign().GetGlobalScript(nScriptIndex).CommandMessage(eMsgSetDangerousPlaceMissionNum, anLocationMission[nLocationIndex]);
+                GetCampaign().GetGlobalScript(nScriptIndex).CommandMessage(eMsgSetDangerousPlaceX, anLocationX[nLocationIndex]);
+                GetCampaign().GetGlobalScript(nScriptIndex).CommandMessage(eMsgSetDangerousPlaceY, anLocationY[nLocationIndex]);
+                GetCampaign().GetGlobalScript(nScriptIndex).CommandMessage(eMsgSetDangerousPlaceRange, anLocationRange[nLocationIndex]);
+            }
+        }
+    }
+}
+
+//======================================        
+
+function void AddLocation(string strName, int nX, int nY, int nMission, int nRange, int nSign) {
+
+#ifdef LOCATIONS_DEBUG
+    TRACE("AddLocation(%s,%d,%d,%d",strName,nX,nY,nMission);
+    TRACE(",%d,%d)                                   \n",nRange,nSign);
+#endif
+
+    if (nMission == eNoMission) return;       
+
+#ifdef QUESTS_MULTI     
+    if (nSign == 20) return;  
+    DecodeMissionAndPositionOffsets(nMission,nX,nY);
+#endif    
+                       
+    astrLocationName.Add(strName);
+    anLocationX.Add(nX);
+    anLocationY.Add(nY);
+    anLocationMission.Add(nMission);
+    anLocationRange.Add(nRange);
+    anLocationVisibleByHero.Add(0);
+    anLocationSign.Add(nSign);
+    
+    if (nRange == 0) ShowLocationToAllHeroes(nLocationsNum);
+    
+    nLocationsNum = astrLocationName.GetSize();
+    
+}    
+
+//======================================        
+    
+function void AddResurrectsAsLocations() {
+
+    mission pMission;
+    int i, count;
+    int nMarker;
+    int nX, nY;
+    int nMaxMarkers;
+    
+    count = GetCampaign().GetMissionsCnt();
+    for (i = 0; i < count; i++) {
+        pMission = GetCampaign().GetMission(i);
+        nMaxMarkers = pMission.GetMaxMarkerNum(MARKER_RESURRECT);
+#ifdef QUEST_DEBUG
+        if (nMaxMarkers != 1) {
+              TRACE("%d %s found in mission %d                   \n",nMaxMarkers,MARKER_RESURRECT,i);  
+        }
+#endif        
+        for (nMarker = 1; nMarker <= nMaxMarkers; nMarker++) {
+            if (pMission.GetMarker(MARKER_RESURRECT,nMarker,nX,nY)) {
+                AddLocation(RESURRECT_LOCATION_NAME,A2G(nX),A2G(nY),pMission.GetMissionNum(),M2A(40),23);            
+            }            
+        }        
+    }
+
+}    
+
+function void AddManaRegsAsLocations() {
+
+    mission pMission;
+    int i, count;
+    int nMarker;
+    int nX, nY;
+    int nMaxMarkers;
+    
+    count = GetCampaign().GetMissionsCnt();
+    for (i = 0; i < count; i++) {
+        pMission = GetCampaign().GetMission(i);
+        nMaxMarkers = pMission.GetMaxMarkerNum(MARKER_MANA);
+#ifdef QUEST_DEBUG
+        if (nMaxMarkers != 1) {
+              TRACE("%d %s found in mission %d                   \n",nMaxMarkers,MARKER_MANA,i);  
+        }
+#endif        
+        for (nMarker = 1; nMarker <= nMaxMarkers; nMarker++) {
+            if (pMission.GetMarker(MARKER_MANA,nMarker,nX,nY)) {
+                AddLocation(MANA_REG_LOCATION_NAME,A2G(nX),A2G(nY),pMission.GetMissionNum(),M2A(40),24);            
+            }            
+        }        
+    }
+
+}    
+
+function void AddCavesAsLocations() {
+
+    mission pMission;
+    int i, count;
+    int nMarker;
+    int nX, nY;
+    int nMaxMarkers;
+    int nCol, nRow, nLayer;
+    string strName;
+    string strMission;
+        
+    count = GetCampaign().GetMissionsCnt();
+    for (i = 0; i < count; i++) {
+        pMission = GetCampaign().GetMission(i);
+        nMaxMarkers = pMission.GetMaxMarkerNum(MARKER_TELEPORT);
+        if (nMaxMarkers < 1) continue;
+        MissionNum2Level(i,nCol,nRow,nLayer);
+        if (nLayer > 0) {
+            for (nMarker = 1; nMarker <= nMaxMarkers; nMarker++)
+                if (pMission.GetMarker(MARKER_TELEPORT,nMarker,nX,nY)) {
+                    AddLocation(CAVE_EXIT_LOCATION_NAME,A2G(nX),A2G(nY),pMission.GetMissionNum(),M2A(40),20);            
+                }            
+        }
+        else {
+#ifndef QUESTS_MULTI
+            if (nRow < 10) strMission.Format("%c0%d",nCol + 'A' - 1,nRow);
+            else strMission.Format("%c%d",nCol + 'A' - 1,nRow);
+#endif
+            for (nMarker = 1; nMarker <= nMaxMarkers; nMarker++)
+                if (pMission.GetMarker(MARKER_TELEPORT,nMarker,nX,nY)) {
+#ifdef QUESTS_MULTI
+                    strName.Format(CAVE_ENTRY_LOCATION_NAME,MultiMissionName2SingleMissionName(GetMissionName(),nX,nY),1);
+#else
+                    strName.Format(CAVE_ENTRY_LOCATION_NAME,strMission,nMarker);
+#endif                    
+                    AddLocation(strName,A2G(nX),A2G(nY),pMission.GetMissionNum(),M2A(40),20);            
+                }            
+        }
+                
+    }
+
+}
+
+//======================================        
+
+#endif

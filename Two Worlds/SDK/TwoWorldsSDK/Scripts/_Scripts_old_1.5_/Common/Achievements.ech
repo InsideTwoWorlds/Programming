@@ -1,0 +1,53 @@
+#ifndef COMMON_ACHIEVEMENTS_ECH
+#define COMMON_ACHIEVEMENTS_ECH
+
+function void ProcessSkillAchievements(unit pUnit)
+{
+    int nIndex;
+    int nLearntSkills, nLearntAllSkills, nVal;
+    int nIsSkillAtTen;
+    UnitValues unVal;
+    
+    unVal = pUnit.GetUnitValues();
+    nLearntSkills = 0;
+    nIsSkillAtTen = 0;
+    nLearntAllSkills = true;
+    for(nIndex = eFirstNormalSkill; nIndex < eSkillsCnt; nIndex++)
+    {
+        nVal = unVal.GetSkill(nIndex);
+        if( nVal > pUnit.GetHeroInitSkillPoints(nIndex) )
+        {
+            nLearntSkills++;
+            if( nVal >= 10 )
+            {
+                nIsSkillAtTen = true;
+            }
+        }
+        else if (nVal == 0)
+        {
+            nLearntAllSkills = false;
+        }
+    }
+    if( nLearntSkills >= 5 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementLearn5Skills, pUnit);
+    }
+    if( nLearntSkills >= 10 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementLearn10Skills, pUnit);
+    }
+    if( nLearntSkills >= 20 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementLearn20Skills, pUnit);
+    }
+    if( nLearntAllSkills )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementLearnAllSkills, pUnit);
+    }
+    if( nIsSkillAtTen )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementReachLevel10ForASkill, pUnit);
+    }
+}
+
+#endif

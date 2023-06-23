@@ -1,0 +1,285 @@
+#ifndef NETWORK_MISSIONBASE_ECH
+#define NETWORK_MISSIONBASE_ECH
+
+/////////////////////////////////////////////////
+//  czesc wspolna dla rozgrywek nieteamowych   //
+/////////////////////////////////////////////////
+
+#include "MissionCommon.ech"
+
+////////////////////////////////////////////////////////////////////////////////
+consts
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///// GRACZE /////
+int m_arrHeroRankPoints[];   // ilosc punktow ktore bohater zdobyl/stracil w biezacej grze
+int m_arrHeroRespawnTicks[]; // czas od smierci do respawnu
+// INNE
+int m_nShowHeroMapSigns;
+////////////////////////////////////////////////////////////////////////////////
+function void BaseInit();
+function void InitHeroMapSigns();
+function void InitHeroParties();
+function void InitHeroes(int arrRankPoints[], int arrRespawnTicks[]);
+function void PrepareToRespawnHero(int nHeroIndex);
+function void RespawnHeroesAtNoCondition();
+function int  RespawnHero(int nHeroNum);
+function int  RespawnHero(unit pHero);
+function void CheckIfOtherPlayersArePresent();
+function void ShowEarthNetPlayerPointsText();
+function int  BaseCommandDebug(string strLine);
+function void EnableShowHeroMapSigns(int nFlag);
+function int  IsShowHeroMapSignsEnabled();
+/////////////////////////////////////////////////////////////////////////////////////////
+
+function void BaseInit()
+{
+    CommonInit();
+    
+    EnableItemRespawns(false);
+    EnableShowHeroMapSigns(false);
+
+    InitHeroParties();
+}//--------------------------------------------------------------------------------------|
+
+function void InitHeroMapSigns()
+{
+    int nIndex;
+    
+    if( IsShowHeroMapSignsEnabled() )
+    {
+        for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+        {
+            if( !IsPlayer(nIndex) )
+            {
+                continue;
+            }
+            AddUnitMapSignExceptLocal( GetCampaign().GetPlayerHeroUnit(nIndex), eMapSignSingleHero);
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void InitHeroParties()
+{
+    int nFirstPlayerIndex, nSecondPlayerIndex;
+    for(nFirstPlayerIndex = ePartyPlayer1; nFirstPlayerIndex <= ePartyPlayer8; nFirstPlayerIndex++)
+    {
+        for(nSecondPlayerIndex = ePartyPlayer1; nSecondPlayerIndex <= ePartyPlayer8; nSecondPlayerIndex++)
+        {
+            if( nFirstPlayerIndex != nSecondPlayerIndex )
+            {
+                GetCampaign().SetPartyEnemy(nFirstPlayerIndex, nSecondPlayerIndex);
+            }
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void InitHeroes(int arrRankPoints[], int arrRespawnTicks[])
+{
+    int nPlayerIndex;
+    int nPoints;
+    unit pHero;
+
+    nPoints = 0;
+    for(nPlayerIndex = 0; nPlayerIndex < GetCampaign().GetPlayersCnt(); nPlayerIndex++)
+    {
+        if( !IsPlayer( nPlayerIndex ) )
+        {
+            arrRankPoints.Add(0);   // gracza nie ma, ale trzeba dodac zeby zgadzaly sie indeksy
+            arrRespawnTicks.Add(0);
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit( nPlayerIndex );
+        
+        if( IsGuildsGame() )
+        {
+            nPoints = 0;
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                nPoints = MIN( pHero.GetHeroNetworkRankPoints(), eEntryPoints);
+                m_nEarthNetPlayerPointsPool += nPoints;
+                pHero.AddHeroNetworkRankPoints(-nPoints);
+            }
+            else if( GetGameType() == eGameRPGArena )
+            {
+                nPoints = MIN( pHero.GetMoney(), eEntryGold);
+                m_nEarthNetPlayerPointsPool += nPoints;
+                pHero.SetMoney( pHero.GetMoney() - nPoints );
+            }
+
+        }
+
+        arrRankPoints.Add(-nPoints);  // zabierz punkty na wstepie
+        arrRespawnTicks.Add(0);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void PrepareToRespawnHero(int nHeroIndex)
+{
+    m_arrHeroRespawnTicks[nHeroIndex] = eHeroRespawnTicks; 
+}//--------------------------------------------------------------------------------------|
+
+function void RespawnHeroesAtNoCondition()
+{
+    int nIndex;
+    unit pHero;
+    ASSERT( GetCampaign().GetPlayersCnt() == m_arrHeroRespawnTicks.GetSize() );
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer( nIndex ) )
+        {
+            continue;
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit( nIndex );
+        if( pHero.IsLive() )
+        {
+            continue;
+        }
+        if( m_arrHeroRespawnTicks[nIndex] > 0 )
+        {
+            m_arrHeroRespawnTicks[nIndex] -= m_nMainStateTicksInterval;
+        }
+        else
+        {
+            RespawnHero(pHero);
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int RespawnHero(int nHeroNum)
+{
+    unit pHero;
+    pHero = GetCampaign().GetPlayerHeroUnit(nHeroNum);
+    return RespawnHero(pHero); // dokaldne sprawdzenie w funkcji glebiej
+}//--------------------------------------------------------------------------------------|
+
+function int RespawnHero(unit pHero)
+{
+    if( !pHero || !pHero.IsHeroUnit() )
+    {
+        TRACE("!!! Niepawidlowy hero do respawnu !!!\n");
+        return 0;
+    }
+    if( pHero.IsLive() )
+    {
+        TRACE("!!! Proba respawnowania zyjacego herosa !!!\n");
+        return 0;
+    }
+    
+    m_pCurrentMission.CreateObject(RESURRECT_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, pHero.GetDirectionAlpha() );
+    pHero.ResurrectUnit();
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function void CheckIfOtherPlayersArePresent()
+{
+    int nIndex;
+    int nPlayersNum;
+
+    nPlayersNum = 0;
+
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;
+        }
+        nPlayersNum++;
+    }
+    if( nPlayersNum == 0 )
+    {
+        __ASSERT_FALSE();
+        return;
+    }
+// na pc gracze maja zainwestowane punkty, wiec gdy zabraknie innych graczy
+// to ten ktory zostal moze grac dalej
+// na xboxie gra konczy sie bez przyznawania punktow
+    if( nPlayersNum == 1 )
+    {
+#ifdef _XBOX
+        EndGame(eEndGameTextNoPlayers);
+#endif
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowEarthNetPlayerPointsText()
+{
+    int nIndex;
+    stringW strText;
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;
+        }
+
+        if( m_arrHeroRankPoints[nIndex] == 0 ) // jezeli liczba punktow nie zmienila sie to nic nie wypisuj
+        {
+            continue; 
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                if( m_arrHeroRankPoints[nIndex] > 0 ) 
+                {
+                    strText.FormatTrl(TEXT_GETPOINTS, m_arrHeroRankPoints[nIndex]);
+                }
+                else if( m_arrHeroRankPoints[nIndex] < 0 ) 
+                {
+                    strText.FormatTrl(TEXT_LOSEPOINTS, -m_arrHeroRankPoints[nIndex]);
+                }
+            }
+            else
+            {
+                if( m_arrHeroRankPoints[nIndex] > 0 ) 
+                {
+                    strText.FormatTrl(TEXT_GETGOLD, m_arrHeroRankPoints[nIndex]);
+                }
+                else if( m_arrHeroRankPoints[nIndex] < 0 ) 
+                {
+                    strText.FormatTrl(TEXT_LOSEGOLD, -m_arrHeroRankPoints[nIndex]);
+                }
+            }
+        }
+        ShowTextToPlayer(nIndex, strText, eResultsConsoleTextTime, true);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void EnableShowHeroMapSigns(int nFlag)
+{
+    m_nShowHeroMapSigns = nFlag;
+}//--------------------------------------------------------------------------------------|
+
+function int IsShowHeroMapSignsEnabled()
+{
+    return m_nShowHeroMapSigns;
+}//--------------------------------------------------------------------------------------|
+
+////////////////////////////////////////////////////////////////////////////////
+
+function int BaseCommandDebug(string strLine)
+{
+    string strCommand;
+    string strName;
+    int nX, nY;
+    int nIndex;
+    mission pMission;
+    
+    strCommand = strLine;
+    if (!strCommand.CompareNoCase("PrintScriptName"))
+    {
+        TRACE("MissionBase\n");
+    }
+    else
+    {
+        return CommonCommandDebug(strLine);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+#endif //NETWORK_MISSIONBASE_ECH

@@ -1,0 +1,2 @@
+This gcc compiler comes from:
+http://www.mingw.org/download.shtml

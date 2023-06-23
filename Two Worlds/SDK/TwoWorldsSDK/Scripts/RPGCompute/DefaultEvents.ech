@@ -1,0 +1,63 @@
+#ifndef RPGCOMPUTE_DEFAULTEVENTS_ECH
+#define RPGCOMPUTE_DEFAULTEVENTS_ECH
+
+#include "..\\Common\\Lock.ech"
+
+function int DefaultEventClickGateByUnit(unit uHero, unit uGate, int bFirstOpen, int bFirstHeroOpen, int& bClosedLockSound, int& bOpenLockSound, int& bBrokenLockpickSound)
+{
+    int nOpen;
+    if (!uGate.GetAttribute("Open",nOpen)) nOpen = 1;
+    if (uGate.IsGateClosed() && bFirstOpen && (nOpen == 1))
+    {
+        if (!TryOpenLock(uGate, uHero, bClosedLockSound, bOpenLockSound, bBrokenLockpickSound))
+        {
+            return false;
+        }
+    }
+    if (uGate.IsGateOpenNotClosing())
+    {
+        uGate.SetGateOpen(false);
+    }
+    else if (uGate.IsGateClosed())
+    {
+        uGate.SetGateOpen(true);
+    }  
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int DefaultEventOpenContainerObject(unit uHero, unit uContainerObject, int bFirstOpen, int bFirstHeroOpen, int& bClosedLockSound, int& bOpenLockSound, int& bBrokenLockpickSound)
+{
+    if (uContainerObject.IsShopUnit() && uContainerObject.IsLive())
+    {
+        return true;
+    }
+    else if (uContainerObject.IsUnitBase() && !uContainerObject.IsLive())
+    {
+        if (bFirstOpen)
+        {
+            uContainerObject.AddObjectsFromParamsToDeadBody();
+        }
+        return true;
+    }
+    else if (uContainerObject.IsContainer())
+    {
+        if (bFirstOpen)
+        {
+            if (!TryOpenLock(uContainerObject, uHero, bClosedLockSound, bOpenLockSound, bBrokenLockpickSound))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    __ASSERT_FALSE();
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int DefaultEventCloseContainerObject(unit uHero, unit uShopUnit, int nBuyMoney, int nSellMoney)
+{
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+#endif //RPGCOMPUTE_DEFAULTEVENTS_ECH

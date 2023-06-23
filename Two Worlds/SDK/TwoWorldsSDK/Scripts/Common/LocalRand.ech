@@ -1,0 +1,17 @@
+#ifndef COMMON_LOCALRAND_ECH
+#define COMMON_LOCALRAND_ECH
+
+int m_nLocalRand;
+
+function void local_srand(int nSeed)
+{
+    m_nLocalRand = nSeed;
+}
+
+function int local_rand(int nRand)
+{
+    m_nLocalRand = m_nLocalRand*214013 + 2531011;
+    return (((m_nLocalRand) >> 16) & 0x7fff) % nRand;
+}
+
+#endif //COMMON_LOCALRAND_ECH

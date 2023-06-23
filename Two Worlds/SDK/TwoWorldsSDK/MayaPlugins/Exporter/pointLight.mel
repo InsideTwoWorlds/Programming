@@ -1,0 +1,16 @@
+global proc int CreateEnginePointLight()
+{
+ string $plight = `shadingNode -asLight pointLight`;
+ string $temp[] = `listRelatives $plight`;
+ string $plightShape = $temp[0];
+
+ string $fullName = "|" + $plight + "|" + $plightShape;
+
+ addAttr -ln InnerRange -at double $fullName;
+ addAttr -ln OuterRange -at double $fullName;
+ addAttr -ln CastShadow -at bool $fullName;
+
+ return 1;
+}
+
+CreateEnginePointLight();

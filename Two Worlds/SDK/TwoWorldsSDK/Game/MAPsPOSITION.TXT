@@ -1,0 +1,239 @@
+
+
+
+// MAPA C 5
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 2048
+
+
+// MAPA D 5
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 2048
+
+
+// MAPA E 5
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 2048
+
+
+// MAPA F 5
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 2048
+
+
+// MAPA G 5
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 2048
+
+
+// MAPA H 5
+Editor.TextureFromBitmapEx GENblokada.bmp 3584 2048
+
+
+// MAPA I 5
+Editor.TextureFromBitmapEx GENblokada.bmp 4096 2048
+
+
+// MAPA B 6
+Editor.TextureFromBitmapEx GENblokada.bmp 512 2560
+
+
+// MAPA C 6
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 2560
+
+
+// MAPA D 6
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 2560
+
+
+// MAPA E 6
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 2560
+
+
+// MAPA F 6
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 2560
+
+
+// MAPA G 6
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 2560
+
+
+// MAPA H 6
+Editor.TextureFromBitmapEx GENblokada.bmp 3584 2560
+
+
+// MAPA I 6
+Editor.TextureFromBitmapEx GENblokada.bmp 4096 2560
+
+
+// MAPA A 7
+Editor.TextureFromBitmapEx GENblokada.bmp 0 3072
+
+
+// MAPA B 7
+Editor.TextureFromBitmapEx GENblokada.bmp 512 3072
+
+
+// MAPA C 7
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 3072
+
+
+// MAPA D 7
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 3072
+
+
+// MAPA E 7
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 3072
+
+
+// MAPA F 7
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 3072
+
+
+// MAPA G 7
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 3072
+
+
+// MAPA H 7
+Editor.TextureFromBitmapEx GENblokada.bmp 3584 3072
+
+
+// MAPA I 7
+Editor.TextureFromBitmapEx GENblokada.bmp 4096 3072
+
+
+// MAPA A 8
+Editor.TextureFromBitmapEx GENblokada.bmp 0 3584
+
+
+// MAPA B 8
+Editor.TextureFromBitmapEx GENblokada.bmp 512 3584
+
+
+// MAPA C 8
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 3584
+
+
+// MAPA D 8
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 3584
+
+
+// MAPA E 8
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 3584
+
+
+// MAPA F 8
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 3584
+
+
+// MAPA G 8
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 3584
+
+
+// MAPA A 9
+Editor.TextureFromBitmapEx GENblokada.bmp 0 4096
+
+
+// MAPA B 9
+Editor.TextureFromBitmapEx GENblokada.bmp 512 4096
+
+
+// MAPA C 9
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 4096
+
+
+// MAPA D 9
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 4096
+
+
+// MAPA E 9
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 4096
+
+
+// MAPA F 9
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 4096
+
+
+// MAPA G 9
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 4096
+
+
+// MAPA A 10
+Editor.TextureFromBitmapEx GENblokada.bmp 0 4608
+
+
+// MAPA B 10
+Editor.TextureFromBitmapEx GENblokada.bmp 512 4608
+
+
+// MAPA C 10
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 4608
+
+
+// MAPA D 10
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 4608
+
+
+// MAPA E 10
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 4608
+
+
+// MAPA F 10
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 4608
+
+
+// MAPA G 10
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 4608
+
+
+// MAPA A 11
+Editor.TextureFromBitmapEx GENblokada.bmp 0 5120
+
+
+// MAPA B 11
+Editor.TextureFromBitmapEx GENblokada.bmp 512 5120
+
+
+// MAPA C 11
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 5120
+
+
+// MAPA D 11
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 5120
+
+
+// MAPA E 11
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 5120
+
+
+// MAPA F 11
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 5120
+
+
+// MAPA G 11
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 5120
+
+
+// MAPA A 12
+Editor.TextureFromBitmapEx GENblokada.bmp 0 5632
+
+
+// MAPA B 12
+Editor.TextureFromBitmapEx GENblokada.bmp 512 5632
+
+
+// MAPA C 12
+Editor.TextureFromBitmapEx GENblokada.bmp 1024 5632
+
+
+// MAPA D 12
+Editor.TextureFromBitmapEx GENblokada.bmp 1536 5632
+
+
+// MAPA E 12
+Editor.TextureFromBitmapEx GENblokada.bmp 2048 5632
+
+
+// MAPA F 12
+Editor.TextureFromBitmapEx GENblokada.bmp 2560 5632
+
+
+// MAPA G 12
+Editor.TextureFromBitmapEx GENblokada.bmp 3072 5632
+
+

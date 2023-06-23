@@ -1,0 +1,37 @@
+#define TEXTURE_REQUEST_NONE    0
+#define TEXTURE_REQUEST_NORMAL	1
+#define TEXTURE_REQUEST_CUBE	2
+#define TEXTURE_REQUEST_3DNOISE 3
+#define TEXTURE_REQUEST_SBOX	4
+
+#define MAX_BONES               34
+#define PSPRITE_SIZE_FACTOR 1024.0
+
+// #define USE_BLUE_BUMP
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef USE_BLUE_BUMP
+float  GetSpecularMap(float4 nmap)
+{
+ return nmap.a;
+}
+
+float3 CalcNormal(float4 nmap)
+{
+ return normalize((nmap.rgb * 2.0) - 1.0);
+}
+
+#else
+float  GetSpecularMap(float4 nmap)
+{
+ return nmap.r;
+}
+
+float3 CalcNormal(float4 nmap)
+{
+ float2 rg = (float2(nmap.a, nmap.g) * 2.0) - 1.0;
+ float  b  = 1.0 - dot(rg.xy, rg.xy);
+ return float3(rg.xy, sqrt(b));
+}
+#endif
+///////////////////////////////////////////////////////////////////////////////////////////////////

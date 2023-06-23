@@ -1,0 +1,411 @@
+#ifndef _P_MISSION_
+#define _P_MISSION_
+
+#include "PEnums.ech"
+#include "PUnitInfo.ech"
+
+//======================================
+
+#define IMMEDIATE_POSITION_FLAG true
+#ifdef USE_DEBUG_MOVE
+#define DEBUG_MOVE(u,x,y) DebugMove(u,x,y)
+#else
+#define DEBUG_MOVE(u,x,y) if (!u.IsInDialogChat()) u.CommandMove(x,y,0)
+#endif
+#define FAST_MOVE(u,x,y) FastMove(u,x,y)
+#define FAST_MOVE_ATTACK(u,x,y) FastMoveAttack(u,x,y)
+
+function void AlarmGuardsAndPlayScream(unit uUnit);
+function int IsHeroCriminal(int nHero);
+function int IsHeroCriminal(unit uHero);
+function int GetDailyState(unit uUnit);
+function int IsAttacker(int nUnit, int nHero);
+
+int anUnitDeathTick[UNIT_ARRAY_SIZE];
+int anWaitingTimer[UNIT_ARRAY_SIZE];
+int nForceFastMove;
+int nUseCommandMove;
+int nImmediatePositionFlag;
+
+//======================================
+// marker
+
+function int GetDistanceFromMarker(unit uUnit, string strMarker, int nMarker) {
+
+    int nX, nY;
+    if (GetMarker(strMarker,nMarker,nX,nY)) return uUnit.DistanceTo(nX,nY);
+    return eInfinity;
+
+}
+
+function int IsUnitNearMarkerA(unit uUnit, string strMarker, int nMarker, int nRange) {
+    
+    int nX, nY;    
+    if (!GetMarker(strMarker,nMarker,nX,nY)) return false;    
+    if (uUnit.DistanceTo(GetThis(),nX,nY) <= nRange) return true;
+    return false;
+
+}
+
+function int IsUnitNearMarkerG(unit uUnit, string strMarker, int nMarker, int nRange) {
+    
+    return IsUnitNearMarker(uUnit,strMarker,nMarker,nRange);
+
+}
+
+function int HaveTownMarker(string strMarker, int nMarker) {
+
+    int nX, nY;
+    
+    if (GetMarker(strMarker, nMarker, nX, nY)) {
+
+        if((nX/256)>=nTownX1 && (nX/256)<=nTownX2 && (nY/256)>=nTownY1 &&(nY/256)<=nTownY2) return true;
+#ifdef TOWN_DEBUG
+//        TRACE("Marker %s %d poza obszarem miasta                        \n",strMarker,nMarker);
+#endif        
+
+    }
+
+    return false;
+
+}
+
+//======================================
+// main state
+
+function void SetMainState(int nUnit, int nNextState) {
+
+    int nPreviousState;
+    ASSERT(UNIT_ARRAY[nUnit]);
+    UNIT_ARRAY[nUnit].GetAttribute(MAIN_STATE_ATTRIBUTE,nPreviousState);
+    UNIT_ARRAY[nUnit].SetAttribute(MAIN_STATE_ATTRIBUTE,nNextState);
+    
+    if (nNextState == eMainStateNormal) {
+        UNIT_ARRAY[nUnit].SetRunMode(false);
+        UNIT_ARRAY[nUnit].CommandSetArmedMode(false);
+    }
+    else SetExternalActivity(nUnit,eEActivityControlledByTown);
+    
+    if (nNextState == eMainStateRunning) {
+        if (nPreviousState != eMainStateRunning) SetGuardAlarmedByUnit(UNIT_ARRAY[nUnit],false);
+    }
+    if (nNextState == eMainStateFighting) {
+        ;
+    }
+    if (nNextState == eMainStateWaiting) {
+        UNIT_ARRAY[nUnit].SetRunMode(false);
+        UNIT_ARRAY[nUnit].CommandSetArmedMode(false);
+        anWaitingTimer[nUnit] = GetCampaign().GetGameTick() + eWaitingTime;        
+    }
+    if (nNextState == eMainStateAlarmingGuards) {
+        UNIT_ARRAY[nUnit].SetRunMode(true);
+    }
+    
+}
+
+function int GetMainState(int nUnit) {
+
+    int nMainState;
+    ASSERT(UNIT_ARRAY[nUnit]);
+    UNIT_ARRAY[nUnit].GetAttribute(MAIN_STATE_ATTRIBUTE,nMainState);
+    return nMainState;
+
+}
+
+//======================================
+// hero
+
+function int IsInsideHouseWithoutHero(unit uUnit) {
+
+    int i;
+    unit uHouse;
+    unit uHero;
+    
+    if (!uUnit.IsObjectInHouse()) return false;
+    uHouse = uUnit.GetHouseWithObject();
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        if (!IsPlayer(i)) continue;
+        uHero = GetHero(i);
+        if (!uHero.IsObjectInHouse()) continue;
+        if (uHero.GetHouseWithObject() == uHouse) return false;
+    }
+
+    return true;
+
+}
+
+function int IsOutsideHouseWithoutHero(unit uUnit) {
+
+    int i;
+    
+    if (uUnit.IsObjectInHouse()) return false;
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        if (!IsPlayer(i)) continue;
+        if (!GetHero(i).IsObjectInHouse()) return false;
+    }
+
+    return true;
+
+}
+
+function int UnableToAttackHero(unit uUnit, int nHero) {
+
+    if (nHero == eNoUnit) return false;
+    if (!uUnit.IsObjectInSightOrHearRange(GetHero(nHero),true)) return true;
+    return false;
+
+}
+
+function void StopAttackingHero(unit uHero) {
+
+    int i;
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (UNIT_ARRAY[i] != null) {
+        if (UNIT_ARRAY[i].GetAttackTarget() == uHero) UNIT_ARRAY[i].CommandStop();                        
+    }        
+
+}
+
+//======================================
+// criminals 
+
+function unit GetNearestCriminal(unit uUnit) {
+    
+    int i;
+    int nHero;
+    int nMin;
+    int nUnit;
+    unit uHouse;
+    
+    nUnit = GetUnitNumber(uUnit);
+    nMin = eCheckForEnemiesRangeA;
+    nHero = eNoUnit;
+    uHouse = uUnit.GetHouseWithObject();
+        
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        if (!IsPlayer(i)) continue;
+        if (!IsHeroCriminal(i) && !IsAttacker(nUnit,i) && !uUnit.IsEnemy(GetHero(i))) continue;
+        if (uHouse != GetHero(i).GetHouseWithObject()) continue;
+        if (uUnit.DistanceTo(GetHero(i)) < nMin) {
+            nMin = uUnit.DistanceTo(GetHero(i));
+            nHero = i;
+        }
+    }
+    
+    if (nHero != eNoUnit) return GetHero(nHero);
+    return null;
+        
+}
+/*
+function unit GetNearestEnemy(unit uUnit) {
+
+    unit uTarget;
+    uTarget = uUnit.GetAttackTarget();
+    if (uTarget != null && uUnit.DistanceTo(uTarget) < eCheckForEnemiesRangeA) return uTarget;
+    return null;
+
+}
+*/
+function int CheckForCriminals(unit uUnit, unit &uCriminal) {
+
+    uCriminal = GetNearestCriminal(uUnit);
+
+    if (IsCriminalFound(uUnit)) {
+        
+        if (uCriminal == null) {       
+            SetCriminalFound(uUnit,false);
+            return false;
+        }    
+        return true;
+
+    }
+      
+    if (uCriminal != null) {
+                                        
+        AlarmGuardsAndPlayScream(uUnit);
+        SetCriminalFound(uUnit,true);
+        return true;
+    
+    }
+
+    return false;
+
+}
+
+//======================================
+// guards
+
+function unit GetNearestGuard(unit uUnit) {
+
+    int i;
+    int nGuard;
+    int nMin;
+    unit uHouse;
+
+    nMin = uUnit.GetSightRange();
+    nGuard = eNoUnit;
+    uHouse = uUnit.GetHouseWithObject();
+
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (UNIT_ARRAY[i] != null) {
+
+        if (!IsGuard(UNIT_ARRAY[i])) continue;
+        if (uUnit == UNIT_ARRAY[i]) continue;
+        if (uHouse != UNIT_ARRAY[i].GetHouseWithObject()) continue;
+        if (uUnit.DistanceTo(UNIT_ARRAY[i]) < nMin) {
+            nMin = uUnit.DistanceTo(UNIT_ARRAY[i]);
+            nGuard = i;
+        }
+    
+    }
+
+    if (nGuard != eNoUnit) return UNIT_ARRAY[nGuard];
+    return null;
+                                                
+}
+
+function int CheckForGuards(unit uUnit) {
+
+    if (GetNearestGuard(uUnit) != null) return true;
+    return false;
+
+}
+
+function int CheckForGuardsOrBarracks(unit uUnit) {
+
+    if (IsUnitNearMarkerG(uUnit,MARKER_GUARD_BARRACKS,nBarracksNumber,eUnitToBarracksRangeG)) return true;
+    return CheckForGuards(uUnit);
+
+}
+
+//======================================
+// move
+
+function void FastMove(unit uUnit, int nX, int nY) {
+
+#ifdef USE_DEBUG_MOVE
+    TRACE("FastMove : (%d,%d)->(%d,%d)                     \n",uUnit.GetLocationX(),uUnit.GetLocationY(),nX,nY);
+#endif
+
+    if (!nUseCommandMove) {
+
+        if (IsHeroNearUnit(uUnit) || IsHeroNearPoint(nX,nY)) {
+            return;
+        }
+        else {
+            uUnit.SetImmediatePosition(nX,nY,0,eFaceNorth,nImmediatePositionFlag);        
+        }
+        
+    }
+    else {
+    
+        if ((IsHeroNearUnit(uUnit) || IsHeroNearPoint(nX,nY)) && (!nForceFastMove)) {
+            uUnit.CommandMove(nX,nY,0);
+        }
+        else {
+            uUnit.SetImmediatePosition(nX,nY,0,eFaceNorth,nImmediatePositionFlag);
+            SetMainState(GetUnitNumber(uUnit),eMainStateWaiting);
+        }        
+        
+    }
+
+}
+
+function void FastMoveAttack(unit uUnit, int nX, int nY) {
+
+#ifdef USE_DEBUG_MOVE
+    TRACE("FastMoveAttack : (%d,%d)->(%d,%d)                     \n",uUnit.GetLocationX(),uUnit.GetLocationY(),nX,nY);
+#endif
+
+    if ((IsHeroNearUnit(uUnit) || IsHeroNearPoint(nX,nY)) && (!nForceFastMove)) {
+        uUnit.CommandMoveAttack(nX,nY,0);
+    }
+    else {
+        uUnit.SetImmediatePosition(nX,nY,0,eFaceNorth,nImmediatePositionFlag);
+        SetMainState(GetUnitNumber(uUnit),eMainStateWaiting);
+    }        
+
+}
+
+function void DebugMove(unit uUnit, int nX, int nY) {
+
+    TRACE("DebugMove: (%d,%d)->(%d,%d)                     \n",uUnit.GetLocationX(),uUnit.GetLocationY(),nX,nY);
+    uUnit.CommandMove(nX,nY,0);
+    
+}
+function void MoveToUnit(unit uUnit, unit uToUnit, int nRange) {
+
+    int nX;
+    int nY;
+    
+    TurnRadiusByAngle(nRange,uToUnit.AngleTo(uUnit),nX,nY);
+    nX += uToUnit.GetLocationX();
+    nY += uToUnit.GetLocationY();
+    
+    DEBUG_MOVE(uUnit,nX,nY);    
+
+}
+
+//======================================
+// other move
+
+function void MoveToMarker(unit uUnit, string strMarker, int nMarker) {
+
+    int nX, nY;
+    if (GetMarker(strMarker,nMarker,nX,nY)) {
+        DEBUG_MOVE(uUnit,nX,nY);
+    }
+
+}
+
+function void FastMoveToMarker(unit uUnit, string strMarker, int nMarker) {
+
+    int nX, nY;
+    if (GetMarker(strMarker,nMarker,nX,nY)) {
+        FAST_MOVE(uUnit,nX,nY);
+    }
+
+}
+
+function void MoveAwayFromObject(unit uUnit, unit uTarget, int nRangeA) {
+
+    int nDX, nDY;    
+              
+    TurnRadiusByAngle(nRangeA,(uUnit.AngleTo(uTarget) + 128) % 256,nDX,nDY);
+    DEBUG_MOVE(uUnit,uUnit.GetLocationX() + nDX,uUnit.GetLocationY() + nDY);
+    
+}
+
+//======================================
+// death
+
+function int IsUnitReadyToResurrection(int nUnit) {
+
+    if ((GetCampaign().GetGameTick() - anUnitDeathTick[nUnit]) > eResurrectionTime && !IsQuestUnit(UNIT_ARRAY[nUnit])) return true;
+    return false;
+    
+}    
+
+function int IsBodyReadyToRemove(int nUnit) {
+
+    if ((GetCampaign().GetGameTick() - anUnitDeathTick[nUnit]) > eBodyRemoveTime && IsQuestUnit(UNIT_ARRAY[nUnit]) && HasNoQuestItems(UNIT_ARRAY[nUnit])) return true;
+    return false;
+    
+}    
+
+function void SetUnitIsDead(int nUnit) {
+
+    anUnitDeathTick[nUnit] = GetCampaign().GetGameTick();
+    SetBodySpotted(UNIT_ARRAY[nUnit],false);
+    SetCreateString(UNIT_ARRAY[nUnit],UNIT_ARRAY[nUnit].GetObjectCreateString());
+
+}
+
+function void RemoveBody(int nUnit) {
+    
+    UNIT_ARRAY[nUnit].RemoveObject();
+    UNIT_ARRAY[nUnit] = null;
+
+}
+
+//======================================
+
+#endif

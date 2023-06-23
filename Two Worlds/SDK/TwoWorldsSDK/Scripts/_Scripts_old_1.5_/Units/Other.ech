@@ -1,0 +1,587 @@
+#ifndef UNITS_OTHER_ECH
+#define UNITS_OTHER_ECH
+
+////    Declarations    ////
+
+#include "..\common\enums.ech"
+#include "..\common\messages.ech"
+
+state InsideDialogTalk;
+state InsideDialogChat;
+state MovingToMountOnHorse;
+state PrepareMountOnHorse;
+state MountingOnHorse;
+state WaitingToUnmountFromHorse;
+state UnmountingFromHorse;
+state WaitingToCallHorse;
+state CallingHorse;
+state WaitToSetUnarmedModeBeforeCustomWork;
+state SettingUnarmedModeBeforeCustomWork;
+state MakingCustomWork;
+
+unit m_uMountOnHorse;
+unit m_uTurnHeadObject;
+int  m_nTurnHeadAlpha;
+int  m_nTurnHeadBeta;
+int  m_nTurnHeadTicks;
+int  m_nTurnHeadBetaTicks;
+
+consts
+{
+    eStartTurnHeadToHeroDistance = e8m;
+    eStopTurnHeadToHeroDistance = e10m;
+    eStartTurnHeadToHeroAngle = 80;
+    eStopTurnHeadToHeroAngle = 96;
+    eMaxTurnHeadAlpha = 80;
+    eTurnHeadAlphaSpeed = 6;
+    eMaxTurnHeadBeta = 20;
+    eTurnHeadBetaSpeed = 2;
+    eStartTurnHeadDownTick = 20;
+    eStartTurnHeadUpTick = 40;
+    eStartTurnHeadEndTick = 60;
+    eMaxTurnHeadTicks = 4*30;
+    eNextTurnHeadDelayTicks = 10*30;    
+}
+
+
+////    Functions    ////
+
+function int MoveToMountOnHorse(unit uHorse)
+{
+    int nX, nY, nZ, nAlpha;
+    
+    if (!GetPlaceToMountOnHorse(uHorse, nX, nY, nZ, nAlpha))
+    {
+        return false;
+    }
+    CallMoveToPoint(nX, nY, nZ);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int StepTurnHead()
+{
+    int nIndex, nFirst, nPlayer, nPlayersCnt, nAngleTo;
+    unit uHero;
+    
+    if (m_uTurnHeadObject != null)
+    {
+        nAngleTo = GetRelativeAngleTo(m_uTurnHeadObject);
+        //(p)
+        if ((ABS(nAngleTo) > eStopTurnHeadToHeroAngle)) {
+            m_nTurnHeadTicks = 0;
+            CallTurnToAngle(AngleTo(m_uTurnHeadObject) - m_nTurnHeadAlpha);
+            state Turning;                                    
+            return true;
+        }
+        //(p)
+        if (!m_uTurnHeadObject.IsLive() || (DistanceTo(m_uTurnHeadObject) > eStopTurnHeadToHeroDistance) ||
+            (m_nTurnHeadTicks > eMaxTurnHeadTicks))
+        {
+            m_uTurnHeadObject = null;
+            m_nTurnHeadTicks = eNextTurnHeadDelayTicks;
+//            CommandStop();
+            if ((m_nTurnHeadAlpha != 0) || (m_nTurnHeadBeta != 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        m_nTurnHeadTicks++;
+        if (m_nTurnHeadAlpha < nAngleTo)
+        {
+            if (m_nTurnHeadAlpha < eMaxTurnHeadAlpha)
+            {
+                m_nTurnHeadAlpha = MIN(m_nTurnHeadAlpha + eTurnHeadAlphaSpeed, nAngleTo);
+            }
+        }
+        else if (m_nTurnHeadAlpha > nAngleTo)
+        {
+            if (m_nTurnHeadAlpha > -eMaxTurnHeadAlpha)
+            {
+                m_nTurnHeadAlpha = MAX(m_nTurnHeadAlpha - eTurnHeadAlphaSpeed, nAngleTo);
+            }
+        }
+        else
+        {
+            m_nTurnHeadBetaTicks++;
+            if (m_nTurnHeadBetaTicks < eStartTurnHeadDownTick)
+            {
+                //nic
+            }
+            else if (m_nTurnHeadBetaTicks < eStartTurnHeadUpTick)
+            {
+                //w dol
+                if (m_nTurnHeadBeta > -eMaxTurnHeadBeta)
+                {
+                    m_nTurnHeadBeta = MAX(m_nTurnHeadBeta - eTurnHeadBetaSpeed, -eMaxTurnHeadBeta);
+                }
+            }
+            else if (m_nTurnHeadBetaTicks < eStartTurnHeadEndTick)
+            {
+                if (m_nTurnHeadBeta < eMaxTurnHeadBeta)
+                {
+                    m_nTurnHeadBeta = MIN(m_nTurnHeadBeta + eTurnHeadBetaSpeed, eTurnHeadBetaSpeed);
+                }
+            }
+            else
+            {
+                if (m_nTurnHeadBeta > 0)
+                {
+                    m_nTurnHeadBeta = MAX(m_nTurnHeadBeta - eTurnHeadBetaSpeed, 0);
+                }
+                else if (m_nTurnHeadBeta < 0)
+                {
+                    m_nTurnHeadBeta = MIN(m_nTurnHeadBeta + eTurnHeadBetaSpeed, 0);
+                }
+            }
+        }
+        SetHeadAngle(m_nTurnHeadAlpha, m_nTurnHeadBeta, true);
+        return true;
+    }
+    else if ((m_nTurnHeadAlpha != 0) || (m_nTurnHeadBeta != 0))
+    {
+        if (m_nTurnHeadAlpha > 0)
+        {
+            m_nTurnHeadAlpha = MAX(m_nTurnHeadAlpha - eTurnHeadAlphaSpeed, 0);
+        }
+        else if (m_nTurnHeadAlpha < 0)
+        {
+            m_nTurnHeadAlpha = MIN(m_nTurnHeadAlpha + eTurnHeadAlphaSpeed, 0);
+        }
+        if (m_nTurnHeadBeta > 0)
+        {
+            m_nTurnHeadBeta = MAX(m_nTurnHeadBeta - eTurnHeadBetaSpeed, 0);
+        }
+        else if (m_nTurnHeadBeta < 0)
+        {
+            m_nTurnHeadBeta = MIN(m_nTurnHeadBeta + eTurnHeadBetaSpeed, 0);
+        }
+        SetHeadAngle(m_nTurnHeadAlpha, m_nTurnHeadBeta, true);
+        return true;
+    }
+    if (m_nTurnHeadTicks > 0)
+    {
+        m_nTurnHeadTicks -= 20;//Nothing delay
+        return false;
+    }
+    nPlayersCnt = GetCampaign().GetPlayersCnt();
+    if (nPlayersCnt > 0)
+    {
+        nFirst = Rand(nPlayersCnt);
+    }
+    for (nIndex = 0; nIndex < nPlayersCnt; nIndex++)
+    {
+        nPlayer = (nFirst + nIndex) % nPlayersCnt;
+        if( !GetCampaign().IsPlayer(nPlayer) )
+        {
+            continue;
+        }
+        uHero = GetCampaign().GetPlayerHeroUnit(nPlayer);
+        if (uHero == null) 
+        {
+            continue;
+        }
+        if ((DistanceTo(uHero) > eStartTurnHeadToHeroDistance) || !IsObjectInSightOrHearRange(uHero, false))
+        {
+            continue;
+        }
+        nAngleTo = GetRelativeAngleTo(uHero);
+        if (ABS(nAngleTo) > eStartTurnHeadToHeroAngle)
+        {
+            //(p)                  
+            CallTurnToAngle(AngleTo(uHero) - m_nTurnHeadAlpha);
+            state Turning;            
+            //continue;
+            //(p)
+        }
+        m_uTurnHeadObject = uHero;
+        m_nTurnHeadTicks = 0;
+        m_nTurnHeadBetaTicks = 0;
+//        CommandMakeCustomWork(14,-1,0,0,"");
+        GetCurrHeadAngle(m_nTurnHeadAlpha, m_nTurnHeadBeta);
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+////    States    ////
+
+state InsideDialogTalk
+{
+    return InsideDialogTalk, 20;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state InsideDialogChat
+{
+    return InsideDialogChat, 22;//musi sie roznic od InsideDialogTalk
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingToMountOnHorse
+{
+    int nX, nY, nZ, nAlpha;
+
+    if (IsMoving() || IsSettingArmedMode() || IsSettingSneakMode())
+    {
+        return MovingToMountOnHorse, 5;
+    }
+    else
+    {
+        if (IsInGoodPlaceToMountOnHorse(m_uMountOnHorse))
+        {
+            return PrepareMountOnHorse, 0;
+        }
+        else
+        {
+            if (MoveToMountOnHorse(m_uMountOnHorse))
+            {
+                return MovingToMountOnHorse, 5;
+            }
+            else
+            {
+                EndCommand(true);
+                m_uMountOnHorse = null;
+                return Nothing, 0;
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state PrepareMountOnHorse
+{
+    if (IsSettingArmedMode() || IsSettingSneakMode())
+    {
+        return PrepareMountOnHorse, 5;
+    }
+    else
+    {
+        if (IsInGoodPlaceToMountOnHorse(m_uMountOnHorse))
+        {
+            if (IsInArmedMode())
+            {
+                m_bAutoArmed = false;
+                CallSetArmedMode(false);
+                return PrepareMountOnHorse, 5;
+            }
+            else if (IsInSneakMode())
+            {
+                CallSetSneakMode(false);
+                return PrepareMountOnHorse, 5;
+            }
+            else
+            {
+                CallMountOnHorse(m_uMountOnHorse);
+                return MountingOnHorse, 5;
+            }
+        }
+        else
+        {
+            if (IsHeroUnit())
+            {
+                EndCommand(true);
+                m_uMountOnHorse = null;
+                return Nothing, 0;
+            }
+            if (MoveToMountOnHorse(m_uMountOnHorse))
+            {
+                return MovingToMountOnHorse, 5;
+            }
+            else
+            {
+                EndCommand(true);
+                m_uMountOnHorse = null;
+                return Nothing, 0;
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MountingOnHorse
+{
+    if (IsMountingOnHorse())
+    {
+        return MountingOnHorse, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        m_uMountOnHorse = null;
+        if (IsOnHorse())
+        {
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementRideAHorse, GetThis());
+        }
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state WaitingToUnmountFromHorse
+{
+    if (IsMoving() || IsSettingArmedMode())
+    {
+        return WaitingToUnmountFromHorse, 5;
+    }
+    else
+    {
+        if (IsInArmedMode())
+        {
+            m_bAutoArmed = false;
+            CallSetArmedMode(false);
+            return WaitingToUnmountFromHorse, 5;
+        }
+        else
+        {
+            CallUnmountFromHorse();
+            return UnmountingFromHorse, 6;
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state UnmountingFromHorse
+{
+    if (IsUnmountingFromHorse())
+    {
+        return UnmountingFromHorse, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state WaitingToCallHorse
+{
+    if (IsMoving())
+    {
+        return WaitingToCallHorse, 5;
+    }
+    else
+    {
+        CallCallHorse();
+        return CallingHorse, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state CallingHorse
+{
+    if (IsCallingHorse())
+    {
+        return CallingHorse, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state WaitToSetUnarmedModeBeforeCustomWork
+{
+    if (IsMoving())
+    {
+        return WaitToSetUnarmedModeBeforeCustomWork, 5;
+    }
+    else
+    {
+        m_bAutoArmed = false;
+        CallSetArmedMode(false);
+        return SettingUnarmedModeBeforeCustomWork, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingUnarmedModeBeforeCustomWork
+{
+    if (IsSettingArmedMode())
+    {
+        return SettingUnarmedModeBeforeCustomWork, 5;
+    }
+    else
+    {
+        CallMakeCustomWork();
+        return MakingCustomWork, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MakingCustomWork
+{
+#ifdef UNITS_UNIT_EC //(p)
+    if (CanBeDialogUnit(GetThis()) && !IsDialogUnit(GetThis())) SetIsDialogUnit(GetThis());
+    if (!FindTarget()) UpdateActivity();
+#endif //(p)   
+    if (IsMakingCustomWork())
+    {
+        return MakingCustomWork, 5;
+    }
+    else
+    {
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+////    Commands    ////
+
+command PrepareBeforeDialogTalk(int nAlpha) hidden
+{
+#ifdef STOPCURRENTACTION
+    StopCurrentAction();
+#endif //STOPCURRENTACTION
+    PrepareBeforeDialogTalk(nAlpha);
+    state InsideDialogTalk;
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command FinishAfterDialogTalk() hidden
+{
+    FinishAfterDialogTalk();
+    state Nothing;
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command PrepareBeforeDialogChat() hidden
+{
+#ifdef STOPCURRENTACTION
+    StopCurrentAction();
+#endif //STOPCURRENTACTION
+    PrepareBeforeDialogChat();
+    state InsideDialogChat;
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command FinishAfterDialogChat() hidden
+{
+    FinishAfterDialogChat();
+    state Nothing;
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command StartDialogTalkAnim(int nBodyAnim, int nHeadAnim, int nTmp) hidden
+{
+    StartDialogTalkAnim(nBodyAnim, nHeadAnim);
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command StopDialogTalkAnim() hidden
+{
+    StopDialogTalkAnim();
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command PauseDialogTalkHeadAnim(int bPause) hidden
+{
+    PauseDialogTalkHeadAnim(bPause);
+    //bez EndCommand
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+command MountOnHorse(unit uHorse) hidden
+{
+    if (!CanMountOnHorse(uHorse))
+    {
+        EndCommand(true);
+        return true;
+    }
+    TRACE("command MountOnHorse     \n");
+    if (IsHeroUnit())
+    {
+        if (!IsInGoodPlaceToMountOnHorse(uHorse))
+        {
+            EndCommand(true);
+            return true;
+        }
+        CHECK_STOP_CURR_ACTION();
+        m_uMountOnHorse = uHorse;
+        state PrepareMountOnHorse;
+        SetStateDelay(10);
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+        if (!MoveToMountOnHorse(uHorse))
+        {
+            EndCommand(true);
+            return true;
+        }
+        m_uMountOnHorse = uHorse;
+        state MovingToMountOnHorse;
+        SetStateDelay(10);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command UnmountFromHorse() hidden
+{
+    if (!IsOnHorse())
+    {
+        EndCommand(true);
+        return true;
+    }
+    CHECK_STOP_CURR_ACTION();
+    if (IsMoving())
+    {
+        CallStopCurrentAction();
+    }
+    state WaitingToUnmountFromHorse;
+    SetStateDelay(5);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command CallHorse() hidden
+{
+    if (IsOnHorse())
+    {
+        EndCommand(true);
+        return true;
+    }
+    CHECK_STOP_CURR_ACTION();
+    if (IsMoving())
+    {
+        CallStopCurrentAction();
+    }
+    state WaitingToCallHorse;
+    SetStateDelay(5);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MakeCustomWork(int nWorkAnimNum, int nLoopsCnt, int nTmp1, int nTmp2, int nWorkSubObjectID) hidden
+{
+    if (IsOnHorse())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (!HaveCustomWorkAnim(nWorkAnimNum, true))
+    {
+        return false;
+    }
+    CHECK_STOP_CURR_ACTION();
+    CHECK_CANCEL_SNEAKMODE();
+    SetCurrCustomWorkParams(nWorkAnimNum, nLoopsCnt, nWorkSubObjectID);
+    if (IsInArmedMode() && !HaveCustomWorkAnim(nWorkAnimNum, false))
+    {
+        if (IsMoving())
+        {
+            CallStopCurrentAction();
+        }
+        state WaitToSetUnarmedModeBeforeCustomWork;
+        SetStateDelay(1);
+    }
+    else
+    {
+        CallMakeCustomWork();
+        state MakingCustomWork;
+        SetStateDelay(20);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_OTHER_ECH

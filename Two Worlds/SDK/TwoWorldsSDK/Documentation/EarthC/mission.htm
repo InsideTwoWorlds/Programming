@@ -1,0 +1,143 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> mission object </title>
+</head>
+<body>
+<a name="mission">
+<hr>
+<mission>
+<big><strong>mission</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<mission_functions_begin>
+public:
+mission GetThis()
+int  GetMissionScriptsCnt()
+mission GetMissionScript(int nIndex)
+mission AddMissionScript(string strScriptFile)
+mission AddMissionScript(string strScriptFile, int bExecuteFirstState)
+void RemoveMissionScript()
+int  IsScriptRemoved()
+void SetPositionOnCampaignTexture(int nX, int nY)
+void SetHorizonOffset(int nX, int nY)
+void AddNeighbourDistantLandLevel(string strLevel, int nDx, int nDy)
+void LoadLevel()
+void UnloadLevel()
+int  IsLevelLoaded()
+int  WasLevelLoaded()
+int  GetMissionNum()
+int  GetWorldTick()
+int  IsUndergroundLevel()
+int  GetMarker(string strMarkerID, int nNum, int& pX, int& pY)
+int  GetMarker(string strMarkerID, int nNum, int& pX, int& pY, int& pZ, int& pAngle)
+int  GetMarker(string strMarkerID, int nNum, int& pX, int& pY, int& pZ, int& pAngle, string& pData)
+int  GetMarker(string strMarkerID, int nNum, string& pData)
+int  HaveMarker(string strMarkerID, int nNum)
+int  GetMaxMarkerNum(string strMarkerID)
+void FillMarkersNums(string strMarkerID, array pArrMarkers)
+void GetMarkersCount(string strMarkerID)
+int  GetMarkersCountInRange(string strMarkerID, int nX, int nY, int nRange)
+void FillMarkersInRange(string strID, int nX, int nY, int nRangeA, array pArrMarkerIDs, array pArrMarkerNums, int bClearArr)
+void FillMarkersInRange(array pArrSortedIDs, int nX, int nY, int nRangeA, array pArrMarkerIDs, array pArrMarkerNums, int bClearArr)
+unit GetObjectMarker(string strMarkerID, int nNum)
+void AddMarker(string pszMarkerID, int nNum, int nX, int nY, int nZ, int nAngle, string strData)
+void SetMarker(string strMarkerID, int nNum, int nX)
+void SetMarker(string strMarkerID, int nNum, int nX, int nY, int nZ, int nAngle)
+void SetMarker(string pszMarkerID, int nNum, int nX, int nY, int nZ, int nAngle, string strData)
+void SetMarker(string pszMarkerID, int nNum, string strData)
+void RemoveMarker(string strMarkerID, int nNum)
+string GetLevelInfoText()
+int  GetLandHeight(int nX, int nY)
+int  GetEAXEnvironment(int nX, int nY)
+int  IsGoodPointForUnit(int nX, int nY)
+unit CreateObject(string strObjectID, int nX, int nY, int nZ, int nAlpha)
+unit CreateSoundObject(string strObjectID, int nX, int nY, int nZ, int nAlpha, int nLoopsCnt)
+unit CreateHero(int nPlayerNum, int nX, int nY, int nZ, int nAlpha)
+unit GetUnit(int nX, int nY)
+unit GetUnit(int nX, int nY, int bAllowDead)
+unit GetHouseFromPoint(int nX, int nY)
+unit GetHouseFromPoint(int nX, int nY, int bReturnMainHouse)
+unit FindNearestGate(int nX, int nY, int nRange)
+unit GetExternalDoorForHouseFromPoint(int nX, int nY)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange, array pArrParties)
+int  GetWorldWidth()
+int  GetWorldHeight()
+int  IsUnitInArea(int nX, int nY, int nRange, array pArrTargetParties)
+int  IsUnitInArea(int nX, int nY, int nRange, int nTargetTypeMask, string strTargetUnitID, array pArrTargetParties)
+int  CountUnitsInArea(int nX, int nY, int nRange, array pArrTargetParties)
+int  CountUnitsInArea(int nX, int nY, int nRange, int nTargetTypeMask, string strTargetUnitID, array pArrTargetParties)
+int  SearchUnitsInArea(int nX, int nY, int nRange, array pArrTargetParties)
+int  SearchUnitsInArea(int nX, int nY, int nRange, int nTargetTypeMask, array pArrTargetParties)
+int  SearchObjectsInArea(int nX, int nY, int nRange, string strTargetObjectID)
+int  GetSearchUnitsInAreaCount()
+unit GetSearchUnitInArea(int nIndex)
+void ClearSearchUnitsInAreaArray()
+int  ReplaceObjectsInArea(int nX, int nY, int nRange, string pszObjectID, string strWithObjectID)
+mission GetUpperConnectedMission()
+mission GetLowerConnectedMission()
+mission GetLeftConnectedMission()
+mission GetRightConnectedMission()
+mission GetUpConnectedMission()
+mission GetDownConnectedMission()
+mission GetLeftUpConnectedMission()
+mission GetRightUpConnectedMission()
+mission GetLeftDownConnectedMission()
+mission GetRightDownConnectedMission()
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayChatDialog(int nScriptUID, int nDialogUID, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit uUnit1)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, unit uUnit2)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit uUnit3)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit uUnit4)
+void PlayChatDialog(int nScriptUID, int nDialogUID, int nDisabledEventsMask, string strDialog, int nUnitNum1, unit pUnit1, int nUnitNum2, unit pUnit2, int nUnitNum3, unit pUnit3, int nUnitNum4, unit pUnit4, int nUnitNum5, unit uUnit5)
+void PlayPositionWave(string strWave, int nX, int nY, int nMinDistA, int nMaxDistA)
+void PlayPositionWave(string strWave, int nX, int nY, int nMinDistA, int nMaxDistA, int nVolumeIndex)
+void PlayPositionWave(string strWave, unit uWaveObject, int nMinDistA, int nMaxDistA)
+void PlayPositionWave(string strWave, unit uWaveObject, int nMinDistA, int nMaxDistA, int nVolumeIndex)
+int  AddMapSign(int nX, int nY, int nSignNum, int nTicks)
+void RemoveMapSign(int nX, int nY)
+void RemoveMapSign(int nMapSignID)
+int  IsAnyGoodPointForUnit(int nX, int nY, int nRange)
+unit GetNotTransientPassive(int nX, int nY)
+unit GetArtefact(int nX, int nY, int bEqualPos)
+unit GetTrap(int nX, int nY, int bEqualPos)
+unit GetDynamicTeleport(int nX, int nY, int bEqualPos)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange, int bRemoveNotSearched, int bRemoveNotEmpty)
+void RemoveKilledUnits(int nX, int nY, int nRange, int bOutsideRange, array pArrParties, int bRemoveNotSearched, int bRemoveNotEmpty)
+void RemoveKilledUnitsOutsideStepRange()
+void RemoveKilledUnitsOutsideStepRange(array pArrParties)
+void RemoveKilledUnitsOutsideStepRange(int bRemoveNotSearched, int bRemoveNotEmpty)
+void RemoveKilledUnitsOutsideStepRange(array pArrParties, int bRemoveNotSearched, int bRemoveNotEmpty)
+void DisableLevel(int bDisable)
+int  IsLevelDisabled()
+<mission_functions_public_end>
+<mission_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<mission_commands_begin>
+int  Combo1(int)
+int  Combo2(int)
+int  Combo3(int)
+int  Combo4(int)
+int  Combo5(int)
+int  Combo6(int)
+<mission_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<mission_events_begin>
+int  SpecialLevelFlags()
+<mission_events_end>
+</pre>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

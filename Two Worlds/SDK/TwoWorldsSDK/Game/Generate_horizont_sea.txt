@@ -1,0 +1,140 @@
+//dwa ponizsze do przegenerowania duzych mapek
+//engine.minimaprtsize=2048
+//engine.reloadshaders
+
+// przez iLe dzielic to 256 z kanalu i z tego jest max liczba drzewek na kratke
+
+
+
+Engine.HorTreeDivider = 24   
+
+Engine.HorizonTexMultiplier 1.2  
+Engine.HorizonTexDarkener 0.6  
+eNGINE.HorizonTreesDiv 1
+
+// MINIMALNA wsplrzedna x mapy
+Engine.HorTreeOffX = -640    
+// MINIMALNA wspolrzedna y mapy
+Engine.HorTreeOffY = -1536   
+
+Editor.IgnoreLevelsCheckouts 1
+Engine.CLearHorizon
+
+game.CreateEditorObjects 0
+
+Editor.LoadLevel Sea_Map.lnd
+
+Engine.AddHorizonWorldEx 0 0 0 1
+Engine.AddHorizonWorldEx 128 0 0 1
+
+//SEA ROW -3
+Engine.AddHorizonWorldEx -384 384 0 1
+Engine.AddHorizonWorldEx -256 384 0 1
+Engine.AddHorizonWorldEx -128 384 0 1
+Engine.AddHorizonWorldEx 0 384 0 1
+Engine.AddHorizonWorldEx 128 384 0 1
+Engine.AddHorizonWorldEx 256 384 0 1
+Engine.AddHorizonWorldEx 384 384 0 1
+Engine.AddHorizonWorldEx 512 384 0 1
+Engine.AddHorizonWorldEx 640 384 0 1
+
+
+//SEA ROW -2
+Engine.AddHorizonWorldEx -384 256 0 1
+Engine.AddHorizonWorldEx -256 256 0 1
+Engine.AddHorizonWorldEx -128 256 0 1
+Engine.AddHorizonWorldEx 0 256 0 1
+Engine.AddHorizonWorldEx 128 256 0 1
+Engine.AddHorizonWorldEx 256 256 0 1
+Engine.AddHorizonWorldEx 384 256 0 1
+Engine.AddHorizonWorldEx 512 256 0 1
+Engine.AddHorizonWorldEx 640 256 0 1
+
+
+//SEA ROW -1
+Engine.AddHorizonWorldEx -384 128 0 1
+Engine.AddHorizonWorldEx -256 128 0 1
+Engine.AddHorizonWorldEx -128 128 0 1
+Engine.AddHorizonWorldEx 0 128 0 1
+Engine.AddHorizonWorldEx 128 128 0 1
+Engine.AddHorizonWorldEx 256 128 0 1
+Engine.AddHorizonWorldEx 384 128 0 1
+Engine.AddHorizonWorldEx 512 128 0 1
+Engine.AddHorizonWorldEx 640 128 0 1
+
+
+//SEA ROW 0
+Engine.AddHorizonWorldEx -384 0 0 1
+Engine.AddHorizonWorldEx -256 0 0 1
+Engine.AddHorizonWorldEx -128 0 0 1
+Engine.AddHorizonWorldEx 0 0 0 1
+Engine.AddHorizonWorldEx 128 0 0 1
+Engine.AddHorizonWorldEx 256 0 0 1
+Engine.AddHorizonWorldEx 384 0 0 1
+Engine.AddHorizonWorldEx 512 0 0 1
+Engine.AddHorizonWorldEx 640 0 0 1
+
+//SEA ROW 1
+Engine.AddHorizonWorldEx -384 -128 0 1
+Engine.AddHorizonWorldEx -256 -128 0 1
+Engine.AddHorizonWorldEx -128 -128 0 1
+Engine.AddHorizonWorldEx 0 -128 0 1
+Engine.AddHorizonWorldEx 128 -128 0 1
+Engine.AddHorizonWorldEx 256 -128 0 1
+Engine.AddHorizonWorldEx 384 -128 0 1
+Engine.AddHorizonWorldEx 512 -128 0 1
+Engine.AddHorizonWorldEx 640 -128 0 1
+
+//SEA ROW 2
+Engine.AddHorizonWorldEx -384 -256 0 1
+Engine.AddHorizonWorldEx -256 -256 0 1
+Engine.AddHorizonWorldEx -128 -256 0 1
+Engine.AddHorizonWorldEx 0 -256 0 1
+Engine.AddHorizonWorldEx 128 -256 0 1
+Engine.AddHorizonWorldEx 256 -256 0 1
+Engine.AddHorizonWorldEx 384 -256 0 1
+Engine.AddHorizonWorldEx 512 -256 0 1
+Engine.AddHorizonWorldEx 640 -256 0 1
+
+//SEA ROW 3
+Engine.AddHorizonWorldEx -384 -384 0 1
+Engine.AddHorizonWorldEx -256 -384 0 1
+Engine.AddHorizonWorldEx -128 -384 0 1
+Engine.AddHorizonWorldEx 0 -384 0 1
+Engine.AddHorizonWorldEx 128 -384 0 1
+Engine.AddHorizonWorldEx 256 -384 0 1
+Engine.AddHorizonWorldEx 384 -384 0 1
+Engine.AddHorizonWorldEx 512 -384 0 1
+Engine.AddHorizonWorldEx 640 -384 0 1
+
+//SEA ROW 4
+Engine.AddHorizonWorldEx -384 -512 0 1
+Engine.AddHorizonWorldEx -256 -512 0 1
+Engine.AddHorizonWorldEx -128 -512 0 1
+Engine.AddHorizonWorldEx 0 -512 0 1
+Engine.AddHorizonWorldEx 128 -512 0 1
+Engine.AddHorizonWorldEx 256 -512 0 1
+Engine.AddHorizonWorldEx 384 -512 0 1
+Engine.AddHorizonWorldEx 512 -512 0 1
+Engine.AddHorizonWorldEx 640 -512 0 1
+
+//SEA ROW 5
+Engine.AddHorizonWorldEx -384 -640 0 1
+Engine.AddHorizonWorldEx -256 -640 0 1
+Engine.AddHorizonWorldEx -128 -640 0 1
+Engine.AddHorizonWorldEx 0 -640 0 1
+Engine.AddHorizonWorldEx 128 -640 0 1
+Engine.AddHorizonWorldEx 256 -640 0 1
+Engine.AddHorizonWorldEx 384 -640 0 1
+Engine.AddHorizonWorldEx 512 -640 0 1
+Engine.AddHorizonWorldEx 640 -640 0 1
+
+Editor.IgnoreLevelsCheckouts 0
+
+// zapisac horizon do pliku
+Engine.SaveHorizon c:\gry\2w\Levels\horizont-sea.hor
+
+game.CreateEditorObjects 1
+
+// wspolrzedne  kazda mapa ma 5120x5120 czyli 128*40 na 128*40
+// tharbakin X: 512+64 = 23040     Y: -256-40 = -11840

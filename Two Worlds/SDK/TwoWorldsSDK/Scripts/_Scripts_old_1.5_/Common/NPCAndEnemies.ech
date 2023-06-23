@@ -1,0 +1,294 @@
+//#include "Generic.ech"
+//#include "Mission.ech"
+consts
+{
+    //enemy type
+    eBear = 0;
+    eWolf = 1;
+    eGoblin = 21;
+    eGoblinWithShield = 22;
+    eZombieWeak = 10;
+    eZombieStrong = 11;
+    eZombieBoss = 12;
+    
+    
+    //NPCtype
+    eCar = 101;
+    eRaker = 102;
+    eCaptain = 103;
+    eHammer = 104;
+    ePickaxe = 105;
+    eFriend = 106;
+    eEnemy = 107;
+    eDogOwner = 108;
+    eDwarfWithBow = 109;
+    eDwarf = 110;
+    eCloud = 111;
+    eBandit = 112;
+    eVehicle =113;
+}
+// offset podawany w METRACH !!!!
+function unit   CreateNPC(int nMarker,string strMarker,int nOffsetX,int nOffsetY, int nAlpha, int nType, int nParty,int nAlarmMode);
+function unit CreateEnemy(int nMarker,string strMarker,unit uHero, int nLevel,int nOffsetX, int nOffsetY, int nAlpha, int nType, int nParty, int nAlarmMode);
+
+
+    
+function unit CreateNPC(int nMarker,string strMarker,int nOffsetX,int nOffsetY, int nAlpha, int nType, int nParty, int nAlarmMode)
+{
+    unit uUnit;
+    string strUnit;
+ 
+    if(nType==eCar)
+        strUnit="VAGON_02";
+    if(nType==eVehicle)
+        strUnit="Vehicle_02";
+    
+    else if(nType==eRaker)
+        strUnit="VERAN(10)#NULL,NULL,NULL,AR_LEATHER_ARMOUR(6,0,5),NULL,AR_LEATHER_TROUSERS(6,0,5),AR_LEATHER_BOOTS(6,0,5)";
+    else if(nType==eDogOwner)
+    {
+        strUnit="BAFUR(10)#WP_AXE_1(10,0),NULL,NULL,AR_LEATHER_ARMOUR(6,0,5),NULL,AR_LEATHER_TROUSERS(6,0,5),AR_LEATHER_BOOTS(6,0,5)";
+    }
+    else if(nType==eCaptain)
+    {
+        strUnit="VOILIN(10)#WP_AXE_1(10,0),NULL,AR_CHAIN_HELMET(9,0,14),AR_CHAIN_ARMOUR(9,0,14),AR_CHAIN_GLOVES(9,0,14),AR_CHAIN_TROUSERS(9,0,14),AR_CHAIN_BOOTS(9,0,14)";
+    }
+    else if(nType==eFriend)
+    {
+        strUnit="NOLIR(10)#WP_AXE_1(10,0),NULL,NULL,AR_LEATHER_ARMOUR(6,0,4),NULL,AR_LEATHER_TROUSERS(6,0,5),AR_LEATHER_BOOTS(6,0,4)";
+    }
+    else if(nType==eEnemy)
+    {
+        strUnit="THE_BAD(10)#WP_AXE_1(10,0),NULL,NULL,AR_CHAIN_ARMOUR_13(7,0),AR_CHAIN_GLOVES_12(7,0),AR_CHAIN_TROUSERS_12(7,0),AR_CHAIN_BOOTS_12(7,0)";
+    }
+    else if(nType==eDwarfWithBow)
+    {
+        strUnit="DWARF_01(10)#NULL,WP_BOW(1,0),NULL,NULL,NULL,AR_LEATHER_TROUSERS(6,0,4),AR_LEATHER_BOOTS(6,0,4),AR_QUIVER_1(1,0)";
+    }
+    else if(nType==eDwarf)
+    {
+        strUnit="DWARF_01(10)#WP_AXE_1(10,0),AR_ROUNDSHIELD(10,0),AR_LEATHER_HELMET(6,0,4),AR_LEATHER_ARMOUR(6,0,4),NULL,AR_LEATHER_TROUSERS(6,0,4),AR_LEATHER_BOOTS(6,0,4)";
+    }
+    else if(nType==eHammer)
+    {
+        strUnit="DWARF_01(10)#WP_AXE_1(10,0),AR_ROUNDSHIELD(10,0),AR_LEATHER_HELMET(6,0,6),AR_LEATHER_ARMOUR(6,0,6),NULL,AR_LEATHER_TROUSERS(6,0,6),AR_LEATHER_BOOTS(6,0,6)";
+    }
+    else if(nType==ePickaxe)
+    {
+        strUnit="DWARF_01(10)#WP_AXE_1(10,0),AR_ROUNDSHIELD(10,0),AR_LEATHER_HELMET(6,0,5),AR_LEATHER_ARMOUR(6,0,5),NULL,AR_LEATHER_TROUSERS(6,0,5),AR_LEATHER_BOOTS(6,0,5)";
+    }
+else if(nType==eCloud)
+    {
+        strUnit="THE_CLOUD(10)#WP_AXE_1(10,0),NULL,NULL,AR_CHAIN_ARMOUR(9,0,14),AR_CHAIN_GLOVES(9,0,14),AR_CHAIN_TROUSERS(9,0,14),AR_CHAIN_BOOTS_12(7,0)";
+    }
+    else if(nType==eBandit)
+    {
+        strUnit="THE_BANDIT(10)#WP_MACE_1(10,0),NULL,NULL,AR_CHAIN_ARMOUR(9,0,14),AR_CHAIN_GLOVES(9,0,14),AR_CHAIN_TROUSERS(9,0,14),AR_CHAIN_BOOTS(9,0,14)";
+    }
+    // tworzenie postaci
+    uUnit = CreateObjectAtMarker(strUnit,strMarker,nMarker,0,0,nAlpha);
+    
+    if(uUnit) 
+    {
+        if(nType==eRaker||nType==eDwarfWithBow)
+        {
+            uUnit.GetUnitValues().SetBasicSkill(eSkillArchery,3);
+            uUnit.GetUnitValues().SetBasicSkill(eSkillCloseDistanceShoot,2);
+            uUnit.UpdateChangedUnitValues();
+        }
+        uUnit.SetIsInParty(nParty, true);
+        uUnit.SetAlarmModeUnit(nAlarmMode);
+    }
+    return uUnit;
+}
+    
+    
+    
+function unit CreateEnemy(int nMarker,string strMarker,unit uHero, int nLevel,int nOffsetX, int nOffsetY, int nAlpha, int nType, int nParty, int nAlarmMode)
+{
+    unit uUnit;
+    int nUnits,i;
+    string strUnit, strTMP,strWeapon, strArmour,strEnemy,strShield, strHelmet, strGloves, strBoots, strTrousers,strQuiver;
+    
+    strQuiver="NULL";
+    strArmour="NULL";
+    strHelmet="NULL";
+    strGloves="NULL";
+    strTrousers="NULL";
+    strBoots="NULL";
+    // CreateObjectAtMarker("EXP_SOIL_01",nMarker);   
+    if(nType==eBear)
+    {
+        if(nLevel<=2)strEnemy="MO_BEAR_01(%d)";
+        else strEnemy="MO_BEAR_02(%d)";
+    }
+    else if(nType==eWolf)
+    {
+        if(nLevel<=2)
+        {
+            if(Rand(2))strEnemy="MO_WOLF_01(%d)";
+            else strEnemy="MO_WOLF_02(%d)";
+        }
+        if(nLevel==3)strEnemy="MO_WOLF_03(%d)";
+        if(nLevel>3)strEnemy="MO_WOLF_04(%d)";
+    }
+    else if(nType==eGoblin || nType==eGoblinWithShield)
+    {
+        i=Rand(3);
+        
+        if(i==0)strEnemy="GOBLIN_W(%d)";
+        if(i==1)strEnemy="GOBLIN_A(%d)";
+        if(i==2)strEnemy="GOBLIN_BLACK(%d)";
+       
+        strWeapon = GetWeapon(eMace,nLevel);
+        if(nType==eGoblinWithShield) 
+        {
+            i=Rand(3);
+            if(i==0) strShield = "AR_GOBLIN_SHIELD_01(3,0)";
+            if(i==1) strShield = "AR_GOBLIN_SHIELD_01(3,0)";
+            if(i==2) strShield = "AR_GOBLIN_SHIELD_01(3,0)";
+        }
+        else strShield="NULL";
+    }            
+    else if(nType==eZombieWeak)
+    {
+       i=Rand(2);
+       if(i==0)strEnemy = "MO_ZOMBIE_01(%d)";
+       if(i==1)strEnemy = "MO_ZOMBIE_02(%d)";
+    }
+    else if(nType==eZombieStrong)
+    {
+       i=Rand(3);
+       if(i==0)strEnemy = "MO_ZOMBIE_03(%d)";
+       if(i==1)strEnemy = "MO_ZOMBIE_04(%d)";
+       if(i==2)strEnemy = "MO_ZOMBIE_05(%d)";
+    }
+    else if(nType==eZombieBoss)
+    {
+        strEnemy = "MO_ZOMBIE_06(%d)";
+    }
+    
+    //sk³adanie nazwy przeciwnika
+    if(nType==eGoblin || nType==eGoblinWithShield)
+    {
+        strUnit.Format("%s#%s,%s,%s,%s,%s,%s,%s,%s",strEnemy,strWeapon,strShield,strHelmet,strArmour,strGloves,strTrousers,strBoots,strQuiver);
+        //strTMP.Format(strUnit,nLevel,nLevel,nLevel,nLevel,nLevel,nLevel,nLevel,nLevel);
+        strTMP.Format(strUnit,nLevel);
+    }
+    else
+    {
+        strTMP.Format(strEnemy,nLevel);
+    }
+    
+    // tworzenie przeciwników
+    uUnit = CreateObjectAtMarker(strTMP,strMarker,nMarker,nOffsetX,nOffsetY,nAlpha);
+    
+    // zrobienie z unita wrogów dla gracza
+    if(uUnit) 
+    {
+        uUnit.SetIsInParty(nParty, true);
+        uUnit.CommandSetArmedMode(1);
+        uUnit.SetAlarmModeUnit(nAlarmMode);
+        if(uHero) uUnit.CommandAttack(uHero);
+    }
+    return uUnit;
+}
+function unit CreateEnemy(int nMarker,string strMarker,unit uHero, int nLevel,int nOffsetX, int nOffsetY, int nAlpha, int nType, int nParty)
+{
+    return CreateEnemy(nMarker, strMarker, uHero, nLevel, nOffsetX,  nOffsetY,  nAlpha,  nType,  nParty, 1);
+}
+function unit CreateEnemy(int nMarker,unit uHero, int nLevel,int nOffsetX, int nOffsetY, int nAlpha, int nType, int nParty, int nAlarmMode)
+{
+    return CreateEnemy(nMarker,MARKER_DEFAULT,uHero, nLevel,nOffsetX, nOffsetY, nAlpha, nType, nParty, nAlarmMode);
+}
+function unit CreateEnemy(int nMarker,unit uHero, int nLevel,int nAlpha, int nType, int nParty, int nAlarmMode)
+{
+    return CreateEnemy(nMarker,MARKER_DEFAULT,uHero, nLevel,0, 0, nAlpha, nType, nParty, nAlarmMode);
+}
+
+function unit CreateEnemy(int nMarker,unit uHero, int nLevel,int nOffsetX, int nOffsetY, int nAlpha, int nType, int nParty)
+{
+    return CreateEnemy(nMarker,MARKER_DEFAULT,uHero, nLevel,nOffsetX, nOffsetY, nAlpha, nType, nParty, 1);
+}
+function unit CreateEnemy(int nMarker,unit uHero, int nLevel,int nAlpha, int nType, int nParty)
+{
+    return CreateEnemy(nMarker,MARKER_DEFAULT,uHero, nLevel,0, 0, nAlpha, nType, nParty,1);
+}
+
+function unit CreateNPC(int nMarker,string strMarker,int nOffsetX,int nOffsetY, int nAlpha, int nType, int nParty)
+{
+    return CreateNPC(nMarker,strMarker,nOffsetX,nOffsetY,  nAlpha, nType, nParty,1);
+}
+function unit CreateNPC(int nMarker,int nOffsetX,int nOffsetY, int nAlpha, int nType, int nParty, int nAlarmMode)
+{
+    return CreateNPC(nMarker,MARKER_DEFAULT, nOffsetX, nOffsetY,  nAlpha, nType, nParty, nAlarmMode);
+}
+function unit CreateNPC(int nMarker,int nAlpha, int nType, int nParty, int nAlarmMode)
+{
+    return CreateNPC(nMarker,MARKER_DEFAULT, 0, 0,  nAlpha, nType, nParty, nAlarmMode);
+}
+function unit CreateNPC(int nMarker,int nOffsetX,int nOffsetY, int nAlpha, int nType, int nParty)
+{
+    return CreateNPC(nMarker,MARKER_DEFAULT, nOffsetX, nOffsetY,  nAlpha, nType, nParty, 1);
+}
+function unit CreateNPC(int nMarker,int nAlpha, int nType, int nParty)
+{
+    return CreateNPC(nMarker,MARKER_DEFAULT, 0, 0,  nAlpha, nType, nParty, 1);
+}
+
+function void CreateEnemies()
+{
+    unit uHero;
+    int i,k,nX,nY,nLevel;
+    uHero = GetHero();
+    nLevel = uHero.GetUnitValues().GetLevel();
+    
+    for(i=1;i<=50;i=i+1)
+    {
+        //if(m_aEnemy[i])
+        {
+            //TRACE("%d",i);
+            if(1)
+            {
+                TRACE("                                             Potwor na markerze ENEMY %d         \n",i);
+                
+                k=Rand(5);
+                if(k==0)
+                { 
+                    CreateEnemy(i,MARKER_ENEMY,null,4,0,0,Rand(200), eBear,ePartyEnemies,0);
+                }
+                else if(k==1)
+                { 
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eBear,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eBear,ePartyEnemies,1);
+                }
+                else if(k==2)
+                { 
+                    GetMarker(MARKER_ENEMY, i, nX, nY);
+                    CreateEnemy(i,MARKER_ENEMY,null,3,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                }
+                else if(k==3)
+                { 
+                    GetMarker(MARKER_ENEMY, i, nX, nY);
+                    CreateEnemy(i,MARKER_ENEMY,null,4,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,3,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                }
+                else
+                {
+                    GetMarker(MARKER_ENEMY, i, nX, nY);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                    CreateEnemy(i,MARKER_ENEMY,null,2,0,0,Rand(200), eWolf,ePartyEnemies,1);
+                }
+            }
+        }
+    }
+}
+
+

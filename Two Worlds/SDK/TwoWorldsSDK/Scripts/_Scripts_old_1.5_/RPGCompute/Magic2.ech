@@ -1,0 +1,453 @@
+
+// zrobic funkcje ktora  ustawia wszystkie parametry czaru. 
+//potem dodac te parametry do ptarget. 
+//ta sama funkcja uzywana bedzie do wyswietlania parametrow magii
+
+function int GetMagicTicks(int nCardCnt, int nRequiredSkill,int nSkill,int nMul) 
+{
+    int nMagicRing;
+    nMagicRing = MagicSchoolSkill2MagicRing(nRequiredSkill);
+    return (10*30 + (nSkill + nCardCnt)*nMagicRing*30)*nMul;
+}
+
+
+#define CHECK_IF_CAN_BE_USED() ptVal.SetCustomObjectID(strName);if(pUnit.FindPotionWithCustomObjectID(strName))bCanBeUsed=false;
+
+
+//function void MakeMagicGenericOnUnit(unit pUnit, int nMagicCardSlotNum, unit pTarget)
+function void PrepareMagicDataOnUnit(unit pUnit, string &strName, int nCardCnt, int nMagicCardSlotNum, int nRequiredSkill,int nSkill, 
+              PotionValues ptVal,int& nAddUnitHP,int &nAddTargetHP,int &nFreezeTicks,int &nStopMovingTicks,
+              int &bHealPoison,int &bRemoveTarget, int &bUnsummonTarget, int &nStoneWallTicks,int &bRessurectTarget,int &bCanBeUsed)
+{
+    int nVal, nVal2, nTicks, nIndex,nProtect;
+    unit uTmp;
+    bCanBeUsed=true;
+    nProtect = ((nSkill+nCardCnt)*5)*(20+nSkill+nCardCnt)/2;
+    if (strName.EqualNoCase("MAGIC_HEAL"))
+    {
+        nVal = nSkill*nCardCnt*100;
+        nAddTargetHP = MAX(nVal, 0);
+        bHealPoison = false;
+    }
+    else if (strName.EqualNoCase("MAGIC_AID"))
+    {
+        nVal = nSkill*nCardCnt*20;
+        ptVal.SetAddParam(eParamHP, MAX(nVal, 0));
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,1); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        nAddTargetHP = 1000;
+        CHECK_IF_CAN_BE_USED();
+        
+    }
+    else if (strName.EqualNoCase("MAGIC_REGENERATION"))
+    {
+        nVal = 20 + (nSkill + nCardCnt)*5;
+        ptVal.SetHPRegenerationSpeedUpPercent(MAX(nVal, 0));//o tyle procent jest zmniejszany czas calkowitej regeneracji
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_STRENGTHOFGOD"))
+    {
+        nVal = 30 + ((nSkill - nRequiredSkill) + nCardCnt)*30;
+        ptVal.SetStrengthUpPercent(MAX(nVal, 0));//o tyle procent jest zwiekszany strength
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_CONFUSION"))
+    {
+        nVal = 5 + nSkill + nCardCnt;
+        ptVal.SetAddPoint(ePointsDexterity, -nVal);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,2); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        
+    }
+    else if (strName.EqualNoCase("MAGIC_SHADOW"))
+    {
+        // zamieniony na zwalnianie wrogów w pewnym czasie i promieniu
+        //nVal = 5 + nSkill + nCardCnt;
+        //ptVal.SetAddPoint(ePointsDexterity, -nVal);
+        ptVal.SetPotionFlags(ePotionSlowDown);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+    }
+    else if (strName.EqualNoCase("MAGIC_RUSTWEAPON"))
+    {
+        //nVal = nSkill + nCardCnt;
+        nVal=CalculateMagicDamage(pUnit, nMagicCardSlotNum);
+        ptVal.SetAddParam(eParamDamage, -nVal);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+    }
+    else if (strName.EqualNoCase("MAGIC_RUSTARMOUR"))
+    {
+        nVal = 5 + (nSkill + nCardCnt)*3;
+        ptVal.SetAddProtect(eProtectPhysical, -nProtect);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+    }
+    else if (strName.EqualNoCase("MAGIC_CORPSECONVERSION"))
+    {
+        nVal = 30 + (nSkill + nCardCnt)*30;
+        nAddUnitHP = MAX(nVal,0);
+        bRemoveTarget=true;
+    }
+    else if (strName.EqualNoCase("MAGIC_DISEASE"))
+    {
+        ptVal.SetAddParam(eParamHP, -(20 + (nSkill + nCardCnt)*5));
+        //ptVal.SetAddParam(eParamStamina, -(5 + (nSkill + nCardCnt)*5));
+        ptVal.SetAddParam(eParamDefence, -(5 + (nSkill + nCardCnt)*5));
+        ptVal.SetAddParam(eParamAttack, -(5 + (nSkill + nCardCnt)*5));
+        ptVal.SetAddParam(eParamDamage, -(5 + (nSkill + nCardCnt)*5));
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+    }
+    else if (strName.EqualNoCase("MAGIC_AURAOFDEATH"))
+    {
+        ptVal.SetAddParam(eParamHP, -(20 + (nSkill + nCardCnt)*5));
+        //ptVal.SetAddParam(eParamStamina, -(5 + (nSkill + nCardCnt)*5));
+        ptVal.SetAddParam(eParamDefence, -(5 + (nSkill + nCardCnt)*5));
+        ptVal.SetAddParam(eParamAttack, -(5 + (nSkill + nCardCnt)*5));
+        ptVal.SetAddParam(eParamDamage, -(5 + (nSkill + nCardCnt)*5));
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+    }
+    else if (strName.EqualNoCase("MAGIC_CHAOSRAGE"))
+    {
+        ptVal.SetPotionFlags(ePotionChaosEnemyParties);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+    }
+    else if (strName.EqualNoCase("MAGIC_RESURRECTION"))//XXXMD ????? co to robi
+    {
+        bRessurectTarget=true;
+    }
+    else if (strName.EqualNoCase("MAGIC_UNSUMMON"))
+    {
+        bUnsummonTarget=true;
+    }
+    else if (strName.EqualNoCase("MAGIC_OVERPOWER"))
+    {
+        nVal = (nSkill + nCardCnt)*30;
+        ptVal.SetMagicEnhanceMissileDamageUpPercent(nVal);
+        nVal = 50 - (nSkill + nCardCnt)*10;
+        ptVal.SetMagicEnhanceManaUseUpPercent(MAX(nVal, 0));
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_CONCENTRATION"))
+    {
+        nVal=CalculateMagicDamage(pUnit, nMagicCardSlotNum);
+        ptVal.SetMagicEnhanceMissileDamageUpPercent(nVal);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_SUMMONINGAURA"))
+    {
+        nVal = 2 + (nSkill - nRequiredSkill) + nCardCnt;
+        ptVal.SetMagicEnhanceSummonAddLevels(nVal);
+        if (((nSkill - nRequiredSkill) + nCardCnt)/3 > 0)
+        {
+            ptVal.SetMagicEnhanceSummonAddCount(1);
+        }
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_BLESS"))
+    {
+        ptVal.SetAddPoint(ePointsStrength, 2 + (nSkill + nCardCnt)*3);
+        ptVal.SetAddPoint(ePointsDexterity, 2 + (nSkill + nCardCnt)*3);
+//        ptVal.SetAddPoint(ePointsVitality, 2 + (nSkill + nCardCnt)*3);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+        
+    }
+    else if (strName.EqualNoCase("MAGIC_SHIELDOFMAGIC"))
+    {
+        ptVal.SetManaAsHPPercent(MAX(30, 100 - ((nSkill - nRequiredSkill) + nCardCnt)*5));
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_BONEARMOUR"))
+    {
+        nVal = 50 + ((nSkill - nRequiredSkill) + nCardCnt)*20;
+        ptVal.SetExtraHP(nVal);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    
+    }
+    else if (strName.EqualNoCase("MAGIC_REFLECTINGSHIELD"))
+    {
+        nVal = 30 + ((nSkill - nRequiredSkill) + nCardCnt)*10;
+        ptVal.SetReflectDamagePercent(CLAMP(nVal, 30, 80));
+        ptVal.SetReflectDamageArmourPercent(80);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_FIRESHIELD"))
+    {
+        ptVal.SetAddProtect(eProtectPhysical, nProtect);
+        ptVal.SetDamage(eDamageFire, 5 + (nSkill + nCardCnt)*5);
+    	for (nIndex = 0; nIndex < eTargetTypeModifiersCnt; nIndex++)
+        {
+		    ptVal.SetTargetTypeModifier(nIndex, 100);
+        }
+        ptVal.SetDamageRangeA(e4m);
+        ptVal.SetDamageTicks(50);//co tyle zadaje damage
+        ptVal.SetDamagePartiesType(ePartiesTypeEnemy);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_ICESHIELD"))
+    {
+        ptVal.SetAddProtect(eProtectCold, nProtect);
+        ptVal.SetDamage(eDamageCold, 5 + (nSkill + nCardCnt)*5);
+    	for (nIndex = 0; nIndex < eTargetTypeModifiersCnt; nIndex++)
+        {
+		    ptVal.SetTargetTypeModifier(nIndex, 100);
+        }
+        ptVal.SetDamageRangeA(e4m);
+        ptVal.SetDamageTicks(50);//co tyle zadaje damage
+        ptVal.SetDamagePartiesType(ePartiesTypeEnemy);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+        
+    }
+    else if (strName.EqualNoCase("MAGIC_POISONSHIELD"))
+    {
+        ptVal.SetPotionFlags(ePotionBlockPoison);
+        ptVal.SetAddProtect(eProtectPhysical, nProtect);
+        ptVal.SetDamage(eDamagePoison, 5 + (nSkill + nCardCnt)*5);
+    	for (nIndex = 0; nIndex < eTargetTypeModifiersCnt; nIndex++)
+        {
+		    ptVal.SetTargetTypeModifier(nIndex, 100);
+        }
+    	ptVal.SetDamageRangeA(e4m);
+        ptVal.SetDamageTicks(50);//co tyle zadaje damage
+        ptVal.SetDamagePartiesType(ePartiesTypeEnemy);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_LIGHTINGSHIELD"))
+    {
+        ptVal.SetAddProtect(eProtectPhysical, nProtect);
+        ptVal.SetDamage(eDamageElectric, 5 + (nSkill + nCardCnt)*5);
+    	for (nIndex = 0; nIndex < eTargetTypeModifiersCnt; nIndex++)
+        {
+		    ptVal.SetTargetTypeModifier(nIndex, 100);
+        }
+    	ptVal.SetDamageRangeA(e4m);
+        ptVal.SetDamageTicks(50);//co tyle zadaje damage
+        ptVal.SetDamagePartiesType(ePartiesTypeEnemy);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_PROTFROMFIRE"))
+    {
+        ptVal.SetAddProtect(eProtectFire, nProtect*3);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_IRONSKIN"))
+    {
+        ptVal.SetAddProtect(eProtectPhysical, nProtect);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_ADAMANTIUM"))
+    {
+        for (nIndex = 0; nIndex < eProtectSpirit; nIndex++)
+        {
+            ptVal.SetAddProtect(nIndex, nProtect);
+        }
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_EARTHBLESSING"))
+    {
+        ptVal.SetAddProtect(eProtectPhysical, nProtect*2);
+        ptVal.SetAddProtect(eProtectCold, nProtect*2);
+        ptVal.SetAddProtect(eProtectFire, nProtect*2);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_LEECHAURA"))
+    {
+        ptVal.SetLeechHP(5 + (nSkill + nCardCnt)*5);
+        ptVal.SetDamageRangeA(e4m);
+        ptVal.SetDamageTicks(100);//co tyle zadaje damage
+        ptVal.SetDamagePartiesType(ePartiesTypeAllNotOurs);
+        ptVal.SetLeechHPTargetTypeModifiersMask(0xFFFFFFFF);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,3); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+    else if (strName.EqualNoCase("MAGIC_CHAINS"))
+    {
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,1); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        nFreezeTicks=nTicks;
+    }
+    else if (strName.EqualNoCase("MAGIC_IVY"))
+    {
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,1); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        nStopMovingTicks=nTicks;
+    }
+    else if (strName.EqualNoCase("MAGIC_FREEZINGWAVE"))
+    {
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,1); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        nFreezeTicks=nTicks;
+    }
+    else if (strName.EqualNoCase("MAGIC_DEADHANDS"))
+    {
+        //ticks takie samo jak w InitMagicMissile
+        nFreezeTicks=GetMagicDeathHandsTicks(pUnit, nMagicCardSlotNum);
+    }
+    else if (strName.EqualNoCase("MAGIC_STONEWALL"))
+    {
+        nStoneWallTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,2);
+    }
+    else if (strName.EqualNoCase("MAGIC_POISONBLADE"))
+    {
+        nVal=CalculateMagicDamage(pUnit, nMagicCardSlotNum);
+        //ptVal.SetDamage(eDamagePoison, 5 + (nSkill + nCardCnt)*5);
+        ptVal.SetDamage(eDamagePoison,nVal);
+    	for (nIndex = 0; nIndex < eTargetTypeModifiersCnt; nIndex++)
+        {
+		    ptVal.SetTargetTypeModifier(nIndex, 100);
+        }
+        ptVal.SetDamageTicks(0);//zwykly damage
+        //ptVal.SetWeaponsForceFieldType(eForcefieldElectric);
+        ptVal.SetWeaponsForceFieldType(eForcefieldFreshnellGreen);
+        //ptVal.SetWeaponExtraExplosionType(eForcefieldFreshnellGreen);
+        //ptVal.SetWeaponTrailNormalColor(0xFF00FF00);
+        nTicks = GetMagicTicks(nCardCnt, nRequiredSkill,nSkill,2); 
+        nTicks = MultiplyValueByPowerUpCards(nTicks, pUnit, nMagicCardSlotNum, eMagicCardPowerUpMagicTime, 1);
+        ptVal.SetPotionTicks(nTicks);
+        CHECK_IF_CAN_BE_USED();
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MakeMagicGenericOnUnit(unit pUnit, int nMagicCardSlotNum, unit pTarget)
+{
+    int nCardCnt, nRequiredSkill, nSkill,nIndex; 
+    MagicCardParams mcPar;
+    PotionValues ptVal;
+    string strCardName;
+    unit uTmp;
+    int nAddUnitHP,nAddTargetHP,nFreezeTicks,nStopMovingTicks,nStoneWallTicks;
+    int bHealPoison,bRemoveTarget,bUnsummonTarget,bRessurectTarget,bCanBeUsed;
+
+    nCardCnt = pUnit.GetMagicCardOnSlotCount(nMagicCardSlotNum);
+    mcPar = pUnit.GetMagicCardParamsOnSlot(nMagicCardSlotNum);
+    
+    strCardName = pUnit.GetMagicCardIDOnSlot(nMagicCardSlotNum);
+    
+    nSkill = pUnit.GetUnitValues().GetSkill(eFirstMagicSkill + mcPar.GetMagicSchool()) + GetPowerUpMagicLevel(pUnit, nMagicCardSlotNum);
+    nRequiredSkill = mcPar.GetRequiredMagicSchoolSkill();
+    nAddUnitHP=0;nAddTargetHP=0;nFreezeTicks=0;nStopMovingTicks=0;nStoneWallTicks=0;
+    bHealPoison=false;bRemoveTarget=false;bUnsummonTarget=false;bRessurectTarget=false;
+    
+    ptVal = GetEmptyPotionValues();//zwraca wskaznik do jednego obiektu!!
+        
+    PrepareMagicDataOnUnit(pUnit, strCardName, nCardCnt, nMagicCardSlotNum, nRequiredSkill,nSkill,
+                           ptVal, nAddUnitHP,nAddTargetHP,nFreezeTicks,nStopMovingTicks,
+                           bHealPoison,bRemoveTarget,bUnsummonTarget,nStoneWallTicks,bRessurectTarget,bCanBeUsed);
+    
+    if(ptVal.GetPotionTicks()>0) pTarget.AddPotionValues(ptVal);
+    pTarget.UpdateChangedUnitValues();
+    
+    if(nAddUnitHP)pUnit.AddHP(nAddUnitHP);
+    if(nAddTargetHP)pTarget.AddHP(nAddTargetHP);
+    if(bHealPoison)pTarget.HealPoison();
+    
+    if(nFreezeTicks) pTarget.SetFreezeTicks(nFreezeTicks, true);
+    if(nStopMovingTicks)pTarget.SetStopMovingTicks(nStopMovingTicks, true);
+    if(bRemoveTarget) pTarget.RemoveObject();
+    if(bUnsummonTarget && pTarget.IsSummonedUnit()) pTarget.RemoveObject();
+    if(nStoneWallTicks > 0)
+    {
+        //ticks takie samo jak w InitMagicMissile
+        uTmp = pTarget.GetMission().CreateObject("MAGIC_STONEWALL_WALL", pTarget.GetLocationX(), pTarget.GetLocationY(), pTarget.GetLocationZ(), pTarget.GetDirectionAlpha());
+        if (!pTarget.IsHeroUnit())
+        {
+            pTarget.CommandAttack(uTmp);
+        }
+        uTmp.SetStoneWallTicks(pTarget, nStoneWallTicks);
+    }
+    if(bRessurectTarget)
+    {
+        pUnit.ResurrectUnitByMagic(pTarget);
+        pTarget.SetPartyNum(-1);
+        for (nIndex = 0; nIndex < pUnit.GetPartiesNums().GetSize(); nIndex++)
+        {
+            pTarget.SetIsInParty(pUnit.GetPartiesNums().ElementAt(nIndex), true);
+        }
+    }
+}
+
+function void FinishMakingMagic(unit pUnit, int nMagicCardSlotNum, unit pTarget)
+{
+    int nPowerUpCardCnt;
+    int nSkill; 
+    MagicCardParams mcPar;
+
+    mcPar = pUnit.GetMagicCardParamsOnSlot(nMagicCardSlotNum);
+    nSkill = pUnit.GetUnitValues().GetSkill(eFirstMagicSkill + mcPar.GetMagicSchool()) + GetPowerUpMagicLevel(pUnit, nMagicCardSlotNum);
+    if( GetAccessibleChamber(nSkill) == 5 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementCastChamber5Spell, pUnit);
+    }
+
+    nPowerUpCardCnt = pUnit.GetPowerUpMagicCardOnSlotCount(nMagicCardSlotNum);
+    if( nPowerUpCardCnt > 0 )
+    {
+        GetCampaign().CommandMessage(eMsgAchievement, eAchievementUseABoostedSpell, pUnit);
+    }
+
+}
+

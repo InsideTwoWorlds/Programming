@@ -1,0 +1,49 @@
+editor.SetCreateRect 0 0 127 127
+
+Editor.RemoveGrassWhereTexture 7 1 1
+Editor.RemoveGrassWhereTexture 7 2 1
+Editor.RemoveGrassWhereTexture 7 3 1
+Editor.RemoveGrassWhereTexture 7 4 1
+Editor.RemoveGrassWhereTexture 7 5 1
+Editor.RemoveGrassWhereTexture 7 6 1
+Editor.RemoveGrassWhereTexture 7 7 1
+
+Editor.RemoveGrassWhereTexture 5 1 1
+Editor.RemoveGrassWhereTexture 5 2 1
+Editor.RemoveGrassWhereTexture 5 3 1
+Editor.RemoveGrassWhereTexture 5 4 1
+Editor.RemoveGrassWhereTexture 5 5 1
+Editor.RemoveGrassWhereTexture 5 6 1
+Editor.RemoveGrassWhereTexture 5 7 1
+
+Editor.RemoveGrassWhereTexture 6 1 1
+Editor.RemoveGrassWhereTexture 6 2 1
+Editor.RemoveGrassWhereTexture 6 3 1
+Editor.RemoveGrassWhereTexture 6 4 1
+Editor.RemoveGrassWhereTexture 6 5 1
+Editor.RemoveGrassWhereTexture 6 6 1
+Editor.RemoveGrassWhereTexture 6 7 1
+
+Editor.RemoveGrassWhereTexture 4 1 1
+Editor.RemoveGrassWhereTexture 4 2 1
+Editor.RemoveGrassWhereTexture 4 3 1
+Editor.RemoveGrassWhereTexture 4 4 1
+Editor.RemoveGrassWhereTexture 4 5 1
+Editor.RemoveGrassWhereTexture 4 6 1
+Editor.RemoveGrassWhereTexture 4 7 1
+
+Editor.RemoveGrassWhereTexture 8 1 1
+Editor.RemoveGrassWhereTexture 8 2 1
+Editor.RemoveGrassWhereTexture 8 3 1
+Editor.RemoveGrassWhereTexture 8 4 1
+Editor.RemoveGrassWhereTexture 8 5 1
+Editor.RemoveGrassWhereTexture 8 6 1
+Editor.RemoveGrassWhereTexture 8 7 1
+
+Editor.RemoveGrassWhereTexture 11 1 1
+Editor.RemoveGrassWhereTexture 11 2 1
+Editor.RemoveGrassWhereTexture 11 3 1
+Editor.RemoveGrassWhereTexture 11 4 1
+Editor.RemoveGrassWhereTexture 11 5 1
+Editor.RemoveGrassWhereTexture 11 6 1
+Editor.RemoveGrassWhereTexture 11 7 1

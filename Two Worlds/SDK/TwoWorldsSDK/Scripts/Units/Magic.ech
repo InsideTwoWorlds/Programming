@@ -1,0 +1,787 @@
+#ifndef UNITS_MAGIC_ECH
+#define UNITS_MAGIC_ECH
+
+////    Declarations    ////
+
+state PrepareManualMagic;
+state MakingMagic;
+state MovingToMagicTarget;
+state EndMakingMagic;
+
+int m_bMultiAutoMagic;
+int m_nMagicCardSlotNum;
+int m_nMagicShootAlpha;
+int m_nMagicShootBeta;
+unit m_uMagicTarget;
+int m_nMagicTargetX;
+int m_nMagicTargetY;
+
+#define eMagicCardCommandTypeDirectFlag (1 << eMagicCardCommandTypeDirect)
+#define eMagicCardCommandTypeObjectFlag (1 << eMagicCardCommandTypeObject)
+
+
+////    Functions    ////
+
+function void ResetMagicTarget()
+{
+    m_uMagicTarget = null;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int IsInMagicState()
+{
+    if ((state == MakingMagic) || (state == MovingToMagicTarget))
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void StopMakingMagic()
+{
+    if (IsMoving())
+    {
+        CallStopCurrentAction();
+    }
+    else if (IsMakingMagic())
+    {
+        CallStopCurrentAction();
+    }
+    ResetMagicTarget();
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void StopCurrentActionMagic()
+{
+    if (IsInMagicState())
+    {
+        StopMakingMagic();
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MoveToMagicTarget(unit uTarget, int nMagicCardSlotNum, int nInRange)
+{
+    int nX, nY, nZ;
+    
+    if (IsHeroUnit())
+    {
+        //nie podchodzi
+        return true;
+    }
+    if ((nInRange == eInRangeGoodHit) || (nInRange == eInRangeBadAngleAlpha))
+    {
+        if (IsMoving())
+        {
+            CallStopCurrentAction();
+        }
+        return true;
+    }
+    uTarget.GetLocation(nX, nY, nZ);
+    if (nInRange == eInRangeTooClose)
+    {
+        MoveAwayFromPoint(nX, nY, e4m);
+    }
+    else
+    {
+        CallMoveToPoint(nX, nY, nZ);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MoveToMagicTarget(unit uTarget, int nMagicCardSlotNum)
+{
+    return MoveToMagicTarget(uTarget, nMagicCardSlotNum, IsMagicTargetInRange(uTarget, nMagicCardSlotNum));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int BeginMagicTarget(unit uTarget, int nTargetPosX, int nTargetPosY, int nMagicCardSlotNum, int nShootAlpha, int nShootBeta, int bAutoTarget, int bMultiAutoMagic)
+{
+    if (!MoveToMagicTarget(uTarget, nMagicCardSlotNum))
+    {
+        return false;        
+    }
+    m_nMagicCardSlotNum = nMagicCardSlotNum;
+    m_nMagicShootAlpha = nShootAlpha;
+    m_nMagicShootBeta = nShootBeta;
+    m_uMagicTarget = uTarget;
+    if ((uTarget != null) && !uTarget.IsLive())
+    {
+        //pozycja uzywana tylko przy czarze na martwym
+        m_nMagicTargetX = nTargetPosX;
+        m_nMagicTargetY = nTargetPosY;
+    }
+    else
+    {
+        m_nMagicTargetX = 0;
+        m_nMagicTargetY = 0;
+    }
+    m_bAutoTarget = bAutoTarget;
+    m_bMultiAutoMagic = bMultiAutoMagic;
+    OnBeginAttackTarget(uTarget, true);
+    AlarmPartyUnitsAboutEnemy(uTarget);
+    state MovingToMagicTarget;
+    SetStateDelay(0);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//prawdopodobienstwa rzucania magii przez NPC	
+//pierwszy bajt: przy szukaniu celu/w evencie AlarmEnemy; drugi: dla zaatakowanego unita; trzeci: dla magii autoCastBeforeFight; czwarty: dla magii autoCastDuringFight	
+function int GetAutoCastMagicProbabilitySearchTarget()
+{
+    return GetUnitParams().GetAutoCastMagicProbability() & 0xFF;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetAutoCastMagicProbabilityWhenAttacked()
+{
+    return (GetUnitParams().GetAutoCastMagicProbability() >> 8) & 0xFF;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetAutoCastMagicProbabilityBeforeFight()
+{
+    return (GetUnitParams().GetAutoCastMagicProbability() >> 16) & 0xFF;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetAutoCastMagicProbabilityDuringFight()
+{
+    return (GetUnitParams().GetAutoCastMagicProbability() >> 24) & 0xFF;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int FindSlotWithUsableMagicCard(int nMagicCardFlags, int nCommandTypeFlags, unit pTarget)
+{
+    int nIndex, nRand, nSlotNum;
+    MagicCardParams mcPar;
+    
+    nRand = Rand(eMagicSlotsCnt);
+    for (nIndex = 0; nIndex < eMagicSlotsCnt; nIndex++)
+    {
+        nSlotNum = (nIndex + nRand) % eMagicSlotsCnt;
+        if (GetMagicCardOnSlotCount(nSlotNum) == 0)
+        {
+            continue;
+        }
+        mcPar = GetMagicCardParamsOnSlot(nSlotNum);
+        if (mcPar == null)
+        {
+            continue;
+        }
+        if (!(mcPar.GetMagicFlags() & nMagicCardFlags))
+        {
+            continue;
+        }
+        if (!((1 << mcPar.GetCommandType()) & nCommandTypeFlags))
+        {
+            continue;
+        }
+        if (pTarget != null)
+        {
+            if (mcPar.GetCommandType() == eMagicCardCommandTypeDirect)
+            {
+                if (!CanMakeMagic(nSlotNum, true, true))
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                if (!CanMakeMagic(pTarget, nSlotNum, true, true))
+                {
+                    continue;
+                }
+            }
+        }
+        else
+        {
+// (p)
+/*            if (!CanUseMagicCard(nSlotNum, true, true))
+            {
+                continue;
+            }
+*/            
+        }
+        return nSlotNum;
+    }
+    return -1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function unit FindMagicTarget(int nMagicSlotNum)
+{
+    int nIndex, nCount, nInRange;
+    unit uTarget, uResult;
+    int nDist, nRangeOfFire, nTargetX, nTargetY, nTargetZ, nPosX, nPosY;
+
+    if (SearchUnits(GetEnemiesParties(), eTargetTypeLand | eTargetTypeUnit | eTargetTypeLive | eTargetTypeAttackingSummonedUnitOwner, eSortTypeRange) == 0)
+    {
+        return null;
+    }
+    nCount = GetSearchUnitsCount();
+    for (nIndex = 0; nIndex < nCount; ++nIndex)
+    {
+        uTarget = GetSearchUnit(nIndex);
+        if (!CanMakeMagic(uTarget, nMagicSlotNum, true, true))
+        {
+            continue;
+        }
+        if (!IsHeroUnit() && uTarget.IsNearLevelBorder(e10m))
+        {
+            continue;
+        }
+        uTarget.GetLocation(nTargetX, nTargetY, nTargetZ);
+        nInRange = IsMagicTargetInRange(uTarget, nMagicSlotNum);
+        if ((nInRange == eInRangeGoodHit) || (nInRange == eInRangeBadAngleAlpha))
+        {
+            uResult = uTarget;
+            break;
+        }
+        else if (uResult == null)
+        {
+            //if (movementMode == eModeHoldArea)
+            {
+                nDist = DistanceTo(uTarget);
+                nRangeOfFire = GetMagicCastRange(nMagicSlotNum);
+                if (nDist > (nRangeOfFire - e2m))
+                {
+                    if (uTarget.IsMoving())
+                    {
+                        uTarget.GetMoveTarget(nPosX, nPosY);
+                        if (DistanceTo(nPosX, nPosY) < nDist)
+                        {
+                            nTargetX = nPosX;
+                            nTargetY = nPosY;
+                        }
+                        else
+                        {
+                            uTarget.GetLocation(nTargetX, nTargetY);
+                        }
+                    }
+                    else
+                    {
+                        uTarget.GetLocation(nTargetX, nTargetY);
+                    }
+                    if ((state == MovingToHoldAreaPos) || (state == WaitBeforeMovingToHoldAreaPos))
+                    {
+                        if ((DistanceTo(nTargetX, nTargetY) > (nRangeOfFire + eHoldAreaRange - e2m)) ||
+                            (Distance(m_nHoldPosX, m_nHoldPosY, nTargetX, nTargetY) > (nRangeOfFire + eHoldAreaRange - e2m)))
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (DistanceTo(nTargetX, nTargetY) > (nRangeOfFire + eHoldAreaRange - e1m))
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+            uResult = uTarget;
+        }
+    }
+    ClearSearchUnitsArray();
+    return uResult;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+function int HaveMagicDistanceWeapon()
+{
+    int nMagicSlotNum;
+    nMagicSlotNum = FindSlotWithUsableMagicCard(eMagicCardFlagAutoAttackEnemy, eMagicCardCommandTypeObjectFlag, null);
+    if (nMagicSlotNum < 0)
+    {
+        return false;
+    }
+    return true;
+}
+function int FindMagicAttackTarget(int bStoreHoldPos)
+{
+    int nMagicSlotNum;
+    unit uTarget;
+    
+    if (IsInSneakMode())
+    {
+        return false;
+    }
+    nMagicSlotNum = FindSlotWithUsableMagicCard(eMagicCardFlagAutoAttackEnemy, eMagicCardCommandTypeObjectFlag, null);
+    if (nMagicSlotNum < 0)
+    {
+        return false;
+    }
+    uTarget = FindMagicTarget(nMagicSlotNum);
+    if (uTarget == null)
+    {
+        return false;
+    }
+    if (bStoreHoldPos)
+    {
+        StoreHoldPos();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (!BeginMagicTarget(uTarget, uTarget.GetLocationX(), uTarget.GetLocationY(), nMagicSlotNum, GetDirectionAlpha(), 0, true, true))
+    {
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int FindMagicAttackTarget()
+{
+    return FindMagicAttackTarget(true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicAttackEnemy(unit uTarget, int bStoreHoldPos)
+{
+    int nMagicSlotNum;
+    
+    if (IsInSneakMode())
+    {
+        return false;
+    }
+    nMagicSlotNum = FindSlotWithUsableMagicCard(eMagicCardFlagAutoAttackEnemy, eMagicCardCommandTypeObjectFlag, null);
+    if (nMagicSlotNum < 0)
+    {
+        return false;
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (bStoreHoldPos)
+    {
+        StoreHoldPos();
+    }
+    if (GetMagicCardParamsOnSlot(nMagicSlotNum).GetCommandType() == eMagicCardCommandTypeDirect)
+    {
+        m_uMagicTarget = uTarget;//zeby go potem zaatakowac
+        m_bAutoTarget = true;
+        m_bMultiAutoMagic = false;
+        CallMakeMagic(nMagicSlotNum);
+        state MakingMagic;
+    }
+    else
+    {
+        if (!BeginMagicTarget(uTarget, uTarget.GetLocationX(), uTarget.GetLocationY(), nMagicSlotNum, GetDirectionAlpha(), 0, true, true))
+        {
+            return false;
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicWhenAttacked(unit uTarget, int bStoreHoldPos)
+{
+    int nMagicSlotNum;
+    
+    nMagicSlotNum = FindSlotWithUsableMagicCard(eMagicCardFlagAutoCastWhenAttacked, eMagicCardCommandTypeObjectFlag | eMagicCardCommandTypeDirectFlag, uTarget);
+    if (nMagicSlotNum < 0)
+    {
+        return false;
+    }
+    if (bStoreHoldPos)
+    {
+        StoreHoldPos();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (GetMagicCardParamsOnSlot(nMagicSlotNum).GetCommandType() == eMagicCardCommandTypeDirect)
+    {
+        m_uMagicTarget = uTarget;//zeby go potem zaatakowac
+        m_bAutoTarget = true;
+        m_bMultiAutoMagic = false;
+        CallMakeMagic(nMagicSlotNum);
+        AlarmPartyUnitsAboutEnemy(uTarget);
+        state MakingMagic;
+    }
+    else
+    {
+        if (!BeginMagicTarget(uTarget, uTarget.GetLocationX(), uTarget.GetLocationY(), nMagicSlotNum, GetDirectionAlpha(), 0, true, true))
+        {
+            return false;
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicWhenAttacked(unit uTarget)
+{
+    return AutoCastMagicWhenAttacked(uTarget, true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int OnAttackByOtherUnitAutoCastMagic(unit uAttacker, int bHit)
+{
+    if ((state != MovingToMagicTarget) && (state != MakingMagic) && (state != EndMakingMagic) &&
+        (Rand(100) < GetAutoCastMagicProbabilityWhenAttacked()) &&
+        //(!HaveUsableWeapon() || (((state == Nothing) || (state == Moving)) && !Rand(4))) && 
+        (bHit || IsObjectInSightOrHearRange(uAttacker, true))) //(p)
+    {
+        //07-07-02 - poprawa zgloszonych bledow: jesli atakuje juz wroga to nie atakujemy nowego jesli to NPC
+        if (IsInAttackState() && (m_uTarget != null) && IsEnemy(m_uTarget) && !uAttacker.IsHeroUnit())
+        {
+            return false;
+        }
+        return AutoCastMagicWhenAttacked(uAttacker);
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicBeforeFight(unit uTarget, int bStoreHoldPos)
+{
+    int nMagicSlotNum;
+        
+    nMagicSlotNum = FindSlotWithUsableMagicCard(eMagicCardFlagAutoCastBeforeFight, eMagicCardCommandTypeObjectFlag | eMagicCardCommandTypeDirectFlag, uTarget);
+    if (nMagicSlotNum < 0)
+    {
+        return false;
+    }
+    if (bStoreHoldPos)
+    {
+        StoreHoldPos();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (GetMagicCardParamsOnSlot(nMagicSlotNum).GetCommandType() == eMagicCardCommandTypeDirect)
+    {
+        m_uMagicTarget = uTarget;//zeby go potem zaatakowac
+        m_bAutoTarget = true;
+        m_bMultiAutoMagic = false;
+        CallMakeMagic(nMagicSlotNum);
+        AlarmPartyUnitsAboutEnemy(uTarget);
+        state MakingMagic;
+    }
+    else
+    {
+        if (!BeginMagicTarget(uTarget, uTarget.GetLocationX(), uTarget.GetLocationY(), nMagicSlotNum, GetDirectionAlpha(), 0, true, false))
+        {
+            return false;
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicBeforeFight(unit uTarget)
+{
+    return AutoCastMagicBeforeFight(uTarget, true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicDuringFight(unit uTarget, int bStoreHoldPos)
+{
+    int nMagicSlotNum;
+    
+    nMagicSlotNum = FindSlotWithUsableMagicCard(eMagicCardFlagAutoCastDuringFight, eMagicCardCommandTypeObjectFlag | eMagicCardCommandTypeDirectFlag, uTarget);
+    if (nMagicSlotNum < 0)
+    {
+        return false;
+    }
+    if (bStoreHoldPos)
+    {
+        StoreHoldPos();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (GetMagicCardParamsOnSlot(nMagicSlotNum).GetCommandType() == eMagicCardCommandTypeDirect)
+    {
+        m_uMagicTarget = uTarget;//zeby go potem zaatakowac
+        m_bAutoTarget = true;
+        m_bMultiAutoMagic = false;
+        CallMakeMagic(nMagicSlotNum);
+        AlarmPartyUnitsAboutEnemy(uTarget);
+        state MakingMagic;
+    }
+    else
+    {
+        if (!BeginMagicTarget(uTarget, uTarget.GetLocationX(), uTarget.GetLocationY(), nMagicSlotNum, GetDirectionAlpha(), 0, true, false))
+        {
+            return false;
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AutoCastMagicDuringFight(unit uTarget)
+{
+    return AutoCastMagicDuringFight(uTarget, true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int AttackAfterMakingMagic() 
+{
+    if (!IsHeroUnit() && m_uMagicTarget != null && m_bAutoTarget && DistanceTo(m_nHoldPosX, m_nHoldPosY) < eHoldAreaRange)
+    {
+        BeginAttackTarget(m_uMagicTarget,m_bAutoTarget,true,true);
+        ResetMagicTarget();
+        return true;    
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+////    States    ////
+
+state PrepareManualMagic
+{
+    if (IsMakingMagic())
+    {
+        return PrepareManualMagic, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing;
+    }
+}
+
+state MakingMagic
+{
+    if (IsMakingMagic())
+    {
+        return MakingMagic, 5;
+    }
+    else
+    {
+        if (m_bAutoTarget && m_bMultiAutoMagic && (m_uMagicTarget != null) && CanMakeMagic(m_uMagicTarget, m_nMagicCardSlotNum, true, true))
+        {
+            return MovingToMagicTarget, 0;
+        }
+        /*
+        //nie atakujemy automatycznie po magii
+        //sprawdzamy czy mozemy go teraz zaatakowac
+        if (m_bAutoTarget && (m_uMagicTarget != null) && CanAttackTarget(m_uMagicTarget))
+        {
+            CHECK_CANCEL_SNEAKMODE();
+            BeginAttackTarget(m_uMagicTarget, true, false);
+            ResetMagicTarget();
+            SetStateDelay(0);
+            //state ustawiony w BeginAttackTarget
+        }
+        else
+        */                
+//(p)        
+        if (AttackAfterMakingMagic()) 
+        {
+            return state;            
+        }
+        else 
+        {            
+            ResetMagicTarget();
+            if (!m_bAutoTarget)
+            {
+                EndCommand(true);
+            }
+            return EndMakingMagic, 0;
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingToMagicTarget
+{
+    int nInRange;
+    int nDist, nTargetX, nTargetY, nTargetZ;
+    
+    if (m_uMagicTarget != null)
+    {
+        m_uMagicTarget.GetLocation(nTargetX, nTargetY, nTargetZ);
+        nDist = DistanceTo(nTargetX, nTargetY);
+        nInRange = IsMagicTargetInRange(m_uMagicTarget, m_nMagicCardSlotNum);
+    }
+    if (!CanMakeMagic(m_uMagicTarget, m_nMagicCardSlotNum, true, true))
+    {
+        if (AttackAfterMakingMagic()) 
+        {
+            return state;            
+        }
+        else
+        {
+            StopMakingMagic();
+            if (!m_bAutoTarget)
+            {
+                EndCommand(true);
+            }
+            return EndMakingMagic, 0;
+        }        
+    }
+    
+    if (IsHeroUnit() || (nInRange == eInRangeGoodHit) || (nInRange == eInRangeBadAngleAlpha))
+    {
+        if (IsMoving())
+        {
+            CallStopCurrentAction();
+            return MovingToMagicTarget, 1;
+        }
+        CallMakeMagic(m_uMagicTarget, m_nMagicTargetX, m_nMagicTargetY, m_nMagicCardSlotNum, m_nMagicShootAlpha, m_nMagicShootBeta);
+        return MakingMagic, 5;
+    }
+    /*
+    else if (nInRange == eInRangeBadAngleAlpha)
+    {
+        CallTurnToAngle(AngleTo(m_nMagicTargetX, m_nMagicTargetY));
+        return MovingToMagicTarget, 1;
+    }
+    */
+    if (!IsHeroUnit() && (m_uMagicTarget != null) && m_uMagicTarget.IsNearLevelBorder(e10m))
+    {
+        StopMakingMagic();
+        if (!m_bAutoTarget)
+        {
+            EndCommand(true);
+        }
+        return EndMakingMagic, 0;
+    }
+    if (m_bAutoTarget)
+    {
+        //!!if ((movementMode == eModeHoldArea) &&
+        if ((DistanceTo(m_nHoldPosX, m_nHoldPosY) > eHoldAreaRange))
+        {
+            TRACE("    ->holdArea->Dist>range->Stop\n");
+            ResetMagicTarget();
+            if (!m_bAutoTarget)
+            {
+                EndCommand(true);
+            }
+            return EndMakingMagic, 0;
+        }
+    }
+    if (!MoveToMagicTarget(m_uMagicTarget, m_nMagicCardSlotNum, nInRange))
+    {
+        if (AttackAfterMakingMagic()) 
+        {
+            return state;            
+        }
+        else
+        {
+            StopMakingMagic();
+            if (!m_bAutoTarget)
+            {
+                EndCommand(true);
+            }
+            return EndMakingMagic, 0;
+        }        
+    }
+    if (nDist < e8m)
+    {
+        return MovingToMagicTarget, 0;
+    }
+    else
+    {
+        return MovingToMagicTarget, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state EndMakingMagic
+{
+    int nDist;
+    
+    TRACE("EndMakingMagic\n");
+    if (!m_bAutoTarget || IsHeroUnit())
+    {
+        TRACE("    ->!Auto->Nothing\n");
+        return Nothing, 60;// XXXMD przerwa pomiedzy kolejnymi czarami
+    }
+    if (true)//!!if (movementMode == eModeHoldArea)
+    {
+        TRACE("  ->eModeHoldArea\n");
+        //sprawdzamy czy w poblizu jest inny cel
+        nDist = DistanceTo(m_nHoldPosX, m_nHoldPosY);
+        if (nDist < eHoldAreaRange/2)
+        {
+            if (FindNothingTarget(false))
+            {
+                TRACE("    ->FindNothingTarget\n");
+                return state, GetStateDelay();//state ustawiony w FindNothingTarget
+            }
+        }
+        if (nDist > e1m)
+        {
+            TRACE("    ->WaitBeforeMovingToHoldAreaPos     \n");
+            m_nAttackCounter = 10;
+            return WaitBeforeMovingToHoldAreaPos, 5;
+        }
+        else
+        {
+            TRACE("    ->Nothing\n");
+            return Nothing, 0;
+        }        
+    }
+    else
+    {
+        TRACE("    ->Nothing\n");
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+    
+////    Commands    ////
+
+command MagicCardDirect(int nCardSlotNum) priority PRIOR_MAGICFIRST
+{
+    if(IsInMagicState())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (!CanMakeMagic(nCardSlotNum, true, true))
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (IsHeroUnit() && !IsOnHorse() && ((state == MovingStep) || (state == MovingOneStep)))
+    {
+        StopCurrentActionImmediate();
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    CallMakeMagic(nCardSlotNum);
+    state MakingMagic;
+    SetStateDelay(0);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MagicCardObject(unit uTarget, int nCardSlotNum, int nShootAlpha, int nShootBeta, int nPosX, int nPosY, int nPosZ) priority PRIOR_MAGICFIRST
+{
+    if (((uTarget == null) && !IsHeroUnit()) || !CanMakeMagic(uTarget, nCardSlotNum, true, true))
+    {
+        if (state == PrepareManualMagic)
+        {
+            CallStopCurrentAction();
+            state Nothing;
+        }
+        EndCommand(true);
+        return true;
+    }
+    if(IsInMagicState())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (IsHeroUnit() && !IsOnHorse() && ((state == MovingStep) || (state == MovingOneStep)))
+    {
+        StopCurrentActionImmediate();
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    if (!BeginMagicTarget(uTarget, nPosX, nPosY, nCardSlotNum, nShootAlpha, nShootBeta, false, false))
+    {
+        if (state == PrepareManualMagic)
+        {
+            CallStopCurrentAction();
+            state Nothing;
+        }
+        return false;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command PrepareManualTargetMagic(int nCardSlotNum) hidden
+{
+    ASSERT(IsHeroUnit());
+    if (!CanMakeMagic(null, nCardSlotNum, true, true))
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (IsHeroUnit() && !IsOnHorse() && ((state == MovingStep) || (state == MovingOneStep)))
+    {
+        StopCurrentActionImmediate();
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+    }
+    CHECK_CANCEL_SNEAKMODE();
+    CallPrepareManualTargetMagic(nCardSlotNum);
+    state PrepareManualMagic;
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_MAGIC_ECH

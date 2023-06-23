@@ -1,0 +1,461 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc AEMXPolanieShaderTemplate(string $node)
+{
+	editorTemplate -beginScrollLayout;
+
+	editorTemplate -beginLayout "Parameters" -collapse false;
+
+	editorTemplate -callCustom "transHelpNew"
+	   						   "transHelpReplace"
+							   "DummyHelp";
+
+	editorTemplate -callCustom "transReloadNew"
+	   						   "transReloadReplace"
+							   "Dummy";
+
+	editorTemplate -addControl "SideColor";
+	editorTemplate -addControl "AmbientColor";
+	editorTemplate -addControl "DiffuseColor";
+	editorTemplate -addControl "SpecularColor";
+	editorTemplate -addControl "DestructionColor";
+
+	editorTemplate -addControl "PC0Color";
+	editorTemplate -addControl "PC1Color";
+	editorTemplate -addControl "PC2Color";
+	editorTemplate -addControl "PC3Color";
+
+	editorTemplate -addControl "AlphaFactor";
+	editorTemplate -addControl "SPowerFactor";
+	editorTemplate -addControl "FurLayers";
+	editorTemplate -addControl "FurLayerDistance";
+	editorTemplate -addControl "FurNoiseX";
+	editorTemplate -addControl "FurNoiseY";
+	editorTemplate -addControl "FurNoiseZ";
+	editorTemplate -addControl "DestructionFactor";
+	editorTemplate -addControl "DestructionTileX";
+	editorTemplate -addControl "DestructionTileY";
+	editorTemplate -addControl "WindForce";
+
+	editorTemplate -addControl "ReflectionFromTheSky";
+
+	editorTemplate -callCustom "transBaseTextureNew"
+	   						   "transBaseTextureReplace"
+							   "BaseTexture";
+
+	editorTemplate -callCustom "transBumpTextureNew"
+	   						   "transBumpTextureReplace"
+							   "BumpTexture";
+
+	editorTemplate -callCustom "transCubeTextureNew"
+	   						   "transCubeTextureReplace"
+							   "CubeTexture";
+
+	editorTemplate -callCustom "transDestructionTextureNew"
+	   						   "transDestructionTextureReplace"
+							   "DestructionTexture";
+
+	editorTemplate -callCustom "transColorTextureNew"
+	   						   "transColorTextureReplace"
+							   "ColorTexture";
+							   
+	editorTemplate -addControl "CustTexPath";							   
+
+	editorTemplate -callCustom "transShaderTypeNew"
+	   						   "transShaderTypeReplace"
+							   "ShaderType";
+
+	editorTemplate -callCustom "transLightTypeNew"
+	   						   "transLightTypeReplace"
+							   "LightType";
+
+	editorTemplate -addControl "CustomLight0";
+	editorTemplate -addControl "CustomLight0Enabled";
+
+	editorTemplate -addControl "CustomLight1";
+	editorTemplate -addControl "CustomLight1Enabled";
+
+	editorTemplate -addControl "CustomLight2";
+	editorTemplate -addControl "CustomLight2Enabled";
+	
+	editorTemplate -endLayout;
+
+	editorTemplate -addExtraControls;
+
+	editorTemplate -endScrollLayout;
+
+	//
+	// Supress unneeded parts of UI
+	//
+    editorTemplate -suppress outColor;
+    editorTemplate -suppress outTransparency;
+    editorTemplate -suppress outMatteOpacity;
+    editorTemplate -suppress outGlowColor;
+    editorTemplate -suppress nodeState;
+    editorTemplate -suppress caching;
+    editorTemplate -suppress shader;
+    editorTemplate -suppress enableHwShading;
+	editorTemplate -suppress LightType;
+	editorTemplate -suppress ShaderType;
+
+	editorTemplate -suppress BaseTexture;
+	editorTemplate -suppress BumpTexture;
+	editorTemplate -suppress CubeTexture;
+	editorTemplate -suppress DestructionTexture;
+	editorTemplate -suppress ColorTexture;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int BaseAssignTextureCB(string $fileAttribute,
+									string $filename,
+									string $fileType)
+{
+    if ($filename == "")
+	    return true;
+
+    setAttr $fileAttribute -type "string" $filename;
+    return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int BumpAssignTextureCB(string $fileAttribute,
+									string $filename,
+									string $fileType)
+{
+    setAttr $fileAttribute -type "string" $filename;
+    return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int CubeAssignTextureCB(string $fileAttribute,
+									string $filename,
+									string $fileType)
+{
+    setAttr $fileAttribute -type "string" $filename;
+    return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int DestructionAssignTextureCB(string $fileAttribute,
+										   string $filename,
+										   string $fileType)
+{
+    setAttr $fileAttribute -type "string" $filename;
+    return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int ColorAssignTextureCB(string $fileAttribute,
+								     string $filename,
+									 string $fileType)
+{
+    setAttr $fileAttribute -type "string" $filename;
+    return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc BaseTextureBrowser( string $cmd )
+{
+    fileBrowser ($cmd, "Open", "", 0);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc BumpTextureBrowser( string $cmd )
+{
+    fileBrowser ($cmd, "Open", "", 0);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc CubeTextureBrowser( string $cmd )
+{
+    fileBrowser ($cmd, "Open", "", 0);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc DestructionTextureBrowser( string $cmd )
+{
+    fileBrowser ($cmd, "Open", "", 0);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc ColorTextureBrowser( string $cmd )
+{
+    fileBrowser ($cmd, "Open", "", 0);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transShaderTypeNew( string $attrName )
+{
+    columnLayout -adjustableColumn true -rowSpacing 10;
+    frameLayout -label "Shader type";
+    columnLayout;
+
+	radioCollection ShaderTypeGrp;
+
+    	string $rb1, $rb2, $rb3, $rb4, $rb5, $rb6, $rb7, $rb8, $rb9, $rb10, $rb11, $rb12, $rb13, $rb14, $rb16, $rb17, $rb18, $rb19, $rb20, $rb21, $rb22, $rb23;
+
+    	$rb1 = `radioButton -label "Debug"					 -data 0`;
+
+    	$rb2 = `radioButton -label "Metal"					 -data 1`;
+		$rb3 = `radioButton -label "Metal Alpha"			 -data 2`;
+		$rb4 = `radioButton -label "Metal Wind Alpha"		 -data 3`;
+		$rb5 = `radioButton -label "Metal Character"		 -data 4`;
+		$rb6 = `radioButton -label "Chrome"					 -data 5`;
+		$rb7 = `radioButton -label "Chrome with destruction" -data 6`;
+		$rb8 = `radioButton -label "Fur"					 -data 7`;
+		$rb9 = `radioButton -label "Alien"					 -data 8`;
+		$rb10= `radioButton -label "Light"					 -data 9`;
+		$rb11= `radioButton -label "Blend"					 -data 10`;
+		$rb12= `radioButton -label "Blend Add"				 -data 11`;
+		$rb13= `radioButton -label "Paralax map"			 -data 12`;
+		$rb14= `radioButton -label "Metal fade"				 -data 13`;
+		$rb16= `radioButton -label "Hair"					 -data 15`;
+		$rb17= `radioButton -label "Metal lightmapped"		 -data 16`;
+		$rb18= `radioButton -label "Metal blend"			 -data 17`;
+		$rb19= `radioButton -label "Lightmap with alpha"	 -data 18`;
+		$rb20= `radioButton -label "Human skin"				 -data 19`;
+		$rb21= `radioButton -label "Fire"					 -data 20`;
+		$rb22= `radioButton -label "Chrome alpha"			 -data 21`;
+		$rb23= `radioButton -label "Metal flag"				 -data 22`;
+
+   	setParent ..;
+   	setParent ..;
+
+	connectControl ShaderTypeGrp $attrName;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transShaderTypeReplace( string $attrName )
+{
+   connectControl ShaderTypeGrp $attrName;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transLightTypeNew( string $attrName )
+{
+    columnLayout -adjustableColumn true -rowSpacing 10;
+    frameLayout -label "Light position";
+    columnLayout;
+
+	radioCollection LightTypeGrp;
+
+    	string $rb1, $rb2, $rb3, $rb4, $rb5, $rb6, $rb7, $rb8;
+
+    	$rb1 = `radioButton -label "Left"   -data 0`;
+    	$rb2 = `radioButton -label "Right"  -data 1`;
+    	$rb3 = `radioButton -label "Front"  -data 2`;
+		$rb4 = `radioButton -label "Back"   -data 3`;
+		$rb5 = `radioButton -label "Top"    -data 4`;
+		$rb6 = `radioButton -label "Bottom" -data 5`;
+		$rb7 = `radioButton -label "Camera" -data 6`;
+		$rb8 = `radioButton -label "Custom" -data 7`;
+
+   	setParent ..;
+   	setParent ..;
+
+	connectControl LightTypeGrp $attrName;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transLightTypeReplace( string $attrName )
+{
+	connectControl LightTypeGrp $attrName;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transReloadNew (string $attrName)
+{
+	button -label "Reload all" -align "center" ReloadButton;
+	button -e -c ("SimpleHWNodeReload") ReloadButton;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transReloadReplace(string $attrName)
+{
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc SimpleHWNodeReload()
+{
+ ReloadMXPolanieMaterials -t;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int HWNodeReloadUVEdit(string $attrName)
+{
+	//
+	// Downstream & update material info
+	//
+	string $tres[];
+	int $numTokens = `tokenize $attrName "." $tres`;
+
+	//
+	// Assign base texture to UVEdit
+	//	
+	print ("ReassignBaseToTexturesEditor " + $tres[0] + "\n");
+
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc int HWNodeReloadUVEditBump(string $attrName)
+{
+	//
+	// Downstream & update material info
+	//
+	string $tres[];
+	int $numTokens = `tokenize $attrName "." $tres`;
+
+	//
+	// Assign base texture to UVEdit
+	//	
+	print ("ReassignBumpToTexturesEditor " + $tres[0] + "\n");
+
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transBaseTextureNew (string $attrName)
+{
+ string $tmps[];
+ tokenize($attrName, ".", $tmps);
+ string $node = $tmps[0];
+ string $attr = $tmps[1];
+ rowLayout -nc 3 BaseTextureNewLayout;
+ { 
+	text -l $attr;
+	textField BasetextureName;
+	symbolButton -image "navButtonBrowse.xpm" BaseTextureBrowse;
+	connectControl -fileName BasetextureName $attrName;
+	string $cmd = "BaseAssignTextureCB " + $attrName;
+	button -e -c ("BaseTextureBrowser \"" + $cmd + "\"" ) BaseTextureBrowse;
+ }
+ setParent ..;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transBaseTextureReplace(string $attrName)
+{
+ deleteUI -layout BaseTextureNewLayout;
+ transBaseTextureNew($attrName);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transBumpTextureNew (string $attrName)
+{
+ string $tmps[];
+ tokenize($attrName, ".", $tmps);
+ string $node = $tmps[0];
+ string $attr = $tmps[1];
+ rowLayout -nc 3 BumpTextureNewLayout;
+ { 
+	text -l $attr;
+	textField BumptextureName;
+	symbolButton -image "navButtonBrowse.xpm" BumpTextureBrowse;
+	connectControl -fileName BumptextureName $attrName;
+	string $cmd = "BumpAssignTextureCB " + $attrName;
+	button -e -c ("BumpTextureBrowser \"" + $cmd + "\"" ) BumpTextureBrowse;
+ }
+ setParent ..;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transCubeTextureNew (string $attrName)
+{
+ string $tmps[];
+ tokenize($attrName, ".", $tmps);
+ string $node = $tmps[0];
+ string $attr = $tmps[1];
+ rowLayout -nc 3 CubeTextureNewLayout;
+ { 
+	text -l $attr;
+	textField CubetextureName;
+	symbolButton -image "navButtonBrowse.xpm" CubeTextureBrowse;
+	connectControl -fileName CubetextureName $attrName;
+	string $cmd = "CubeAssignTextureCB " + $attrName;
+	button -e -c ("CubeTextureBrowser \"" + $cmd + "\"" ) CubeTextureBrowse;
+ }
+ setParent ..;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transDestructionTextureNew (string $attrName)
+{
+ string $tmps[];
+ tokenize($attrName, ".", $tmps);
+ string $node = $tmps[0];
+ string $attr = $tmps[1];
+ rowLayout -nc 3 DestructionTextureNewLayout;
+ { 
+	text -l $attr;
+	textField DestructionTextureName;
+	symbolButton -image "navButtonBrowse.xpm" DestructionTextureBrowse;
+	connectControl -fileName DestructionTextureName $attrName;
+	string $cmd = "DestructionAssignTextureCB " + $attrName;
+	button -e -c ("DestructionTextureBrowser \"" + $cmd + "\"" ) DestructionTextureBrowse;
+ }
+ setParent ..;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transColorTextureNew (string $attrName)
+{
+ string $tmps[];
+ tokenize($attrName, ".", $tmps);
+ string $node = $tmps[0];
+ string $attr = $tmps[1];
+ rowLayout -nc 3 ColorTextureNewLayout;
+ { 
+	text -l $attr;
+	textField ColorTextureName;
+	symbolButton -image "navButtonBrowse.xpm" ColorTextureBrowse;
+	connectControl -fileName ColorTextureName $attrName;
+	string $cmd = "ColorAssignTextureCB " + $attrName;
+	button -e -c ("ColorTextureBrowser \"" + $cmd + "\"" ) ColorTextureBrowse;
+ }
+ setParent ..;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transBumpTextureReplace(string $attrName)
+{
+ deleteUI -layout BumpTextureNewLayout;
+ transBumpTextureNew($attrName);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transCubeTextureReplace(string $attrName)
+{
+ deleteUI -layout CubeTextureNewLayout;
+ transCubeTextureNew($attrName);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transDestructionTextureReplace(string $attrName)
+{
+ deleteUI -layout DestructionTextureNewLayout;
+ transDestructionTextureNew($attrName);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transColorTextureReplace(string $attrName)
+{
+ deleteUI -layout ColorTextureNewLayout;
+ transColorTextureNew($attrName);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transHelpNew (string $attrName)
+{
+ button -label "Show help" -align "center" HelpButton;
+ button -e -c ("SimpleHWNodeHelp") HelpButton;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc transHelpReplace(string $attrName)
+{
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+global proc SimpleHWNodeHelp()
+{
+ string $window = `window -title "Shaders Help" -iconName "Help" -widthHeight 300 500 -minimizeButton 1 -maximizeButton 1`;
+
+ string $scrollLayout = `scrollLayout -horizontalScrollBarThickness 16 -verticalScrollBarThickness 16`;
+
+ columnLayout -adjustableColumn true;
+
+ //
+ // Put help text here
+ //
+ string $HelpFile = `ReloadMXPolanieMaterials -p`;
+
+ $fileId = `fopen $HelpFile "r"`;
+
+ string $whFile   = "";
+ string $nextLine = `fgetline $fileId`;
+
+ while (size($nextLine) > 0) 
+ { 
+		$whFile  += $nextLine;
+ 		$nextLine = `fgetline $fileId`;
+ }	
+
+ fclose $fileId; 
+
+ text -align "left" -label $whFile;
+
+ setParent ..;
+ setParent ..;
+ showWindow $window;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// eof
+

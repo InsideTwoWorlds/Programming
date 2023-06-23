@@ -1,0 +1,142 @@
+#include "config.efh"
+
+//
+// Effect file
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Configuration
+//
+
+bool CF_Solid					 = true;
+bool CF_SkinSupport				 = false;
+int  CF_DrawPriority             = 0;
+
+int  CF_TextureRequest_0		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_1 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_2 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_3 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_4 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_5 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_6 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_7 		 = TEXTURE_REQUEST_NONE;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Vars
+//
+texture IN_TextureSlots_0;
+texture IN_TextureSlots_1;
+texture IN_TextureSlots_2;
+texture IN_TextureSlots_3;
+texture IN_TextureSlots_4;
+texture IN_TextureSlots_5;
+texture IN_TextureSlots_6;
+texture IN_TextureSlots_7;
+ 
+matrix IN_CameraMatrix;
+matrix IN_ProjectionMatrix;
+matrix IN_WorldMatrix;
+
+matrix IN_WorldViewProjectionMatrix;
+matrix IN_CameraProjectionMatrix;
+
+float4 IN_SpecularColor;
+float  IN_Time;
+float4 IN_ObserverPosition;
+float4 IN_AmbientColor;
+float4 IN_DiffuseColor;
+float4 IN_LightPosition;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// App vertex format
+//
+struct appdata 
+{
+    float3 Position		  : POSITION;
+	float4 NormalDS       : COLOR0;
+	float4 TangentDS	  : COLOR1;
+    float2 UV			  : TEXCOORD0;
+	float2 UVLM			  : TEXCOORD1;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct vertexOutput_Main
+{
+    float4 HPosition	: POSITION;
+	float4 Color        : COLOR0;
+	float  fog          : FOG;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct pixelOutput
+{
+    float4 Color : COLOR;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+vertexOutput_Main VertexShaderMain(appdata IN)
+{
+ vertexOutput_Main OUT;
+
+ float3 IN_Normal = (IN.NormalDS.xyz * 2.0) - 1.0;
+
+ float3 Pw = mul(float4(IN.Position.xyz, 1), IN_WorldMatrix);
+ OUT.HPosition = mul(float4(Pw.xyz, 1), IN_CameraProjectionMatrix);
+
+ float3 Nn = mul(IN_Normal, IN_WorldMatrix);
+ Nn = normalize(Nn);
+
+ float3 Lv = IN_LightPosition - Pw;
+ Lv = normalize(Lv);
+
+ float Diffuse = max(0, dot(Nn, Lv));
+
+ OUT.Color.xyz = IN_AmbientColor.xyz + (IN_DiffuseColor.xyz * Diffuse);
+ OUT.Color.w = 1.0;
+ OUT.fog = 1.0;
+
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+pixelOutput PixelShaderMain(vertexOutput_Main IN)
+{
+ pixelOutput OUT;
+ OUT.Color = IN.Color;
+ 
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+technique MainTechnique
+{	
+	pass p0
+	{
+		VertexShader	 = compile vs_2_0 VertexShaderMain();
+		PixelShader		 = compile ps_2_0 PixelShaderMain();
+
+		AlphaBlendEnable = True;
+		SrcBlend		 = SrcAlpha;
+        DestBlend		 = InvSrcAlpha;
+
+		ZEnable          = True;
+		ZWriteEnable     = True;
+		ZFunc			 = Less;
+
+		AlphaTestEnable	 = False;
+		AlphaRef		 = 0;
+		AlphaFunc		 = Always;
+
+		CullMode         = CW;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+technique MainTechniqueRestore
+{	
+	pass p0
+	{
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////

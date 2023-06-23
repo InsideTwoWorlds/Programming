@@ -1,0 +1,162 @@
+#version 110
+#define DO_NOT_USE_DYNAMIC_LIGHTS
+
+uniform mat4		gModelviewMatrix;
+uniform mat4		gProjectionMatrix;
+uniform mat4		gModelviewMatrixIT;
+uniform mat4		gProjectionMatrixIT;
+uniform vec4		gCameraPosition;
+uniform vec4		gLightPosition;
+uniform vec4		gLightDirection;
+uniform vec4		gAmbientColor;
+uniform vec4		gDiffuseColor;
+uniform vec4		gSpecularColor;
+uniform vec4		gSideColor;
+uniform vec4		gDestructionColor;
+uniform vec4		gFurFactor;
+uniform float		gFurNS;
+uniform vec4		gDestructionTilesFactor;
+uniform float		gTimeFactor;
+uniform vec4		gWindFactor;
+uniform vec4		gColorFactor0;
+uniform vec4		gColorFactor1;
+uniform vec4		gColorFactor2;
+uniform vec4		gColorFactor3;
+uniform sampler2D	gBaseTexture;
+uniform sampler2D	gBumpTexture;
+uniform sampler2D	gDestructionTexture;
+uniform sampler2D	gColorTexture;
+uniform samplerCube	gCubeTexture;
+uniform sampler3D	g3DNoiseTexture;
+
+//
+// Lights
+//
+uniform vec4		gLight0_Position;
+uniform vec4		gLight0_Direction;
+uniform vec4		gLight0_Color;
+uniform vec4		gLight0_Angle;
+uniform vec4		gLight0_Distance;
+
+uniform vec4		gLight1_Position;
+uniform vec4		gLight1_Direction;
+uniform vec4		gLight1_Color;
+uniform vec4		gLight1_Angle;
+uniform vec4		gLight1_Distance;
+
+uniform vec4		gLight2_Position;
+uniform vec4		gLight2_Direction;
+uniform vec4		gLight2_Color;
+uniform vec4		gLight2_Angle;
+uniform vec4		gLight2_Distance;
+
+///////////////////////////////////////////////////////////////////////////////
+float RayReliefIntersection(in vec2 dp, 
+							in vec2 ds)
+{ 
+ int linear_search_steps = 10;
+ int binary_search_steps =  5;
+ 
+ float depth_step = 1.0 / float(linear_search_steps);
+ float size       = depth_step;
+ float depth      = 0.0;
+ float t;
+ 
+ //
+ // best match found (starts with last position 1.0)
+ //
+ float best_depth = 1.0;
+ 
+ //
+ // search from front to back for first point inside the object
+ //
+ for (int i = 0; i < linear_search_steps-1; i++)
+ { 
+    depth += size;
+
+    t = texture2D(gBumpTexture, dp + (ds*depth)).w;
+	
+    if (best_depth > 0.996)
+        if (depth >= t)
+		    best_depth = depth;
+ }
+ 
+ depth = best_depth;
+ 
+ //
+ // search around first point (depth) for closest match
+ //
+ for (int i = 0;  i < binary_search_steps; i++) 
+ { 
+	  size *= 0.5;
+	
+	  t = texture2D(gBumpTexture, dp + (ds*depth)).w;
+	  
+	  if (depth >= t) 
+	  { 
+	      best_depth = depth;
+          depth     -= 2.0*size;
+      } 
+      
+      depth += size;
+ }
+ 
+ return best_depth;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+void main(void)
+{
+ //
+ // gl_TexCoord[3].xy  -> UV
+ // gl_TexCoord[0].xyz -> Eye-Vertex RAY
+ //
+ float depth_scale = 0.035;
+
+ vec3 s = normalize(gl_TexCoord[0].xyz);
+
+ vec2 ds = s.xy * (depth_scale / s.z);
+ vec2 dp = gl_TexCoord[3].xy;
+ float d = RayReliefIntersection(dp, ds);
+
+ //
+ // Limit paralax angle
+ //
+ float dt = abs(s.z);
+       dt = max(0.0, dt-0.40);
+       dt = min(1.0, dt*3.33);
+       d *= dt;
+ 
+ vec2 NewUV = dp + (ds*d);
+
+ //////////////////////////////////////////////////////////////////////////////
+ //
+ // Use NewUV as base for light calculations
+ //
+ vec4 DiffuseMap = texture2D(gBaseTexture, NewUV);
+ vec4 NormalMapA = texture2D(gBumpTexture, NewUV);
+ vec3 nmap       = normalize((NormalMapA.xyz * 2.0) - 1.0);
+
+ if (gl_Color.a < 0.5)
+     nmap *= vec3(-1.0, -1.0, -1.0);
+
+ float Diffuse  = clamp(dot(nmap.xyz, gl_TexCoord[1].xyz), 0.0, 1.0);
+ float Specular = clamp(dot(nmap.xyz, gl_TexCoord[2].xyz), 0.0, 1.0);
+
+ vec3 SpecClr   = gSpecularColor.xyz * (pow(Specular, gSpecularColor.w) * DiffuseMap.a);
+
+ vec3 LCntrb    = Diffuse * gDiffuseColor.rgb;
+ 
+#ifndef DO_NOT_USE_DYNAMIC_LIGHTS   
+      LCntrb   += (clamp(dot(nmap, gl_TexCoord[4].xyz), 0.0, 1.0) * gl_TexCoord[4].w) * gLight0_Color.rgb;
+	  LCntrb   += (clamp(dot(nmap, gl_TexCoord[5].xyz), 0.0, 1.0) * gl_TexCoord[5].w) * gLight1_Color.rgb;
+	  LCntrb   += (clamp(dot(nmap, gl_TexCoord[6].xyz), 0.0, 1.0) * gl_TexCoord[6].w) * gLight2_Color.rgb;
+#endif
+
+ vec3 Result     = clamp(LCntrb + gAmbientColor.rgb, 0.0, 1.0) * DiffuseMap.rgb;
+      Result     = clamp(Result + SpecClr, 0.0, 1.0);
+
+ gl_FragColor    = vec4(Result.xyz, 1.0);
+}
+///////////////////////////////////////////////////////////////////////////////

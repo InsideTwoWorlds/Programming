@@ -1,0 +1,30 @@
+
+// consty przenioslem do Enums.ech (p)
+
+function int ReputationPerLevel(int nGuild, int nLevel)
+{
+    return 1;
+    //return nLevel*3+(nLevel/3)*2;
+}
+
+function int CalcReputationLevel(int nGuild, int nReputation)
+{
+    if(nReputation>10)return 10;
+    return nReputation;
+    /*int i;
+    for(i=10;i>0;i--)//06-12-01: JS: i++ -> i-- ?
+        if(nReputation>=ReputationPerLevel(nGuild, i))return i;
+    return 0;*/
+}
+function int CalcDiscount(int nGuild,int nReputation)
+{
+    return CalcReputationLevel(nGuild, nReputation)*5;
+}
+/* nazwy markerow do sklepow poszczgolnych gildii
+  		MARKER_SHOP
+		MARKER_SHOP_NECRO
+		MARKER_SHOP_MAGE
+		MARKER_SHOP_WARRIOR
+		MARKER_SHOP_FENCE
+*/
+       

@@ -1,0 +1,691 @@
+#ifndef _P_COMMON_
+#define _P_COMMON_
+
+#define TRANSLATE_LOCATION_FOUND    "translateLOC_Found"
+#define MARKER_LOOK_AT              "MARKER_LOOK_AT"
+
+#define MARKER_Q_FINDDESK                        "MARKER_Q_FINDDESK"
+#define MARKER_Q_FINDCHAIR                       "MARKER_Q_FINDCHAIR"
+#define MARKER_Q_FINDBED                         "MARKER_Q_FINDBED"
+#define MARKER_Q_SITTING                         "MARKER_Q_SITING"
+#define MARKER_Q_KNEEL                           "MARKER_Q_KNEEL"
+#define MARKER_Q_LAY_DOWN                        "MARKER_Q_LAY_DOWN"
+#define MARKER_Q_TRAINING                        "MARKER_Q_TRAINING"
+#define MARKER_Q_WOODCUT                         "MARKER_Q_WOODCUT"
+#define MARKER_Q_PINAXE                          "MARKER_Q_PINEAXE"
+#define MARKER_Q_EMPTY                           "MARKER_Q_EMPTY" 
+
+consts {
+
+    eConsoleTextOutTime         = 120;
+    eQuestConsoleTextOutTime    = 240;
+    eFindLookAtMarkerRangeA     = M2A(16);
+    
+}
+
+//======================================        
+
+function void SetLookAtAngle(unit uUnit) {
+
+    int i;
+    int nMin;
+    int nDist;
+    int nMax;
+    int nMarker;
+    int nX, nY;
+    mission pMission;
+    
+    pMission = uUnit.GetMission();    
+    nMarker = -1;            
+    nMin = eFindLookAtMarkerRangeA;
+    nMax = pMission.GetMaxMarkerNum(MARKER_LOOK_AT);
+    
+    for (i = 1; i <= nMax; i++) {
+        
+        if (!pMission.GetMarker(MARKER_LOOK_AT,i,nX,nY)) continue;
+        nDist = uUnit.DistanceTo(nX,nY);
+        if (nDist < nMin) {
+            nMarker = i;
+            nMin = nDist;
+        }
+    
+    }
+
+    if (nMarker != -1) {
+        pMission.GetMarker(MARKER_LOOK_AT,nMarker,nX,nY);
+        uUnit.SetImmediatePosition(uUnit.GetLocationX(),uUnit.GetLocationY(),0,uUnit.AngleTo(nX,nY),true);
+    }
+
+}
+
+//======================================        
+
+function void SetFlagAtPosition(int &nFlag, int nPosition, int nValue) {
+
+    nFlag &= (~(15 << (nPosition * 4)));
+    nFlag |= ((nValue & 15) << (nPosition * 4));
+
+}
+
+function int GetFlagAtPosition(int nFlag, int nPosition) {
+
+    int nValue;
+    nValue = (nFlag >> (nPosition * 4)) & 15;
+//    if (nValue & 8) nValue |= 0xfff0; // liczba ujemna
+    return nValue;
+    
+}
+
+//======================================        
+// commands
+
+#ifdef MISSION_SCRIPT
+
+function void SendMessageToMissionScripts(int nMessage, unit uUnit) {
+
+    int i, count;
+    count = GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) GetMissionScript(i).CommandMessage(nMessage,uUnit);
+
+}
+
+function void SendMessageToMissionScripts(int nMessage, unit uUnit, int nValue) {
+
+    int i, count;
+    count = GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) GetMissionScript(i).CommandMessage(nMessage,nValue,uUnit);
+
+}
+
+#endif
+
+function void SendMessageToMissionScripts(mission pMission, int nMessage, int nValue1, int nValue2, int nValue3) {
+
+    int i, count;
+    ASSERT(pMission != null);
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) pMission.GetMissionScript(i).CommandMessage(nMessage,nValue1,nValue2,nValue3);
+
+}
+
+//======================================        
+
+function void SendMessageToTownScript(mission pMission, int nMessage) {
+
+    int i, count;
+    ASSERT(pMission != null);    
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) if (pMission.GetMissionScript(i).CommandMessage(eMsgGetScriptID) == eTownScriptID) pMission.GetMissionScript(i).CommandMessage(nMessage);
+
+}
+
+function void SendMessageToTownScript(mission pMission, int nMessage, int nValue) {
+
+    int i, count;
+    ASSERT(pMission != null);
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) if (pMission.GetMissionScript(i).CommandMessage(eMsgGetScriptID) == eTownScriptID) pMission.GetMissionScript(i).CommandMessage(nMessage,nValue);
+
+}
+
+function void SendMessageToTownScript(mission pMission, int nMessage, unit uUnit) {
+
+    int i, count;
+    ASSERT(pMission != null);
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) if (pMission.GetMissionScript(i).CommandMessage(eMsgGetScriptID) == eTownScriptID) pMission.GetMissionScript(i).CommandMessage(nMessage,uUnit);
+
+}
+
+function void SendMessageToTownScript(mission pMission, int nMessage, int nValue1, int nValue2, int nValue3) {
+
+    int i, count;
+    ASSERT(pMission != null);
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) if (pMission.GetMissionScript(i).CommandMessage(eMsgGetScriptID) == eTownScriptID) pMission.GetMissionScript(i).CommandMessage(nMessage,nValue1,nValue2,nValue3);
+
+}
+
+//======================================        
+
+function void SendMessageToGlobalScripts(int nMessage, unit uUnit) {
+
+    int i, count;
+
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) {
+        ASSERT(GetCampaign().GetGlobalScript(i) != null);
+        GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,uUnit);
+    }
+
+}
+
+function void SendMessageToGlobalScripts(int nMessage, int nValue) {
+
+    int i, count;
+
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,nValue);
+
+}
+
+
+function void SendMessageToGlobalScripts(int nMessage, unit uUnit, int nValue) {
+
+    int i, count;
+        
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,nValue,uUnit);
+
+}
+
+function void SendMessageToGlobalScripts(int nMessage, int nValue1, int nValue2) {
+
+    int i, count;
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,nValue1,nValue2,0);
+    
+}
+
+function void SendMessageToGlobalScripts(int nMessage, int nValue1, int nValue2, int nValue3) {
+
+    int i, count;
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,nValue1,nValue2,nValue3);
+    
+}
+
+function void SendMessageToGlobalScripts(int nMessage, int nValue1, int nValue2, int nValue3, int nValue4) {
+
+    int i, count;
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,nValue1,nValue2,nValue3,nValue4);
+    
+}
+
+function void SendMessageGetToGlobalScripts(int nMessage, int nValue1, int nValue2, int &nReturnValue) {
+
+    int i, count;
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessageGet(nMessage,nValue1,nValue2,nReturnValue);
+    
+}
+
+//======================================        
+
+function int IsTownMission(mission pMission) {
+
+    int i, count;
+    ASSERT(pMission != null);
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) if (pMission.GetMissionScript(i).CommandMessage(eMsgGetScriptID) == eTownScriptID) return true;
+    return false;
+
+}
+
+function int IsTownMission(int nMission) {
+
+    return IsTownMission(GetCampaign().GetMission(nMission));
+
+}
+
+//======================================
+// hero
+
+function int IsHeroFemale(unit uHero) {
+
+    int nFlags;
+    nFlags = uHero.GetHeroFlags() & 7;
+    if ((nFlags == eHeroGenderFemale) || (nFlags == eHeroGenderFemaleElf)) return true;
+    return false;
+
+}
+
+function int IsHeroFemale(int nHero) {
+
+    return IsHeroFemale(GetCampaign().GetPlayerHeroUnit(nHero));
+
+}
+
+function int PlayDialogWaves(unit uHero) {
+
+    if (IsHeroFemale(uHero)) return eNotPlayDialogWaves;
+    return 0;
+
+}
+
+//======================================        
+
+function int IsHeroNearPoint(int nX, int nY) {
+
+    int i;
+    int nRange;
+    
+    nRange = G2A(eHeroSightRangeG);   
+
+    for (i = 0; i < GetPlayersCnt(); i++) {        
+        if (!IsPlayer(i)) continue;
+        if (GetHero(i).DistanceTo(nX,nY) < nRange) return true;
+    }
+    
+    return false;
+
+}
+
+function int IsHeroNearUnit(unit uUnit) {
+
+    return IsHeroNearPoint(uUnit.GetLocationX(),uUnit.GetLocationY());
+
+}
+
+function int IsHeroNearMarker(mission pMission, string strMarker, int nMarker) {
+
+    int nX, nY;
+    if (!pMission.GetMarker(strMarker,nMarker,nX,nY)) return false;
+    return IsHeroNearPoint(nX,nY);
+
+}
+
+//======================================        
+
+function int FindFreeMarker(mission pMission, string strMarker, int nMaxMarker) {
+
+    int i;
+    for (i = 1; i <= nMaxMarker; i++) if (!pMission.HaveMarker(strMarker,i)) return i;
+    return eNoMarker;
+    
+}
+
+function int FindFreeMarker(mission pMission, string strMarker) {
+
+    int i;
+    i = 1;
+    while (pMission.HaveMarker(strMarker,i)) i++;
+    return i;
+
+}
+
+function int FindFreeMarkerQuestUnit(mission pMission) {
+
+    int i;
+    i = 0;
+
+    while (true) {
+        i++;
+        if (pMission.HaveMarker(MARKER_QUEST_START,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_FINDDESK,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_FINDCHAIR,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_FINDBED,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_SITTING,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_KNEEL,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_LAY_DOWN,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_TRAINING,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_WOODCUT,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_PINAXE,i)) continue;    
+        if (pMission.HaveMarker(MARKER_Q_EMPTY,i)) continue;    
+        return i;   
+    }
+
+    return i;
+
+}
+
+//======================================        
+// missions loaded
+
+function int IsLoaded(int nMission) {
+
+    return GetCampaign().GetMission(nMission).IsLevelLoaded();
+
+}
+
+function int IsLoaded(mission pMission) {
+
+    return pMission.IsLevelLoaded();
+   
+}
+
+//======================================        
+
+function void ConsoleTextOut(int nHero, string strText) {
+
+    GetPlayerInterface(nHero).SetConsoleText(strText,eConsoleTextOutTime,true,true);
+
+}
+
+function void ConsoleTextOut(int nHero, stringW strText) {
+
+    GetPlayerInterface(nHero).SetConsoleText(strText,eConsoleTextOutTime,true,true);
+
+}
+
+function void QuestConsoleTextOut(int nHero, string strText) {
+
+    GetPlayerInterface(nHero).SetConsoleText(strText,eQuestConsoleTextOutTime,true);
+
+}
+
+function void QuestConsoleTextOut(int nHero, stringW strText) {
+
+    GetPlayerInterface(nHero).SetConsoleText(strText,eQuestConsoleTextOutTime,true);
+
+}
+
+/*
+function stringW FormatTranslateQuestInfo(string strTranslateName, int nQuestNum) {
+
+    string str;
+    stringW strLine;
+    stringW strText;
+    stringW strN;                
+                
+    strText.Copy("");
+    strN.Copy("\n");
+    
+    str.Format(strTranslateName,nQuestNum,1);
+    if (CheckTranslate(str)) {
+        strLine.Translate(str);
+        strText.Append(strLine);
+        strText.Append(strN);
+    }
+
+    str.Format(strTranslateName,nQuestNum,2);
+    if (CheckTranslate(str)) {
+        strLine.Translate(str);
+        strText.Append(strLine);
+        strText.Append(strN);
+    }
+                        
+    return strText;
+
+}
+*/
+function stringW FormatTranslateQuestInfo(string strQuestName, string strTranslateName, int nQuestNum) {
+
+    string str;
+    stringW strLine;
+    stringW strText;
+    stringW strN;                
+                
+    strText.Copy("");
+    strN.Copy(" ");
+    
+    str = strTranslateName;
+    if (CheckTranslate(str)) {
+        strLine.Translate(str);
+        strText.Append(strLine);
+        strText.Append(strN);
+    }
+    str.Format(strQuestName,nQuestNum);
+    if (CheckTranslate(str)) {
+        strLine.Translate(str);
+        strText.Append(strLine);
+    }
+                        
+    return strText;
+
+}
+
+function stringW FormatTranslateLocationFound(string strTranslateName) {
+
+    stringW strText;
+    stringW strLine;
+    stringW strN;                
+
+    strText.Copy("");
+    strN.Copy(" ");
+    
+    strLine.Translate(TRANSLATE_LOCATION_FOUND);
+    strText.Append(strLine);
+    strText.Append(strN);
+    strLine.Translate(strTranslateName);
+    strText.Append(strLine);
+//    strText.Append(strN);
+    
+    return strText;
+
+}
+
+//======================================        
+
+function void StrSplit(string strString, string astrSplitted[], int nSpace) {
+
+    string strTemp;
+    int i, j;
+    int nSize;
+    string str;
+    str = strString;
+
+    i = 0;
+    j = 0;
+    nSize = str.GetLength();
+    astrSplitted.RemoveAll();
+
+    while (i < nSize) {
+
+        while ((GetChar(str,i) == nSpace) && (i < nSize)) i++;
+        
+        strTemp = "";
+        while ((GetChar(str,i) != nSpace) && (i < nSize)) {
+            strTemp.Append(GetChar(str,i));
+            i++;
+        }
+        astrSplitted.Add(strTemp);
+        j++;
+        i++;
+        
+    }
+    
+}
+
+function void StrSplit(string strString, string astrSplitted[]) {
+
+    StrSplit(strString,astrSplitted,' ');
+
+}
+
+function string StrCat(string astrStrings[]) {
+
+    int i, size;
+    string str, tmp;
+    str = "";
+    
+    size = astrStrings.GetSize();
+    for (i = 0; i < size; i++) {
+        tmp = str;
+        str.Format("%s %s",tmp,astrStrings[i]);
+    }
+    
+    return str;
+
+}
+
+function string AddTextToString(string strText, string strString) {
+
+    string str;
+    string tmp;        
+        
+    str = strString;
+    tmp.Format("%s %s",str,strText);
+    return tmp;
+
+}
+
+function string RemoveTextFromString(string strText, string strString) {
+
+    int i;
+    string astrSplitted[];
+    
+    StrSplit(strString,astrSplitted);
+        
+    for (i = 0; i < astrSplitted.GetSize(); i++) {
+        if (astrSplitted[i].EqualNoCase(strText)) {
+            astrSplitted.RemoveAt(i);
+            break;
+        }
+    }
+    
+    return StrCat(astrSplitted);
+
+}
+/*
+function string GetRealObjectName(string strItem) {
+
+    int i;
+    int nSize;
+    int n;
+    string str;
+    string strTemp;
+   
+    nSize = str.GetLength();
+    str = strItem;
+    strTemp = "";
+
+    while (i < nSize) {
+    
+        n = GetChar(str,i);
+        if (n == '(')) break;
+        strTemp.Append(n);        
+        i++;
+        
+    }
+
+    return strTemp;
+
+}
+*/
+//======================================
+
+function int IsInRangeA(int nX1, int nY1, int nX2, int nY2, int nRange) {
+
+    nX1 = nX1 - nX2;
+    nY1 = nY1 - nY2;
+    
+    if (nX1 * nX1 + nY1 * nY1 < nRange * nRange) return true;
+    return false;
+
+}
+
+function int IsUnitNearMarkerA(mission pMission, unit uUnit, string strMarker, int nMarker, int nRange) {
+    
+    int nX, nY;    
+    if (!pMission.GetMarker(strMarker,nMarker,nX,nY)) return false;    
+    if (uUnit.DistanceTo(nX,nY) <= nRange) return true;
+    return false;
+
+}
+
+function int IsUnitNearMarkerG(mission pMission, unit uUnit, string strMarker, int nMarker, int nRange) {
+    
+    return IsUnitNearMarker(pMission,uUnit,strMarker,nMarker,nRange);
+
+}
+
+//======================================
+
+function int GetLectorByDialogNumber(int nDialog) {
+
+    int nLector;
+    int nCity;
+    
+    nLector = (nDialog / 10) % 10;
+    nCity = nDialog / 100;
+    
+    if (nCity == 2) { //Ashos
+        if (nLector == 0) return 101;
+        if (nLector == 1) return 102;
+        if (nLector == 2) return 103;
+        if (nLector == 3) return 201;
+        if (nLector == 4) return 202;
+    }
+    else {
+        if (nLector == 0) return 104;
+        if (nLector == 1) return 105;
+        if (nLector == 2) return 106;
+        if (nLector == 3) return 203;
+        if (nLector == 4) return 204;
+    }
+    
+    __ASSERT_FALSE();
+    return 104;
+
+}
+
+function int GetLectorByDialogName(string strDialog) {
+
+    string str;
+    str = strDialog;
+    
+    if (str.EqualNoCase("translateCitizen_0")) return 104;
+    if (str.EqualNoCase("translateCitizen_10")) return 105;
+    if (str.EqualNoCase("translateCitizen_20")) return 106;
+    if (str.EqualNoCase("translateCitizen_30")) return 203;
+    if (str.EqualNoCase("translateCitizen_40")) return 204;
+    if (str.EqualNoCase("translateCitizen_200")) return 101;
+    if (str.EqualNoCase("translateCitizen_210")) return 102;
+    if (str.EqualNoCase("translateCitizen_220")) return 103;
+    if (str.EqualNoCase("translateCitizen_230")) return 201;
+    if (str.EqualNoCase("translateCitizen_240")) return 202;
+    if (str.EqualNoCase("translateGuard_0")) return 508;
+    if (str.EqualNoCase("translateGuard_200")) return 610;
+    if (str.EqualNoCase("translateBandit_0")) return 501;
+    
+    __ASSERT_FALSE();
+    return 104;
+
+}
+
+//======================================
+
+function int GetMagicSkillFromCard(string strCard) {
+
+    int nMagicSchool;
+    nMagicSchool = GetMagicCardParams(strCard).GetMagicSchool();
+    if (nMagicSchool == eAirMagicSchool) return eMageAir;
+    if (nMagicSchool == eFireMagicSchool) return eMageFire;
+    if (nMagicSchool == eWaterMagicSchool) return eMageWater;
+    if (nMagicSchool == eEarthMagicSchool) return eMageEarth;
+    if (nMagicSchool == eNecromancyMagicSchool) return eMageNecro;
+    return -1;
+
+}
+
+function void SetMagicSkill(unit uUnit, int nMagicSkill) {
+
+    if (nMagicSkill >= eMageAir && nMagicSkill <= eMageAir + 4) {
+        uUnit.GetUnitValues().SetBasicSkill(eSkillAirMagic + nMagicSkill - eMageAir,MAX(10,MIN(2,uUnit.GetUnitLevel() / 2)));
+        uUnit.UpdateChangedUnitValues();
+        uUnit.AddMagicCard(GetSimpleMagicCardString(1 + nMagicSkill - eMageAir),0);
+        uUnit.SetAttribute("Mage",1 + nMagicSkill - eMageAir);
+    }
+
+}
+
+function void SetMagicSkill(unit uUnit, string strCard) {
+
+    int nMagicSkill;    
+    string str;
+    
+    str = strCard;
+    if (str.EqualNoCase("")) return;
+    nMagicSkill = GetMagicSkillFromCard(strCard);
+    if (nMagicSkill >= eMageAir && nMagicSkill <= eMageAir + 4) {
+        uUnit.GetUnitValues().SetBasicSkill(eSkillAirMagic + nMagicSkill - eMageAir,MAX(10,MIN(2,uUnit.GetUnitLevel() / 2)));
+        uUnit.UpdateChangedUnitValues();
+        uUnit.AddMagicCard(strCard,0);
+        uUnit.SetAttribute("Mage",1 + nMagicSkill - eMageAir);
+    }
+
+}
+
+function void CopyMagicSkill(unit uUnitFrom, unit uUnitTo) {
+
+    int nMagicSkill;
+    uUnitFrom.GetAttribute("Mage",nMagicSkill);
+    SetMagicSkill(uUnitTo,nMagicSkill - 1 + eMageAir);
+
+}
+
+//======================================
+
+#endif

@@ -1,0 +1,33 @@
+editor.SetCreateRect 0 0 127 127
+Editor.ReplaceObject CAVE_WALL_A_01 CAVE_WALL_A_05
+Editor.ReplaceObject CAVE_WALL_B_01 CAVE_WALL_B_05
+Editor.ReplaceObject CAVE_WALL_C_01 CAVE_WALL_C_05
+Editor.ReplaceObject CAVE_WALL_D_01 CAVE_WALL_D_05
+Editor.ReplaceObject CAVE_WALL_E_01 CAVE_WALL_E_05
+Editor.ReplaceObject CAVE_WALL_F_01 CAVE_WALL_F_05
+Editor.ReplaceObject CAVE_WALL_G_01 CAVE_WALL_G_05
+Editor.ReplaceObject CAVE_WALL_H_01 CAVE_WALL_H_05
+Editor.ReplaceObject CAVE_WALL_I_01 CAVE_WALL_I_05
+Editor.ReplaceObject CAVE_WALL_J_01 CAVE_WALL_J_05
+Editor.ReplaceObject CAVE_WALL_K_01 CAVE_WALL_K_05
+Editor.ReplaceObject CAVE_CORR_A_01 CAVE_CORR_A_05
+Editor.ReplaceObject CAVE_CORR_B_01 CAVE_CORR_B_05
+Editor.ReplaceObject CAVE_CORR_C_01 CAVE_CORR_C_05
+Editor.ReplaceObject CAVE_CORR_D_01 CAVE_CORR_D_05
+Editor.ReplaceObject CAVE_CORR_E_01 CAVE_CORR_E_05
+Editor.ReplaceObject CAVE_CORR_F_01 CAVE_CORR_F_05
+Editor.ReplaceObject CAVE_CORR_G_01 CAVE_CORR_G_05
+Editor.ReplaceObject CAVE_CORR_H_01 CAVE_CORR_H_05
+Editor.ReplaceObject CAVE_CORR_I_01 CAVE_CORR_I_05
+Editor.ReplaceObject CAVE_CORR_J_01 CAVE_CORR_J_05
+Editor.ReplaceObject CAVE_CORR_K_01 CAVE_CORR_K_05
+Editor.ReplaceObject CAVE_CORR_L_01 CAVE_CORR_L_05
+Editor.ReplaceObject CAVE_CORR_M_01 CAVE_CORR_M_05
+Editor.ReplaceObject CAVE_CORR_N_01 CAVE_CORR_N_05
+Editor.ReplaceObject CAVE_CORR_O_01 CAVE_CORR_O_05
+Editor.ReplaceObject CAVE_WALL_L_01 CAVE_WALL_L_05
+  
+  
+  
+  
+  

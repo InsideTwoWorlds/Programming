@@ -1,0 +1,7 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Polanie3\MayaPlugin\FileSystem]
+"ShadersPath"="D:\\Polanie3\\MayaShader\\Shaders\\"
+
+[HKEY_CURRENT_USER\SOFTWARE\Polanie3\MayaPlugin\FileSystem]
+"ShadersPath"="D:\\Polanie3\\MayaShader\\Shaders\\"

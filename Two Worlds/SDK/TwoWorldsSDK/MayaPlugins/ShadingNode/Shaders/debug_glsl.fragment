@@ -1,0 +1,121 @@
+#version 110
+
+uniform mat4		gModelviewMatrix;
+uniform mat4		gProjectionMatrix;
+uniform mat4		gModelviewMatrixIT;
+uniform mat4		gProjectionMatrixIT;
+uniform vec4		gCameraPosition;
+uniform vec4		gLightPosition;
+uniform vec4		gLightDirection;
+uniform vec4		gAmbientColor;
+uniform vec4		gDiffuseColor;
+uniform vec4		gSpecularColor;
+uniform vec4		gSideColor;
+uniform vec4		gDestructionColor;
+uniform vec4		gFurFactor;
+uniform float       gFurNS;
+uniform vec4		gDestructionTilesFactor;
+uniform float		gTimeFactor;
+uniform vec4        gWindFactor;
+uniform vec4	    gColorFactor0;
+uniform vec4	    gColorFactor1;
+uniform vec4	    gColorFactor2;
+uniform vec4	    gColorFactor3;
+uniform sampler2D	gBaseTexture;
+uniform sampler2D	gBumpTexture;
+uniform sampler2D	gDestructionTexture;
+uniform sampler2D	gColorTexture;
+uniform samplerCube gCubeTexture;
+uniform sampler3D	g3DNoiseTexture;
+
+//
+// Lights
+//
+uniform vec4		gLight0_Position;
+uniform vec4		gLight0_Direction;
+uniform vec4		gLight0_Color;
+uniform vec4		gLight0_Angle;
+uniform vec4		gLight0_Distance;
+
+uniform vec4		gLight1_Position;
+uniform vec4		gLight1_Direction;
+uniform vec4		gLight1_Color;
+uniform vec4		gLight1_Angle;
+uniform vec4		gLight1_Distance;
+
+uniform vec4		gLight2_Position;
+uniform vec4		gLight2_Direction;
+uniform vec4		gLight2_Color;
+uniform vec4		gLight2_Angle;
+uniform vec4		gLight2_Distance;
+
+varying vec4        OUT_Diffuse;
+varying vec3        OUT_Tangent;
+varying vec3        OUT_Binormal;
+varying vec3        OUT_Normal;
+varying vec4        OUT_Color;
+varying vec3        OUT_LVector;
+varying vec2        OUT_UV;
+
+///////////////////////////////////////////////////////////////////////////////
+void main(void)
+{
+ vec4 NormalMap = texture2D(gBumpTexture, OUT_UV.xy);
+ vec3 nmap      = normalize((NormalMap.xyz * 2.0) - 1.0);
+ 
+ if (gl_Color.a < 0.5)
+     nmap *= vec3(-1.0, -1.0, -1.0);
+     
+ float bump  = clamp(dot(nmap.xyz, OUT_LVector.xyz), 0.0, 1.0);
+ vec3 Result = OUT_Diffuse.rgb;
+ 
+ if (gAmbientColor.a > 0.10)
+	Result = NormalMap.rgb;
+
+ if (gAmbientColor.a > 0.20)
+	Result = vec3(bump, bump, bump);
+
+ if (gAmbientColor.a > 0.30)
+	Result = OUT_Color.rgb;
+
+ if (gAmbientColor.a > 0.40)
+	Result = 0.5 + (OUT_Normal.xyz * 0.5);
+
+ if (gAmbientColor.a > 0.50)
+	Result = 0.5 + (OUT_Tangent.xyz * 0.5);
+
+ if (gAmbientColor.a > 0.60)
+	Result = 0.5 + (OUT_Binormal.xyz * 0.5);
+	
+ if (gAmbientColor.a > 0.70)
+ {
+	Result.x = (nmap.x * OUT_Tangent.x)  +
+			   (nmap.y * OUT_Binormal.x) +
+			   (nmap.z * OUT_Normal.x);
+			   
+	Result.y = (nmap.x * OUT_Tangent.y)  +
+			   (nmap.y * OUT_Binormal.y) +
+			   (nmap.z * OUT_Normal.y);
+
+	Result.z = (nmap.x * OUT_Tangent.z)  +
+			   (nmap.y * OUT_Binormal.z) +
+			   (nmap.z * OUT_Normal.z);
+			   
+	Result = 0.5 + ((Result.xyz - OUT_Normal.xyz) * 0.5);
+ }
+ 
+ if (gAmbientColor.a > 0.80)
+ {
+	Result = normalize(vec3(dot(OUT_Normal.xyz, OUT_Tangent.xyz), dot(OUT_Normal.xyz, OUT_Binormal.xyz), dot(OUT_Normal.xyz, OUT_Normal.xyz)).xyz);
+	Result = 0.5 + (Result.xyz * 0.5);
+ }
+ 
+ if (gAmbientColor.a > 0.90)
+ {
+	Result.rgb = vec3(OUT_Color.a, OUT_Color.a, OUT_Color.a);
+ }
+
+ gl_FragColor.rgb = Result;
+ gl_FragColor.a   = 1.0;
+}
+///////////////////////////////////////////////////////////////////////////////

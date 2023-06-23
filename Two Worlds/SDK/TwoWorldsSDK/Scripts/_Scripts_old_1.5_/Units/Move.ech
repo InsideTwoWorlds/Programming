@@ -1,0 +1,621 @@
+#ifndef UNITS_MOVE_ECH
+#define UNITS_MOVE_ECH
+
+////    Declarations    ////
+
+state Moving;
+state Turning;
+state MovingStep;
+state Jumping;
+state MovingOneStep;
+state MovingHorseStep;
+state TurningHorseLeftStep;
+state TurningHorseRightStep;
+
+int m_nStartMoveX;
+int m_nStartMoveY;
+int m_nStartMoveZ;
+int m_nMoveToX;
+int m_nMoveToY;
+int m_nMoveToZ;
+int m_nAlphaAngle;
+
+//eModeAir jest 0 bo przy zaznaczeniu unitow z roznymi stanami przychodzi komenda z mode==0 a przy roznych ustawieniach powinien wystartowac
+consts
+{
+    eModeAir = 0;
+    eModeLand = 1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+////    Functions    ////
+
+function int IsStartingMoving()
+{
+    if (IsPreparingToMove())
+    {
+        return true;
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MoveToPoint(int nX, int nY, int nZ)
+{
+    TRACE("MoveToPoint %d, %d     \n", nX, nY);
+    GetLocation(m_nStartMoveX, m_nStartMoveY, m_nStartMoveZ);
+	m_nMoveToX = nX;
+	m_nMoveToY = nY;
+    m_nMoveToZ = nZ;
+	CallMoveToPoint(m_nMoveToX, m_nMoveToY, m_nMoveToZ);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//idzie nDist kratek w kierunku nX,y
+function void MoveInDirectionOfPoint(int nX, int nY, int nDist)
+{
+    int nDx, nDy;
+
+    TurnRadiusByAngle(nDist, AngleTo(nX, nY), nDx, nDy);
+    MoveToPoint(GetLocationX() + nDx, GetLocationY() + nDy, GetLocationZ());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//jw dla obiektu
+function void MoveInDirectionOfObject(unit uTarget, int nDist)
+{
+    int nDx, nDy;
+
+    TurnRadiusByAngle(nDist, AngleTo(uTarget), nDx, nDy);
+    MoveToPoint(GetLocationX() + nDx, GetLocationY() + nDy, GetLocationZ());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CheckMoveAwayFromObject(unit uTarget, int nDist)
+{
+    int nX, nY;
+    TurnRadiusByAngle(nDist,AngleTo(uTarget) + 0x80,nX,nY);
+    nX += GetLocationX();
+    nY += GetLocationY();
+    return GetMission().IsGoodPointForUnit(nX,nY);    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+    
+function void MoveAwayFromPoint(int nAngleTo, int nDist)
+{
+    int nDx, nDy, nLocX, nLocY, nMoveToX, nMoveToY;
+
+    TurnRadiusByAngle(nDist, nAngleTo + 0x80, nDx, nDy);
+    nLocX = GetLocationX();
+    nLocY = GetLocationY();
+    nMoveToX = nLocX + nDx;
+    nMoveToY = nLocY + nDy;
+    if (IsNearLevelBorder(nMoveToX, nMoveToY, e16m))
+    {
+        nMoveToX = nLocX - nDx;
+        nMoveToY = nLocY - 2*nDy;
+        if (IsNearLevelBorder(nMoveToX, nMoveToY, e16m))
+        {
+            nMoveToX = nLocX - 2*nDx;
+            nMoveToY = nLocY - nDy;
+            if (IsNearLevelBorder(nMoveToX, nMoveToY, e16m))
+            {
+                nMoveToX = nLocX - 2*nDy;
+                nMoveToY = nLocY + 2*nDx;
+                if (IsNearLevelBorder(nMoveToX, nMoveToY, e16m))
+                {
+                    nMoveToX = nLocX + 2*nDy;
+                    nMoveToY = nLocY - 2*nDx;
+                    if (IsNearLevelBorder(nMoveToX, nMoveToY, e16m))
+                    {
+                        nMoveToX = nLocX - 2*nDx;
+                        nMoveToY = nLocY - 2*nDy;
+                    }
+                }
+            }
+        }
+    }
+    MoveToPoint(nMoveToX, nMoveToY, GetLocationZ());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//idzie nDist kratek w kierunku przeciwnym do nX,y
+function void MoveAwayFromPoint(int nX, int nY, int nDist)
+{
+    MoveAwayFromPoint(AngleTo(nX, nY), nDist);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MoveAwayFromObject(unit uTarget, int nDist)
+{
+    MoveAwayFromPoint(AngleTo(uTarget), nDist);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CheckAndMoveAwayFromObject(unit uTarget, int nDist)
+{
+    if (!CheckMoveAwayFromObject(uTarget,nDist)) return false;
+    MoveAwayFromPoint(AngleTo(uTarget), nDist);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MoveAwayFromObjectRandAngle(unit uTarget, int nDist, int nRandAngle)
+{
+    MoveAwayFromPoint(AngleTo(uTarget) - nRandAngle + Rand(nRandAngle*2), nDist);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+////    States    ////
+
+state Moving
+{
+	if (IsMoving() || IsStartingMoving())
+	{
+		TRACE("Moving     \n");
+        return Moving, 20;
+	}
+	else
+	{
+		TRACE("Moving -> Nothing     \n");
+		EndCommand(true);
+		return Nothing, 0;
+	}
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state Turning
+{
+    if (IsMoving() || IsStartingMoving())
+    {
+        return Turning, 22;//musi sie roznic od moving
+    }
+    else
+    {
+		EndCommand(true);
+		return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingStep
+{
+    return MovingStep, 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state Jumping
+{
+    if (IsInJumpingState())
+    {
+        return Jumping, 0;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingOneStep
+{
+    if (IsMovingOneStep() || IsStartingMoving())
+    {
+        return MovingOneStep, 0;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingHorseStep
+{
+    if (IsMoving() || IsPreparingToMove())
+    {
+        return MovingHorseStep, 0;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state TurningHorseLeftStep
+{
+    CallTurnToAngle(GetDirectionAlpha() - 0x40);
+    return TurningHorseLeftStep, 2;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state TurningHorseRightStep
+{
+    CallTurnToAngle(GetDirectionAlpha() + 0x40);
+    return TurningHorseRightStep, 2;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+////    Commands    ////
+
+command Stop() hidden
+{
+    TRACE("command Stop     \n");
+    CHECK_STOP_CURR_ACTION();
+	if (IsMoving())
+	{
+		CallStopCurrentAction();
+	}
+    EndCommand(true);
+	state Nothing;
+    SetStateDelay(0);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command StopCurrentAction() hidden
+{
+    TRACE("command StopCurrentAction     \n");
+    CHECK_STOP_CURR_ACTION();
+	CallStopCurrentAction();
+    EndCommand(true);
+	state Nothing;
+    SetStateDelay(0);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MakeCommandMove(int nX, int nY, int nZ)
+{
+    TRACE("command Move     \n");
+    
+    if(IsHeroUnit())
+    {
+//        return true;        
+    }
+    CHECK_STOP_CURR_ACTION();
+    MoveToPoint(nX, nY, nZ);
+	state Moving;
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command Move(int nX, int nY, int nZ) hidden
+{
+    return MakeCommandMove(nX, nY, nZ);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//komenda dla latajacego
+command MoveXYZA(int nX, int nY, int nZ, int nAlpha) hidden
+{
+    TRACE("command MoveXYZA     \n");
+    CHECK_STOP_CURR_ACTION();
+    if (IsLandMove())
+    {
+        MoveToPoint(nX, nY, nZ);
+    }
+    else 
+    {
+        GetLocation(m_nStartMoveX, m_nStartMoveY, m_nStartMoveZ);
+	    m_nMoveToX = nX;
+	    m_nMoveToY = nY;
+        if ((nX != GetLocationX()) || (nY != GetLocationY()))
+        {
+            if (nAlpha != -1)
+            {
+                CallFlyableFlyToPoint(nX, nY, nZ, nAlpha);
+            }
+            else
+            {
+                CallFlyableFlyToPoint(nX, nY, nZ);
+            }
+        }
+        else if (nZ != GetLocationZ())
+        {
+            if (nAlpha != -1)
+            {
+                CallFlyableSetHeight(nZ, nAlpha);
+            }
+            else
+            {
+                CallFlyableSetHeight(nZ);
+            }
+        }
+        else if (nAlpha != -1)
+        {
+            CallTurnToAngle(nAlpha);
+        }
+        //else nic
+    }
+	state Moving;
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command Turn(int nAlphaAngle) hidden
+{
+    TRACE("command Turn     \n");
+    CHECK_STOP_CURR_ACTION();
+    CallTurnToAngle(nAlphaAngle);
+    state Turning;
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveStepInDirection(int nAlphaAngle) hidden
+{
+    TRACE("command MoveStepInDirection     \n");
+#ifdef STATE_STRIKEATTACKINGTARGET
+    if (state == STATE_STRIKEATTACKINGTARGET)
+    {
+        SetMoveStepInDirectionAfterCommand(true, nAlphaAngle);
+        return true;
+    }
+#endif //STATE_STRIKEATTACKINGTARGET
+    if (state == Jumping)
+    {
+        SetMoveStepInDirectionAfterCommand(true, nAlphaAngle);
+        return true;
+    }
+    if (state == MovingOneStep)
+    {
+        SetMoveStepInDirectionAfterCommand(true, nAlphaAngle);
+        return true;
+    }
+    CHECK_STOP_CURR_ACTION();
+    SetMoveStepInDirectionAfterCommand(false, 0);
+    m_nAlphaAngle = nAlphaAngle;
+    CallMoveStepInDirection(nAlphaAngle);
+    state MovingStep;
+    SetStateDelay(2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command StopMovingStep() hidden
+{
+    TRACE("command StopMovingStep     \n");
+    SetMoveStepInDirectionAfterCommand(false, 0);
+    if ((state == MovingStep) || (state == Jumping))
+    {
+        CallStopCurrentAction();
+        state Nothing;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command StartJump() hidden
+{
+    TRACE("command StartJump     \n");
+    CHECK_CANCEL_SNEAKMODE();
+    if (state == MovingStep)
+    {
+        //zapamietujemy
+        SetMoveStepInDirectionAfterCommand(true, m_nAlphaAngle);
+    }
+    CallStartJumping();
+    state Jumping;
+    SetStateDelay(2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveOneStepForward(int nCameraAngle) hidden
+{
+    if (IsOnHorse() || IsInSneakMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (state == MovingStep)
+    {
+        //zapamietujemy
+        SetMoveStepInDirectionAfterCommand(true, m_nAlphaAngle);
+    }
+    CallMoveOneStep(0, nCameraAngle);
+    state MovingOneStep;
+    SetStateDelay(2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveOneStepBack(int nCameraAngle) item ITEM_MOVEONESTEPBACK hidden
+{
+    if (IsOnHorse() || IsInSneakMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (state == MovingStep)
+    {
+        //zapamietujemy
+        SetMoveStepInDirectionAfterCommand(true, m_nAlphaAngle);
+    }
+    CallMoveOneStep(2, nCameraAngle);
+    state MovingOneStep;
+    SetStateDelay(2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveOneStepLeft(int nCameraAngle) hidden
+{
+    if (IsOnHorse() || IsInSneakMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (state == MovingStep)
+    {
+        //zapamietujemy
+        SetMoveStepInDirectionAfterCommand(true, m_nAlphaAngle);
+    }
+    CallMoveOneStep(3, nCameraAngle);
+    state MovingOneStep;
+    SetStateDelay(2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveOneStepRight(int nCameraAngle) hidden
+{
+    if (IsOnHorse() || IsInSneakMode())
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (state == MovingStep)
+    {
+        //zapamietujemy
+        SetMoveStepInDirectionAfterCommand(true, m_nAlphaAngle);
+    }
+    CallMoveOneStep(1, nCameraAngle);
+    state MovingOneStep;
+    SetStateDelay(2);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseSpeedUp(int nStrengthPercent) hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    if (state == MovingHorseStep)
+    {
+        SetHorseChangeSpeed(1, nStrengthPercent);
+        state MovingHorseStep;
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+        SetHorseChangeSpeed(1, nStrengthPercent);
+        CallMoveHorseInDirection(GetDirectionAlpha());
+        TRACE("command MoveHorseSpeedUp -> MovingHorseStep     \n");
+        state MovingHorseStep;
+        SetStateDelay(5);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseStopSpeedUp() hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    SetHorseChangeSpeed(0, 0);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+
+command MoveHorseSlowDown(int nStrengthPercent) hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    if (state == MovingHorseStep)
+    {
+        SetHorseChangeSpeed(-1, nStrengthPercent);
+        state MovingHorseStep;
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseStopSlowDown() hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    SetHorseChangeSpeed(0, 0);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseMoveBack(int nStrengthPercent) hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    if (state == MovingHorseStep)
+    {
+        SetHorseMoveBack();
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+        SetHorseMoveBack();
+        CallMoveHorseInDirection(GetDirectionAlpha());
+        TRACE("command MoveHorseSpeedUp -> MovingHorseStep     \n");
+        state MovingHorseStep;
+        SetStateDelay(5);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseStopMoveBack() hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    if (state == MovingHorseStep)
+    {
+        CallStopCurrentAction();
+        state Nothing;
+    }
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseQuickStop() hidden
+{
+    if (!IsOnHorse())
+    {
+        return false;
+    }
+    if ((state == MovingHorseStep) || (state == TurningHorseLeftStep) || (state == TurningHorseRightStep))
+    {
+        CallStopCurrentAction();
+        state Nothing;
+    }
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseTurnLeft(int nStrengthPercent) hidden
+{
+    if (state == MovingHorseStep)
+    {
+        TRACE("command MoveHorseTurnLeft -> SetHorseTurnMoving     \n");
+        SetHorseTurnMoving(-1, nStrengthPercent);
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+        CallTurnToAngle(GetDirectionAlpha() - 0x40);
+        TRACE("command MoveHorseTurnLeft -> TurningHorseLeftStep     \n");
+        state TurningHorseLeftStep;
+        SetStateDelay(2);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseTurnRight(int nStrengthPercent) hidden
+{
+    if (state == MovingHorseStep)
+    {
+        TRACE("command MoveHorseTurnRight -> SetHorseTurnMoving     \n");
+        SetHorseTurnMoving(1, nStrengthPercent);
+    }
+    else
+    {
+        CHECK_STOP_CURR_ACTION();
+        CallTurnToAngle(GetDirectionAlpha() + 0x40);
+        TRACE("command MoveHorseTurnRight -> TurningHorseRightStep     \n");
+        state TurningHorseRightStep;
+        SetStateDelay(2);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command MoveHorseStopTurn() hidden
+{
+    if (state == MovingHorseStep)
+    {
+        TRACE("command MoveHorseStopTurn -> MovingHorseStep     \n");
+        SetHorseTurnMoving(0, 0);
+    }
+    else if ((state == TurningHorseLeftStep) || (state == TurningHorseRightStep))
+    {
+        TRACE("command MoveHorseStopTurn -> stop -> Nothing     \n");
+        CallStopCurrentAction();
+        state Nothing;
+    }
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_MOVE_ECH

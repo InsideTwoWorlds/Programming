@@ -1,0 +1,121 @@
+Two Worlds SDK ver. 1.3  [2007-10-30]
+
+SDK forum is hosted by Inside Two Worlds website:
+http://www.insidetwoworlds.com/forumdisplay.php?f=314
+
+You can easily distribute your mods to gamers from Inside Two Worlds website with Two Worlds Control Panel.
+
+Directory contents:
+
+[Documentation]
+  [EarthC]
+    Automatically generated list of available EarthC functions from version 1.5.
+  [Dungeons readme.txt]
+    Some informations about dungeons editor.
+  [Editor console.txt]
+    Some editor console commands. Not sorted, not documented.
+  [Maya plugins readme.txt]
+    Maya plugins info.
+  [WhizzEdit-manual.txt]
+    Manual for WhizzEdit - this is in fact manual for translators but maybe it can be helpful somehow?
+[Dungeons]
+  Dungeons editor with sample data (inside Dungeons subdirectory) which was used to create dungeons in game.
+  *scr.txt file are console scripts for use in editor.
+[Game]
+  This directory contains console scripts for editor. Those files must be copied to game directory.
+  [cook_PC]
+    This command creates file *.phx inside Levels\physic with data required for physics calculations.
+    It must be run always when some changes has been made to landscape or objects.
+  [*.txt]
+    Some useful level generation scripts.
+[Interface]
+  Game interface definition files. Must be "compiled" to create [Game]\Interface\GameInterface.dat file.
+[MayaPlugins]
+  Maya plugins.
+[Parameters]
+  Parameters definition files. Must be "compiled" by macro Makra.xls!ExportParameters to create [Game]\Parameters\TwoWorlds.par file.
+[Scripts]
+  Sources for game scripts (from version 1.5). Must be compiled into [Game]\Scripts\*.eco files.
+[Tools]
+  [gcc] 
+    C preprocessor ripped from gcc distribution.
+  [ConvertLevelBmp.bat]
+    This batch creates [Game]\Levels\MipMaps dds file for map dialog. TexConv.exe comes from DirectX SDK and it is required 
+    to be installed to use it.
+  [EarthC.exe] [EarthC.bat]
+    EarthC scripts compiler.
+  [EarthCdbg.exe] [EarthCdbg.reg]
+    EarthC scripts editor and debugger. Use EarthCdbg.reg to setup it.
+    To run game in scripts debugging mode you must switch to Debug build configuration, compile all scripts, 
+    copy it to game directory and then start debugging by F5.
+  [InterfaceMap.exe]
+    Tool for build GameInterface.dat file.
+  [LevelHeadersCacheGen.bat]
+    This batch creates Levels\Map_LevelHeaders.lhc file which contains cached headers of campaign's Map_*.lnd files.
+    It must be used if markers has been changed.
+  [MeshParamsGen.bat]
+    This batch creates Parameters\MeshParams.dat file which contains cached data from graphics meshes/animations files.
+    It must be used if some meshes has been changed/added or if some changes has been made in TwoWorlds.xls's tabs:
+    UnitMeshes / UnitAnimations / UnitAnimationsFiles / BasicUnits/Units/Heroes(new rows or changed characterMeshID/meshBox)
+  [MeshParamsGen.exe]
+    Tool for batches above.
+  [ParamsParser.exe]
+    Tool for build TwoWorlds.par file.
+  [ParticleEdit.exe] [ParticleEdit.reg]
+    Particles editor. Use ParticleEdit.reg to setup it.
+  [TwoWorldsEditor.exe]
+    Levels editor.
+  [WDCreator.exe] [WDCreatorSample.bat] [WDCreatorSample.dat]
+    Tool for creating wd files with sample files.
+[TreesGenerator]
+  Tool for generating tree models. Use TreesGenerator.reg to setup it. This tool doesn't read data from wd files so
+  to make it work you must extract following directories from Graphics.wd to D:\Games\TwoWorlds:
+  Textures\System\*.* Textures\TreeBilboards\*.* Textures\Trees\*.*.
+  Directory Game\Treegenshaders contains shaders for TreesGenerator and directory Game\Models\Environment\TREES
+  contains *.tpn source files for generator. You have to load it and to create *.vdf files for game you must use export option.
+  If you will see messages about missing msvc*.dll then you have to install vcredist_x86.exe which should be available
+  on TwoWorlds CD or download it from Microsoft.
+[WhizzEdit]
+  This is sophisticated tool for quests edition integrated with localization functions.
+  Data subdirectory contains quests from version 1.5.
+  Microsoft .NET Framework 2.0 is required for this tool.
+
+
+Additional notes:
+
+Paths in *.bat, *.xls and *.reg files of this package has been setup to D:\Games\TwoWorldsSDK for SDK
+and D:\Games\TwoWorlds for game.
+Those paths are also set inside WhizzEdit.exe, so some minor functions of it can not work properly.
+
+Some tools from Tools directory requires PhysX dll's from game directory so you can copy it or 
+you can add D:\Games\TwoWorlds to system's PATH.
+
+If you have localized language files, you can give them special name and it will be automatically used:
+MyMod.VER.lan where VER is ID of game language fe. ENG DEU (it is stored inside translateLanguageID)
+
+It is recommended to put all your mod's files into single wd file. It's might be good idea to also add to 
+your wd info.txt file with mod description.
+You can install your wd into [Game]\Mods subdirectory. WD files from this directory are invisible for game by default.
+You can enable it by creating registry value:
+[HKEY_CURRENT_USER\Software\Reality Pump\TwoWorlds\Mods]
+"MyModFile.wd"=dword:00000001
+
+In Network there is no option to automatically download missing files like it was in our previous games,
+so user must manually install mod.
+Users can play together in Network if they have the same executable version and the same parameters file 
+If parameters file is different they can't see each other in
+town and can't join other player's games. If your mod changes some existing network levels/scripts you must also include
+recompiled parameters file, otherwise player without mod can join game created by player with mod which will 
+cause game unsync.
+You don't need to recompile parameters from xls. You can take TwoWorlds.par from patch 1.5 (or compiled by someone else)
+and replace its GUID (16 bytes starting at 0x0000001C) with random numbers.
+
+If there are more mods enabled with the same files inside - for example TwoWorlds.par then this file is read from
+newest wd file (creation date is stored inside wd). Such a mods should be enabled exclusively.
+
+
+We strongly suggest to test your mods carefully before giving it to gamers, particularly when you make changes in parameters / scripts / quests.
+We give you this SDK "as it is" and you must be aware that game wasn't especially prepared for handling mods.
+We suggest to not distribute small mods with just one or few changes in gameplay (in parameters/scripts/quests/levels) - it 
+might create mess in the game and confuse gamers.
+You should rather work together with other modders and create bigger, well considered and tested mods.

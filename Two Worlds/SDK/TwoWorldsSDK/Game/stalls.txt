@@ -1,0 +1,8 @@
+
+
+Editor.ReplaceObject STALLS_01_1 STALLS_04_1
+Editor.ReplaceObject STALLS_01_2 STALLS_04_2
+Editor.ReplaceObject STALLS_01_3 STALLS_04_3
+Editor.ReplaceObject STALLS_01_4 STALLS_04_4
+Editor.ReplaceObject STALLS_01_5 STALLS_04_5
+Editor.ReplaceObject STALLS_01_6 STALLS_04_6 

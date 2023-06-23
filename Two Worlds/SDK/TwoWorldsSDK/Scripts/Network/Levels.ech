@@ -1,0 +1,260 @@
+#ifndef NETWORK_LEVELS_ECH
+#define NETWORK_LEVELS_ECH
+
+
+//////////// Towns ////////////
+
+function void AddTown(string strTownID, int nPosX, int nPosY, int nButtonTemplNum, int bAvailableFromBegin, int bTypeRPG,
+                      string arrChannels[], string arrScripts[], string arrScriptParams[], stringW arrTooltips[], int arrButtonTemplNum[], int arrMapPosition[], int arrAvailable[])
+{
+    string strTranslate;
+    stringW strTooltip, strN, strText;
+    int bAvailable;
+
+    arrChannels.Add(strTownID);
+    if (bTypeRPG)
+    {
+        arrScripts.Add("Scripts\\Network\\TownCampaign.eco");
+    }
+    else
+    {
+        arrScripts.Add("Scripts\\Network\\TownCampaign.eco");
+    }
+    arrScriptParams.Add(strTownID);
+    arrMapPosition.Add(nPosX + (nPosY << 16));
+    arrButtonTemplNum.Add(nButtonTemplNum);
+    strTranslate = "translate";
+    strTranslate.Append(strTownID);
+    strTooltip.Translate(strTranslate);
+    if (bAvailableFromBegin)
+    {
+        bAvailable = true;
+    }
+    else if (!GetFillChannelLevelsListCommonPlayerAttribute(strTownID, bAvailable) || !bAvailable)
+    {
+        bAvailable = false;
+        strN.Copy("\n");
+        strTooltip.Append(strN);
+        strText.Translate("translateNetTownUnavailable");
+        strTooltip.Append(strText);
+    }
+    if (bTypeRPG && !(GetFillChannelLevelsListSelectedHeroFlags() & eHeroTypeRPG))
+    {
+        bAvailable = false;
+        strN.Copy("\n");
+        strTooltip.Append(strN);
+        strText.Translate("translateNetTownUnavailableRPGOnly");
+        strTooltip.Append(strText);
+    }
+    if (!bTypeRPG && !(GetFillChannelLevelsListSelectedHeroFlags() & eHeroTypePVP))
+    {
+        bAvailable = false;
+        strN.Copy("\n");
+        strTooltip.Append(strN);
+        strText.Translate("translateNetTownUnavailablePVPOnly");
+        strTooltip.Append(strText);
+    }
+    arrAvailable.Add(bAvailable);
+    arrTooltips.Add(strTooltip);
+}
+
+function void FillNetworkChannelLevelsList(string& strMapTexture, string arrChannels[], string arrScripts[], string arrScriptParams[], stringW arrTooltips[], int arrButtonTemplNum[], int arrMapPosition[], int arrAvailable[])
+{
+    strMapTexture = "Interface\\NetworkTowns.dds";
+
+    //pozycja w procentach rozmiaru bitmapki swiata
+    AddTown("Net_T_01", 51, 19, 65, true,  true,  arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+    AddTown("Net_T_02", 61, 54, 65, false, true,  arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+    AddTown("Net_T_03", 40, 64, 65, false, true,  arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+    AddTown("Net_T_04", 16, 77, 66, true,  false, arrChannels, arrScripts, arrScriptParams, arrTooltips, arrButtonTemplNum, arrMapPosition, arrAvailable);
+}
+
+
+//////////// Missions ////////////
+
+//this code assumes that all network levels definition files are correct
+
+function int LoadMissionInfo(string strInfoFile, string arrAttribs[], string arrValues[])
+{
+    string arrLines[];
+    string strAttrib, strVal;
+    int nLine, nPos, nIndex;
+    
+    arrAttribs.RemoveAll();
+    arrValues.RemoveAll();
+    ReadTextFile(strInfoFile, arrLines, true);
+    if ((arrLines.GetSize() == 0) || 
+        !arrLines[0].EqualNoCase("TwoWorlds_NetworkLevelDefinition"))//required header
+    {
+        return false;
+    }
+    for (nLine = 1; nLine < arrLines.GetSize(); nLine++)
+    {
+        nPos = arrLines[nLine].Find('=');
+        if (nPos <= 0)
+        {
+            __ASSERT_FALSE();
+            continue;
+        }
+        strAttrib = arrLines[nLine];
+        strAttrib.Left(nPos);
+        strAttrib.TrimLeft();
+        strAttrib.TrimRight();
+        if (strAttrib.GetLength() == 0)
+        {
+            __ASSERT_FALSE();
+            continue;
+        }
+        strVal = arrLines[nLine];
+        strVal.Mid(nPos + 1);
+        strVal.TrimLeft();
+        strVal.TrimRight();
+        //strVal can be empty string
+        nIndex = arrAttribs.InsertInSorted(strAttrib);
+        arrValues.InsertAt(nIndex, strVal);
+    }
+    return true;
+}
+
+function string GetMissionInfoValue(string arrAttribs[], string arrValues[], string strAttrib)
+{
+    int nIndex;
+    
+    nIndex = arrAttribs.FindInSorted(strAttrib);
+    if (nIndex < 0)
+    {
+        return "";
+    }
+    return arrValues[nIndex];
+}
+
+#define GET_VAL(attrib) GetMissionInfoValue(arrAttribs, arrValues, attrib)
+
+function void AddMission(string arrAttribs[], string arrValues[],
+                         string arrScripts[], string arrScriptParams[], string arrNames[], int arrPointsGame[], int arrGuildsGame[], int arrAllowDynConn[], int arrMinPlayersCnt[], int arrAvailable[])
+{
+    string strMissionID, strMode;
+    int bAvailable, nValue;
+    
+    arrScripts.Add(GET_VAL("CampaignScript"));
+    strMissionID = GET_VAL("ID");
+    arrScriptParams.Add(strMissionID);
+    arrNames.Add(GET_VAL("Name"));
+    if (!stricmp(GET_VAL("PointsGame"), "true"))
+    {
+        arrPointsGame.Add(true);
+    }
+    else 
+    {
+        arrPointsGame.Add(false);
+    }
+    if (!stricmp(GET_VAL("GuildsGame"), "true"))
+    {
+        arrGuildsGame.Add(true); 
+    }
+    else
+    {
+        arrGuildsGame.Add(false);
+    }
+    if (!stricmp(GET_VAL("AllowDynConn"), "true")) 
+    {
+        arrAllowDynConn.Add(true);
+    }
+    else 
+    {
+        arrAllowDynConn.Add(false);
+    }
+    sscanf(GET_VAL("MinPlayersCnt"), "%d", nValue);
+    arrMinPlayersCnt.Add(nValue);
+    if (!stricmp(GET_VAL("AvailableFromBegin"), "true") ||
+        (GetPlayerHeroUnit(0).GetPlayersCommonAttribute(strMissionID, bAvailable) && bAvailable))
+    {
+        arrAvailable.Add(true);
+    }
+    else
+    {
+        arrAvailable.Add(false);
+    }
+}
+
+function void FillNetworkMissionsList(string strTown, string arrScripts[], string arrScriptParams[], string arrNames[], int arrPointsGame[], int arrGuildsGame[], int arrAllowDynConn[], int arrMinPlayersCnt[], int arrAvailable[])
+{
+    string strTownID;
+    string arrMissionInfoFiles[];
+    string arrAttribs[];
+    string arrValues[];
+    int nIndex, nIndexLastM;
+    
+    SearchFiles("Levels\\Net_*.txt", arrMissionInfoFiles);
+    //arrMissionInfoFiles are sorted alphabetically so fix: move RPG arenas below rpg missions
+    for (nIndexLastM = arrMissionInfoFiles.GetSize() - 1; nIndexLastM >= 0; nIndexLastM--)
+    {
+        if (!strnicmp(arrMissionInfoFiles[nIndexLastM], "Levels\\Net_M_", 13))
+        {
+            break;
+        }
+    }
+    if (nIndexLastM >= 0)
+    {
+        for (nIndex = arrMissionInfoFiles.GetSize() - 1; nIndex >= 0; nIndex--)
+        {
+            if (!strnicmp(arrMissionInfoFiles[nIndex], "Levels\\Net_A_0", 14))
+            {
+                ASSERT(nIndex < nIndexLastM);
+                arrMissionInfoFiles.InsertAt(nIndexLastM + 1, arrMissionInfoFiles[nIndex]);
+                arrMissionInfoFiles.RemoveAt(nIndex);
+                nIndexLastM--;
+            }
+        }
+    }
+    
+    strTownID = strTown;
+    for (nIndex = 0; nIndex < arrMissionInfoFiles.GetSize(); nIndex++)
+    {
+        if (!LoadMissionInfo(arrMissionInfoFiles[nIndex], arrAttribs, arrValues))
+        {
+            continue;
+        }
+        if (strTownID.EqualNoCase(GET_VAL("Town")))
+        {
+            AddMission(arrAttribs, arrValues, arrScripts, arrScriptParams, arrNames, arrPointsGame, arrGuildsGame, arrAllowDynConn, arrMinPlayersCnt, arrAvailable);
+        }
+    }
+}
+
+function void AddMissionMode(string strModeParam, int nXDefineNum, string arrModeParams[], string arrModeNames[], int arrModeXDefineNum[])
+{
+    string strTranslate;
+
+    arrModeParams.Add(strModeParam);
+    strTranslate = "translateNetMode";
+    strTranslate.Append(strModeParam);
+    arrModeNames.Add(strTranslate);
+    arrModeXDefineNum.Add(nXDefineNum);
+}
+
+function void FillNetworkMissionModes(string strScriptParam, string arrModeParams[], string arrModeNames[], int arrModeXDefineNum[])
+{
+    string strInfoFile;
+    string arrAttribs[];
+    string arrValues[];
+    string arrModes[];
+    int nIndex;
+    
+    strInfoFile = "Levels\\";
+    strInfoFile.Append(strScriptParam);
+    strInfoFile.Append(".txt");
+    if (!LoadMissionInfo(strInfoFile, arrAttribs, arrValues))
+    {
+        return;
+    }
+    ScanStringValues(GET_VAL("Modes"), arrModes);
+    for (nIndex = 0; nIndex < arrModes.GetSize(); nIndex++)
+    {
+        AddMissionMode(arrModes[nIndex], 0/*doesn't matter*/, arrModeParams, arrModeNames, arrModeXDefineNum);
+    }
+}
+
+#undef GET_VAL
+
+#endif //NETWORK_LEVELS_ECH

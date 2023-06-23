@@ -1,0 +1,449 @@
+#ifndef _P_REWARDS_
+#define _P_REWARDS_
+
+consts {
+
+    eNoReward            = 0;
+    eRewardGold          = 1;
+    eRewardReputation    = 2;
+    eRewardExperience    = 3;
+    eRewardItem          = 4;
+    eRewardSkillPoints   = 5;
+    eRewardRandom        = 6;
+    eRewardAchievement   = 7;
+
+    eQuantityCustom      = 0;
+    eQuantitySmall       = 1;
+    eQuantityMedium      = 2;
+    eQuantityBig         = 3;
+
+    // gold
+#ifdef QUESTS_MULTI
+    eGoldSmall           = 150;
+    eGoldMedium          = 300;
+    eGoldBig             = 600;
+#else
+    eGoldSmall           = 30;
+    eGoldMedium          = 80;
+    eGoldBig             = 150;
+#endif
+
+    // reputation
+    eReputationSmall     = 1;
+    eReputationMedium    = 2;
+    eReputationBig       = 3;
+
+    // experience
+    eExperienceSmall     = 10;
+    eExperienceMedium    = 25;
+    eExperienceBig       = 50;
+                
+}
+
+// rewards
+int anRewardQuest[];
+int anRewardType[];
+int anRewardWhen[];
+int anRewardQuantityType[];
+int anRewardQuantity[];
+
+string astrRewardObject[];    
+int anRewardParam1[];
+int nCurrentReward;
+
+#define NOT_ENOUGH_SPACE        "translateNotEnoughSpaceInInventory"
+
+//======================================        
+
+function int GetRewardGoldQuantity(int nQuantityType, int nQuantity, unit uHero) {
+
+    if (nQuantityType == eQuantityCustom) return nQuantity;
+    if (nQuantityType == eQuantitySmall) return uHero.GetUnitLevel() * eGoldSmall;
+    if (nQuantityType == eQuantityMedium) return uHero.GetUnitLevel() * eGoldMedium;
+    if (nQuantityType == eQuantityBig) return uHero.GetUnitLevel() * eGoldBig;
+    return 0;
+
+}
+
+function int GetRewardReputationQuantity(int nQuantityType, int nQuantity, unit uHero) {
+
+    if (nQuantityType == eQuantityCustom) return nQuantity;
+    if (nQuantityType == eQuantitySmall) return uHero.GetUnitLevel() * eReputationSmall;
+    if (nQuantityType == eQuantityMedium) return uHero.GetUnitLevel() * eReputationMedium;
+    if (nQuantityType == eQuantityBig) return uHero.GetUnitLevel() * eReputationBig;
+    return 0;
+
+}
+
+function int GetRewardExperienceQuantity(int nQuantityType, int nQuantity, unit uHero) {
+
+    if (nQuantityType == eQuantityCustom) return nQuantity;
+    if (nQuantityType == eQuantitySmall) return uHero.GetUnitLevel() * eExperienceSmall;
+    if (nQuantityType == eQuantityMedium) return uHero.GetUnitLevel() * eExperienceMedium;
+    if (nQuantityType == eQuantityBig) return uHero.GetUnitLevel() * eExperienceBig;
+    return 0;
+
+}
+
+//======================================        
+
+function void InsertNewReward() {
+
+    anRewardQuest.Add(eNoQuest);
+    anRewardType.Add(eNoReward);
+    anRewardWhen.Add(eDontKnowWhen);
+    anRewardQuantityType.Add(eQuantityCustom);
+    anRewardQuantity.Add(0);
+    astrRewardObject.Add("");
+    anRewardParam1.Add(0);
+    nCurrentReward = anRewardQuest.GetSize() - 1;
+
+}
+
+function void AddRewardGold(int nQuestNum, int nWhen, int nQuantityType, int nQuantity) {
+
+    InsertNewReward();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardGold(%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nQuantityType,nQuantity);
+#endif
+
+    anRewardType[nCurrentReward] = eRewardGold;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantityType[nCurrentReward] = nQuantityType;
+    anRewardQuantity[nCurrentReward] = nQuantity;
+
+    nCurrentReward++;
+
+}
+
+function void AddRewardReputation(int nQuestNum, int nWhen, int nQuantityType, int nQuantity, int nGuild) {
+
+    InsertNewReward();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardReputation(%d,%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nQuantityType,nQuantity,nGuild);
+#endif
+
+    anRewardType[nCurrentReward] = eRewardReputation;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantityType[nCurrentReward] = nQuantityType;
+    anRewardQuantity[nCurrentReward] = nQuantity;
+    anRewardParam1[nCurrentReward] = nGuild;
+
+    nCurrentReward++;
+
+}
+
+function void AddRewardExperience(int nQuestNum, int nWhen, int nQuantityType, int nQuantity) {
+
+    InsertNewReward();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardExperience(%d,%d,%d,%d)                                   \n",nQuestNum,nWhen,nQuantityType,nQuantity);
+#endif
+
+    anRewardType[nCurrentReward] = eRewardExperience;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantityType[nCurrentReward] = nQuantityType;
+    anRewardQuantity[nCurrentReward] = nQuantity;
+
+    nCurrentReward++;
+
+}
+
+function void AddRewardSkillPoints(int nQuestNum, int nWhen, int nQuantity) {
+
+    InsertNewReward();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardSkillPoints(%d,%d,%d)                                   \n",nQuestNum,nWhen,nQuantity);
+#endif
+
+    anRewardType[nCurrentReward] = eRewardSkillPoints;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantity[nCurrentReward] = nQuantity;
+
+    nCurrentReward++;
+
+}
+
+function void AddRewardItem(int nQuestNum, int nWhen, int nQuantity, string strObject) {
+
+    InsertNewReward();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardItem(%d,%d,%d,",nQuestNum,nWhen,nQuantity);
+    TRACE("%s)                                   \n",strObject);
+#endif
+
+    anRewardType[nCurrentReward] = eRewardItem;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantity[nCurrentReward] = eQuantityCustom;
+    anRewardParam1[nCurrentReward] = nQuantity;
+    astrRewardObject[nCurrentReward] = strObject;
+
+    nCurrentReward++;
+
+}
+
+function void AddRewardRandom(int nQuestNum, int nWhen, int nQuantityType) {
+
+    InsertNewReward();
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardRandom(%d,%d,%d)                                   \n",nQuestNum,nWhen,nQuantityType);
+#endif
+
+    anRewardType[nCurrentReward] = eRewardRandom;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantity[nCurrentReward] = nQuantityType;
+
+    nCurrentReward++;
+
+}
+
+function void AddRerwardAchievement(int nQuestNum, int nWhen, int nAchievement) {
+
+    InsertNewReward();
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddRewardAchievement(%d,%d,%d)                                   \n",nQuestNum,nWhen,nAchievement);
+#endif
+    
+    anRewardType[nCurrentReward] = eRewardAchievement;
+    anRewardQuest[nCurrentReward] = nQuestNum;
+    anRewardWhen[nCurrentReward] = nWhen;
+    anRewardQuantity[nCurrentReward] = nAchievement;
+
+}
+
+//======================================        
+
+function void GiveRewardGold(int nReward, unit uHero) {
+
+    ASSERT(uHero != null);
+    AddMoney(uHero,GetRewardGoldQuantity(anRewardQuantityType[nReward],anRewardQuantity[nReward],uHero));
+                 
+}
+
+function void GiveRewardReputation(int nReward, unit uHero) {
+
+    int nReputation;
+    int nQuantity;
+
+    nQuantity = GetRewardReputationQuantity(anRewardQuantityType[nReward],anRewardQuantity[nReward],uHero);
+
+#ifdef QUEST_DEBUG
+    TRACE("Reward reputation: guild %d quantity %d         \n",anRewardParam1[nReward],nQuantity);
+#endif    
+        
+    uHero.GetAttribute(anRewardParam1[nReward],nReputation);
+    nReputation = MIN(10,MAX(0,nQuantity+nReputation));
+    uHero.SetAttribute(anRewardParam1[nReward],nReputation + nQuantity);
+    SetConsoleTextAddReputation(uHero,anRewardParam1[nReward] - eNoGuild,nQuantity);
+    
+    
+}
+
+function void GiveRewardExperience(int nReward, unit uHero) {
+
+    ASSERT(uHero != null);
+    AddExpPoints(uHero,GetRewardExperienceQuantity(anRewardQuantityType[nReward],anRewardQuantity[nReward],uHero));
+
+}
+
+function void GiveRewardSkillPoints(int nReward, unit uHero) {
+
+    ASSERT(uHero != null);
+    AddSkillPoints(uHero,anRewardQuantity[nReward]);
+
+}
+
+function string GetRewardItem(int nReward, unit uHero) {
+
+    int nItem;
+    string strItem;
+    int nLevel;
+
+    nLevel = uHero.GetUnitLevel();
+    if (anRewardQuantity[nReward] == eQuantityCustom) strItem = astrRewardObject[nReward];
+    if (anRewardQuantity[nReward] == eQuantitySmall) strItem = CreateRewardString(nLevel, false);
+    if (anRewardQuantity[nReward] == eQuantityMedium) strItem = CreateRewardString(nLevel + 2, false);
+    if (anRewardQuantity[nReward] == eQuantityBig) strItem = CreateRewardString(nLevel + 4, false);
+
+    return strItem;
+
+}
+
+function void GiveRewardItem(int nReward, unit uHero, int nQuestNum) {
+    
+    int i;
+    int nQuantity;
+    int nMapping;
+    string strReward;
+    string str;
+    int nItemNumber;
+    unit uDropObject;
+
+    ASSERT(uHero != null);
+    
+    strReward = GetRewardItem(nReward,uHero);
+    if (anRewardQuantity[nReward] == eQuantityCustom) nQuantity = anRewardParam1[nReward];
+    else nQuantity = 1;
+
+    while (nQuantity > 0) {
+
+#ifdef QUEST_DEBUG
+    TRACE("AddInventoryItem: %s   %d   \n",strReward,nQuantity);
+#endif
+    
+//        if (!uHero.IsFreePlaceForObjectInInventory(GetRealObjectName(strReward))) anShowMessageBox[uHero.GetHeroPlayerNum()] = GetCampaign().GetGameTick();
+        SetConsoleTextItem(uHero,strReward,"translateItemReceived");
+        nItemNumber = 1;
+        uHero.AddInventory(strReward,true,nItemNumber,uDropObject);
+        if (uDropObject != null) anShowMessageBox[uHero.GetHeroPlayerNum()] = GetCampaign().GetGameTick();
+        // musimy wywalic obiekty z questgivera
+        RemoveItemFromUnit(anQuestGiverMapping[nQuestNum],strReward);
+        nQuantity--;            
+    
+    }
+    
+    while (nQuantity < 0) {
+
+#ifdef QUEST_DEBUG
+    TRACE("RemoveInventoryItem: %s   %d   \n",strReward,nQuantity);
+#endif
+
+        if (uHero.IsObjectInInventory(strReward)) {
+            SetConsoleTextItem(uHero,strReward,"translateItemLost");
+            uHero.RemoveObjectFromInventory(strReward,false);
+        }
+        else break;
+        nQuantity++;
+    
+    }
+    
+}
+
+function void GiveRandomReward(int nReward, unit uHero, int nQuestNum) {
+
+    int n;
+
+    ASSERT(uHero != null);
+    ASSERT(anRewardQuantity[nReward] != eQuantityCustom);
+    
+    n = Rand(3);    
+    if (n == 0) {
+        GiveRewardGold(nReward,uHero);
+    }
+    if (n == 1) {
+        GiveRewardExperience(nReward,uHero);
+    }
+    if (n == 2) {
+        GiveRewardItem(nReward,uHero,nQuestNum);
+    }
+    
+}
+
+function void GiveRewardAchievement(int nReward, unit uHero) {
+
+    ASSERT(uHero != null);
+    GetCampaign().CommandMessage(eMsgAchievement,anRewardQuantity[nReward],uHero);
+
+}
+
+//======================================        
+
+function void GiveQuestReward(int nQuestNum, int nWhen, unit uHero) {
+
+    int i;
+    int nQuantity;
+
+    ASSERT(uHero != null);
+        
+    for (i = 0; i < nCurrentReward; i++) if ((anRewardQuest[i] == nQuestNum) && (anRewardWhen[i] == nWhen)) {
+        
+        if (anRewardType[i] == eRewardRandom) GiveRandomReward(i,uHero,nQuestNum);
+        if (anRewardType[i] == eRewardGold) if (((anQuestType[nQuestNum] != eQuestTypeKill) && (anQuestType[nQuestNum] != eQuestTypeFindAndKill))  || (nWhen != eWhenQuestSolved)) GiveRewardGold(i,uHero);
+        if (anRewardType[i] == eRewardReputation) GiveRewardReputation(i,uHero);
+        if (anRewardType[i] == eRewardExperience) GiveRewardExperience(i,uHero); 
+        if (anRewardType[i] == eRewardItem) if (((anQuestType[nQuestNum] != eQuestTypeKill) && (anQuestType[nQuestNum] != eQuestTypeFindAndKill)) || (nWhen != eWhenQuestSolved)) GiveRewardItem(i,uHero,nQuestNum);
+        if (anRewardType[i] == eRewardSkillPoints) GiveRewardSkillPoints(i,uHero);
+    
+    }
+
+}
+
+//======================================        
+
+function void AddGoldToBody(int nGold, unit uUnit) {
+
+    if (nGold < 5) {
+        uUnit.SetAttribute("RewardGold","");
+        return;    
+    }
+    if (nGold < 10) {
+        uUnit.SetAttribute("RewardGold","ART_MONEY5");
+        return;
+    }
+    if (nGold < 20) {
+        uUnit.SetAttribute("RewardGold","ART_MONEY10");
+        return;
+    }
+    if (nGold < 50) {
+        uUnit.SetAttribute("RewardGold","ART_MONEY20");
+        return;
+    }
+    if (nGold < 100) {
+        uUnit.SetAttribute("RewardGold","ART_MONEY50");
+        return;
+    }
+    if (nGold < 200) {
+        uUnit.SetAttribute("RewardGold","ART_MONEY100");
+        return;
+    }
+    if (nGold < 500) {
+        uUnit.SetAttribute("RewardGold","ART_MONEY200");
+        return;
+    }
+
+    uUnit.SetAttribute("RewardGold","ART_MONEY500");
+
+}
+
+function void AddItemsToBody(string astrItems[], unit uUnit) {
+
+    uUnit.SetAttribute("RewardItems",StrCat(astrItems));
+    
+}
+
+function void AddRewardToBody(int nQuestNum, int nWhen, unit uUnit, unit uHero) {
+
+    int i;
+    int nGold;
+    string astrItems[];
+
+    ASSERT(uUnit != null);
+
+    nGold = 0;
+    for (i = 0; i < nCurrentReward; i++) if ((anRewardQuest[i] == nQuestNum) && (anRewardWhen[i] == nWhen)) {
+    
+        if (anRewardType[i] == eRewardGold) nGold += GetRewardGoldQuantity(anRewardQuantityType[i],anRewardQuantity[i],uHero);
+        if (anRewardType[i] == eRewardItem) astrItems.Add(GetRewardItem(i,uHero));
+    
+    }
+
+    AddGoldToBody(nGold,uUnit);
+    AddItemsToBody(astrItems,uUnit);
+    
+}
+
+//======================================        
+
+#endif

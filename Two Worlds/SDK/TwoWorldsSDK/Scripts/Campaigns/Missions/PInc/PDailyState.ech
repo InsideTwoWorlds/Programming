@@ -1,0 +1,366 @@
+#ifndef _P_DAILY_STATE_
+#define _P_DAILY_STATE_
+
+#include "PEnums.ech"
+#include "PMission.ech"
+
+#define MARKER_WORK_NUMBER       GetMarkerWorkNumber(nUnit)
+#define MARKER_SLEEP_NUMBER      GetMarkerSleepNumber(nUnit)
+#define MARKER_TAVERN_NUMBER     anTargetTavern[nUnit]
+
+//======================================
+
+consts {
+
+    eWorkRangeG          = 4;
+    eSleepRangeG         = 2;
+
+    eShiftNormal         = 0;
+    eShiftWorkoholic     = 2;
+    eShiftCitizen        = 3;
+
+    eShiftNormalSleepTime      = 20;
+    eShiftNormalWorkTime       = 180;
+    eShiftNormalRestTime       = 240;
+    
+    eShiftCitizenSleepTime     = 20;
+    eShiftCitizenRestTime      = 230;
+
+}
+
+//======================================
+
+function void ChooseTavern(int nUnit);
+function void GoToTavern(int nUnit);
+function int GetRandomPositionInTavern(string strMarker, int nMarker, int &nX, int &nY);
+function int IsPlaceInTaverns();
+function int GetStartRoute(int nUnit);
+
+int anShift[UNIT_ARRAY_SIZE];
+int anBeds[];
+
+//======================================
+
+function int GetMarkerWorkNumber(int nUnit) {
+
+    if (UNIT_ARRAY[nUnit] == null) return 0;
+    return nUnit;    
+
+}
+
+function int GetMarkerSleepNumber(int nUnit) {
+
+    if (UNIT_ARRAY[nUnit] == null) return eNoBed;
+    return GetBedNumber(UNIT_ARRAY[nUnit]);
+
+}
+
+//======================================
+// beds
+
+function void InitializeBeds() {
+
+    int i;
+    int nX, nY;
+    int count;
+    
+    anBeds.SetSize(MAX(1,GetMaxMarkerNum(MARKER_SLEEP) + 1));        
+    count = anBeds.GetSize();
+    for (i = 1; i < count; i++) {
+        if (!HaveTownMarker(MARKER_SLEEP,i)) anBeds[i] = eNoBed;            
+        else anBeds[i] = eBedFree;
+    }
+
+}
+
+function void FindAndSetBed(unit uUnit) {
+
+    int i;
+    int nBed;    
+    int nUnit;
+    int count;
+    
+    nUnit = GetUnitNumber(uUnit);
+    
+    nBed = eNoBed;
+    count = anBeds.GetSize();
+    for (i = 0; i < count; i++) if (anBeds[i] == eBedFree) {        
+        anBeds[i] = eBedOccupied;
+        nBed = i;
+        break;
+    }
+
+    SetBedNumber(uUnit,nBed);
+
+}
+
+function void SetBed(unit uUnit, int nBed) {
+
+    anBeds[nBed] = eBedOccupied;
+    SetBedNumber(uUnit,nBed);
+    
+}
+
+function void SetFreeBeds() {
+
+    int i;
+    unit uUnit;
+    
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) {
+    
+        uUnit = UNIT_ARRAY[i];
+        if (uUnit == null) continue;
+        if (GetBedNumber(uUnit) != eNoBed) continue;
+        if (GetCustomFlags(uUnit) == eUnknownFlag) continue;
+                
+        if (IsGuard(uUnit)) SetBed(uUnit,eNoBed);
+        else FindAndSetBed(uUnit);
+    
+    }
+
+
+}
+
+//======================================
+
+function int IsShopNearHero(int nUnit) {    
+
+    if (!UNIT_ARRAY[nUnit].IsShopUnit()) return false;
+    if (GetNearestHeroA(UNIT_ARRAY[nUnit],M2A(2)) == null) return false;
+    return true;
+
+}
+
+//======================================
+
+function void GoToBed(int nUnit) {
+    
+    int nX, nY;
+    
+    if (IsShopNearHero(nUnit)) return;
+    
+    if (GetMarker(MARKER_SLEEP,MARKER_SLEEP_NUMBER,nX,nY)) {
+        FAST_MOVE(UNIT_ARRAY[nUnit],nX,nY);
+        SetDailyState(nUnit,eGoingToBed);
+    }
+#ifdef TOWN_DEBUG    
+    else {
+        TRACE("Can't find %s %d\n",MARKER_SLEEP,MARKER_SLEEP_NUMBER);
+    }
+#endif                
+                
+}
+
+function void GoToWork(int nUnit) {
+
+    int nX, nY;
+
+    if (IsShopNearHero(nUnit)) return;
+
+    if (GetMarker(MARKER_WORK,MARKER_WORK_NUMBER,nX,nY)) {
+        FAST_MOVE(UNIT_ARRAY[nUnit],nX,nY);
+        SetDailyState(nUnit,eGoingToWork);
+    }
+#ifdef TOWN_DEBUG    
+    else {
+        TRACE("Can't find %s %d\n",MARKER_WORK,MARKER_WORK_NUMBER);
+    }
+#endif
+    
+}
+
+function void Rest(int nUnit) {
+
+    int nX, nY;
+
+    if (IsShopNearHero(nUnit)) return;
+        
+    if (IsPlaceInTaverns() && Rand(2)) {
+        ChooseTavern(nUnit);
+        SetDailyState(nUnit,eRestingInTavern);
+        GoToTavern(nUnit);
+    }
+    else {
+        SetDailyState(nUnit,eRestingOutside);
+    }        
+                
+}
+
+//======================================
+
+function void InitDailyState(int nUnit, int nShift) {
+
+    anShift[nUnit] = nShift;
+    SetDailyState(nUnit,eWorking);
+            
+}
+
+//======================================
+
+function int GetNextDailyState(int nUnit) {
+
+    int nTime;
+    int nShift;
+                
+    nTime = GetCampaign().GetDayTime();
+    nShift = anShift[nUnit];
+
+    if (nShift == eShiftNormal) {
+    
+        if ((nTime >= eShiftNormalSleepTime) && (nTime < eShiftNormalWorkTime)) return eWorking;
+        if ((nTime >= eShiftNormalWorkTime) && (nTime < eShiftNormalRestTime)) return eResting;
+        return eSleeping;    
+    
+    }
+
+    if (nShift == eShiftWorkoholic) {
+    
+        return eWorking;    
+    
+    }
+         
+    if (nShift == eShiftCitizen) {
+             
+        if ((nTime >= eShiftCitizenSleepTime) && (nTime < eShiftCitizenRestTime)) return eResting;
+        return eSleeping;
+             
+    }
+                 
+    return eWorking;
+
+}
+
+function int UpdateDailyStateIncludingHero(int nUnit, int nState) {
+
+    int i;
+    unit uHouse;
+
+    uHouse = UNIT_ARRAY[nUnit].GetHouseWithObject();
+    
+    if ((nState != eWorking) && (GetDailyState(nUnit) == eWorking)) {
+    
+        if (!UNIT_ARRAY[nUnit].IsObjectInHouse()) return nState;
+        for (i = 0; i < GetPlayersCnt(); i++) {
+            if (!IsPlayer(i)) continue;
+            if (GetHero(i).GetHouseWithObject() == uHouse) return eWorking;        
+        }
+    
+    }
+    
+    return nState;
+
+}
+
+function int UpdateDailyState(int nUnit) {
+
+    int nCurrentState;
+    int nNextState;
+    unit uUnit;
+    
+    uUnit = UNIT_ARRAY[nUnit];
+    ASSERT(uUnit);
+    nCurrentState = GetDailyState(nUnit);
+    nNextState = GetNextDailyState(nUnit);
+    nNextState = UpdateDailyStateIncludingHero(nUnit,nNextState);    
+    if ((nNextState == eSleeping) && (GetBedNumber(uUnit) == eNoBed)) nNextState = eResting;
+
+    if (nNextState == eWorking) {
+        if ((nCurrentState != eWorking) && (nCurrentState != eGoingToWork)) {
+            GoToWork(nUnit);
+            return true;
+        }
+        if (nCurrentState == eWorking)
+        if (!IsUnitNearMarkerG(uUnit,MARKER_WORK,MARKER_WORK_NUMBER,eWorkRangeG)) {            
+            GoToWork(nUnit);
+            return true;                
+        }
+    }       
+
+    if (nNextState == eSleeping) {
+        if ((nCurrentState != eSleeping) && (nCurrentState != eGoingToBed)) {
+            GoToBed(nUnit);
+            return true;
+        }
+        if (nCurrentState == eSleeping)
+        if (!IsUnitNearMarkerG(uUnit,MARKER_SLEEP,MARKER_SLEEP_NUMBER,eSleepRangeG)) {            
+            GoToBed(nUnit);
+            return true;                
+        }
+    }
+   
+    if (nNextState == eResting) {
+        if ((nCurrentState != eRestingInTavern) && (nCurrentState != eRestingOutside)) {
+            Rest(nUnit);
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+function int UpdateGoingDailyState(int nUnit) {
+
+    int nCurrentState;
+    unit uUnit;
+                
+    uUnit = UNIT_ARRAY[nUnit];
+    nCurrentState = GetDailyState(nUnit);
+      
+    if (nCurrentState == eGoingToWork) {
+    
+        if (IsUnitNearMarkerG(uUnit,MARKER_WORK,MARKER_WORK_NUMBER,eWorkRangeG)) {
+            SetDailyState(nUnit,eWorking);
+            return true;
+        }
+        if (!UNIT_ARRAY[nUnit].IsMoving()) {
+            GoToWork(nUnit);
+        }
+        return true;       
+    }
+
+     if (nCurrentState == eGoingToBed) {
+
+        if (IsUnitNearMarkerG(uUnit,MARKER_SLEEP,MARKER_SLEEP_NUMBER,eSleepRangeG)) {
+            SetDailyState(nUnit,eSleeping);
+            return true;
+        }    
+        if (!UNIT_ARRAY[nUnit].IsMoving()) {
+            GoToBed(nUnit);
+        }
+        return true;   
+    }
+
+    return false;
+    
+}
+
+//======================================
+
+function void SetInitialPosition(int nUnit) {
+
+    int nX, nY;
+    int nCurrentState;
+    unit uUnit;
+    
+    uUnit = UNIT_ARRAY[nUnit];
+    nCurrentState = GetDailyState(nUnit);    
+    nX = eNoCoord;
+    
+    if ((nCurrentState == eSleeping) || (nCurrentState == eGoingToBed)) {    
+        if (!GetMarker(MARKER_SLEEP,MARKER_SLEEP_NUMBER,nX,nY)) nX = eNoCoord;
+    }
+    if (anTargetTavern[nUnit] != eNoTavern) {
+        if (!GetRandomPositionInTavern(MARKER_TAVERN,MARKER_TAVERN_NUMBER,nX,nY)) nX = eNoCoord;;
+    }
+        
+    if (nX != eNoCoord && UNIT_ARRAY[nUnit].DistanceTo(nX,nY) > M2A(3)) {
+        UNIT_ARRAY[nUnit].SetImmediatePosition(nX,nY,0,eFaceNorth,true);    
+        SetLookAtAngle(UNIT_ARRAY[nUnit]);
+    }
+
+}
+
+//======================================
+
+#endif

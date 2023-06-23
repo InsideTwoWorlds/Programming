@@ -1,0 +1,272 @@
+#include "config.efh"
+
+//
+// Effect file
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Configuration
+//
+
+bool CF_Solid					 = true;
+bool CF_SkinSupport				 = true;
+int  CF_DrawPriority             = 0;
+
+int  CF_TextureRequest_0		 = TEXTURE_REQUEST_NORMAL;
+int  CF_TextureRequest_1 		 = TEXTURE_REQUEST_NORMAL;
+int  CF_TextureRequest_2 		 = TEXTURE_REQUEST_NORMAL;
+int  CF_TextureRequest_3 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_4 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_5 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_6 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_7 		 = TEXTURE_REQUEST_NONE;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Vars
+//
+texture IN_TextureSlots_0;
+texture IN_TextureSlots_1;
+texture IN_TextureSlots_2;
+texture IN_TextureSlots_3;
+texture IN_TextureSlots_4;
+texture IN_TextureSlots_5;
+texture IN_TextureSlots_6;
+texture IN_TextureSlots_7;
+ 
+matrix IN_CameraMatrix;
+matrix IN_ProjectionMatrix;
+matrix IN_WorldMatrix;
+
+matrix IN_WorldViewProjectionMatrix;
+matrix IN_CameraProjectionMatrix;
+
+float4 IN_SpecularColor;
+float  IN_Time;
+float4 IN_ObserverPosition;
+float4 IN_AmbientColor;
+float4 IN_DiffuseColor;
+float4 IN_LightPosition;
+
+matrix  IN_HWSkinMatrixArray[MAX_BONES];
+
+//
+// Tweakables
+//
+float4 IN_SideColor;
+float4 IN_DestructionColor;
+float4 IN_FurFactor;
+float  IN_FurNS;
+float4 IN_DestructionTilesFactor;
+float4 IN_ColorFactor0;
+float4 IN_ColorFactor1;
+float4 IN_ColorFactor2;
+float4 IN_ColorFactor3;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// App vertex format
+//
+struct appdata 
+{
+    float3 Position		  : POSITION;
+	float4 NormalDS       : COLOR0;
+	float4 TangentDS	  : COLOR1;
+    float2 UV			  : TEXCOORD0;
+	float2 UVLM			  : TEXCOORD1;
+
+	//
+	// Skin support addition
+	//
+	float3 BlendWeights   : BLENDWEIGHT;
+    int4   BlendIndices   : BLENDINDICES;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct vertexOutput_Main
+{
+    float4 HPosition	: POSITION;
+
+	float2 UV			: TEXCOORD0;
+	float3 LVector		: TEXCOORD1;
+	float3 HVector      : TEXCOORD2;
+	float2 DestUV       : TEXCOORD3;
+
+	float  fog          : FOG;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct pixelOutput
+{
+    float4 Color : COLOR;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+vertexOutput_Main VertexShaderMain(appdata IN)
+{
+ vertexOutput_Main OUT;
+
+ float LastWeight = 1.0 - dot(IN.BlendWeights.xyz, 1);
+
+ matrix m = IN_HWSkinMatrixArray[IN.BlendIndices.x] * IN.BlendWeights.x;
+        m+= IN_HWSkinMatrixArray[IN.BlendIndices.y] * IN.BlendWeights.y;
+        m+= IN_HWSkinMatrixArray[IN.BlendIndices.z] * IN.BlendWeights.z;
+        m+= IN_HWSkinMatrixArray[IN.BlendIndices.w] * LastWeight;
+
+ float3 Position = mul(float4(IN.Position.xyz, 1), m);
+
+ //
+ // Expand normal
+ //
+ float3 _IN_Normal  = (IN.NormalDS.xyz * 2.0) - 1.0;
+
+ //
+ // Transform by skinning
+ //
+ float3 IN_Normal  = mul(float3(_IN_Normal.xyz), m);
+
+ //
+ // Expand tangent
+ //
+ float4 _IN_Tangent  = (IN.TangentDS.xyzw * 2.0) - 1.0;
+
+ //
+ // Transform by skinning
+ //
+ float3 IN_Tangent  = mul(float3(_IN_Tangent.xyz), m);
+
+ float3 Pw = mul(float4(Position.xyz, 1), IN_WorldMatrix);
+ OUT.HPosition = mul(float4(Pw.xyz, 1), IN_CameraProjectionMatrix);
+
+ OUT.UV = IN.UV;
+
+ float3 Nn = mul(IN_Normal, IN_WorldMatrix);
+ Nn = normalize(Nn);
+
+ float3 Tn = mul(IN_Tangent.xyz, IN_WorldMatrix);
+ Tn = normalize(Tn);
+
+ float3 Bn = cross(Nn, Tn);
+
+ //
+ // Mirrored flipp where need
+ //
+ Tn.xyz *= _IN_Tangent.w;
+
+ //
+ // Destruction
+ //
+ float2 DUV = IN.UV.xy * IN_DestructionTilesFactor.xy;
+ OUT.DestUV = DUV.xy * _IN_Tangent.w;
+
+ //
+ // Calculate L & H vectors
+ //
+ float3 Ln = normalize(IN_LightPosition.xyz  - Pw);
+ float3 Vn = normalize(IN_ObserverPosition.xyz - Pw);
+ float3 Hn = normalize(Vn + Ln);
+
+ //
+ // Transform to tangent space
+ //
+ OUT.LVector.xyz = float3(dot(Ln.xyz, Tn.xyz), dot(Ln.xyz, Bn.xyz), dot(Ln.xyz, Nn.xyz)).xyz;
+ OUT.HVector.xyz = float3(dot(Hn.xyz, Tn.xyz), dot(Hn.xyz, Bn.xyz), dot(Hn.xyz, Nn.xyz)).xyz;
+
+ OUT.fog = 1.0;
+
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+sampler2D gBaseTexture = sampler_state
+{
+	Texture   = <IN_TextureSlots_0>;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU  = Wrap;
+	AddressV  = Wrap;
+};
+
+sampler2D gBumpTexture = sampler_state
+{
+	Texture   = <IN_TextureSlots_1>;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU  = Wrap;
+	AddressV  = Wrap;
+};
+
+sampler2D gDestTexture = sampler_state
+{
+	Texture   = <IN_TextureSlots_2>;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU  = Wrap;
+	AddressV  = Wrap;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+pixelOutput PixelShaderMain(vertexOutput_Main IN)
+{
+ pixelOutput OUT;
+
+ float4 BaseTex = tex2D(gBaseTexture, IN.UV);
+ float4 BumpTex = tex2D(gBumpTexture, IN.UV);
+ float4 DestTex = tex2D(gDestTexture, IN.DestUV);
+ float3 Normal  = CalcNormal(BumpTex);
+ 
+ float Diffuse  = saturate(dot(Normal.xyz, IN.LVector.xyz));
+ float Specular = saturate(dot(Normal.xyz, IN.HVector.xyz));
+
+ float3 SpecColor = IN_SpecularColor.xyz * (pow(Specular, IN_SpecularColor.w) * GetSpecularMap(BumpTex));
+
+ float dLerp    = saturate(IN_DestructionColor.a-DestTex.a);
+	   dLerp    = saturate(dLerp * 8.0) * DestTex.b;
+
+ float3 DColor  = DestTex.r * IN_DestructionColor.rgb;
+ float3 DMap    = lerp(BaseTex.rgb, DColor.rgb, dLerp);
+
+ SpecColor     *= (1.0 - dLerp);
+
+ float3 Result = saturate(IN_AmbientColor.xyz + (IN_DiffuseColor.xyz * Diffuse)) * DMap.rgb;
+        Result+= SpecColor;
+
+ OUT.Color.xyz = Result;
+ OUT.Color.w   = 1.0;
+ 
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+technique MainTechnique
+{	
+	pass p0
+	{
+		VertexShader	 = compile vs_2_0 VertexShaderMain();
+		PixelShader		 = compile ps_2_0 PixelShaderMain();
+
+		AlphaBlendEnable = True;
+		SrcBlend		 = SrcAlpha;
+        DestBlend		 = InvSrcAlpha;
+
+		ZEnable          = True;
+		ZWriteEnable     = True;
+		ZFunc			 = Less;
+
+		AlphaTestEnable	 = False;
+		AlphaRef		 = 0;
+		AlphaFunc		 = Always;
+
+		CullMode         = CW;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+technique MainTechniqueRestore
+{	
+	pass p0
+	{
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////

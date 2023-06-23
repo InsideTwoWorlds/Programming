@@ -1,0 +1,187 @@
+#ifndef _P_GREETINGS_
+#define _P_GREETINGS_
+
+#ifdef MISSION_SCRIPT
+int anGreetingsLastTick[UNIT_ARRAY_SIZE];
+#endif
+
+#define GUARD_GREETINGS_DIALOG        "translateGuard_0"
+#define CITIZEN_GREETINGS_DIALOG      "translateCitizen_%d"
+#define BANDIT_GREETINGS_DIALOG       "translateBandit_0"
+
+consts {
+    
+    eGreetingsInterval        = 30 * 5 * 60;
+    eGuardStopInterval        = 30 * 10;
+    eGreetingsRangeA          = M2A(5);    
+
+    // greeting type
+    eGreetingsTypeFriendly     = 0;
+    eGreetingsTypeUnfriendly   = 1;
+    eGreetingsTypeHelp         = 2;
+    eGreetingsTypeStop         = 2;
+    eGreetingsTypeWork         = 3;
+    eGreetingsTypeWeapon       = 3;
+
+    // greeting flags
+    eGreetingsFriendly0        = 0x1;
+    eGreetingsFriendly1        = 0x2;
+    eGreetingsFriendly2        = 0x4;
+    eGreetingsFriendly3        = 0x8;
+    eGreetingsFriendly4        = 0x10;
+    eGreetingsFriendly5        = 0x20;
+    eGreetingsFriendly6        = 0x40;
+    eGreetingsFriendly7        = 0x80;
+    eGreetingsUnfriendly0      = 0x100;
+    eGreetingsUnfriendly1      = 0x200;
+    eGreetingsUnfriendly2      = 0x400;
+    eGreetingsUnfriendly3      = 0x800;
+    eGreetingsUnfriendly4      = 0x1000;
+    eGreetingsUnfriendly5      = 0x2000;
+    eGreetingsUnfriendly6      = 0x4000;
+    eGreetingsUnfriendly7      = 0x8000;
+    eGreetingsHelp0            = 0x10000;
+    eGreetingsHelp1            = 0x20000;
+    eGreetingsHelp2            = 0x40000;
+    eGreetingsHelp3            = 0x80000;
+    eGreetingsHelp4            = 0x100000;
+    eGreetingsHelp5            = 0x200000;
+    eGreetingsHelp6            = 0x400000;
+    eGreetingsHelp7            = 0x800000;
+    eGreetingsWork0            = 0x1000000;
+    eGreetingsWork1            = 0x2000000;
+    eGreetingsWork2            = 0x4000000;
+    eGreetingsWork3            = 0x8000000;
+    eGreetingsWork4            = 0x10000000;
+    eGreetingsWork5            = 0x20000000;
+    eGreetingsWork6            = 0x40000000;
+    eGreetingsWork7            = 0x80000000;
+
+    eGreetingsChatDialogUID    = 200; // uwaga!!! musi byc >= eChatDialogTotalUIDs (PActivity.ech)
+
+
+}
+
+//======================================
+
+function void PlayGreetings(unit uUnit, string strDialog, int nGreetingsType) {
+    
+    int i, k, n;
+    int nFlags;
+    int nNumber;
+    int nLector;
+    
+    n = Rand(8);
+    
+    if (nGreetingsType == eGreetingsTypeFriendly) k = eGreetingsFriendly0;
+    else if (nGreetingsType == eGreetingsTypeUnfriendly) k = eGreetingsUnfriendly0;
+    else if (nGreetingsType == eGreetingsTypeHelp) k = eGreetingsHelp0;
+    else if (nGreetingsType == eGreetingsTypeWork) k = eGreetingsWork0;
+    else {
+        __ASSERT_FALSE();
+    }
+
+    nFlags = ~(k << n);
+    nLector = GetLectorByDialogName(strDialog);
+    nNumber = eGreetingsChatDialogUID + GetUnitNumber(uUnit);
+            
+    ASSERT(uUnit != null);
+    ASSERT(uUnit.GetMission() != null);
+
+#ifdef DIALOG_UNITS_DEBUG
+    TRACE("PlayChatDialog(%d,%d,%d,%s,%d,uUnit)                \n",GetScriptUID(),nNumber,nFlags,strDialog,nLector);
+#endif    
+    uUnit.GetMission().PlayChatDialog(GetScriptUID(),nNumber,nFlags,strDialog,nLector,uUnit);
+
+}
+
+#ifdef MISSION_SCRIPT
+
+function string GetGreetingsDialogName(unit uUnit, int nCheckGuard) {
+
+    string str;
+    int nDialog;
+    
+    if (IsGuard(uUnit) && nCheckGuard) str = GUARD_GREETINGS_DIALOG;
+    else {
+        nDialog = GetStandardDialogNumber(uUnit);
+        ASSERT(nDialog > 0);
+        if (((nDialog % 100) / 10) == 8) nDialog = 20; // uwaga!!! sklepy
+        str.Format(CITIZEN_GREETINGS_DIALOG,(nDialog % 100) - (nDialog % 10));    
+    }
+
+    return str;
+
+}
+
+function void PlayStandardGreetings(unit uUnit) {
+
+    int nUnit;
+    unit uHero;
+    string strDialog;
+    
+    ASSERT(uUnit != null);
+    nUnit = GetUnitNumber(uUnit);
+
+    if (GetCampaign().GetGameTick() - anGreetingsLastTick[nUnit] < eGreetingsInterval) return;
+
+    uHero = GetNearestHeroA(uUnit,eGreetingsRangeA);
+    if (uHero == null) return;
+    if (!uHero.IsLive()) return;
+    if (IsUnitInDialogMode(uHero)) return;
+    if (ABS(uUnit.GetRelativeAngleTo(uHero)) > eDialogAngle) return;
+    
+    anGreetingsLastTick[nUnit] = GetCampaign().GetGameTick();
+        
+    strDialog = GetGreetingsDialogName(uUnit,true);
+    
+    if (!IsGuard(uUnit)) {
+        if (uUnit.IsMakingCustomWork()) PlayGreetings(uUnit,strDialog,eGreetingsTypeWork);
+        else if (IsHeroBanished(uHero)) PlayGreetings(uUnit,strDialog,eGreetingsTypeUnfriendly);
+        else if (!IsUnitInDialogMode(uUnit)) PlayGreetings(uUnit,strDialog,eGreetingsTypeFriendly);    
+    }
+    else {
+        if (IsHeroBanished(uHero)) PlayGreetings(uUnit,strDialog,eGreetingsTypeUnfriendly);
+        else if (uHero.IsInArmedMode()) PlayGreetings(uUnit,strDialog,eGreetingsTypeWeapon);
+        else if (!IsUnitInDialogMode(uUnit)) PlayGreetings(uUnit,strDialog,eGreetingsTypeFriendly);        
+    }
+   
+}
+
+function void PlayScream(unit uUnit) {
+
+    PlayGreetings(uUnit,GetGreetingsDialogName(uUnit,false),eGreetingsTypeHelp);
+
+}
+
+function void PlayGuardStop(unit uUnit) {
+        
+    int nUnit;
+    
+    ASSERT(uUnit != null);
+    nUnit = GetUnitNumber(uUnit);
+
+    if (GetCampaign().GetGameTick() - anGreetingsLastTick[nUnit] < eGuardStopInterval) return;
+    anGreetingsLastTick[nUnit] = GetCampaign().GetGameTick();
+            
+    PlayGreetings(uUnit,GUARD_GREETINGS_DIALOG,eGreetingsTypeStop);
+
+}
+
+#else
+
+function void PlayBanditStop(unit uUnit) {
+
+    PlayGreetings(uUnit,BANDIT_GREETINGS_DIALOG,eGreetingsTypeStop);
+
+}
+
+function void PlayBanditWeapon(unit uUnit) {
+
+    PlayGreetings(uUnit,BANDIT_GREETINGS_DIALOG,eGreetingsTypeWeapon);
+
+}
+
+#endif
+
+#endif

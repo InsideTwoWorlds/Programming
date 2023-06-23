@@ -1,0 +1,1219 @@
+#ifndef NETWORK_MISSIONTEAMBASE_ECH
+#define NETWORK_MISSIONTEAMBASE_ECH
+
+//////////////////////////////////////////////
+//  czesc wspolna dla rozgrywek teamowych   //
+//////////////////////////////////////////////
+
+#include "MissionCommon.ech"
+
+////////////////////////////////////////////////////////////////////////////////
+consts
+{
+// markery
+    eMarkerTeam1Area = 9,         // 9
+    eMarkerTeam2Area = 10,        // 10
+    eMarkerTeam1Start = 11,       // 11-18
+    eMarkerTeam2Start = 21,       // 21-28
+    eMarkerTeamStartNum = 8,
+// gameplay
+    eTeamMarkerRange   = 8 * e1m, // promien obszaru przy wyborze teamow na poczatku
+// wynik rozgrywki
+    eNoWinnerYet = -1;
+    eNoTeam      = -1;
+    eTeam1       = 0,
+    eTeam2       = 1,
+    eDrawGame    = 2,
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////// MARKERY //////////
+int m_arrTeamAreaX[];    // markery okreslajace strefy teamow
+int m_arrTeamAreaY[];
+int m_arrTeam1StartX[];  // markery startowe dla herosow z teamow
+int m_arrTeam1StartY[];
+int m_arrTeam1StartAngle[];
+int m_arrTeam2StartX[];
+int m_arrTeam2StartY[];
+int m_arrTeam2StartAngle[];
+////////// TEAMY //////////
+int m_arrTeam1HeroNumber[]; // numer herosa
+int m_arrTeam2HeroNumber[];
+int m_arrTeam1RankPoints[]; // ilosc punktow ktore bohater zdobyl/stracil w biezacej grze
+int m_arrTeam2RankPoints[];
+int m_arrTeam1HeroRespawnTicks[]; // czas od smierci do respawnu
+int m_arrTeam2HeroRespawnTicks[];
+////////// INNE //////////
+int m_nWinner;                // eNoWinnerYet, eTeam1, eTeam2
+int m_nShowLocalTeamMapSigns;
+int m_nShowRemoteTeamMapSigns;
+
+////////////////////////////////////////////////////////////////////////////////
+function void TeamBaseInit();
+function void InitTeamMapSigns();
+function void InitTeamMapSigns(int nTeamNum);
+function void InitTeamMapSigns(int arrHeroNum[], int nMapSign);
+function int  InitTeamStartMarkers();
+function int  InitTeamAreaMarkers();
+function void InitTeamHeroParties();
+function void InitTeam(int arrHeroNumber[], int arrRankPoints[], int arrRespawnTicks[]);
+
+function void ResetHeroDamages(unit pHero);
+function void ResetHeroesDamages();
+function int  AssignGuildHeroesToTeams();
+function void ClearAssigmentToTeams();
+function void ClearAssigmentToHero(int nHeroNum);
+function int  CheckIfHeroesJoinedTeams();
+function void CheckGuildTeams();
+function int  MoveHeroesToStartMarkers(int nShowTeleOutEffect, int nShowTeleInEffect);
+function void MoveTeamsToTeamStartMarkers();
+function int  MoveHeroesToTeamStartMarkers(int arrTeamHeroNumbers[], int arrTeamStartX[], int arrTeamStartY[], int arrTeamStartAngle[]);
+function int  MoveHeroToTeamStartMarker(unit pHero, int nTeamNum);
+function void PrepareToRespawnHero(int nTeamNum, int nHeroIndex);
+function void RespawnTeamHeroesAtNoCondition();
+function void RespawnTeamHeroesAtNoCondition(int nTeamNum);
+function void RespawnTeamHeroesAtNoCondition(int arrHeroesNum[], int arrHeroRespawnTicks[]);
+function int  RespawnTeamHero(int nHeroNum);
+function int  RespawnTeamHero(unit pHero);
+function void CheckIfBothTeamsArePresent();
+function void SetWinningTeam(int nTeamNum);
+function void DistributeEarthNetGuildPoints();
+function void ReturnEarthNetPlayerPointsAfterDrawGame(int arrHeroNum[], int arrRankPoints[]);
+function void ReturnEarthNetGuildPointsAfterDrawGame();
+
+function void ShowTextToTeam(int nTeamNum,       stringW strText, int nTextTime,int nAdd);
+function void ShowTextToTeam(int arrHeroesNum[], stringW strText, int nTextTime,int nAdd);
+function void ShowBottomTextToTeam(int nTeamNum,       stringW strText, int nTextTime,int nAdd);
+function void ShowBottomTextToTeam(int arrHeroesNum[], stringW strText, int nTextTime,int nAdd);
+function void ShowChooseTeamText();
+function void ShowPlayersAssignedText();
+function void ShowTeamResultsText();
+function void ShowEarthNetPlayerPointsText();
+function void ShowEarthNetPlayerPointsText(int arrHeroNum[], int arrPrizePoints[], int nAdd);
+
+function void AddStaticMapSignToTeam(int nTeamNum, int nX, int nY, int nMapSignNum);
+function void AddStaticMapSignToTeam(int arrHeroNum[], int nX, int nY, int nMapSignNum);
+
+function int  IsTeamFromOneGuild(int nTeamNum);
+function int  IsTeamFromOneGuild(int arrHeroNum[]);
+function int  GetGuildNumOfTeam(int nTeamNum);
+function int  GetGuildNumOfTeam(int arrHeroNum[]);
+function int  GetOppositeTeam(int nTeamNum);
+function int  GetTeamOfTheHero(int nPlayerNum);
+function int  GetTeamOfTheHero(unit pHero);
+function int  GetIndexOfTheHero(int nPlayerNum, int nTeamNum);
+function void EnableShowLocalTeamMapSigns(int nFlag);
+function void EnableShowRemoteTeamMapSigns(int nFlag);
+function int  IsShowLocalTeamMapSignsEnabled();
+function int  IsShowRemoteTeamMapSignsEnabled();
+function int TeamBaseCommandDebug(string strLine);
+
+function void __TraceTeamHeroPoints(int nFlag);
+function void __TraceTeamGamePoints(int nFlag);
+
+////////////////////////////////////////////////////////////////////////////////
+
+function void TeamBaseInit()
+{
+    CommonInit();
+    
+    EnableItemRespawns(false);
+    EnableShowLocalTeamMapSigns(false);
+    EnableShowRemoteTeamMapSigns(false);
+    
+    m_nWinner = eNoWinnerYet;
+
+    InitTeamHeroParties();
+    InitTeamAreaMarkers();
+}//--------------------------------------------------------------------------------------|
+
+function void InitTeamMapSigns()
+{
+    InitTeamMapSigns(eTeam1);
+    InitTeamMapSigns(eTeam2);
+}//--------------------------------------------------------------------------------------|
+
+function void InitTeamMapSigns(int nTeamNum)
+{
+    int nMapSign;
+
+    if( nTeamNum == eTeam1 )
+    {
+        InitTeamMapSigns(m_arrTeam1HeroNumber, eMapSignTeam1Hero);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        InitTeamMapSigns(m_arrTeam2HeroNumber, eMapSignTeam2Hero);
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void InitTeamMapSigns(int arrHeroNum[], int nMapSign)
+{
+    int nIndex;
+    int nLocalHeroIndex;
+
+    nLocalHeroIndex = GetIndexOfValueInArray(GetLocalPlayerNum(), arrHeroNum);
+    
+    if( (nLocalHeroIndex >= 0)  && IsShowLocalTeamMapSignsEnabled() ||
+        (nLocalHeroIndex == -1) && IsShowRemoteTeamMapSignsEnabled() )
+    {
+        for(nIndex = 0; nIndex < arrHeroNum.GetSize(); nIndex++)
+        {
+            if( !IsPlayer( arrHeroNum[nIndex] ) )
+            {
+                continue;
+            }
+            AddUnitMapSignExceptLocal( GetCampaign().GetPlayerHeroUnit(arrHeroNum[nIndex]), nMapSign);
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int InitTeamStartMarkers()
+{
+    InitMarkers(eMarkerTeam1Start + GetMultipliedMarkerShift(), eMarkerTeamStartNum, m_arrTeam1StartX, m_arrTeam1StartY, m_arrTeam1StartAngle);
+    InitMarkers(eMarkerTeam2Start + GetMultipliedMarkerShift(), eMarkerTeamStartNum, m_arrTeam2StartX, m_arrTeam2StartY, m_arrTeam2StartAngle);
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int InitTeamAreaMarkers()
+{
+    int nIndex;
+    int nDistance;
+    int nX, nY;
+
+    InitMarkers(eMarkerTeam1Area, 2,   m_arrTeamAreaX, m_arrTeamAreaY);
+
+    nDistance = Distance(m_arrTeamAreaX[0], m_arrTeamAreaY[0], m_arrTeamAreaX[1], m_arrTeamAreaY[1] );
+    if( nDistance < 2 * eTeamMarkerRange )
+    {
+        TRACE("!!! Za mala odleglosc miedzy markerami teamowymi: %d. Powinna byc conajmniej %d !!!\n", nDistance, 2 * eTeamMarkerRange);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function void InitTeamHeroParties()
+{
+    GetCampaign().SetPartyEnemy(ePartyPlayer1, ePartyPlayer2);
+    GetCampaign().SetPartyEnemy(ePartyPlayer2, ePartyPlayer1);
+}//--------------------------------------------------------------------------------------|
+
+function void InitTeam(int arrHeroNumber[], int arrRankPoints[], int arrRespawnTicks[])
+{
+    int nPlayerIndex;
+    int nPoints;
+    unit pHero;
+
+    for(nPlayerIndex = 0; nPlayerIndex < arrHeroNumber.GetSize(); nPlayerIndex++)
+    {
+        if( !IsPlayer( arrHeroNumber[nPlayerIndex] ) )
+        {
+            continue;    
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit( arrHeroNumber[nPlayerIndex] );
+
+        if( IsGuildsGame() )
+        {
+            nPoints = 0;
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                nPoints = MIN( pHero.GetHeroNetworkRankPoints(), eEntryPoints);
+                m_nEarthNetPlayerPointsPool += nPoints;
+                pHero.AddHeroNetworkRankPoints(-nPoints);
+            }
+            else if( GetGameType() == eGameRPGArena )
+            {
+                nPoints = MIN( pHero.GetMoney(), eEntryGold);
+                m_nEarthNetPlayerPointsPool += nPoints;
+                pHero.SetMoney( pHero.GetMoney() - nPoints );
+            }
+
+        }
+
+        arrRankPoints.Add(-nPoints);  // zabierz punkty na wstepie
+        arrRespawnTicks.Add(0);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ResetHeroDamages(unit pHero)
+{
+    int nCnt, nIndex, bUpdate;
+    PotionValues ptVal;
+    
+    pHero.SetHP(pHero.GetMaxHP());
+    pHero.SetMana(pHero.GetMaxMana());
+    pHero.HealPoison();
+    pHero.SetFreezeTicks(0);
+    pHero.SetStopMovingTicks(0);
+    
+    nCnt = pHero.GetPotionsCount();
+    nIndex = 0;
+    bUpdate = false;
+    while (nIndex < nCnt)
+    {
+        ptVal = pHero.GetPotionValues(nIndex);
+        if (ptVal.GetPotionFlags() & (ePotionDirtyTrick | ePotionArrowOfDust | ePotionStun | ePotionSlowDown))
+        {
+            pHero.RemovePotionValues(nIndex);
+            nCnt--;
+            bUpdate = true;
+            continue;
+        }
+        nIndex++;
+    }
+    if (bUpdate)
+    {
+        pHero.UpdateChangedUnitValues();
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ResetHeroesDamages()
+{
+    int nIndex;
+
+    for (nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if (IsPlayer(nIndex) && (GetCampaign().GetPlayerHeroUnit(nIndex) != null))
+        {
+            ResetHeroDamages(GetCampaign().GetPlayerHeroUnit(nIndex));
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int AssignGuildHeroesToTeams()
+{
+    int nHeroNum;
+    int nGuildNum;
+    unit pHero;
+
+    TRACE("PRZYPORZADKOWANIE GILDI DO TEAMOW\n");
+    ASSERT(m_arrGuildsNum.GetSize() == 2);
+    TRACE("gildie dostepne: %d %d\n", m_arrGuildsNum[0], m_arrGuildsNum[1]);
+    for(nHeroNum = 0; nHeroNum < GetCampaign().GetPlayersCnt(); nHeroNum++)
+    {
+        if( !IsPlayer(nHeroNum) )
+        {
+            continue;    
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit(nHeroNum);
+        nGuildNum = pHero.GetHeroNetworkGuildNum();
+        if( nGuildNum == m_arrGuildsNum[0] )
+        {
+            m_arrTeam1HeroNumber.Add(nHeroNum);
+            pHero.SetPartyNum(ePartyPlayer1);
+            pHero.SetHeroNetworkTeamNum(ePartyPlayer1);
+        }
+        else if( nGuildNum == m_arrGuildsNum[1] )
+        {
+            m_arrTeam2HeroNumber.Add(nHeroNum);
+            pHero.SetPartyNum(ePartyPlayer2);
+            pHero.SetHeroNetworkTeamNum(ePartyPlayer2);
+        }
+        else
+        {
+            TRACE("!!! Hero z niewlasciwa gildia !!!");
+            __ASSERT_FALSE();
+        }
+    }
+    TRACE("Team1: %d, Team2: %d\n", m_arrTeam1HeroNumber.GetSize(), m_arrTeam2HeroNumber.GetSize());
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function void CheckGuildTeams()
+{
+    if( !IsTeamFromOneGuild(eTeam1) )
+    {
+        TRACE("!!! Blad przy przyporzadkowywaniu graczy do teamow !!!");
+    }
+    if( !IsTeamFromOneGuild(eTeam2) )
+    {
+        TRACE("!!! Blad przy przyporzadkowywaniu graczy do teamow !!!");
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int CheckIfHeroesJoinedTeams()
+{
+    int nRealHeroesCount;
+    int nHeroIndex;
+    unit pHero;
+    stringW strText, strName;
+    stringW strTeam1, strTeam2;
+    int nLastJoinHeroNum;
+
+    strTeam1.Translate(TEXT_TEAM1);
+    strTeam2.Translate(TEXT_TEAM2);
+
+    nLastJoinHeroNum = -1;
+    nRealHeroesCount = 0;
+    // jednorazowe dodanie herosa do teamu jezeli wszedl w obszar (i ewentualnie usuniecie z drugiego teamu)
+    for(nHeroIndex = 0; nHeroIndex < GetCampaign().GetPlayersCnt(); nHeroIndex++)
+    {
+        if( !IsPlayer(nHeroIndex) )
+        {
+            continue;    
+        }
+        nRealHeroesCount++; // potrzebne pozniej
+        pHero = GetCampaign().GetPlayerHeroUnit(nHeroIndex);
+        strName = GetPlayerInterface(nHeroIndex).GetPlayerName();
+        if( (GetIndexOfValueInArray(nHeroIndex, m_arrTeam1HeroNumber) == -1) &&
+            (pHero.DistanceTo(m_arrTeamAreaX[eTeam1], m_arrTeamAreaY[eTeam1]) < eTeamMarkerRange)
+          )
+        {
+            TRACE("Hero %d chose team 0\n", nHeroIndex);
+            RemoveValueFromArray(nHeroIndex, m_arrTeam2HeroNumber);
+            AddValueToArray(nHeroIndex, m_arrTeam1HeroNumber);
+            strText.FormatTrl(TEXT_CHOSEATEAM, strName, strTeam1);
+            ShowTextToAll_NoRepeat(strText, eJoinedTeamConsoleTextTime, true);
+            pHero.SetPartyNum(ePartyPlayer1);
+            pHero.SetHeroNetworkTeamNum(ePartyPlayer1);
+            pHero.SetAttribute("TEAM",1);
+            nLastJoinHeroNum = nHeroIndex;
+        }
+        else if( (GetIndexOfValueInArray(nHeroIndex, m_arrTeam2HeroNumber) == -1) &&
+                 (pHero.DistanceTo(m_arrTeamAreaX[eTeam2], m_arrTeamAreaY[eTeam2]) < eTeamMarkerRange)
+               )
+        {
+            TRACE("Hero %d chose team 1\n", nHeroIndex);
+            RemoveValueFromArray(nHeroIndex, m_arrTeam1HeroNumber);
+            AddValueToArray(nHeroIndex, m_arrTeam2HeroNumber);
+            strText.FormatTrl(TEXT_CHOSEATEAM, strName, strTeam2);
+            ShowTextToAll_NoRepeat(strText, eJoinedTeamConsoleTextTime, true);
+            pHero.SetPartyNum(ePartyPlayer2);
+            pHero.SetHeroNetworkTeamNum(ePartyPlayer2);
+            pHero.SetAttribute("TEAM",2);
+            nLastJoinHeroNum = nHeroIndex;
+        }
+    }
+    // jezeli inni gracze wyszli podczas wybierania teamow i zostal tylko jeden to wyjdz z gry
+    if( nRealHeroesCount == 1 )
+    {
+        EndGame(eEndGameTextNoPlayers);
+        return false;
+    }
+    // jezeli nie zostal nikt wolny
+    if( nRealHeroesCount == m_arrTeam1HeroNumber.GetSize() + m_arrTeam2HeroNumber.GetSize() )
+    {
+        // i w kazdym teamie jest przynajmniej 1 hero to zaczynamy        
+        if( (m_arrTeam1HeroNumber.GetSize() > 0 ) &&
+            (m_arrTeam2HeroNumber.GetSize() > 0 ) 
+          ) 
+        {
+            TRACE("TEAM 0: %d heroes\n", m_arrTeam1HeroNumber.GetSize() );
+            for(nHeroIndex = 0; nHeroIndex < m_arrTeam1HeroNumber.GetSize(); nHeroIndex++)
+                TRACE("%d ", m_arrTeam1HeroNumber[nHeroIndex]);
+            TRACE("\n");
+            TRACE("TEAM 1: %d heroes\n", m_arrTeam2HeroNumber.GetSize() );
+            for(nHeroIndex = 0; nHeroIndex < m_arrTeam2HeroNumber.GetSize(); nHeroIndex++)
+                TRACE("%d ", m_arrTeam2HeroNumber[nHeroIndex]);
+            TRACE("\n");
+            return true;
+        }
+        // jezeli wszyscy sa jednym teamie to przenies ostatniego na poczatek i napisz mu ostrzezenie
+        else
+        {
+            if( nLastJoinHeroNum > -1 )
+            {
+                strText.Translate(TEXT_ATLEASTONEHEROINEACHTEAM);
+                ShowTextToPlayer_NoRepeat(nLastJoinHeroNum, strText, eWarningConsoleTextTime, true);
+                MoveHeroToStartMarker(nLastJoinHeroNum, true, true);
+                ClearAssigmentToHero(nLastJoinHeroNum);
+                RemoveValueFromArray(nLastJoinHeroNum, m_arrTeam1HeroNumber);
+                RemoveValueFromArray(nLastJoinHeroNum, m_arrTeam2HeroNumber);
+            }
+        }
+    }
+    return false;
+}//--------------------------------------------------------------------------------------|
+
+function void ClearAssigmentToTeams()
+{
+    int nHeroNum;
+    unit pHero;
+
+    for(nHeroNum = 0; nHeroNum < GetCampaign().GetPlayersCnt(); nHeroNum++)
+    {
+        if( !IsPlayer(nHeroNum) )
+        {
+            continue;    
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit(nHeroNum);
+        pHero.SetHeroNetworkTeamNum(eNoTeam);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ClearAssigmentToHero(int nHeroNum)
+{
+    unit pHero;
+
+    if( !IsPlayer(nHeroNum) )
+    {
+        return;    
+    }
+    pHero = GetCampaign().GetPlayerHeroUnit(nHeroNum);
+    pHero.SetHeroNetworkTeamNum(eNoTeam);
+}//--------------------------------------------------------------------------------------|
+
+function void MoveTeamsToTeamStartMarkers()
+{
+    MoveHeroesToTeamStartMarkers(m_arrTeam1HeroNumber, m_arrTeam1StartX, m_arrTeam1StartY, m_arrTeam1StartAngle);
+    MoveHeroesToTeamStartMarkers(m_arrTeam2HeroNumber, m_arrTeam2StartX, m_arrTeam2StartY, m_arrTeam2StartAngle);
+}//--------------------------------------------------------------------------------------|
+
+function int MoveHeroesToTeamStartMarkers(int arrTeamHeroNumbers[], int arrTeamStartX[], int arrTeamStartY[], int arrTeamStartAngle[])
+{
+    int nIndex;
+    int nX, nY, nAngle;
+    int arrStartX[];
+    int arrStartY[];
+    int arrStartAngle[];
+    int nMarkerIndex;
+    unit pHero;
+
+    arrStartX.Copy(arrTeamStartX);
+    arrStartY.Copy(arrTeamStartY);
+    arrStartAngle.Copy(arrTeamStartAngle);
+
+    if( arrTeamStartX.GetSize() < arrTeamHeroNumbers.GetSize() )
+    {
+        TRACE("!!! Jest mniej markerow startowych dla teamu %d niz graczy (%d < %d) !!!\n", 1, arrStartX.GetSize(), arrTeamHeroNumbers.GetSize());
+    }
+
+    for(nIndex = 0; nIndex < arrTeamHeroNumbers.GetSize(); nIndex++)
+    {
+        if( !IsPlayer( arrTeamHeroNumbers[nIndex] ) )
+        {
+            continue;
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit( arrTeamHeroNumbers[nIndex] );
+        if( arrStartX.GetSize() > 0 )
+        {
+            nMarkerIndex = Rand( arrStartX.GetSize() );
+            nX = arrStartX[nMarkerIndex];
+            nY = arrStartY[nMarkerIndex];
+            nAngle = arrStartAngle[nMarkerIndex];
+        }
+        else // jezeli zabraklo markerow to bierz pierwszy wolny
+        {
+            nX = arrTeamStartX[nMarkerIndex];
+            nY = arrTeamStartY[nMarkerIndex];
+            nAngle = arrTeamStartAngle[nMarkerIndex];
+        }
+
+        m_pCurrentMission.CreateObject(TELE_OUT_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, 0);
+        pHero.SetImmediatePosition( nX, nY, 0, nAngle, true);
+        m_pCurrentMission.CreateObject(TELE_IN_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, nAngle);
+        arrStartX.RemoveAt(nMarkerIndex);
+        arrStartY.RemoveAt(nMarkerIndex);
+        arrStartAngle.RemoveAt(nMarkerIndex);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int MoveHeroToTeamStartMarker(unit pHero, int nTeamNum)
+{
+    int nHeroNum;
+    int nMarkerIndex;
+    int nX, nY, nAngle;
+
+    nHeroNum = pHero.GetHeroPlayerNum();
+    if( !IsPlayer(nHeroNum) )
+    {
+        return 0;
+    }
+    
+    if( nTeamNum == eTeam1 )
+    {
+        nMarkerIndex = Rand( m_arrTeam1StartX.GetSize() );
+        nX = m_arrTeam1StartX[nMarkerIndex];
+        nY = m_arrTeam1StartY[nMarkerIndex];
+        nAngle = m_arrTeam1StartAngle[nMarkerIndex];
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        nMarkerIndex = Rand( m_arrTeam2StartX.GetSize() );
+        nX = m_arrTeam2StartX[nMarkerIndex];
+        nY = m_arrTeam2StartY[nMarkerIndex];
+        nAngle = m_arrTeam2StartAngle[nMarkerIndex];
+    }
+    else
+    {
+        TRACE("!!! Nieznany team %d !!!\n", nTeamNum);
+        return 0;
+    }
+    m_pCurrentMission.CreateObject(TELE_OUT_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, 0);
+    pHero.SetImmediatePosition( nX, nY, 0, nAngle, true);
+    m_pCurrentMission.CreateObject(TELE_IN_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, nAngle);
+    
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function void PrepareToRespawnHero(int nTeamNum, int nHeroIndex)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        m_arrTeam1HeroRespawnTicks[nHeroIndex] = eHeroRespawnTicks; 
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        m_arrTeam2HeroRespawnTicks[nHeroIndex] = eHeroRespawnTicks;
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void RespawnTeamHeroesAtNoCondition()
+{
+    RespawnTeamHeroesAtNoCondition(eTeam1);
+    RespawnTeamHeroesAtNoCondition(eTeam2);
+}//--------------------------------------------------------------------------------------|
+
+function void RespawnTeamHeroesAtNoCondition(int nTeamNum)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        RespawnTeamHeroesAtNoCondition(m_arrTeam1HeroNumber, m_arrTeam1HeroRespawnTicks);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        RespawnTeamHeroesAtNoCondition(m_arrTeam2HeroNumber, m_arrTeam2HeroRespawnTicks);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void RespawnTeamHeroesAtNoCondition(int arrHeroesNum[], int arrHeroRespawnTicks[])
+{
+    int nIndex;
+    unit pHero;
+    ASSERT( arrHeroesNum.GetSize() == arrHeroRespawnTicks.GetSize() );
+    for(nIndex = 0; nIndex < arrHeroesNum.GetSize(); nIndex++)
+    {
+        if( !IsPlayer( arrHeroesNum[nIndex] ) )
+        {
+            continue;
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit( arrHeroesNum[nIndex] );
+        if( pHero.IsLive() )
+        {
+            continue;
+        }
+        if( arrHeroRespawnTicks[nIndex] > 0 )
+        {
+            arrHeroRespawnTicks[nIndex] -= m_nMainStateTicksInterval;
+        }
+        else
+        {
+            RespawnTeamHero(pHero);
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int RespawnTeamHero(int nHeroNum)
+{
+    unit pHero;
+    pHero = GetCampaign().GetPlayerHeroUnit(nHeroNum);
+    return RespawnTeamHero(pHero); // dokaldne sprawdzenie w funkcji glebiej
+}//--------------------------------------------------------------------------------------|
+
+function int RespawnTeamHero(unit pHero)
+{
+    int nTeamNum;
+    if( !pHero || !pHero.IsHeroUnit() )
+    {
+        TRACE("!!! Niepawidlowy hero do respawnu !!!\n");
+        return 0;
+    }
+    if( pHero.IsLive() )
+    {
+        TRACE("!!! Proba respawnowania zyjacego herosa !!!\n");
+        return 0;
+    }
+    nTeamNum = GetTeamOfTheHero(pHero);
+    if( nTeamNum == -1 )
+    {
+        TRACE("!!! Nieprawidlowy team w respawnie herosa !!!\n");
+        return 0;
+    }
+    
+    pHero.ResurrectUnit();
+    MoveHeroToTeamStartMarker(pHero, nTeamNum);
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function void CheckIfBothTeamsArePresent()
+{
+    int nIndex;
+    int nTeamNum;
+    int nTeam1Count, nTeam2Count;
+    nTeam1Count = 0;
+    nTeam2Count = 0;
+
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;
+        }
+        nTeamNum = GetCampaign().GetPlayerHeroUnit(nIndex).GetHeroNetworkTeamNum();
+        if( nTeamNum == eTeam1 )
+        {
+            nTeam1Count++;
+        }
+        else if( nTeamNum == eTeam2 )
+        {
+            nTeam2Count++;
+        }
+        else
+        {
+            __ASSERT_FALSE();
+        }
+    }
+    if( (nTeam1Count + nTeam2Count) == 0 )
+    {
+        __ASSERT_FALSE();
+        return;
+    }
+// na pc gracze maja zainwestowane punkty, wiec gdy zabraknie graczy z drugiego teamu
+// to pierwszy team automatycznie wygrywa (nie mialby szans ukonczyc gry w deathmatcha)
+// na xboxie gra konczy sie bez przyznawania punktow
+    if( nTeam1Count == 0 )
+    {
+#ifdef _XBOX
+        EndGame(eEndGameTextNoPlayersInOtherTeam);
+#else
+        m_nWinner = eTeam2;
+#endif
+    }
+    else if( nTeam2Count == 0 )
+    {
+#ifdef _XBOX
+        EndGame(eEndGameTextNoPlayersInOtherTeam);
+#else
+        m_nWinner = eTeam1;
+#endif
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void SetWinningTeam(int nTeamNum)
+{
+    m_nWinner = nTeamNum;
+}//--------------------------------------------------------------------------------------|
+
+function void DistributeEarthNetGuildPoints()
+{
+    int nGuildNum;
+    int nGuildIndex;
+
+    if( !IsGuildsGame() )
+    {
+        return;
+    }
+
+    if( (m_nWinner == eTeam1) || (m_nWinner == eTeam2) )
+    {
+        nGuildNum = GetGuildNumOfTeam(m_nWinner);
+        if( nGuildNum == -1 )
+        {
+            __ASSERT_FALSE();
+            return;    
+        }
+        nGuildIndex = GetIndexOfValueInArray(nGuildNum, m_arrGuildsNum);
+        if( nGuildIndex == -1 )
+        {
+            __ASSERT_FALSE();
+            return;    
+        }
+        DistributeEarthNetGuildPoints(nGuildIndex);
+    }
+    else if( m_nWinner == eDrawGame )
+    {
+        ReturnEarthNetGuildPointsAfterDrawGame();
+    }
+    else
+    {
+        TRACE("!!! Unknown winner !!!");
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ReturnEarthNetPlayerPointsAfterDrawGame(int arrHeroNum[], int arrRankPoints[])
+{
+    int nIndex;
+    unit pHero;
+    
+    if( IsGuildsGame() )
+    {
+        return;
+    }    
+// zwrot punktow w przypadku remisu
+    for(nIndex = 0; nIndex < arrHeroNum.GetSize(); nIndex++)
+    {
+        if( !IsPlayer( arrHeroNum[nIndex] ) )
+        {
+            continue;
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit(arrHeroNum[nIndex]);
+
+        if( GetGameType() == eGamePvP )
+        {
+            pHero.AddHeroNetworkRankPoints( -arrRankPoints[nIndex] );
+        }
+        else if( GetGameType() == eGameRPGArena )
+        {
+            pHero.SetMoney( pHero.GetMoney() - arrRankPoints[nIndex] );
+        }
+
+        arrRankPoints[nIndex] = 0;
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ReturnEarthNetGuildPointsAfterDrawGame()
+{
+    int nGuildIndex;
+    int nHeroIndex;
+    
+    ASSERT( (m_arrGuildsNum.GetSize() == 2) && (m_arrGuildsPoints.GetSize() == 2) );
+
+    if( !IsGuildsGame() )
+    {
+        return;
+    }
+    for(nGuildIndex = 0; nGuildIndex < m_arrGuildsNum.GetSize(); nGuildIndex++)
+    {
+        nHeroIndex = GetHeroIndexFromGuild( m_arrGuildsNum[nGuildIndex] );
+        if( nHeroIndex == -1 )
+        {
+            __ASSERT_FALSE();
+            continue;
+        }
+        // zwrot wlozonych punktow
+        GetCampaign().GetPlayerHeroUnit(nHeroIndex).AddHeroNetworkGuildRankPoints(-m_arrGuildsPoints[nGuildIndex]);
+        m_arrGuildsPoints[nGuildIndex] = 0;
+    }
+    m_nEarthNetGuildPointsPool = 0; // wyzerowanie puli 
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTextToTeam(int nTeamNum, stringW strText, int nTextTime, int nAdd)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        ShowTextToTeam(m_arrTeam1HeroNumber, strText, nTextTime, nAdd);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        ShowTextToTeam(m_arrTeam2HeroNumber, strText, nTextTime, nAdd);
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTextToTeam(int arrHeroesNum[], stringW strText, int nTextTime, int nAdd)
+{
+    int nIndex;
+    for(nIndex = 0; nIndex < arrHeroesNum.GetSize(); nIndex++)
+    {
+        ShowTextToPlayer( arrHeroesNum[nIndex], strText, nTextTime, nAdd);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowBottomTextToTeam(int nTeamNum, stringW strText, int nTextTime, int nAdd)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        ShowBottomTextToTeam(m_arrTeam1HeroNumber, strText, nTextTime, nAdd);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        ShowBottomTextToTeam(m_arrTeam2HeroNumber, strText, nTextTime, nAdd);
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowBottomTextToTeam(int arrHeroesNum[], stringW strText, int nTextTime, int nAdd)
+{
+    int nIndex;
+    for(nIndex = 0; nIndex < arrHeroesNum.GetSize(); nIndex++)
+    {
+        ShowBottomTextToPlayer( arrHeroesNum[nIndex], strText, nTextTime, nAdd);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowChooseTeamText()
+{
+    int nIndex;
+    stringW strText;
+    strText.Translate(TEXT_CHOOSEATEAM);
+    ShowTextToAll(strText, eChooseTeamConsoleTextTime, true);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowPlayersAssignedText()
+{
+    stringW strTeam, strText;
+
+    strTeam.Translate(TEXT_TEAM1);
+    strText.FormatTrl(TEXT_PLAYERSASSIGNEDTOTEAM, strTeam);
+    ShowTextToTeam(eTeam1, strText, eJoinedTeamConsoleTextTime, true);
+
+    strTeam.Translate(TEXT_TEAM2);
+    strText.FormatTrl(TEXT_PLAYERSASSIGNEDTOTEAM, strTeam);
+    ShowTextToTeam(eTeam2, strText, eJoinedTeamConsoleTextTime, true);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTeamResultsText()
+{
+    stringW strWins, strLoses, strDraw;
+    strWins.Translate(TEXT_TEAMWINS);
+    strLoses.Translate(TEXT_TEAMLOSES);
+    strDraw.Translate(TEXT_DRAWGAME);
+    if( m_nWinner == eTeam1 )
+    {
+        ShowTextToTeam(eTeam1, strWins, eResultsConsoleTextTime, true);
+        ShowTextToTeam(eTeam2, strLoses, eResultsConsoleTextTime, true);
+    }
+    else if( m_nWinner == eTeam2 )
+    {
+        ShowTextToTeam(eTeam2, strWins, eResultsConsoleTextTime, true);
+        ShowTextToTeam(eTeam1, strLoses, eResultsConsoleTextTime, true);
+    }
+    else if( m_nWinner == eDrawGame )
+    {
+        ShowTextToTeam(eTeam2, strDraw, eResultsConsoleTextTime, true);
+        ShowTextToTeam(eTeam1, strDraw, eResultsConsoleTextTime, true);
+    }
+    else
+    {
+        TRACE("!!! Unknown winner. Can't display results text !!!\n");
+        return;
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowEarthNetPlayerPointsText()
+{
+    ShowEarthNetPlayerPointsText(m_arrTeam1HeroNumber, m_arrTeam1RankPoints, true);
+    ShowEarthNetPlayerPointsText(m_arrTeam2HeroNumber, m_arrTeam2RankPoints, true);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowEarthNetPlayerPointsText(int arrHeroNum[], int arrPrizePoints[], int nAdd)
+{
+    int nIndex;
+    stringW strText;
+    for(nIndex = 0; nIndex < arrHeroNum.GetSize(); nIndex++)
+    {
+        if( !IsPlayer( arrHeroNum[nIndex] ) )
+        {
+            continue;
+        }
+
+        if( arrPrizePoints[nIndex] == 0 ) // jezeli liczba punktow nie zmienila sie to nic nie wypisuj
+        {
+            continue; 
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                if( arrPrizePoints[nIndex] > 0 ) 
+                {
+                    strText.FormatTrl(TEXT_GETPOINTS, arrPrizePoints[nIndex]);
+                }
+                else if( arrPrizePoints[nIndex] < 0 ) 
+                {
+                    strText.FormatTrl(TEXT_LOSEPOINTS, -arrPrizePoints[nIndex]);
+                }
+            }
+            else
+            {
+                if( arrPrizePoints[nIndex] > 0 ) 
+                {
+                    strText.FormatTrl(TEXT_GETGOLD, arrPrizePoints[nIndex]);
+                }
+                else if( arrPrizePoints[nIndex] < 0 ) 
+                {
+                    strText.FormatTrl(TEXT_LOSEGOLD, -arrPrizePoints[nIndex]);
+                }
+            }
+        }
+        ShowTextToPlayer(arrHeroNum[nIndex], strText, eResultsConsoleTextTime, true);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void AddStaticMapSignToTeam(int nTeamNum, int nX, int nY, int nMapSignNum)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        AddStaticMapSignToTeam(m_arrTeam1HeroNumber, nX, nY, nMapSignNum);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        AddStaticMapSignToTeam(m_arrTeam2HeroNumber, nX, nY, nMapSignNum);
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void AddStaticMapSignToTeam(int arrHeroNum[], int nX, int nY, int nMapSignNum)
+{
+    int nIndex;
+
+    for(nIndex = 0; nIndex < arrHeroNum.GetSize(); nIndex++ )
+    {
+        if( !IsPlayer(arrHeroNum[nIndex]) )
+        {
+            continue;
+        }
+        m_pCurrentMission.AddMapSign(nX, nY, nMapSignNum, -1);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int IsTeamFromOneGuild(int nTeamNum)
+{
+    if( !IsGuildsGame() ) // na wszelki wypadek
+    {
+        return true;
+    }
+    if( nTeamNum == eTeam1 )
+    {
+        return IsTeamFromOneGuild(m_arrTeam1HeroNumber);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        return IsTeamFromOneGuild(m_arrTeam2HeroNumber);
+    }
+    return false;
+}//--------------------------------------------------------------------------------------|
+
+function int IsTeamFromOneGuild(int arrHeroNum[])
+{
+    int nIndex;
+    int GuildNum;
+    
+    if( !IsGuildsGame() ) // na wszelki wypadek
+    {
+        return true;
+    }
+    if( arrHeroNum.GetSize() < 1 )
+    {
+        return true;
+    }
+    GuildNum = GetCampaign().GetPlayerHeroUnit(arrHeroNum[0]).GetHeroNetworkGuildNum();
+
+    for(nIndex = 1; nIndex < arrHeroNum.GetSize(); nIndex++)
+    {
+        if( GuildNum != GetCampaign().GetPlayerHeroUnit(arrHeroNum[nIndex]).GetHeroNetworkGuildNum() )
+        {
+            return false;
+        }
+    }
+    return true;
+}//--------------------------------------------------------------------------------------|
+
+function int GetGuildNumOfTeam(int nTeamNum)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        return GetGuildNumOfTeam(m_arrTeam1HeroNumber);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        return GetGuildNumOfTeam(m_arrTeam2HeroNumber);
+    }
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function int GetGuildNumOfTeam(int arrHeroNum[])
+{
+    int nIndex;
+    
+    for(nIndex = 0; nIndex < arrHeroNum.GetSize(); nIndex++)
+    {
+        if( IsPlayer(arrHeroNum[nIndex]) )
+        {
+            return GetCampaign().GetPlayerHeroUnit(arrHeroNum[nIndex]).GetHeroNetworkGuildNum();
+        }
+    }
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function int GetOppositeTeam(int nTeamNum)
+{
+    if( nTeamNum == eTeam1 )
+    {
+        return eTeam2;
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        return eTeam1;
+    }
+    __ASSERT_FALSE();
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function int GetTeamOfTheHero(int nPlayerNum)
+{
+    int nIndex;
+    nIndex = GetIndexOfValueInArray(nPlayerNum, m_arrTeam1HeroNumber);
+    if( nIndex > -1 )
+    {
+        return eTeam1;
+    }
+    nIndex = GetIndexOfValueInArray(nPlayerNum, m_arrTeam2HeroNumber);
+    if( nIndex > -1 )
+    {
+        return eTeam2;
+    }
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function int GetTeamOfTheHero(unit pHero)
+{
+    if( !pHero || !pHero.IsHeroUnit() )
+    {
+        TRACE("!!! Niepawidlowy hero w GetTeamOfTheHero() !!!\n");
+        return 0;
+    }
+    return GetTeamOfTheHero( pHero.GetHeroPlayerNum() );
+}//--------------------------------------------------------------------------------------|
+
+function int GetIndexOfTheHero(int nPlayerNum, int nTeamNum)
+{
+    int nIndex;
+    if( nTeamNum == eTeam1 )
+    {
+        return GetIndexOfValueInArray(nPlayerNum, m_arrTeam1HeroNumber);
+    }
+    else if( nTeamNum == eTeam2 )
+    {
+        return GetIndexOfValueInArray(nPlayerNum, m_arrTeam2HeroNumber);
+    }
+    TRACE("!!! Bohatera nie ma w zadnym teamie !!!\n");
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function void EnableShowLocalTeamMapSigns(int nFlag)
+{
+    m_nShowLocalTeamMapSigns = nFlag;
+}//--------------------------------------------------------------------------------------|
+
+function void EnableShowRemoteTeamMapSigns(int nFlag)
+{
+    m_nShowRemoteTeamMapSigns = nFlag;
+}//--------------------------------------------------------------------------------------|
+
+function int IsShowLocalTeamMapSignsEnabled()
+{
+    return m_nShowLocalTeamMapSigns;
+}//--------------------------------------------------------------------------------------|
+
+function int IsShowRemoteTeamMapSignsEnabled()
+{
+    return m_nShowRemoteTeamMapSigns;
+}//--------------------------------------------------------------------------------------|
+
+function int TeamBaseCommandDebug(string strLine)
+{
+    string strCommand;
+    int nX, nY;
+    int nIndex;
+    mission pMission;
+
+    strCommand = strLine;
+    if (!strCommand.CompareNoCase("PrintScriptName"))
+    {
+        TRACE("MissionTeamBase\n");
+    }
+    else
+    {
+        return CommonCommandDebug(strLine);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function void __TraceTeamHeroPoints(int nFlag)
+{
+    int nIndex;
+
+    __PrintTraceHeader(nFlag);
+    TRACE("Liczba team herosow: %d, %d\n", m_arrTeam1HeroNumber.GetSize(), m_arrTeam2HeroNumber.GetSize() );
+    for(nIndex = 0; nIndex < m_arrTeam1HeroNumber.GetSize(); nIndex++)
+    {
+        __PrintTraceHeader(nFlag);
+        if( !IsPlayer(m_arrTeam1HeroNumber[nIndex]) )
+        {
+            TRACE("T1 ?\n");
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                if( GetCampaign().GetLocalPlayerNum() == m_arrTeam1HeroNumber[nIndex] )
+                {
+                    TRACE("T1 %d L\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam1HeroNumber[nIndex]).GetHeroNetworkRankPoints() );
+                }
+                else
+                {
+                    TRACE("T1 %d\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam1HeroNumber[nIndex]).GetHeroNetworkRankPoints() );
+                }
+            }
+            else
+            {
+                if( GetCampaign().GetLocalPlayerNum() == m_arrTeam1HeroNumber[nIndex] )
+                {
+                    TRACE("T1 %d L\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam1HeroNumber[nIndex]).GetMoney() );
+                }
+                else
+                {
+                    TRACE("T1 %d\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam1HeroNumber[nIndex]).GetMoney() );
+                }
+            }
+        }
+    }
+    for(nIndex = 0; nIndex < m_arrTeam2HeroNumber.GetSize(); nIndex++)
+    {
+        __PrintTraceHeader(nFlag);
+        if( !IsPlayer(m_arrTeam2HeroNumber[nIndex]) )
+        {
+            TRACE("T2 ?\n");
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                if( GetCampaign().GetLocalPlayerNum() == m_arrTeam2HeroNumber[nIndex] )
+                {
+                    TRACE("T2 %d L\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam2HeroNumber[nIndex]).GetHeroNetworkRankPoints() );
+                }
+                else
+                {
+                    TRACE("T2 %d\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam2HeroNumber[nIndex]).GetHeroNetworkRankPoints() );
+                }
+            }
+            else
+            {
+                if( GetCampaign().GetLocalPlayerNum() == m_arrTeam2HeroNumber[nIndex] )
+                {
+                    TRACE("T2 %d L\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam2HeroNumber[nIndex]).GetMoney() );
+                }
+                else
+                {
+                    TRACE("T2 %d\n", GetCampaign().GetPlayerHeroUnit(m_arrTeam2HeroNumber[nIndex]).GetMoney() );
+                }
+            }
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void __TraceTeamGamePoints(int nFlag)
+{
+    __TraceGuildPoints(nFlag);
+    __TraceTeamHeroPoints(nFlag);
+}//--------------------------------------------------------------------------------------|
+
+#endif //NETWORK_MISSIONTEAMBASE_ECH

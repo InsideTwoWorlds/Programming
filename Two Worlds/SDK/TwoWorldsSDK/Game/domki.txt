@@ -1,0 +1,577 @@
+// //editor.WriteLevelsScript Map_%c%02d.lnd 9 12
+
+// Map_A01.lnd
+editor.LoadLevel Map_A01.lnd
+//editor.SetConnectedLevels null Map_B01.lnd Map_A02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B01.lnd
+editor.LoadLevel Map_B01.lnd
+//editor.SetConnectedLevels Map_A01.lnd Map_C01.lnd Map_B02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C01.lnd
+editor.LoadLevel Map_C01.lnd
+//editor.SetConnectedLevels Map_B01.lnd Map_D01.lnd Map_C02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D01.lnd
+editor.LoadLevel Map_D01.lnd
+//editor.SetConnectedLevels Map_C01.lnd Map_E01.lnd Map_D02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E01.lnd
+editor.LoadLevel Map_E01.lnd
+//editor.SetConnectedLevels Map_D01.lnd Map_F01.lnd Map_E02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F01.lnd
+editor.LoadLevel Map_F01.lnd
+//editor.SetConnectedLevels Map_E01.lnd Map_G01.lnd Map_F02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G01.lnd
+editor.LoadLevel Map_G01.lnd
+//editor.SetConnectedLevels Map_F01.lnd Map_H01.lnd Map_G02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H01.lnd
+editor.LoadLevel Map_H01.lnd
+//editor.SetConnectedLevels Map_G01.lnd Map_I01.lnd Map_H02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I01.lnd
+editor.LoadLevel Map_I01.lnd
+//editor.SetConnectedLevels Map_H01.lnd null Map_I02.lnd null
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 0   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A02.lnd
+editor.LoadLevel Map_A02.lnd
+//editor.SetConnectedLevels null Map_B02.lnd Map_A03.lnd Map_A01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B02.lnd
+editor.LoadLevel Map_B02.lnd
+//editor.SetConnectedLevels Map_A02.lnd Map_C02.lnd Map_B03.lnd Map_B01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C02.lnd
+editor.LoadLevel Map_C02.lnd
+//editor.SetConnectedLevels Map_B02.lnd Map_D02.lnd Map_C03.lnd Map_C01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D02.lnd
+editor.LoadLevel Map_D02.lnd
+//editor.SetConnectedLevels Map_C02.lnd Map_E02.lnd Map_D03.lnd Map_D01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E02.lnd
+editor.LoadLevel Map_E02.lnd
+//editor.SetConnectedLevels Map_D02.lnd Map_F02.lnd Map_E03.lnd Map_E01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F02.lnd
+editor.LoadLevel Map_F02.lnd
+//editor.SetConnectedLevels Map_E02.lnd Map_G02.lnd Map_F03.lnd Map_F01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G02.lnd
+editor.LoadLevel Map_G02.lnd
+//editor.SetConnectedLevels Map_F02.lnd Map_H02.lnd Map_G03.lnd Map_G01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H02.lnd
+editor.LoadLevel Map_H02.lnd
+//editor.SetConnectedLevels Map_G02.lnd Map_I02.lnd Map_H03.lnd Map_H01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I02.lnd
+editor.LoadLevel Map_I02.lnd
+//editor.SetConnectedLevels Map_H02.lnd null Map_I03.lnd Map_I01.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 512   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A03.lnd
+editor.LoadLevel Map_A03.lnd
+//editor.SetConnectedLevels null Map_B03.lnd Map_A04.lnd Map_A02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B03.lnd
+editor.LoadLevel Map_B03.lnd
+//editor.SetConnectedLevels Map_A03.lnd Map_C03.lnd Map_B04.lnd Map_B02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C03.lnd
+editor.LoadLevel Map_C03.lnd
+//editor.SetConnectedLevels Map_B03.lnd Map_D03.lnd Map_C04.lnd Map_C02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D03.lnd
+editor.LoadLevel Map_D03.lnd
+//editor.SetConnectedLevels Map_C03.lnd Map_E03.lnd Map_D04.lnd Map_D02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E03.lnd
+editor.LoadLevel Map_E03.lnd
+//editor.SetConnectedLevels Map_D03.lnd Map_F03.lnd Map_E04.lnd Map_E02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F03.lnd
+editor.LoadLevel Map_F03.lnd
+//editor.SetConnectedLevels Map_E03.lnd Map_G03.lnd Map_F04.lnd Map_F02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G03.lnd
+editor.LoadLevel Map_G03.lnd
+//editor.SetConnectedLevels Map_F03.lnd Map_H03.lnd Map_G04.lnd Map_G02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H03.lnd
+editor.LoadLevel Map_H03.lnd
+//editor.SetConnectedLevels Map_G03.lnd Map_I03.lnd Map_H04.lnd Map_H02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I03.lnd
+editor.LoadLevel Map_I03.lnd
+//editor.SetConnectedLevels Map_H03.lnd null Map_I04.lnd Map_I02.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 1024   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A04.lnd
+editor.LoadLevel Map_A04.lnd
+//editor.SetConnectedLevels null Map_B04.lnd Map_A05.lnd Map_A03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B04.lnd
+editor.LoadLevel Map_B04.lnd
+//editor.SetConnectedLevels Map_A04.lnd Map_C04.lnd Map_B05.lnd Map_B03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C04.lnd
+editor.LoadLevel Map_C04.lnd
+//editor.SetConnectedLevels Map_B04.lnd Map_D04.lnd Map_C05.lnd Map_C03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D04.lnd
+editor.LoadLevel Map_D04.lnd
+//editor.SetConnectedLevels Map_C04.lnd Map_E04.lnd Map_D05.lnd Map_D03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E04.lnd
+editor.LoadLevel Map_E04.lnd
+//editor.SetConnectedLevels Map_D04.lnd Map_F04.lnd Map_E05.lnd Map_E03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F04.lnd
+editor.LoadLevel Map_F04.lnd
+//editor.SetConnectedLevels Map_E04.lnd Map_G04.lnd Map_F05.lnd Map_F03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G04.lnd
+editor.LoadLevel Map_G04.lnd
+//editor.SetConnectedLevels Map_F04.lnd Map_H04.lnd Map_G05.lnd Map_G03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H04.lnd
+editor.LoadLevel Map_H04.lnd
+//editor.SetConnectedLevels Map_G04.lnd Map_I04.lnd Map_H05.lnd Map_H03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I04.lnd
+editor.LoadLevel Map_I04.lnd
+//editor.SetConnectedLevels Map_H04.lnd null Map_I05.lnd Map_I03.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 1536   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A05.lnd
+editor.LoadLevel Map_A05.lnd
+//editor.SetConnectedLevels null Map_B05.lnd Map_A06.lnd Map_A04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B05.lnd
+editor.LoadLevel Map_B05.lnd
+//editor.SetConnectedLevels Map_A05.lnd Map_C05.lnd Map_B06.lnd Map_B04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C05.lnd
+editor.LoadLevel Map_C05.lnd
+//editor.SetConnectedLevels Map_B05.lnd Map_D05.lnd Map_C06.lnd Map_C04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D05.lnd
+editor.LoadLevel Map_D05.lnd
+//editor.SetConnectedLevels Map_C05.lnd Map_E05.lnd Map_D06.lnd Map_D04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E05.lnd
+editor.LoadLevel Map_E05.lnd
+//editor.SetConnectedLevels Map_D05.lnd Map_F05.lnd Map_E06.lnd Map_E04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F05.lnd
+editor.LoadLevel Map_F05.lnd
+//editor.SetConnectedLevels Map_E05.lnd Map_G05.lnd Map_F06.lnd Map_F04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G05.lnd
+editor.LoadLevel Map_G05.lnd
+//editor.SetConnectedLevels Map_F05.lnd Map_H05.lnd Map_G06.lnd Map_G04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H05.lnd
+editor.LoadLevel Map_H05.lnd
+//editor.SetConnectedLevels Map_G05.lnd Map_I05.lnd Map_H06.lnd Map_H04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I05.lnd
+editor.LoadLevel Map_I05.lnd
+//editor.SetConnectedLevels Map_H05.lnd null Map_I06.lnd Map_I04.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 2048   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A06.lnd
+editor.LoadLevel Map_A06.lnd
+//editor.SetConnectedLevels null Map_B06.lnd Map_A07.lnd Map_A05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B06.lnd
+editor.LoadLevel Map_B06.lnd
+//editor.SetConnectedLevels Map_A06.lnd Map_C06.lnd Map_B07.lnd Map_B05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C06.lnd
+editor.LoadLevel Map_C06.lnd
+//editor.SetConnectedLevels Map_B06.lnd Map_D06.lnd Map_C07.lnd Map_C05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D06.lnd
+editor.LoadLevel Map_D06.lnd
+//editor.SetConnectedLevels Map_C06.lnd Map_E06.lnd Map_D07.lnd Map_D05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E06.lnd
+editor.LoadLevel Map_E06.lnd
+//editor.SetConnectedLevels Map_D06.lnd Map_F06.lnd Map_E07.lnd Map_E05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F06.lnd
+editor.LoadLevel Map_F06.lnd
+//editor.SetConnectedLevels Map_E06.lnd Map_G06.lnd Map_F07.lnd Map_F05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G06.lnd
+editor.LoadLevel Map_G06.lnd
+//editor.SetConnectedLevels Map_F06.lnd Map_H06.lnd Map_G07.lnd Map_G05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H06.lnd
+editor.LoadLevel Map_H06.lnd
+//editor.SetConnectedLevels Map_G06.lnd Map_I06.lnd Map_H07.lnd Map_H05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I06.lnd
+editor.LoadLevel Map_I06.lnd
+//editor.SetConnectedLevels Map_H06.lnd null Map_I07.lnd Map_I05.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 2560   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A07.lnd
+editor.LoadLevel Map_A07.lnd
+//editor.SetConnectedLevels null Map_B07.lnd Map_A08.lnd Map_A06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B07.lnd
+editor.LoadLevel Map_B07.lnd
+//editor.SetConnectedLevels Map_A07.lnd Map_C07.lnd Map_B08.lnd Map_B06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C07.lnd
+editor.LoadLevel Map_C07.lnd
+//editor.SetConnectedLevels Map_B07.lnd Map_D07.lnd Map_C08.lnd Map_C06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D07.lnd
+editor.LoadLevel Map_D07.lnd
+//editor.SetConnectedLevels Map_C07.lnd Map_E07.lnd Map_D08.lnd Map_D06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E07.lnd
+editor.LoadLevel Map_E07.lnd
+//editor.SetConnectedLevels Map_D07.lnd Map_F07.lnd Map_E08.lnd Map_E06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F07.lnd
+editor.LoadLevel Map_F07.lnd
+//editor.SetConnectedLevels Map_E07.lnd Map_G07.lnd Map_F08.lnd Map_F06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G07.lnd
+editor.LoadLevel Map_G07.lnd
+//editor.SetConnectedLevels Map_F07.lnd Map_H07.lnd Map_G08.lnd Map_G06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H07.lnd
+editor.LoadLevel Map_H07.lnd
+//editor.SetConnectedLevels Map_G07.lnd Map_I07.lnd Map_H08.lnd Map_H06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I07.lnd
+editor.LoadLevel Map_I07.lnd
+//editor.SetConnectedLevels Map_H07.lnd null Map_I08.lnd Map_I06.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 3072   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_A08.lnd
+editor.LoadLevel Map_A08.lnd
+//editor.SetConnectedLevels null Map_B08.lnd Map_A09.lnd Map_A07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 0 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_B08.lnd
+editor.LoadLevel Map_B08.lnd
+//editor.SetConnectedLevels Map_A08.lnd Map_C08.lnd Map_B09.lnd Map_B07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 512 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_C08.lnd
+editor.LoadLevel Map_C08.lnd
+//editor.SetConnectedLevels Map_B08.lnd Map_D08.lnd Map_C09.lnd Map_C07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1024 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_D08.lnd
+editor.LoadLevel Map_D08.lnd
+//editor.SetConnectedLevels Map_C08.lnd Map_E08.lnd Map_D09.lnd Map_D07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 1536 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_E08.lnd
+editor.LoadLevel Map_E08.lnd
+//editor.SetConnectedLevels Map_D08.lnd Map_F08.lnd Map_E09.lnd Map_E07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2048 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_F08.lnd
+editor.LoadLevel Map_F08.lnd
+//editor.SetConnectedLevels Map_E08.lnd Map_G08.lnd Map_F09.lnd Map_F07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 2560 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_G08.lnd
+editor.LoadLevel Map_G08.lnd
+//editor.SetConnectedLevels Map_F08.lnd Map_H08.lnd Map_G09.lnd Map_G07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3072 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_H08.lnd
+editor.LoadLevel Map_H08.lnd
+//editor.SetConnectedLevels Map_G08.lnd Map_I08.lnd Map_H09.lnd Map_H07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 3584 3584   16   20
+@test.txt
+editor.SaveLevel
+
+
+// Map_I08.lnd
+editor.LoadLevel Map_I08.lnd
+//editor.SetConnectedLevels Map_H08.lnd null Map_I09.lnd Map_I07.lnd
+//editor.LoadRaw Map.raw 16 0 4608 6144 4096 3584   16   20
+@test.txt
+editor.SaveLevel
+

@@ -1,0 +1,3 @@
+editor.ClearObjectsInsideHouse
+editor.CreateObjectsInsideHouseFromDef
+editor.SaveLevel

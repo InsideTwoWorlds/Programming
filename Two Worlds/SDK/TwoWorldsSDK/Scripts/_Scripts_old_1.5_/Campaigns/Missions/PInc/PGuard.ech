@@ -1,0 +1,796 @@
+#ifndef _P_GUARD_
+#define _P_GUARD_
+
+#include "PEnums.ech"
+
+#define MAX_GUARDS_RATIO     2
+        
+consts {
+    
+    eRoutePoints                         = 10;
+    eSpaceBetweenGuards                  = 2;
+         
+    // ranges
+    eGuardRouteRangeG                    = 2;
+    eTooFarFromBarracksRangeG            = 30;
+    eGuardsPaidByHeroRangeG              = 5;
+
+    // find criminal dialog flags
+    eFCDPay100                           = 0x0000001;
+    eFCDPay200                           = 0x0000002;
+    eFCDPay500                           = 0x0000004;
+    eFCDPay1000                          = 0x0000008;
+    eFCDPay5000                          = 0x0000010;
+    eFCDPay10000                         = 0x0000020;
+    eFCDPay30000                         = 0x0000040;
+    eFCDNoMoney                          = 0x0000080;
+
+    eFCDMurder                           = 0x0000200;
+    eFCDTheft                            = 0x0000400;
+    eFCDBurglary                         = 0x0000800;
+    eFCDFight                            = 0x0001000;
+
+    eFCDCorrupt                          = 0x0000100;
+    eFCDNotCorrupt                       = 0x0040000;
+
+    eFCDPayMoney                         = 0x0002000;
+    eFCDPay30Percent                     = 0x0010000;
+    eFCDPay10Percent                     = eFCDCorrupt;
+    eFCDSetEnemy                         = 0x0008000;
+    eFCDBanishment                       = 0x0020000;
+    
+    eFCDMoneyFlags                       = eFCDPay100 | eFCDPay200 | eFCDPay500 | eFCDPay1000 | eFCDPay5000 | eFCDPay10000 | eFCDPay30000 | eFCDNoMoney;
+    eFCDCrimeFlags                       = eFCDMurder | eFCDTheft | eFCDBurglary | eFCDFight;
+    eFCDInputFlags                       = eFCDMoneyFlags | eFCDCrimeFlags | eFCDCorrupt | eFCDNotCorrupt;
+                
+}
+
+#include "PMission.ech"
+#include "PEnums.ech"
+#include "PCrime.ech"
+#include "PDailyState.ech"
+#include "PActivity.ech"
+
+//======================================
+                
+int anFirstRoute[];
+int anLastRoute[];
+int anGuardsOnRoute[];
+int nRoutesNumber;
+
+int anStartRoute[UNIT_ARRAY_SIZE];
+int anNextRoute[UNIT_ARRAY_SIZE];
+int anRouteNumber[UNIT_ARRAY_SIZE];
+
+int anPaidByHero[UNIT_ARRAY_SIZE];
+
+int nGuardsNumber;
+int nDynamicGuardsNumber;
+int nMinGuardsNumber;
+int nMaxGuardsNumber;
+int nCurrentGuardDynamic;
+
+function void InitializeGuard(int nUnit);
+
+//======================================
+// route functions
+
+function void AddRoute(int nRouteFirstMarker) {
+
+    int i;
+
+    for (i = nRouteFirstMarker; i < nRouteFirstMarker + eRoutePoints; i++) if (!HaveTownMarker(MARKER_GUARD_ROUTE,i)) break;
+
+    anFirstRoute.Add(nRouteFirstMarker);
+    anLastRoute.Add(i);
+    anGuardsOnRoute.Add(0);
+    nRoutesNumber = anFirstRoute.GetSize();
+
+}
+
+function void InitializeGuardRoute(int nGuard) {
+
+    int nX, nY;
+    int nRoute;
+    int points;
+
+    nRoute = nCurrentGuardDynamic * nRoutesNumber / nDynamicGuardsNumber;
+
+    points = anLastRoute[nRoute] - anFirstRoute[nRoute];
+    
+    if (points < 2) anStartRoute[nGuard] = anFirstRoute[nRoute];
+    else anStartRoute[nGuard] = anFirstRoute[nRoute] + ((anGuardsOnRoute[nRoute] * eSpaceBetweenGuards) % points);// blad!!!
+    anNextRoute[nGuard] = anStartRoute[nGuard];
+    anGuardsOnRoute[nRoute] += 1;
+    anRouteNumber[nGuard] = nRoute;
+
+    // przepisujemy MARKER_NPC w miejsce pierwszego punktu patrolu
+    GetMarker(MARKER_GUARD_ROUTE,anStartRoute[nGuard],nX,nY);
+    SetMarker(MARKER_NPC,nGuard,nX,nY,0,0);
+
+    nCurrentGuardDynamic++;
+
+}
+
+function void InitializeAddedGuardRoute(int nGuard, int nStartRoute, int nRoute) {
+
+    anStartRoute[nGuard] = nStartRoute;
+    anNextRoute[nGuard] = nStartRoute;
+    anRouteNumber[nGuard] = nRoute;
+    anGuardsOnRoute[nRoute] += 1;
+
+}
+
+function int GetStartRoute(int nUnit) {
+
+    return anStartRoute[nUnit];
+    
+}
+
+//======================================
+// add/remove guard functions
+
+function int FindRouteForNewGuard() {
+
+    int i, n;
+    int nMax;
+    int nRoute;
+
+    nMax = 1;
+    nRoute = eNoRoute;
+
+    for (i = 0; i < nRoutesNumber; i++) {
+        if (!anGuardsOnRoute[i]) return i;  // jesli trafimy na pusta route to automatycznie wrzucamy tam kolesia
+        n = (anLastRoute[i] - anFirstRoute[i]) / anGuardsOnRoute[i];
+        if (n > nMax) {
+            nRoute = i;
+            nMax = n;
+        }
+    }
+
+    return nRoute;
+
+}
+
+function int FindMarkerOnRouteForNewGuard(int nRoute) {
+
+    int i;
+    for (i = anFirstRoute[nRoute]; i < anLastRoute[nRoute]; i++) {
+        if (!IsHeroNearMarker(GetThis(),MARKER_GUARD_ROUTE,i)) return i;
+    }
+    return eNoMarker;
+    
+}
+
+function int FindGuardToRemove() {
+
+    int i;
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (UNIT_ARRAY[i] != null) {
+        if (GetCustomFlags(UNIT_ARRAY[i]) != eGuardAdded) continue;
+        if (!IsHeroNearUnit(UNIT_ARRAY[i])) return i;
+    }
+    return eNoUnit;
+    
+}
+
+function int AddGuard() {
+
+    int nMarker;
+    int nRoute;
+    int nNewMarker;
+    int nX, nY;
+    int nDialog;
+    int nMagic;
+    unit uUnit;
+
+    if (nGuardsNumber == nMaxGuardsNumber) return false;
+    
+    nRoute = FindRouteForNewGuard();
+    if (nRoute == eNoRoute) return false;        
+        
+    nMarker = FindMarkerOnRouteForNewGuard(nRoute);
+    if (nMarker == eNoMarker) return false;
+                
+    nNewMarker = FindFreeMarker(GetThis(),MARKER_NPC,UNIT_ARRAY_SIZE - 1);
+    if (nNewMarker == eNoMarker) return false;            
+                            
+    GetMarker(MARKER_GUARD_ROUTE,nMarker,nX,nY);
+    AddMarker(MARKER_NPC,nNewMarker,nX,nY,0,0,"");
+    UNIT_ARRAY[nNewMarker] = CreateObject(GetCreateString(nTownType,eTGGuardDynamic,eMale,nDialog,0,0,nMagic),nX,nY,0,Rand(256));
+    uUnit = UNIT_ARRAY[nNewMarker];
+    uUnit.GetUnitValues().SetBasicSkill(eSkillKnockDown,5+Rand(6));
+    SetUnitNumber(UNIT_ARRAY[nNewMarker],nNewMarker);
+    SetMask(UNIT_ARRAY[nNewMarker],0);    
+
+    ResetUnitTimers(nNewMarker);
+    SetTargetHero(nNewMarker,eNoUnit);
+
+    UNIT_ARRAY[nNewMarker].SetAlarmModeUnit(true);
+    SetLookAtAngle(UNIT_ARRAY[nNewMarker]);
+    SetCustomFlags(UNIT_ARRAY[nNewMarker],eGuardAdded);
+    SetStandardDialogNumber(UNIT_ARRAY[nNewMarker],nDialog);
+    SendMessageToGlobalScripts(eMsgSetNPCNameNum,UNIT_ARRAY[nNewMarker]);
+
+    InitDailyState(nNewMarker,eShiftWorkoholic);
+    SetBedNumber(UNIT_ARRAY[nNewMarker],eNoBed);
+    InitializeAddedGuardRoute(nNewMarker,nMarker,nRoute);
+    InitializeGuard(nNewMarker);
+    UpdateDailyState(nNewMarker);
+    nGuardsNumber++;
+
+    return true;
+    
+}
+
+function int RemoveGuard() {
+
+    int nRoute;
+    int nUnit;
+    
+    nUnit = FindGuardToRemove();
+    if (nUnit == eNoUnit) return false;
+
+    nRoute = anRouteNumber[nUnit];
+
+    RemoveMarker(MARKER_NPC,nUnit);
+    UNIT_ARRAY[nUnit].RemoveObject();
+    UNIT_ARRAY[nUnit] = null;
+    anGuardsOnRoute[nRoute] -= 1;        
+    nGuardsNumber--;
+
+    return true;
+
+}
+
+function void UpdateGuardsNumber() {
+
+    int guards;
+    guards = nCityCrimeLevel / ePointsAddGuard;
+
+    while (guards > (nGuardsNumber - nMinGuardsNumber)) {
+        if (!AddGuard()) break;
+    }
+    while (guards < (nGuardsNumber - nMinGuardsNumber)) {
+        if (!RemoveGuard()) break;
+    }
+
+}
+
+//======================================
+// guards paid by hero
+
+function void SetIsPaidByHero(int nGuard, int nHero, int nPaid) {
+
+    if (nPaid) anPaidByHero[nGuard] = anPaidByHero[nGuard] | (1 << nHero);
+    else       anPaidByHero[nGuard] = anPaidByHero[nGuard] & (~(1 << nHero));
+}
+
+function int IsPaidByHero(int nGuard, int nHero) {
+
+    if (anPaidByHero[nGuard] & (1 << nHero)) return true;
+    return false;
+
+}
+
+function void SetGuardsPaidByHero(int nHero) {
+
+    unit uHero;
+    int i;
+    
+    uHero = GetHero(nHero);
+                               
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (IsUnitActive(i) && IsGuard(i)) {
+    
+        if (IsPaidByHero(i,nHero)) continue;
+        if (uHero.DistanceTo(UNIT_ARRAY[i]) < G2A(eGuardsPaidByHeroRangeG)) SetIsPaidByHero(i,nHero,true);        
+    
+    }                          
+                
+}
+
+function void ResetGuardsPaidByHero(int nHero) {
+    
+    int i;
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) SetIsPaidByHero(i,nHero,false);
+
+}
+
+//======================================
+
+function int IsTooFarFromBarracks(int nUnit) {
+
+    if (!HaveTownMarker(MARKER_GUARD_BARRACKS,nBarracksNumber)) return false;
+    return (!IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_GUARD_BARRACKS,nBarracksNumber,eTooFarFromBarracksRangeG));
+
+}
+
+function int IsTooFarFromMarkerWork(int nUnit) {
+
+    if (GetUnitType(nUnit) == eUnitTypeGuardDynamic) {
+    
+        return (!IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_GUARD_ROUTE,anNextRoute[nUnit],eTooFarFromBarracksRangeG));
+    
+    }
+    else {
+
+        return (!IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_NPC,nUnit,eTooFarFromBarracksRangeG));
+        
+    }
+
+    return false;
+
+}
+
+//======================================
+
+function int GetFCDInputFlags(unit uHero) {
+
+    int nGold;
+    int nFlags;
+    int nHero;
+      
+    nHero = uHero.GetHeroPlayerNum();
+    nFlags = eFCDInputFlags;
+    
+#ifdef TOWN_DEBUG
+    TRACE("GetFCDInputFlags: crime points %d current crime %d gold %d          \n",anHeroCrimePoints[nHero],anHeroCurrentCrime[nHero],uHero.GetMoney());
+#endif    
+        
+    // przekupny/nieprzekupny
+    if (Rand(4) == 0) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDCorrupt            \n");
+#endif    
+        nFlags -= eFCDCorrupt;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDNotCorrupt            \n");
+#endif    
+        nFlags -= eFCDNotCorrupt;
+    }
+
+    // rodzaj przestepstwa    
+    if (anHeroCurrentCrime[nHero] == eCrimePointsMurder) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDMurder            \n");
+#endif    
+        nFlags -= eFCDMurder;
+    }
+    else if (anHeroCurrentCrime[nHero] == eCrimePointsFight) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDFight            \n");
+#endif    
+        nFlags -= eFCDFight;
+    }
+    else if (anHeroCurrentCrime[nHero] == eCrimePointsBurglary) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDBurglary            \n");
+#endif    
+        nFlags -= eFCDBurglary;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDTheft            \n");
+#endif    
+        nFlags -= eFCDTheft;
+    }
+        
+    // kasa
+    nGold = uHero.GetMoney();
+    if (nGold >= 30000) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay30000            \n");
+#endif    
+        nFlags -= eFCDPay30000;
+    }
+    else if (nGold >= 10000) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay10000            \n");
+#endif    
+        nFlags -= eFCDPay10000;    
+    }
+    else if (nGold >= 5000) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay5000            \n");
+#endif    
+        nFlags -= eFCDPay5000;
+    }
+    else if (nGold >= 1000) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay1000            \n");
+#endif    
+        nFlags -= eFCDPay1000;
+    }
+    else if (nGold >= 500) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay500            \n");
+#endif    
+        nFlags -= eFCDPay500;
+    }
+    else if (nGold >= 200) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay200            \n");
+#endif    
+        nFlags -= eFCDPay200;
+    }
+    else if (nGold >= 100) {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDPay100            \n");
+#endif    
+        nFlags -= eFCDPay100;
+    }
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("eFCDNoMoney            \n");
+#endif    
+        nFlags -= eFCDNoMoney;    
+    }
+
+#ifdef TOWN_DEBUG
+    TRACE("GetFCDInputFlags returned: %d %d           \n",nFlags,eFCDInputFlags - nFlags);
+#endif    
+    
+    return nFlags;
+
+}
+
+function void PlayFCDialog(unit uDialogUnit, unit uHero) {
+
+    ResetHeroIsCriminal(uHero);        
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).PlayDialog(GetScriptUID(),eDialogFindCriminalUID,eDefDialogFlags | eEndEventOnStartFadeOut | PlayDialogWaves(uHero),GetFCDInputFlags(uHero),DIALOG_FIND_CRIMINAL,1,uHero,uDialogUnit);
+    
+}
+
+function void FindCriminal(int nUnit) {  
+
+    int i;
+    int nMin;
+    int nHero;
+    unit uHero;
+    
+    nMin = UNIT_ARRAY[nUnit].GetSightRange();
+    nHero = eNoUnit;
+    
+    for (i = 0; i < GetPlayersCnt(); i++) {
+    
+        if (!IsPlayer(i)) continue;
+        if (!IsHeroCriminal(i)) continue;
+        if (IsPaidByHero(nUnit,i)) continue;
+
+        uHero = GetHero(i);
+        if (UNIT_ARRAY[nUnit].DistanceTo(uHero) < nMin) {
+            nMin = UNIT_ARRAY[nUnit].DistanceTo(uHero);
+            nHero = i;
+        }
+        
+    }
+         
+    if (nHero != eNoUnit) {
+    
+        uHero = GetHero(nHero);
+
+        SetGuardWorkState(nUnit,eGuardChasingCriminal);
+        SetTargetHero(nUnit,nHero);
+
+        if ((UNIT_ARRAY[nUnit].DistanceTo(uHero) < eUnitDialogRangeA) && (!IsUnitInDialogMode(uHero))) {            
+            UNIT_ARRAY[nUnit].CommandStop();
+            PlayFCDialog(UNIT_ARRAY[nUnit],uHero);
+        }
+        else {
+            MoveToUnit(UNIT_ARRAY[nUnit],uHero,M2A(1));
+            PlayGuardStop(UNIT_ARRAY[nUnit]);
+        }
+    
+    }
+         
+}
+
+function void ResetGuardIsChasingCriminal(int nUnit, int nHero) {
+
+    if (IsUnitActive(nUnit)) if (GetTargetHero(nUnit) == nHero) {
+        SetGuardWorkState(nUnit,eGuardPatrolling);
+        SetTargetHero(nUnit,eNoUnit);
+    }
+
+}
+
+//======================================
+// guard work substate
+
+function void UpdateGuardDynamic(int nUnit) {
+
+    int nX, nY;
+    int route;
+    
+    route = anRouteNumber[nUnit];
+    if ((anLastRoute[route] - anFirstRoute[route]) > 1) {
+        
+        if (IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_GUARD_ROUTE,anNextRoute[nUnit],eGuardRouteRangeG)) {
+
+            anNextRoute[nUnit] = anNextRoute[nUnit] + 1;
+            if (anNextRoute[nUnit] == anLastRoute[route]) anNextRoute[nUnit] = anFirstRoute[route];
+            GetMarker(MARKER_GUARD_ROUTE,anNextRoute[nUnit],nX,nY);
+            FAST_MOVE_ATTACK(UNIT_ARRAY[nUnit],nX,nY);          
+
+        } 
+        else if (!UNIT_ARRAY[nUnit].IsMoving()) {
+            GetMarker(MARKER_GUARD_ROUTE,anNextRoute[nUnit],nX,nY);
+            FAST_MOVE_ATTACK(UNIT_ARRAY[nUnit],nX,nY);
+        }
+
+    }
+    else {
+        if (!UNIT_ARRAY[nUnit].IsMoving())
+            if (!IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_GUARD_ROUTE,anStartRoute[nUnit],eGuardRouteRangeG)) {
+                GetMarker(MARKER_GUARD_ROUTE,anStartRoute[nUnit],nX,nY);
+                FAST_MOVE_ATTACK(UNIT_ARRAY[nUnit],nX,nY);
+            }    
+    }
+ 
+}
+                                   
+function void UpdateGuardStatic(int nUnit) {
+
+    if (!IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_WORK,MARKER_WORK_NUMBER,eWorkRangeG) && (!UNIT_ARRAY[nUnit].IsMoving())) MoveToMarker(UNIT_ARRAY[nUnit],MARKER_WORK,MARKER_WORK_NUMBER);
+
+}
+
+//======================================
+
+function void InitializeGuard(int nUnit) {
+
+    SetMainState(nUnit,eMainStateNormal);
+    UNIT_ARRAY[nUnit].SetPartyNum(PARTY_NPC);
+    SetGuardWorkState(nUnit,eGuardPatrolling);
+    
+}
+
+function void ResurrectGuard(int nUnit) {
+
+    InitializeGuard(nUnit);
+    
+}
+
+//======================================
+
+function void InitializeRoutesAndBarracks() {
+    
+    int i, nMaxNum;
+
+    nGuardsNumber = 0;
+
+    nMaxNum = GetMaxMarkerNum(MARKER_GUARD_ROUTE);
+    for (i = 1; i <= nMaxNum; i += eRoutePoints) {
+        if (HaveTownMarker(MARKER_GUARD_ROUTE,i)) AddRoute(i);
+    }              
+        
+    nBarracksNumber = eNoBarracks;        
+    nMaxNum = GetMaxMarkerNum(MARKER_GUARD_BARRACKS);
+    for (i = 1; i <= nMaxNum; i++) {
+        if (HaveTownMarker(MARKER_GUARD_BARRACKS,i)) {
+            nBarracksNumber = i;
+            break;
+        }    
+    }
+        
+}    
+
+function void InitializeGuards() {
+
+    int i;
+
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if (UNIT_ARRAY[i] != null) if (IsGuard(i)) {
+        if (GetUnitType(UNIT_ARRAY[i]) == eUnitTypeGuardDynamic) {
+            InitializeGuardRoute(i);
+        }            
+    }              
+      
+    nMinGuardsNumber = nGuardsNumber;
+    nMaxGuardsNumber = nMinGuardsNumber * MAX_GUARDS_RATIO;
+    
+    for (i = 0; i < eMaxPlayers; i++) {
+        anHeroCrimePoints[i] = 0;    
+    }
+        
+    nCityCrimeLevel = 0;
+        
+}
+
+//======================================
+
+function void ProcessGuardNormalState(int nUnit) {
+
+    int nDailyState;
+    int nState;
+
+    nState = GetGuardWorkState(nUnit);
+
+    if (nState == eGuardPatrolling) {
+             
+        PlayStandardGreetings(UNIT_ARRAY[nUnit]);                                        
+        UpdateDailyState(nUnit);                            
+        UpdateGoingDailyState(nUnit);
+        nDailyState = GetDailyState(nUnit);
+        UpdateActivity(nUnit);
+
+        if (nDailyState == eWorking) {                        
+            if (GetCustomFlags(UNIT_ARRAY[nUnit]) == eGuardStatic) UpdateGuardStatic(nUnit);                
+            if (GetCustomFlags(UNIT_ARRAY[nUnit]) == eGuardRoute) UpdateGuardDynamic(nUnit);                
+        }
+
+        FindCriminal(nUnit);      
+            
+    }            
+            
+    if (nState == eGuardAlarmed) {
+        SetExternalActivity(nUnit,eEActivityControlledByTown);
+        FindCriminal(nUnit);
+    }
+
+    if (nState == eGuardChasingCriminal) {
+    
+        SetExternalActivity(nUnit,eEActivityControlledByTown);       
+        if (IsTooFarFromMarkerWork(nUnit)) {
+            UNIT_ARRAY[nUnit].CommandStop();
+            SetGuardWorkState(nUnit,eGuardPatrolling);
+        }
+        else FindCriminal(nUnit);
+        
+    }
+        
+    if (!UNIT_ARRAY[nUnit].IsMoving()) SetGuardWorkState(nUnit,eGuardPatrolling);
+
+    if (nState == eGuardChasingCriminal) UNIT_ARRAY[nUnit].SetRunMode(true);
+    else UNIT_ARRAY[nUnit].SetRunMode(false);
+
+}
+
+//======================================
+
+function void GuardBehavior(int nUnit) {
+    
+    int nMainState;
+                      
+    if (UNIT_ARRAY[nUnit].IsInDialogChat()) return; // uwaga!!!
+    if (IsUnitArmed(UNIT_ARRAY[nUnit])) SetMainState(nUnit,eMainStateFighting);
+
+    nMainState = GetMainState(nUnit);
+
+    if (nMainState == eMainStateNormal) {
+
+        ProcessGuardNormalState(nUnit);
+                                             
+    }
+    
+    if (nMainState == eMainStateRunning) {
+        SetMainState(nUnit,eMainStateNormal);            
+    }        
+    
+    if (nMainState == eMainStateFighting) {
+        if (!IsUnitArmed(UNIT_ARRAY[nUnit]) && (UNIT_ARRAY[nUnit].GetAttackTarget() == null)) SetMainState(nUnit,eMainStateNormal);        
+/*
+        else if (UnableToAttackHero(UNIT_ARRAY[nUnit],GetTargetHero(nUnit))) {
+            UNIT_ARRAY[nUnit].CommandStop();
+            SetMainState(nUnit,eMainStateNormal);                    
+        }
+*/
+    }
+    
+    if (nMainState == eMainStateWaiting) {    
+        if (GetCampaign().GetGameTick() > anWaitingTimer[nUnit]) SetMainState(nUnit,eMainStateNormal);
+    }
+            
+}        
+
+//======================================
+
+function void RemoveGold(unit uHero, int nGold) {
+
+    uHero.SetMoney(uHero.GetMoney() - nGold);   
+
+}
+
+function void PayFine(unit uHero, int nPercent) {
+
+    int nGold;  
+    nGold = uHero.GetMoney();    
+
+#ifdef TOWN_DEBUG
+    TRACE("PayFine gold %d percent %d             \n",nGold,nPercent);
+#endif    
+
+    if (nGold >= 30000) nGold -= (300 * nPercent);
+    else if (nGold >= 10000) nGold -= (100 * nPercent);
+    else if (nGold >= 5000) nGold -= (50 * nPercent);
+    else if (nGold >= 1000) nGold -= (10 * nPercent);
+    else if (nGold >= 500) nGold -= (5 * nPercent);
+    else if (nGold >= 200) nGold -= (2 * nPercent);
+    else if (nGold >= 100) nGold -= nPercent;
+    else {
+#ifdef TOWN_DEBUG
+        TRACE("PayFine warning: gold == 0             \n");
+#endif
+        nGold = 0;
+    }
+
+    uHero.SetMoney(nGold);
+#ifdef TOWN_DEBUG
+    TRACE("PayFine gold after: %d             \n",uHero.GetMoney());
+#endif
+    
+}
+
+function void EndTalkDialogGuard(int nPlayerNum, int nDialogUID, int nEndEvent) {
+
+    unit uHero;
+    uHero = GetHero(nPlayerNum);
+
+#ifdef TOWN_DEBUG
+    TRACE("EndTalkDialogGuard: event %d                \n",nEndEvent);
+#endif
+
+    if (nEndEvent & eFCDPayMoney) {
+
+#ifdef TOWN_DEBUG
+    TRACE("eFCDPayMoney                \n");
+#endif
+        ResetHeroCrimePoints(nPlayerNum);
+        PayFine(uHero,100);
+        return;
+    
+    }
+
+    if (nEndEvent & eFCDPay10Percent) {
+
+#ifdef TOWN_DEBUG
+    TRACE("eFCDPay10Percent                \n");
+#endif
+        ResetHeroCrimePoints(nPlayerNum);//XXXMD przekupiony straznik zmazuje nasze winy
+        PayFine(uHero,10);
+        //SetGuardsPaidByHero(nPlayerNum);
+        
+        return;
+    
+    }
+
+    if (nEndEvent & eFCDPay30Percent) {
+
+#ifdef TOWN_DEBUG
+    TRACE("eFCDPay30Percent                \n");
+#endif
+        ResetHeroCrimePoints(nPlayerNum);//XXXMD przekupiony straznik zmazuje nasze winy
+        PayFine(uHero,30);
+        //SetGuardsPaidByHero(nPlayerNum);
+        return;
+    
+    }
+
+    if (nEndEvent & eFCDBanishment) {
+
+#ifdef TOWN_DEBUG
+    TRACE("eFCDBanishment                \n");
+#endif
+
+        ResetHeroCrimePoints(nPlayerNum);
+        SetHeroBanishment(nPlayerNum,eBanishmentTime);
+        return;
+        
+    }
+        
+    if (nEndEvent & (eFCDSetEnemy | eFCDNotCorrupt)) {
+    
+#ifdef TOWN_DEBUG
+    TRACE("eFCDSetEnemy | eFCDNotCorrupt                \n");
+#endif
+    
+        ResetHeroCrimePoints(nPlayerNum);
+        SetHeroPartyCriminalEnemy(nPlayerNum);
+        SetHeroBanishment(nPlayerNum,0);
+        return;
+    
+    }
+         
+}
+       
+#endif

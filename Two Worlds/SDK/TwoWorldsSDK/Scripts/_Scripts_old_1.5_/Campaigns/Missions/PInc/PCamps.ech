@@ -1,0 +1,173 @@
+#ifndef _P_CAMPS_
+#define _P_CAMPS_
+
+string astrCampMarkerName[];
+int anCampMarkerType[];
+int anCampMarkerCustomFlags[];
+
+int anTownX1[];
+int anTownY1[];
+int anTownX2[];
+int anTownY2[];
+
+//======================================        
+
+function void SetCampCreated(mission pMission, int nFlag) {
+
+    pMission.SetAttribute(CAMP_CREATED_ATTRIBUTE,nFlag);
+
+}
+
+function int IsCampCreated(mission pMission) {
+
+    int nFlag;
+    pMission.GetAttribute(CAMP_CREATED_ATTRIBUTE,nFlag);
+    return nFlag;
+    
+}
+
+//======================================        
+
+function void ClearTownRanges() {
+
+    anTownX1.RemoveAll();
+    anTownY1.RemoveAll();
+    anTownX2.RemoveAll();
+    anTownY2.RemoveAll();
+
+}
+
+function void GetTownRanges(mission pMission) {
+
+    int i;
+    int count;
+    
+    ClearTownRanges();
+    
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) if (pMission.GetMissionScript(i).CommandMessage(eMsgGetScriptID) == eTownScriptID) {
+        anTownX1.Add(pMission.GetMissionScript(i).CommandMessage(eMsgGetTownX1));
+        anTownX2.Add(pMission.GetMissionScript(i).CommandMessage(eMsgGetTownX2));
+        anTownY1.Add(pMission.GetMissionScript(i).CommandMessage(eMsgGetTownY1));
+        anTownY2.Add(pMission.GetMissionScript(i).CommandMessage(eMsgGetTownY2));
+    }
+
+}
+
+function int GetMarkerOutsideTown(mission pMission, string strMarker, int nMarker, int &nX, int &nY) {
+
+    int i, count;
+    int nX1, nY1, nX2, nY2;
+
+    if (!pMission.GetMarker(strMarker,nMarker,nX,nY)) return false;
+
+    count = anTownX1.GetSize();
+    for (i = 0; i < count; i++) {
+        nX1 = anTownX1[i];
+        nY1 = anTownY1[i];
+        nX2 = anTownX2[i];
+        nY2 = anTownY2[i];
+        if ((nX >> 8) >= nX1 && (nX >> 8) <= nX2 && (nY >> 8) >= nY1 && (nY >> 8) <= nY2) return false;
+    }
+    
+    return true;
+    
+}
+
+//======================================        
+
+function void SetCampMarker(string strName, int nType, int nCustomFlags) {
+
+    astrCampMarkerName.Add(strName);
+    anCampMarkerType.Add(nType);
+    anCampMarkerCustomFlags.Add(nCustomFlags);
+    
+}
+
+function void InitializeCampMarkers() {
+
+    SetCampMarker(MARKER_SHOP,eTGShopMerchant,eShopMerchant);
+    SetCampMarker(MARKER_SHOP_NECRO,eTGShopNecro,eShopNecro);        
+    SetCampMarker(MARKER_SHOP_MAGE,eTGShopMage,eShopMage);        
+    SetCampMarker(MARKER_SHOP_WARRIOR,eTGShopWarrior,eShopWarrior);        
+    SetCampMarker(MARKER_SHOP_FENCE,eTGShopThief,eShopThief);        
+
+    SetCampMarker(MARKER_COACH_1,eTGCoach1,eTrainer1);        
+    SetCampMarker(MARKER_COACH_2,eTGCoach2,eTrainer2);        
+    SetCampMarker(MARKER_COACH_3,eTGCoach3,eTrainer3);        
+    SetCampMarker(MARKER_COACH_4,eTGCoach4,eTrainer4);        
+    SetCampMarker(MARKER_COACH_5,eTGCoach5,eTrainer5);        
+    SetCampMarker(MARKER_COACH_6,eTGCoach6,eTrainer6);        
+    SetCampMarker(MARKER_COACH_7,eTGCoachMage,eTrainerMage);        
+    SetCampMarker(MARKER_COACH_8,eTGCoachNecro,eTrainerNecro);        
+    
+    SetCampMarker(MARKER_CHANGER_1,eTGChanger1,eChanger1);        
+    SetCampMarker(MARKER_CHANGER_2,eTGChanger2,eChanger2);        
+
+    SetCampMarker(MARKER_TAVERN,eTGBartender,eBartender);        
+
+}
+
+//======================================        
+
+function void CreateCampUnit(mission pMission, string strMarker, int nMarker, int nType, int nCustomFlags) {
+
+    int nX, nY;
+    string str;
+    int nDialog;
+    unit uUnit;
+    int nCol, nRow, nLayer;
+    int nMagic;
+    
+    if (!GetMarkerOutsideTown(pMission,strMarker,nMarker,nX,nY)) return;
+
+    LevelNum2Level(pMission.GetMissionNum(),nCol,nRow,nLayer);
+    str = GetCreateString(eTownUnknownType,nType,eMale,nDialog,nCol,nRow,nMagic);
+    uUnit = pMission.CreateObject(str,nX,nY,0,Rand(256));
+    uUnit.GetUnitValues().SetBasicSkill(eSkillKnockDown,Rand(11));
+    ASSERT(uUnit != null);
+
+    if (uUnit == null) {
+#ifdef DIALOG_UNITS_DEBUG
+        TRACE("CreateCampUnit: can't create %s                  \n");    
+#endif        
+        return;
+    }
+
+    SetLookAtAngle(uUnit);
+    if (nType == eTGBartender) SetExternalActivity(uUnit,eEActivityWorking);    
+    else SetExternalActivity(uUnit,eEActivityControlledByUnit);
+    uUnit.SetRemoveOnUnloadLevel(true);
+    uUnit.SetPartyNum(ePartyHumans);
+    SetCustomFlags(uUnit,nCustomFlags);
+    SetStandardDialogNumber(uUnit,nDialog);
+    SetMagicSkill(uUnit,nMagic);
+
+    SendMessageToGlobalScripts(eMsgRegisterSingleDialogUnit,uUnit);
+    SendMessageToGlobalScripts(eMsgSetNPCNameNum,uUnit);
+
+}
+
+function void CreateCamp(mission pMission) {
+
+    int i, j, nMaxNum;
+    int count;
+
+    if (IsTownMission(pMission)) GetTownRanges(pMission);
+    else ClearTownRanges();
+
+    count = anCampMarkerType.GetSize();
+    for (i = 0; i < count; i++) {
+        nMaxNum = pMission.GetMaxMarkerNum(astrCampMarkerName[i]);
+        for (j = 1; j <= nMaxNum; j++) {                
+            CreateCampUnit(pMission,astrCampMarkerName[i],j,anCampMarkerType[i],anCampMarkerCustomFlags[i]);    
+        }       
+    }
+
+    SetCampCreated(pMission,true);
+
+}
+
+//======================================        
+
+#endif

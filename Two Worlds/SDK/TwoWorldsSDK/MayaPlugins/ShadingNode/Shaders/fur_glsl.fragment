@@ -1,0 +1,99 @@
+#version 110
+#define DO_NOT_USE_DYNAMIC_LIGHTS
+
+uniform mat4		gModelviewMatrix;
+uniform mat4		gProjectionMatrix;
+uniform mat4		gModelviewMatrixIT;
+uniform mat4		gProjectionMatrixIT;
+uniform vec4		gCameraPosition;
+uniform vec4		gLightPosition;
+uniform vec4		gLightDirection;
+uniform vec4		gAmbientColor;
+uniform vec4		gDiffuseColor;
+uniform vec4		gSpecularColor;
+uniform vec4		gSideColor;
+uniform vec4		gDestructionColor;
+uniform vec4		gFurFactor;
+uniform float       gFurNS;
+uniform vec4		gDestructionTilesFactor;
+uniform float		gTimeFactor;
+uniform vec4        gWindFactor;
+uniform vec4	    gColorFactor0;
+uniform vec4	    gColorFactor1;
+uniform vec4	    gColorFactor2;
+uniform vec4	    gColorFactor3;
+uniform sampler2D	gBaseTexture;
+uniform sampler2D	gBumpTexture;
+uniform sampler2D	gDestructionTexture;
+uniform sampler2D	gColorTexture;
+uniform samplerCube gCubeTexture;
+uniform sampler3D	g3DNoiseTexture;
+
+//
+// Lights
+//
+uniform vec4		gLight0_Position;
+uniform vec4		gLight0_Direction;
+uniform vec4		gLight0_Color;
+uniform vec4		gLight0_Angle;
+uniform vec4		gLight0_Distance;
+
+uniform vec4		gLight1_Position;
+uniform vec4		gLight1_Direction;
+uniform vec4		gLight1_Color;
+uniform vec4		gLight1_Angle;
+uniform vec4		gLight1_Distance;
+
+uniform vec4		gLight2_Position;
+uniform vec4		gLight2_Direction;
+uniform vec4		gLight2_Color;
+uniform vec4		gLight2_Angle;
+uniform vec4		gLight2_Distance;
+
+///////////////////////////////////////////////////////////////////////////////
+vec3 lerpme(in vec3 x, in vec3 y, in float s)
+{
+ return x + s * (y - x); 
+}
+///////////////////////////////////////////////////////////////////////////////
+void main(void)
+{
+ vec4 DiffuseMap     = texture2D(gBaseTexture,	      gl_TexCoord[0].xy);
+ vec4 NormalMap      = texture2D(gBumpTexture,		  gl_TexCoord[0].xy);
+ vec4 DestructionMap = texture2D(gDestructionTexture, gl_TexCoord[0].zw);
+ vec4 FurMap		 = texture3D(g3DNoiseTexture,	  gl_TexCoord[1].xyz);
+
+ vec3 nmap      = normalize((NormalMap.xyz * 2.0) - 1.0);
+
+ if (gl_Color.a < 0.5)
+     nmap *= vec3(-1.0, -1.0, -1.0);
+
+ float Diffuse  = clamp(dot(nmap, gl_TexCoord[2].xyz), 0.0, 1.0);
+ float Specular = clamp(dot(nmap, gl_TexCoord[3].xyz), 0.0, 1.0);
+
+ vec3 SpecClr   = gSpecularColor.xyz * (pow(Specular, gSpecularColor.w) * NormalMap.a);
+
+ float dLerp    = clamp(gDestructionColor.a-DestructionMap.a, 0.0, 1.0);
+	   dLerp    = clamp(dLerp * 8.0, 0.0, 1.0) * DestructionMap.b;
+
+ vec3 DColor    = DestructionMap.r * gDestructionColor.rgb;
+ vec3 DMap      = lerpme(DiffuseMap.rgb, DColor.rgb, dLerp);
+
+ SpecClr       *= (1.0 - dLerp);
+
+ vec3 LCntrb    = Diffuse * gDiffuseColor.rgb;
+ 
+#ifndef DO_NOT_USE_DYNAMIC_LIGHTS 
+      LCntrb   += (clamp(dot(nmap, gl_TexCoord[4].xyz), 0.0, 1.0) * gl_TexCoord[4].w) * gLight0_Color.rgb;
+	  LCntrb   += (clamp(dot(nmap, gl_TexCoord[5].xyz), 0.0, 1.0) * gl_TexCoord[5].w) * gLight1_Color.rgb;
+	  LCntrb   += (clamp(dot(nmap, gl_TexCoord[6].xyz), 0.0, 1.0) * gl_TexCoord[6].w) * gLight2_Color.rgb;
+#endif	  
+
+ vec3 Result    = clamp(LCntrb.rgb + gAmbientColor.rgb, 0.0, 1.0);
+	  Result    = clamp((DMap.rgb * Result) + SpecClr, 0.0, 1.0);
+
+ gl_FragColor   = vec4(Result.xyz, clamp((FurMap.a * DiffuseMap.a) + gFurFactor.a, 0.0, 1.0));
+
+ return;
+}
+///////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,288 @@
+#ifndef COMMON_STEALING_ECH
+#define COMMON_STEALING_ECH
+
+//======================================
+
+#define THIEF_UID_ATTRIBUTE         "ThiefUID"
+#define STEALING_DONE_ATTRIBUTE     "Steal%d"
+#define STEAL_DONE_BEFORE           "translateCannotSteal"
+#define STEAL_FAILED                "translateStealingFailed"
+#define STEAL_NO_PLACE              "translateStealingNoPlace"
+#define STEAL_SUCCESS               "translateStealingSuccess"
+
+int nCurrentThiefUID;
+
+//======================================
+
+function string CreateStealRewardGold(unit uHero, unit uUnit) {
+
+    int i;
+    int nLevel;
+    string strObject;
+    nLevel = uHero.GetUnitLevel();
+    i=MIN(Rand(1+nLevel*2),25);
+    if(i<3)strObject = "ART_MONEY5";
+    else if(i<5) strObject ="ART_MONEY10";
+    else if(i<9) strObject ="ART_MONEY20";
+    else if(i<15) strObject ="ART_MONEY50";
+    else if(i<19) strObject ="ART_MONEY100";
+    else if(i<23) strObject ="ART_MONEY200";
+    else if(i<25) strObject ="ART_MONEY500";
+    else strObject ="ART_MONEY20";
+    return strObject;
+ 
+}
+
+function string CreateStealReward(unit uHero, unit uUnit) {
+
+    int i;
+    int v;
+    int nLevel;
+    string strObject;
+
+    nLevel = uHero.GetUnitLevel();
+    v = Rand(100);
+
+    if (v<20)
+    {
+        strObject ="LOCKPICK";
+        return strObject;
+    }
+    else if(v<70)
+    {   
+        i=Rand(100);
+        if(i<30) strObject = "POTION_HEALING_01";
+        else if(i<50) strObject = "POTION_MANA_01";
+        else if(i<60) strObject = "POTION_MANA_02";
+        else if(i<70) strObject = "POTION_MANA_03";
+        else if(i<80) strObject = "POTION_HEALING_02";
+        else if(i<90) strObject = "POTION_HEALING_03";
+        else if(i<91) strObject = "POTION_SKILL_TIME_01";
+        else if(i<92) strObject = "POTION_SKILL_TIME_02";
+        else if(i<93) strObject = "POTION_SKILL_TIME_03";
+        else if(i<94) strObject = "POTION_SKILL_TIME_04";
+        else if(i<95) strObject = "POTION_SKILL_TIME_05";
+        else if(i<96) strObject = "POTION_SKILL_01";
+        else if(i<97) strObject = "POTION_SKILL_02";
+        else if(i<98) strObject = "POTION_SKILL_03";
+        else if(i<99) strObject = "POTION_SKILL_04";
+        else strObject = "POTION_SKILL_05";
+        return strObject;        
+    }
+    else if(v<90)
+    {
+        strObject.Format("ING_%d",61+Rand(17));
+        return strObject;                
+    }
+    else
+    {
+        i=Rand(100);
+        if(i<12) strObject = "ART_ADD_POISON10";        //12%
+        else if(i<24) strObject = "ART_ADD_FIRE10";
+        else if(i<26) strObject = "ART_ADD_COLD10";
+        else if(i<48) strObject = "ART_ADD_ELECTRIC10";        
+        else if(i<60) strObject = "ART_ADD_SPIRIT10";
+
+        else if(i<66) strObject = "ART_ADD_POISON20";  //6%
+        else if(i<72) strObject = "ART_ADD_FIRE20";
+        else if(i<78) strObject = "ART_ADD_SPIRIT20";
+        else if(i<84) strObject = "ART_ADD_ELECTRIC20";
+        else if(i<90) strObject = "ART_ADD_COLD20";
+
+        else if(i<92) strObject = "ART_ADD_COLD50";    //2%
+        else if(i<94) strObject = "ART_ADD_FIRE50";
+        else if(i<96) strObject = "ART_ADD_ELECTRIC50";
+        else if(i<98) strObject = "ART_ADD_SPIRIT50";
+        else strObject = "ART_ADD_POISON50";
+        return strObject;
+    }
+    return "ART_MONEY5";
+}
+
+function string GetRealObjectName(string strItem) {
+
+    int i;
+    int nSize;
+    string str;
+    string strRealName;
+
+    i = 0;
+    str = strItem;
+    nSize = str.GetLength();
+    if (nSize < 1) return str;
+
+    while (i < nSize && GetChar(str,i) != '(') {
+
+        strRealName.Append(GetChar(str,i));
+        i++;
+        
+    }
+
+    return strRealName;
+
+}
+
+//======================================
+
+function void DisplayMessageStealingDoneBefore(unit uHero) {
+
+    GetCampaign().GetPlayerInterface(uHero.GetHeroPlayerNum()).SetConsoleText(STEAL_DONE_BEFORE,120,true,true);
+
+}
+
+function void DisplayMessageStealingFailed(unit uHero) {
+
+    GetCampaign().GetPlayerInterface(uHero.GetHeroPlayerNum()).SetConsoleText(STEAL_FAILED,120,true,true);
+
+}
+
+function void DisplayMessageStealingNoPlace(unit uHero) {
+
+    GetCampaign().GetPlayerInterface(uHero.GetHeroPlayerNum()).SetConsoleText(STEAL_NO_PLACE,120,true,true);
+
+}
+
+function int GetTotalNumberOfItems(string astrStolenItems[], string strItem) {
+
+    int i;
+    int nTotal;
+    string str;
+    nTotal = 0;
+    while (i < astrStolenItems.GetSize()) {
+        str = astrStolenItems[i];
+        if (str.EqualNoCase(strItem)) {
+            nTotal++;
+            astrStolenItems.RemoveAt(i);
+        }
+        else i++;    
+    }
+
+    return nTotal;
+
+}
+
+function void DisplayMessageStealingSuccessful(unit uHero, string astrStolenItems[]) {
+        
+    int i, count;
+    stringW strText;
+    stringW strN;
+    stringW strTemp;
+    stringW strNumber;
+    string str;    
+    string strItem;
+    int nItems;
+    
+    strText.Translate(STEAL_SUCCESS);
+    strN.Copy(":");
+    strText.Append(strN);
+    strN.Copy("\n - ");
+                        
+    while (astrStolenItems.GetSize()) {
+
+        strText.Append(strN);            
+
+        strItem = astrStolenItems[0];
+
+        nItems = GetTotalNumberOfItems(astrStolenItems,strItem);
+        if (nItems > 1) {
+            str.Format("%d x ",nItems);
+            strTemp.Copy(str);
+            strText.Append(strTemp);
+        }
+
+        str.Format("translate%s",strItem);
+        strTemp.Translate(str);
+        strText.Append(strTemp);    
+    
+    
+    }
+        
+//    GetCampaign().GetPlayerInterface(uHero.GetHeroPlayerNum()).SetConsoleText(STEAL_SUCCESS,120,true,true);
+    GetCampaign().GetPlayerInterface(uHero.GetHeroPlayerNum()).SetConsoleText(strText,120,true,true);
+
+}
+
+//======================================
+
+function void SetThiefUID(unit uHero) {
+
+    uHero.SetAttribute(THIEF_UID_ATTRIBUTE,nCurrentThiefUID);
+    nCurrentThiefUID++;
+    
+}
+
+function int GetThiefUID(unit uHero) {
+
+    int nThiefUID;
+    uHero.GetAttribute(THIEF_UID_ATTRIBUTE,nThiefUID);
+    return nThiefUID;
+    
+}
+
+function int StealingDoneBefore(unit uHero, unit uUnit) {
+
+    string attr;
+    int nUnitUID;
+        
+    attr.Format(STEALING_DONE_ATTRIBUTE,uHero.GetHeroPlayerNum());
+    if (uUnit.GetAttribute(attr,nUnitUID)) {
+        if (GetThiefUID(uHero) == nUnitUID) {                    
+            DisplayMessageStealingDoneBefore(uHero);
+            return true;    
+        }
+    }
+    return false;
+
+}
+
+function void SetStealingDone(unit uHero, unit uUnit) {
+
+    string attr;
+    
+    attr.Format(STEALING_DONE_ATTRIBUTE,uHero.GetHeroPlayerNum());
+    uUnit.SetAttribute(attr,GetThiefUID(uHero));
+
+}
+
+//======================================
+
+function int CanSteal(unit uHero, unit uUnit) {
+    
+    if (uUnit.IsInArmedMode()) return false;    
+    if (StealingDoneBefore(uHero,uUnit)) return false;
+    if (uUnit.GetNPCNameNum() < 1) return false;
+    return true;
+
+}
+
+//======================================
+
+function void Steal(unit uHero, unit uUnit, int nMinItems, int nMaxItems) {
+
+    int i;
+    int nItems;
+    string astrItems[];
+    string strItem;
+    int nGoldStolen;
+
+    nItems = nMinItems + Rand(1 + nMaxItems - nMinItems);
+    
+    nGoldStolen = false;
+    for (i = 0; i < nItems; i++) {
+        if (!nGoldStolen && Rand(2)) {
+            strItem = CreateStealRewardGold(uHero,uUnit);
+            nGoldStolen = true;
+        }
+        else strItem = CreateStealReward(uHero,uUnit);        
+        astrItems.Add(GetRealObjectName(strItem));
+        uHero.AddInventory(strItem,1);        
+    }
+      
+    DisplayMessageStealingSuccessful(uHero,astrItems);
+    SetStealingDone(uHero,uUnit);
+        
+}
+
+//======================================
+
+#endif

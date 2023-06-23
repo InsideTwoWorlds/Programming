@@ -1,0 +1,2278 @@
+#ifndef _QUESTS_COMMON_
+#define _QUESTS_COMMON_
+
+//======================================        
+
+#include "..\\..\\..\\Common\\Generic.ech"
+#include "..\\..\\..\\Common\\Quest.ech"
+#include "..\\..\\..\\Common\\Lock.ech"
+#include "..\\..\\..\\Common\\Levels.ech"
+#include "..\\..\\..\\Common\\Messages.ech"
+#include "..\\..\\..\\Common\\CreateStrings.ech"
+#include "PEnums.ech"
+#include "PUnitInfo.ech"
+
+#define LOG_TEXT_QUEST_TAKE           "translateQ_%d_QTD"
+#define LOG_TEXT_QUEST_SOLVE          "translateQ_%d_QSD"
+#define LOG_TEXT_QUEST_CLOSE          "translateQ_%d_QCD"
+
+#define CONSOLE_TEXT_QUEST_SOLVED     "translateQuestSolved"
+#define CONSOLE_TEXT_LOG_UPDATED      "translateQuestLogUpdated"
+#define CONSOLE_TEXT_QUEST_FAILED     "translateLogQuestFailed"
+
+#define LOG_TEXT_QUEST_FAIL           "translateLogQuestFailed"
+#define CONSOLE_TEXT_QUEST_FAIL       "translateConsoleQuestFailed"
+
+#define QUEST_DIALOG                  "translateDQ_%d"
+#define QUEST_NAME                    "translateQ_%d"
+#define SUPERQUEST                    "translateGROUP_%d"
+
+//======================================        
+
+consts {
+
+    eDontKnowWhen          = 0;
+    eWhenQuestEnabled      = 1;
+    eWhenQuestHeared       = 2;
+    eWhenQuestTaken        = 3;
+    eWhenQuestSolved       = 4;    
+    eWhenQuestClosed       = 5;
+    eWhenQuestFailed       = 6;
+    eWhenFighting          = 7;
+
+    eQuestNoGiver          = 0;
+    eQuestGiverActive      = 1;
+    eQuestGiverPassive     = 2;
+    eQuestGiverMarker      = 3;
+    
+    eQuestTypeUnknown      = 0;        
+    eQuestTypeGo           = 1;
+    eQuestTypeGoAway       = 2;
+    eQuestTypeFindPlace    = 3;
+    eQuestTypeFindLocation = 4;
+    eQuestTypeClearArea    = 5;    
+    eQuestTypeFindObject   = 6;        
+    eQuestTypeBringObject  = 7;
+    eQuestTypeBringGold    = 8;
+    eQuestTypeDeliverObject= 9;
+    eQuestTypeTalk         = 10;
+    eQuestTypeFindAndTalk  = 11;
+    eQuestTypeKill         = 12;
+    eQuestTypeFindAndKill  = 13;
+    eQuestTypeOpen         = 14;
+    eTotalQuestTypes       = 15;
+    
+    eQuestStateDisabled    = 0;
+    eQuestStateEnabled     = 1;
+    eQuestStateTaken       = 2;
+    eQuestStateSolved      = 3;
+    eQuestStateClosed      = 4;
+    eQuestStateFailed      = 5;
+    eQuestStateDisabledEnd = 6;
+
+    eBackToGiver           = 0x01;
+    eBackToGiverMapSign    = 0x02;
+    eAutoCloseOnSolve      = 0x04;   
+    eDontAddToLog          = 0x08;   
+    eQuestLoaded           = 0x10;  
+    eQuestUnderground      = 0x20;
+    eEnableActionsDone     = 0x40;
+        
+    eFirstTime             = 0x01;
+    eQuestNotTaken         = 0x02;
+    eQuestTaken            = 0x04;
+    eQuestClosed           = 0x08;
+    eQuestFailed           = 0x10;
+    eQuestLowReputation    = 0x20;
+    eQuestNotSolved        = 0x0100;
+    eQuestSolved           = 0x0200;      
+    eQuestFightNow         = 0x010000;    
+    eQuestTakeNow          = 0x020000;
+    eQuestCloseNow         = 0x040000;
+    eDialogInputFlags      = eFirstTime | eQuestNotTaken | eQuestTaken | eQuestClosed | eQuestFailed | eQuestLowReputation | eQuestSolved | eQuestNotSolved;
+        
+    eQuestDialogFirstTime  = 0;
+    eQuestDialogNotTaken   = 1;
+        
+    ePlaceNotVisited       = 0;
+    ePlaceVisited          = 1;        
+
+    eGateOpen              = 128;
+    eGateClosed            = 0;
+
+    eMapSignYellow         = 1;
+    eMapSignGreen          = 2;
+    eMapSignRed            = 3;
+    eMapSignBlue           = 4;
+    eMapSignBackToGiver    = 5;
+
+    eQuestInitialLevel     = -1;
+
+    eShowMessageBoxDelay   = 30 * 2;
+        
+}
+
+//======================================        
+// quests            
+
+int anQuestState[eQuestsNum];
+int anQuestType[eQuestsNum];
+int anQuestMission[eQuestsNum];
+int anQuestGroup[eQuestsNum];
+int anQuestFlags[eQuestsNum];
+
+// level
+int anQuestLevel[eQuestsNum];
+int anQuestEnableLevel[eQuestsNum];
+
+// quest params
+int anQuestObjectsNum[eQuestsNum];
+string astrQuestObject[eQuestsNum];
+int anQuestMarker[eQuestsNum];
+int anQuestParty[eQuestsNum];
+int anQuestRange[eQuestsNum];
+int anQuestUnitMapping[eQuestsNum];
+
+// quest givers
+int anQuestGiverType[eQuestsNum];
+int anQuestGiverMapping[eQuestsNum];
+int anQuestGiverMarker[eQuestsNum];
+int anQuestGiverMarkerMission[eQuestsNum];
+int anQuestGiverRange[eQuestsNum];
+int anQuestDialogState[eQuestsNum];
+
+// quest reputation
+int anQuestReputationGuild[eQuestsNum];
+int anQuestReputationLevel[eQuestsNum];
+
+// visited places
+int anPlaceMarker[];
+int anPlaceMission[];
+int anPlaceRange[];
+int anPlaceState[];
+int anPlaceQuest[];
+int nPlacesNumber;
+
+// map signs
+int anQuestMapSign[eTotalQuestTypes];
+
+// actions on solve after dialog (sic!)
+int anDoActionsOnSolveAfterDialog[eMaxPlayers];
+
+// container lockpicked
+int anContainerLockpicked[eMaxPlayers];
+
+// message boxes
+int anShowMessageBox[eMaxPlayers];
+
+//======================================        
+
+function void PromoteQuest(int nQuestNum, unit uHero);
+function void EnableQuest(int nQuestNum, unit uHero);
+function void DisableQuest(int nQuestNum, unit uHero);
+function void TakeQuest(int nQuestNum, unit uHero);
+function void SolveQuest(int nQuestNum, unit uHero, int nDoActions);
+function void SolveQuest(int nQuestNum, unit uHero);
+function void CloseQuest(int nQuestNum, unit uHero);
+function void FailCloseQuest(int nQuestNum, unit uHero);
+
+function void SetQuestUnknown(int nQuestNum);
+function void SetQuestGo(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange);
+function void SetQuestGoAway(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange);
+function void SetQuestFindPlace(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange);
+function void SetQuestFindLocation(int nQuestNum, string strLocation);
+function void SetQuestClearArea(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange, int nQuestParty);
+function void SetQuestFindObject(int nQuestNum, string strQuestObject);
+function void SetQuestBringObject(int nQuestNum, string strQuestObject, int nQuestObjectsNum);
+function void SetQuestBringGold(int nQuestNum, int nQuantity);
+function void SetQuestDeliverObject(int nQuestNum, string strQuestObject, int nQuestObjectsNum, int nMarker, int nMission, int nRange);
+function void SetQuestTalk(int nQuestNum, int nQuestUnitMapping);
+function void SetQuestFindAndTalk(int nQuestNum, int nQuestUnitMapping);
+function void SetQuestKill(int nQuestNum, int nQuestUnitMapping);
+function void SetQuestFindAndKill(int nQuestNum, int nQuestUnitMapping);
+function void SetQuestOpen(int nQuestNum, int nQuestMarker, int nQuestMission);
+
+function int FindLocation(string strName);
+function void AddLocation(string strName, int nX, int nY, int nMission, int nRange, int nSign);
+function void ShowLocation(string strName, int nHero, int nDisplayMessage);
+
+function void SetQuestState(int nQuestNum, int nHero, int nQuestState);
+function void SetQuestState(int nQuestNum, unit uHero, int nQuestState);
+function int GetQuestState(int nQuestNum, int nHero);
+function int GetQuestState(int nQuestNum, unit uHero);
+function int IsQuestDisabled(int nQuestNum);
+function int IsQuestMoreAdvancedThan(int nQuestNum, int nLastQuest);
+
+function void SetQuestDialogState(int nQuestNum, int nHero, int nQuestDialogState);
+function void SetQuestDialogState(int nQuestNum, unit uHero, int nQuestDialogState);
+function int GetQuestDialogState(int nQuestNum, int nHero);
+function int GetQuestDialogState(int nQuestNum, unit uHero);
+
+function void PlayQuestDialog(unit uDialogUnit, int nHero);
+function int GetDialogInputFlags(int nQuestNum, unit uHero);
+
+function void SetQuestTakenByHero(int nQuestNum, int nHero);
+function void SetQuestTakenByHero(int nQuestNum, unit uHero);
+function void ResetQuestTakenByHero(int nQuestNum, int nHero);
+function void ResetQuestTakenByHero(int nQuestNum, unit uHero);
+function int IsQuestTakenByHero(int nQuestNum, int nHero);
+function int IsQuestTakenByHero(int nQuestNum, unit uHero);
+function void ResetQuestSolvedByHero(int nQuestNum, int nHero);
+function void ResetQuestSolvedByHero(int nQuestNum, unit uHero);
+function int IsQuestSolvedByHero(int nQuestNum, int nHero);
+function int IsQuestSolvedByHero(int nQuestNum, unit uHero);
+
+//function void UpdateQuestLogAfterNPCTeleport(int nMapping);
+
+function void OpenGateOnSolveQuestKill(int nQuestNum);
+
+//======================================        
+
+#include "PCommon.ech"
+#include "PGates.ech"
+#include "PQuestUnits.ech"
+#include "PContainers.ech"
+#include "PQuestActions.ech"
+#include "PRewards.ech"
+#include "PQuestLoader.ech"
+#include "PLocations.ech"
+
+int nQuestsOn;
+
+//======================================        
+// debug
+
+#ifdef USE_COMMAND_DEBUG
+
+function void PrintQuestInfo(int nQuestNum) {
+
+    int nQuestGiverMapping;
+    int nQuestUnitMapping;
+    string str;
+
+    nQuestGiverMapping = anQuestGiverMapping[nQuestNum];
+
+    if (anQuestType[nQuestNum] == eQuestTypeUnknown) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: no finishing condition                                   \n",nQuestNum);
+        }
+        else {
+            TRACE("Quest %d giver %s: no finishing condition                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping]);                
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeGo) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: go to marker %d in mission %d range %d                                  \n",nQuestNum,anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestRange[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: go to marker %d in mission %d range %d                                  \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestRange[nQuestNum]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeGoAway) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: go away from marker %d in mission %d range %d                                  \n",nQuestNum,anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestRange[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: go away from marker %d in mission %d range %d                                  \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestRange[nQuestNum]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeFindPlace) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: find marker %d in mission %d range %d                                  \n",nQuestNum,anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestRange[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: find marker %d in mission %d range %d                                  \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestRange[nQuestNum]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeFindLocation) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: find location %s                                   \n",nQuestNum,astrQuestObject[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: find location %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],astrQuestObject[nQuestNum]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeClearArea) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: clear area around marker %d in mission %d from party %d                                   \n",nQuestNum,anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestParty[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: clear area around marker %d in mission %d from party %d                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestMarker[nQuestNum],anQuestMission[nQuestNum],anQuestParty[nQuestNum]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeFindObject) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: find %s                                   \n",nQuestNum,astrQuestObject[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: find %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],astrQuestObject[nQuestNum]);                
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeBringObject) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: bring %d %s(s) to %s                                   \n",nQuestNum,anQuestObjectsNum[nQuestNum],astrQuestObject[nQuestNum],astrUnitName[nQuestGiverMapping]);
+        }
+        else {
+            TRACE("Quest %d giver %s: bring %d %s(s) to %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestObjectsNum[nQuestNum],astrQuestObject[nQuestNum],astrUnitName[nQuestGiverMapping]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeBringGold) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: bring %d gold to %s                                   \n",nQuestNum,anQuestObjectsNum[nQuestNum],astrUnitName[nQuestGiverMapping]);
+        }
+        else {
+            TRACE("Quest %d giver %s: bring %d gold to %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestObjectsNum[nQuestNum],astrUnitName[nQuestGiverMapping]);
+        }
+    }    
+    if (anQuestType[nQuestNum] == eQuestTypeDeliverObject) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: deliver %d %s(s) to marker %d in mission %d                                  \n",nQuestNum,anQuestObjectsNum[nQuestNum],astrQuestObject[nQuestNum],anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: deliver %d %s(s) to marker %d in mission %d                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestObjectsNum[nQuestNum],astrQuestObject[nQuestNum],anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeTalk) {
+        nQuestUnitMapping = anQuestUnitMapping[nQuestNum];
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: talk to %s                                   \n",nQuestNum,astrUnitName[nQuestUnitMapping]);
+        }
+        else {
+            TRACE("Quest %d giver %s: talk to %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],astrUnitName[nQuestUnitMapping]);
+        }            
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeFindAndTalk) {
+        nQuestUnitMapping = anQuestUnitMapping[nQuestNum];
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: find and talk to %s                                   \n",nQuestNum,astrUnitName[nQuestUnitMapping]);
+        }
+        else {
+            TRACE("Quest %d giver %s: find and talk to %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],astrUnitName[nQuestUnitMapping]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeKill) {
+        nQuestUnitMapping = anQuestUnitMapping[nQuestNum];
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: kill %s                                   \n",nQuestNum,astrUnitName[nQuestUnitMapping]);
+        }
+        else {
+            TRACE("Quest %d giver %s: kill %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],astrUnitName[nQuestUnitMapping]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeFindAndKill) {
+        nQuestUnitMapping = anQuestUnitMapping[nQuestNum];
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: find and kill %s                                   \n",nQuestNum,astrUnitName[nQuestUnitMapping]);
+        }
+        else {
+            TRACE("Quest %d giver %s: find and kill %s                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],astrUnitName[nQuestUnitMapping]);
+        }
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeOpen) {
+        if (nQuestGiverMapping == eNoUnit) {
+            TRACE("Quest %d with no giver: open gate %d in mission %d                                   \n",nQuestNum,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+        }
+        else {
+            TRACE("Quest %d giver %s: open gate %d in mission %d                                   \n",nQuestNum,astrUnitName[nQuestGiverMapping],anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+        }
+    }
+
+}
+
+function int CheckQuestFinishingCondition(int nQuestNum) {
+
+    int nType;
+    
+    nType = anQuestType[nQuestNum];
+    
+    if (nType == eQuestTypeUnknown) return true;
+    if (nType == eQuestTypeGo) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_GO,anQuestMarker[nQuestNum])) {
+            TRACE("Quest Go %d: can't find %s %d in mission %d                \n",nQuestNum,MARKER_QUEST_GO,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        if (anQuestRange[nQuestNum] <= 0) {
+            TRACE("Quest Go %d: range = %d                                    \n",nQuestNum,anQuestRange[nQuestNum]);
+            return false;
+        }
+        return true;    
+    }
+    if (nType == eQuestTypeGo) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_GO,anQuestMarker[nQuestNum])) {
+            TRACE("Quest Go %d: can't find %s %d in mission %d                \n",nQuestNum,MARKER_QUEST_GO,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        if (anQuestRange[nQuestNum] <= 0) {
+            TRACE("Quest Go %d: range = %d                                    \n",nQuestNum,anQuestRange[nQuestNum]);
+            return false;
+        }
+        return true;    
+    }
+    if (nType == eQuestTypeGoAway) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_GO_AWAY,anQuestMarker[nQuestNum])) {
+            TRACE("Quest GoAway %d: can't find %s %d in mission %d                \n",nQuestNum,MARKER_QUEST_GO_AWAY,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        if (anQuestRange[nQuestNum] <= 0) {
+            TRACE("Quest GoAway %d: range = %d                                    \n",nQuestNum,anQuestRange[nQuestNum]);
+            return false;
+        }
+        return true;    
+    }
+    if (nType == eQuestTypeFindPlace) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_FIND_PLACE,anQuestMarker[nQuestNum])) {
+            TRACE("Quest Find Place %d: can't find %s %d in mission %d                 \n",nQuestNum,MARKER_QUEST_FIND_PLACE,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        if (anQuestRange[nQuestNum] <= 0) {
+            TRACE("Quest Find Place %d: range = %d                                    \n",nQuestNum,anQuestRange[nQuestNum]);
+            return false;
+        }
+        return true;            
+    }
+    if (nType == eQuestTypeFindLocation) {
+        if (!FindLocation(astrQuestObject[nQuestNum])) {
+            TRACE("Quest Find Location %d: can't find %s                       \n",nQuestNum,astrQuestObject[nQuestNum]);
+            return false;
+        }    
+        return true;            
+    }
+    if (nType == eQuestTypeClearArea) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_CLEAR_AREA,anQuestMarker[nQuestNum])) {
+            TRACE("Quest Clear Area %d: can't find %s %d in mission %d                 \n",nQuestNum,MARKER_QUEST_CLEAR_AREA,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        if (anQuestRange[nQuestNum] <= 0) {
+            TRACE("Quest Clear Area %d: range = %d                                    \n",nQuestNum,anQuestRange[nQuestNum]);
+            return false;
+        }
+        if (anQuestParty[nQuestNum] < 0) {
+            TRACE("Quest Clear Area %d: party = %d                                    \n",nQuestNum,anQuestParty[nQuestNum]);
+            return false;
+        }
+        return true;            
+    }
+    if (nType == eQuestTypeFindObject) {
+        if (anQuestObjectsNum[nQuestNum] <= 0) {
+            TRACE("Quest Find Object %d: objects num = %d                                    \n",nQuestNum,anQuestObjectsNum[nQuestNum]);
+            return false;                
+        }
+        return true;
+    }
+    if (nType == eQuestTypeBringObject) {
+        if (anQuestObjectsNum[nQuestNum] <= 0) {
+            TRACE("Quest Bring Object %d: objects num = %d                                    \n",nQuestNum,anQuestObjectsNum[nQuestNum]);
+            return false;                
+        }
+        return true;
+    }
+    if (nType == eQuestTypeBringGold) {
+        if (anQuestObjectsNum[nQuestNum] <= 0) {
+            TRACE("Quest Bring Gold %d: objects num = %d                                    \n",nQuestNum,anQuestObjectsNum[nQuestNum]);
+            return false;                
+        }
+        return true;
+    }
+    if (nType == eQuestTypeDeliverObject) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_DELIVER_OBJECT,anQuestMarker[nQuestNum])) {
+            TRACE("Quest Deliver Object %d: can't find %s %d in mission %d                 \n",nQuestNum,MARKER_QUEST_DELIVER_OBJECT,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        if (anQuestRange[nQuestNum] <= 0) {
+            TRACE("Quest Deliver Object %d: range = %d                                    \n",nQuestNum,anQuestRange[nQuestNum]);
+            return false;
+        }
+        if (anQuestObjectsNum[nQuestNum] <= 0) {
+            TRACE("Quest Deliver Object %d: objects num = %d                                    \n",nQuestNum,anQuestObjectsNum[nQuestNum]);
+            return false;                
+        }
+        return true;                    
+    }
+    if (nType == eQuestTypeTalk) {
+        if (anQuestUnitMapping[nQuestNum] == eNoMapping) {
+            TRACE("Quest Talk %d: can't find quest unit                          \n",nQuestNum);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eQuestTypeFindAndTalk) {
+        if (anQuestUnitMapping[nQuestNum] == eNoMapping) {
+            TRACE("Quest Find And Talk %d: can't find quest unit                          \n",nQuestNum);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eQuestTypeKill) {
+        if (anQuestUnitMapping[nQuestNum] == eNoMapping) {
+            TRACE("Quest Kill %d: can't find quest unit                          \n",nQuestNum);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eQuestTypeFindAndKill) {
+        if (anQuestUnitMapping[nQuestNum] == eNoMapping) {
+            TRACE("Quest Find And Kill %d: can't find quest unit                          \n",nQuestNum);
+            return false;
+        }
+        return true;
+    }
+    if (nType == eQuestTypeOpen) {
+        if (!GetCampaign().GetMission(anQuestMission[nQuestNum]).HaveMarker(MARKER_QUEST_OPEN,anQuestMarker[nQuestNum])) {
+            TRACE("Quest Open %d: can't find %s %d in mission %d                 \n",nQuestNum,MARKER_QUEST_OPEN,anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+            return false;
+        }    
+        return true;                    
+    }
+
+    return true;
+
+}
+
+function int CheckQuestGiver(int nQuestNum) {
+
+    int nType;
+    
+    nType = anQuestGiverType[nQuestNum];
+    if (nType == eQuestNoGiver) return true;
+    if (nType == eQuestGiverActive || nType == eQuestGiverPassive) {
+        if (anQuestGiverMapping[nQuestNum] == eNoMapping) {
+            TRACE("Quest %d: no quest giver found                      \n",nQuestNum);
+            return false;
+        }
+        return true;    
+    }
+    if (nType == eQuestGiverMarker) {
+        if (!GetCampaign().GetMission(anQuestGiverMarkerMission[nQuestNum]).HaveMarker(MARKER_QUEST_GIVER,anQuestGiverMarker[nQuestNum])) {
+            TRACE("Quest %d: %s %d not found                       \n",nQuestNum,MARKER_QUEST_GIVER,anQuestGiverMarker[nQuestNum]);
+            return false;
+        }   
+        return true;
+    }
+
+    return true;
+
+}
+
+function int CheckQuestTranslates(int nQuestNum) {
+
+    string str;
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return true;
+
+    // take
+    str.Format(LOG_TEXT_QUEST_TAKE,nQuestNum + eFirstQuest);
+    if (!CheckTranslate(str)) {
+        TRACE("Quest %d: can't find %s                \n",nQuestNum,str);
+        return false;
+    }
+
+    // solve
+    if ((anQuestFlags[nQuestNum] & eBackToGiver) || (anQuestFlags[nQuestNum] & eBackToGiverMapSign)) {
+        str.Format(LOG_TEXT_QUEST_SOLVE,nQuestNum + eFirstQuest);
+        if (!CheckTranslate(str)) {
+            TRACE("Quest %d: can't find %s                \n",nQuestNum,str);
+            return false;
+        }
+    }
+// Nie sprawdzac jak bez givera lub jak jest quest giver ale jest flaga Auto close on solve
+   if(anQuestGiverType[nQuestNum] == eQuestGiverMarker || (anQuestFlags[nQuestNum] & eAutoCloseOnSolve)) return true;
+    // close
+    str.Format(LOG_TEXT_QUEST_CLOSE,nQuestNum + eFirstQuest);
+    if (!CheckTranslate(str)) {
+        TRACE("Quest %d: can't find %s                \n",nQuestNum,str);
+        return false;
+    }
+
+    return true;
+
+}
+
+function int CheckQuestConditions() {
+
+    int i;
+    int nFlag;
+    
+    nFlag = true;
+
+    for (i = 0; i < eQuestsNum; i++) {
+        if ((anQuestFlags[i] & eQuestLoaded) == 0) continue;
+        nFlag &= CheckQuestFinishingCondition(i);
+        nFlag &= CheckQuestActions(i);
+        nFlag &= CheckQuestGiver(i);    
+        nFlag &= CheckQuestTranslates(i);
+    }
+
+    return nFlag;
+
+}
+
+function int CheckSingleQuest(int nQuestNum) {
+
+    int nFlag;
+    
+    nFlag = true;
+
+    if ((anQuestFlags[nQuestNum] & eQuestLoaded) == 0) return true;
+    nFlag &= CheckQuestFinishingCondition(nQuestNum);
+    nFlag &= CheckQuestActions(nQuestNum);
+    nFlag &= CheckQuestGiver(nQuestNum);    
+    nFlag &= CheckQuestTranslates(nQuestNum);
+
+    return nFlag;
+
+}
+
+#endif
+
+//======================================        
+
+function void ContainerLockpicked(unit uHero) {
+
+    int i;
+    int count;
+    int anParties[];
+    unit uHouse;
+    
+//    TRACE("ContainerLockpicked");
+    
+    for (i = ePartyHumans; i <= ePartyLastVillage; i++) anParties.Add(i);
+    uHero.SearchUnits(M2A(16),anParties);
+    count = uHero.GetSearchUnitsCount();
+
+//    TRACE("Units found: %d                    \n",count);
+    if (count == 0) return;
+    uHouse = uHero.GetHouseWithObject();
+
+    for (i = 0; i < count; i++) {
+        if (uHero.GetSearchUnit(i).GetHouseWithObject() == uHouse) {
+            uHero.GetSearchUnit(i).CommandAttack(uHero);        
+        }
+    }
+    uHero.ClearSearchUnitsArray();
+    
+}
+
+function void ProcessContainerLockpicked() {
+
+    int i;
+
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        if (IsPlayer(i) && anContainerLockpicked[i]) ContainerLockpicked(GetHero(i));            
+        anContainerLockpicked[i] = false;    
+    }
+
+    for (i = GetPlayersCnt(); i < eMaxPlayers; i++) anContainerLockpicked[i] = false;
+
+}
+
+function void ShowMessageBox() {
+
+    int i;
+    
+    for (i = 0; i < GetPlayersCnt(); i++) 
+        if (anShowMessageBox[i] && (GetCampaign().GetGameTick() - anShowMessageBox[i] > eShowMessageBoxDelay)) {
+            anShowMessageBox[i] = 0;
+            GetPlayerInterface(i).MessageBox(NOT_ENOUGH_SPACE,MB_OK,true,0,0);
+        }
+    
+    for (i = GetPlayersCnt(); i < eMaxPlayers; i++) anShowMessageBox[i] = 0;        
+
+}        
+        
+//======================================        
+// places to find
+
+function int CheckPlaceAfterQuestTaken(int nQuestNum) {
+
+#ifdef QUESTS_SINGLE
+    if (nQuestNum == 179) return true;
+#endif
+    return false;
+    
+}    
+
+function void AddPlaceToFind(int nMarker, int nMission, int nRange, int nQuestNum) {
+
+    anPlaceMarker.Add(nMarker);
+    anPlaceMission.Add(nMission);
+    anPlaceRange.Add(nRange);
+    anPlaceState.Add(ePlaceNotVisited);
+    if (CheckPlaceAfterQuestTaken(nQuestNum)) anPlaceQuest.Add(nQuestNum);
+    else anPlaceQuest.Add(eNoQuest);
+
+    nPlacesNumber = anPlaceMarker.GetSize();
+
+}    
+ 
+function int IsPlaceVisited(int nMarker, int nMission) {
+
+    int i;
+    for (i = 0; i < nPlacesNumber; i++) if ((anPlaceMarker[i] == nMarker) && (anPlaceMission[i] == nMission) && (anPlaceState[i] == ePlaceVisited)) return true;
+    return false;        
+
+} 
+ 
+function void CheckPlaces(unit uHero) {
+
+    int i;
+    int nMission;
+    int nX, nY;
+    mission pMission;
+
+    ASSERT(uHero != null);
+    
+    pMission = uHero.GetMission();
+    nMission = pMission.GetMissionNum();
+    for (i = 0; i < nPlacesNumber; i++) {
+        if (anPlaceState[i] == ePlaceVisited) continue;
+        if (anPlaceMission[i] != nMission) continue;
+        if (anPlaceQuest[i] != eNoQuest) {
+            if (anQuestState[anPlaceQuest[i]] != eQuestStateTaken) continue;
+        }        
+        if (!pMission.GetMarker(MARKER_QUEST_FIND_PLACE,anPlaceMarker[i],nX,nY)) continue;
+        if (uHero.DistanceTo(nX,nY) < anPlaceRange[i]) anPlaceState[i] = ePlaceVisited;       
+    }
+
+}
+
+//======================================        
+// set quests
+
+function void SetQuestUnknown(int nQuestNum) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestUnknown(%d)                                   \n",nQuestNum);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeUnknown;
+
+}
+
+function void SetQuestGo(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestGo(%d,%d,%d,%d)                                   \n",nQuestNum,nQuestMarker,nQuestMission,nQuestRange);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeGo;
+    anQuestMarker[nQuestNum] = nQuestMarker;
+    anQuestMission[nQuestNum] = nQuestMission;
+    anQuestRange[nQuestNum] = nQuestRange;
+
+}
+
+function void SetQuestGoAway(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestGoAway(%d,%d,%d,%d)                                   \n",nQuestNum,nQuestMarker,nQuestMission,nQuestRange);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeGoAway;
+    anQuestMarker[nQuestNum] = nQuestMarker;
+    anQuestMission[nQuestNum] = nQuestMission;
+    anQuestRange[nQuestNum] = nQuestRange;
+
+}
+
+function void SetQuestFindPlace(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestFindPlace(%d,%d,%d,%d)                                   \n",nQuestNum,nQuestMarker,nQuestMission,nQuestRange);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeFindPlace;
+    anQuestMarker[nQuestNum] = nQuestMarker;
+    anQuestMission[nQuestNum] = nQuestMission;
+    anQuestRange[nQuestNum] = nQuestRange;
+    
+    AddPlaceToFind(nQuestMarker,nQuestMission,nQuestRange,nQuestNum);
+    
+}
+
+function void SetQuestFindLocation(int nQuestNum, string strLocation) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestFindLocation(%d,%s)                                   \n",nQuestNum,strLocation);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeFindLocation;
+    astrQuestObject[nQuestNum] = strLocation;
+    
+}
+
+function void SetQuestClearArea(int nQuestNum, int nQuestMarker, int nQuestMission, int nQuestRange, int nQuestParty) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestClearArea(%d,%d,%d,%d,%d)                                   \n",nQuestNum,nQuestMarker,nQuestMission,nQuestRange,nQuestParty);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeClearArea;
+    anQuestMarker[nQuestNum] = nQuestMarker; 
+    anQuestMission[nQuestNum] = nQuestMission;
+    anQuestRange[nQuestNum] = nQuestRange;
+    anQuestParty[nQuestNum] = nQuestParty;
+     
+}
+
+function void SetQuestFindObject(int nQuestNum, string strQuestObject) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestFindObject(%d,%s)                                   \n",nQuestNum,strQuestObject);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeFindObject;
+    astrQuestObject[nQuestNum] = strQuestObject;
+    anQuestObjectsNum[nQuestNum] = 1;
+            
+}
+
+function void SetQuestBringObject(int nQuestNum, string strQuestObject, int nQuestObjectsNum) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestBringObject(%d,%s",nQuestNum,strQuestObject);
+    TRACE(",%d)                                   \n",nQuestObjectsNum);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeBringObject;
+    astrQuestObject[nQuestNum] = strQuestObject;
+    anQuestObjectsNum[nQuestNum] = nQuestObjectsNum;
+            
+}
+
+function void SetQuestBringGold(int nQuestNum, int nQuantity) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestBringGold(%d,%d)                                   \n",nQuestNum,nQuantity);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeBringGold;
+    anQuestObjectsNum[nQuestNum] = nQuantity;
+            
+}
+
+function void SetQuestDeliverObject(int nQuestNum, string strQuestObject, int nQuestObjectsNum, int nMarker, int nMission, int nRange) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestDeliverObject(%d,%s",nQuestNum,strQuestObject);
+    TRACE(",%d,%d,%d,%d)                                   \n",nQuestObjectsNum,nMarker,nMission,nRange);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeDeliverObject;
+    astrQuestObject[nQuestNum] = strQuestObject;
+    anQuestObjectsNum[nQuestNum] = nQuestObjectsNum;
+    anQuestMarker[nQuestNum] = nMarker;
+    anQuestMission[nQuestNum] = nMission;
+    anQuestRange[nQuestNum] = nRange;
+            
+}
+ 
+function void SetQuestTalk(int nQuestNum, int nQuestUnitMapping) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestTalk(%d,%d)                                   \n",nQuestNum,nQuestUnitMapping);
+#endif
+    
+    if(nQuestUnitMapping<0 ||nQuestUnitMapping>anUnitMission.GetSize())return;//xxxmd
+    anQuestType[nQuestNum] = eQuestTypeTalk;
+    anQuestUnitMapping[nQuestNum] = nQuestUnitMapping;
+
+}
+
+function void SetQuestFindAndTalk(int nQuestNum, int nQuestUnitMapping) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestFindAndTalk(%d,%d)                                   \n",nQuestNum,nQuestUnitMapping);
+#endif
+
+    if(nQuestUnitMapping<0 ||nQuestUnitMapping>anUnitMission.GetSize())return;//xxxmd    
+    anQuestType[nQuestNum] = eQuestTypeFindAndTalk;
+    anQuestUnitMapping[nQuestNum] = nQuestUnitMapping;
+
+}
+
+function void SetQuestKill(int nQuestNum, int nQuestUnitMapping) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestKill(%d,%d)                                   \n",nQuestNum,nQuestUnitMapping);
+#endif
+
+    if(nQuestUnitMapping<0 ||nQuestUnitMapping>anUnitMission.GetSize())return;//xxxmd
+    anQuestType[nQuestNum] = eQuestTypeKill;
+    anQuestUnitMapping[nQuestNum] = nQuestUnitMapping;
+
+}
+
+function void SetQuestFindAndKill(int nQuestNum, int nQuestUnitMapping) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestFindAndKill(%d,%d)                                   \n",nQuestNum,nQuestUnitMapping);
+#endif
+    
+    if(nQuestUnitMapping<0 ||nQuestUnitMapping>anUnitMission.GetSize())return;//xxxmd
+    anQuestType[nQuestNum] = eQuestTypeFindAndKill;
+    anQuestUnitMapping[nQuestNum] = nQuestUnitMapping;
+
+}
+
+function void SetQuestOpen(int nQuestNum, int nQuestMarker, int nQuestMission) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestOpen(%d,%d,%d)                                   \n",nQuestNum,nQuestMarker,nQuestMission);
+#endif
+
+    anQuestType[nQuestNum] = eQuestTypeOpen;
+    anQuestMarker[nQuestNum] = nQuestMarker;
+    anQuestMission[nQuestNum] = nQuestMission;
+
+}
+
+//======================================        
+// quest log and map
+
+function void InitializeMapSigns() {
+
+    anQuestMapSign[eQuestTypeUnknown] = eMapSignGreen;
+    anQuestMapSign[eQuestTypeGo] = eMapSignYellow;
+    anQuestMapSign[eQuestTypeGoAway] = eMapSignYellow;
+    anQuestMapSign[eQuestTypeFindPlace] = eMapSignGreen;
+    anQuestMapSign[eQuestTypeFindLocation] = eMapSignGreen;
+    anQuestMapSign[eQuestTypeClearArea] = eMapSignRed;
+    anQuestMapSign[eQuestTypeFindObject] = eMapSignBlue;
+    anQuestMapSign[eQuestTypeBringObject] = eMapSignBlue;
+    anQuestMapSign[eQuestTypeBringGold] = eMapSignBlue;
+    anQuestMapSign[eQuestTypeDeliverObject] = eMapSignYellow;
+    anQuestMapSign[eQuestTypeTalk] = eMapSignGreen;
+    anQuestMapSign[eQuestTypeFindAndTalk] = eMapSignGreen;
+    anQuestMapSign[eQuestTypeKill] = eMapSignRed;
+    anQuestMapSign[eQuestTypeFindAndKill] = eMapSignRed;
+    anQuestMapSign[eQuestTypeOpen] = eMapSignYellow;
+
+}
+
+function void LogQuestTaken(int nQuestNum, unit uHero) {
+
+    mission pMission;
+    int nX, nY;
+    string str;
+    string str1;
+    string name;
+    int nType;
+    int nMapping;
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return;    
+
+    nType = anQuestType[nQuestNum];
+    nX = eNoCoord;
+    nY = eNoCoord;
+    
+    if ((nType == eQuestTypeClearArea) || (nType == eQuestTypeGo) || (nType == eQuestTypeGoAway) || (nType == eQuestTypeDeliverObject)) {
+    
+        pMission = GetCampaign().GetMission(anQuestMission[nQuestNum]); // uwaga na nazwe markera!!!
+        if (!pMission.GetMarker(MARKER_QUEST_POINT,anQuestMarker[nQuestNum],nX,nY)) {
+            nX = eNoCoord;
+            nY = eNoCoord;
+        }
+    
+    }
+    
+    if ((nType == eQuestTypeFindObject) || (nType == eQuestTypeFindPlace) || (nType == eQuestTypeFindLocation) || (nType == eQuestTypeFindAndTalk) || (nType == eQuestTypeFindAndKill) || (nType == eQuestTypeUnknown)) {
+    
+        pMission = uHero.GetMission();
+        nX = uHero.GetLocationX();
+        nY = uHero.GetLocationY();
+    
+    }
+
+    if ((nType == eQuestTypeBringObject) || (nType == eQuestTypeBringGold)) {
+   
+        pMission = GetQuestUnitMission(anQuestGiverMapping[nQuestNum]);
+        GetQuestUnitPosition(anQuestGiverMapping[nQuestNum],nX,nY);
+    
+    }
+
+    if ((nType == eQuestTypeTalk) || (nType == eQuestTypeKill)) {
+      
+        pMission = GetQuestUnitMission(anQuestUnitMapping[nQuestNum]);
+        GetQuestUnitPosition(anQuestUnitMapping[nQuestNum],nX,nY);
+    
+    }
+
+    if (nType == eQuestTypeOpen) {
+    
+        pMission = GetCampaign().GetMission(anQuestMission[nQuestNum]);
+        if (!pMission.GetMarker(MARKER_QUEST_OPEN,anQuestMarker[nQuestNum],nX,nY)) {
+            nX = eNoCoord;
+            nY = eNoCoord;
+        }
+    
+    }
+
+    if ((nX != eNoCoord) && (nY != eNoCoord)) {
+        
+        QuestConsoleTextOut(uHero.GetHeroPlayerNum(),FormatTranslateQuestInfo(QUEST_NAME,CONSOLE_TEXT_LOG_UPDATED,nQuestNum + eFirstQuest));
+        GetPlayerInterface(uHero.GetHeroPlayerNum()).PlayWave("QUEST_GIVEN");
+        
+        str.Format(LOG_TEXT_QUEST_TAKE,nQuestNum + eFirstQuest);  
+        name.Format(QUEST_NAME,nQuestNum + eFirstQuest);              
+
+        GetPlayerInterface(uHero.GetHeroPlayerNum()).AddQuest(anQuestGroup[nQuestNum],nQuestNum,name,str,str,anQuestMapSign[nType],anQuestMapSign[nType],pMission,nX,nY,eQuestStateActive);
+
+//        GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestsDirTitle(anQuestGroup[nQuestNum],name);
+
+#ifndef QUESTS_MULTI        
+        str1.Format(SUPERQUEST,anQuestGroup[nQuestNum]);
+#else
+        str1.Format("translate%s",GetMissionName());
+#endif        
+        GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestsDirTitle(anQuestGroup[nQuestNum],str1);
+    
+        AddLocationQuestUnderground(pMission,nQuestNum,uHero.GetHeroPlayerNum());
+    
+    }
+            
+}
+
+function void LogQuestSolved(int nQuestNum, unit uHero) {
+
+    string str;
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return;
+
+    QuestConsoleTextOut(uHero.GetHeroPlayerNum(),FormatTranslateQuestInfo(QUEST_NAME,CONSOLE_TEXT_QUEST_SOLVED,nQuestNum + eFirstQuest));
+    // uwaga!!!
+    if (anQuestType[nQuestNum] != eQuestTypeTalk && anQuestType[nQuestNum] != eQuestTypeFindAndTalk) GetPlayerInterface(uHero.GetHeroPlayerNum()).PlayWave("QUEST_SOLVED");
+
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestQuestsMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestMapIconNum(nQuestNum,-1);
+    str.Format(LOG_TEXT_QUEST_SOLVE,nQuestNum + eFirstQuest);      
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestTooltipDescription(nQuestNum,str);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestDescription(nQuestNum,str);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestState(nQuestNum,eQuestStateSolved);
+
+    RemoveLocationQuestUnderground(nQuestNum,uHero.GetHeroPlayerNum());
+
+}
+
+function void LogQuestGoBack(int nQuestNum, unit uHero) {
+
+    int nX, nY;
+    mission pMission;
+    string str;
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return;
+
+    QuestConsoleTextOut(uHero.GetHeroPlayerNum(),FormatTranslateQuestInfo(QUEST_NAME,CONSOLE_TEXT_QUEST_SOLVED,nQuestNum + eFirstQuest));
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).PlayWave("QUEST_SOLVED");
+
+    GetQuestUnitPosition(anQuestGiverMapping[nQuestNum],nX,nY);    
+    pMission = GetQuestUnitMission(anQuestGiverMapping[nQuestNum]);
+  
+    str.Format(LOG_TEXT_QUEST_SOLVE,nQuestNum + eFirstQuest);         
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestTooltipDescription(nQuestNum,str);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestDescription(nQuestNum,str);    
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestPosition(nQuestNum,pMission,nX,nY);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestMapIconNum(nQuestNum,eMapSignBackToGiver);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestQuestsMapIconNum(nQuestNum,eMapSignBackToGiver);
+
+    RemoveLocationQuestUnderground(nQuestNum,uHero.GetHeroPlayerNum());
+
+}
+
+function void LogQuestClosed(int nQuestNum, unit uHero) {
+
+    string str;
+
+    if (anQuestGiverMapping[nQuestNum] != eNoMapping) SetIsDialogUnit(auQuestUnits[anQuestGiverMapping[nQuestNum]]);
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return;
+
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestQuestsMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestState(nQuestNum,eQuestStateSolved);
+  
+    str.Format(LOG_TEXT_QUEST_CLOSE,nQuestNum + eFirstQuest);
+    if (CheckTranslate(str)) GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestDescription(nQuestNum,str);
+
+    RemoveLocationQuestUnderground(nQuestNum,uHero.GetHeroPlayerNum());
+
+}
+
+function void LogQuestFailed(int nQuestNum, unit uHero) {
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return;
+
+    QuestConsoleTextOut(uHero.GetHeroPlayerNum(),FormatTranslateQuestInfo(QUEST_NAME,CONSOLE_TEXT_QUEST_FAILED,nQuestNum + eFirstQuest));
+
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestQuestsMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestState(nQuestNum,eQuestStateSolved);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestDescription(nQuestNum,LOG_TEXT_QUEST_FAIL);
+
+    RemoveLocationQuestUnderground(nQuestNum,uHero.GetHeroPlayerNum());
+    
+}
+
+function void RemoveQuestFromMap(int nQuestNum, unit uHero) {
+
+    if (anQuestFlags[nQuestNum] & eDontAddToLog) return;
+
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestQuestsMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).SetQuestMapIconNum(nQuestNum,-1);
+    GetPlayerInterface(uHero.GetHeroPlayerNum()).RemoveQuest(nQuestNum);
+
+    RemoveLocationQuestUnderground(nQuestNum,uHero.GetHeroPlayerNum());
+
+}
+
+//======================================        
+/*
+function void UpdateQuestLogAfterNPCTeleport(int nMapping) {
+
+    int i;
+    int nX, nY;
+    int nType;
+    int nHero;
+    mission pMission;
+
+    for (nHero = 0; nHero < GetPlayersCnt(); nHero++) {
+    
+        if (!IsPlayer(nHero)) continue;
+        for (i = 0; i < eQuestsNum; i++) if (IsQuestTakenByHero(i,nHero)) {
+            nType = anQuestType[i];
+            if (((nType == eQuestTypeBringObject || nType == eQuestTypeBringGold) && nMapping == anQuestGiverMapping[i]) || ((nType == eQuestTypeTalk || nType == eQuestTypeKill) && nMapping == anQuestUnitMapping[i])) {
+                GetQuestUnitPosition(nMapping,nX,nY);
+                pMission = GetQuestUnitMission(nMapping);
+                GetPlayerInterface(nHero).SetQuestPosition(i,pMission,nX,nY);                                 
+            }                    
+        }
+    
+    }
+
+}
+*/
+function void UpdateQuestUnitPosition(int nHero, int nQuestNum, int nMapping) {
+
+    unit uUnit;   
+    uUnit = auQuestUnits[nMapping];
+    if (uUnit == null) return;
+    GetPlayerInterface(nHero).SetQuestPosition(nQuestNum,uUnit.GetMission(),uUnit.GetLocationX(),uUnit.GetLocationY());
+
+}
+
+function void UpdateQuestUnitsPositions() {
+
+    int nHero;
+    int i;
+    int nType;
+ 
+    for (nHero = 0; nHero < GetPlayersCnt(); nHero++) {
+        if (!IsPlayer(nHero)) continue;
+        for (i = 1; i < eQuestsNum; i++) {
+            if (anQuestFlags[i] & eDontAddToLog) continue;
+            if (GetQuestState(i,nHero) == eQuestStateTaken) {
+                nType = anQuestType[i];
+                if (nType == eQuestTypeBringObject || nType == eQuestTypeBringGold) UpdateQuestUnitPosition(nHero,i,anQuestGiverMapping[i]);
+                if (nType == eQuestTypeTalk || nType == eQuestTypeKill) UpdateQuestUnitPosition(nHero,i,anQuestUnitMapping[i]);            
+            }
+            else if ((GetQuestState(i,nHero) == eQuestStateSolved) && (anQuestFlags[i] & eBackToGiverMapSign)) {
+                UpdateQuestUnitPosition(nHero,i,anQuestGiverMapping[i]);
+            }
+        }    
+    }  
+
+}
+
+//======================================        
+// quest finishing conditions
+
+function int CheckQuestFindPlace(int nQuestNum) {
+
+    return IsPlaceVisited(anQuestMarker[nQuestNum],anQuestMission[nQuestNum]);
+
+}
+
+function int CheckQuestFindLocation(int nQuestNum, unit uHero) {
+
+    ASSERT(uHero != null);    
+    return IsLocationVisibleByHero(astrQuestObject[nQuestNum],uHero.GetHeroPlayerNum());
+    
+}
+
+function void RemoveQuestObjects(int nQuestNum, unit uHero) {
+
+    int i;
+    
+    ASSERT(uHero != null);
+    if (!anQuestObjectsNum[nQuestNum]) return;    
+    for (i = 0; i < anQuestObjectsNum[nQuestNum]; i++) uHero.RemoveObjectFromInventory(astrQuestObject[nQuestNum],false);
+
+}
+
+function void AddQuestObjectsToQuestGiver(int nQuestNum) {
+
+    int i;
+    if (anQuestGiverMapping[nQuestNum] == eNoMapping) return;
+    for (i = 0; i <  anQuestObjectsNum[nQuestNum]; i++) AddItemToUnit(anQuestGiverMapping[nQuestNum],astrQuestObject[nQuestNum]); 
+
+}
+
+function void RemoveQuestGold(int nQuestNum, unit uHero) {
+
+    AddMoney(uHero,-anQuestObjectsNum[nQuestNum]);
+
+}
+
+function int CheckQuestObjects(int nQuestNum, unit uHero) {
+
+    int i;
+    
+    ASSERT(uHero != null);
+#ifdef QUEST_DEBUG
+//            TRACE("CheckQuestObjects:   %s  ilosc:%d   quest:%d ObjNum:5d                   \n",astrQuestObject[nQuestNum],anQuestObjectsNum[nQuestNum],nQuestNum,anQuestObjectsNum[nQuestNum]);
+#endif
+  
+    if (!anQuestObjectsNum[nQuestNum]) return false;    
+                    
+    if (uHero.IsObjectInInventory(astrQuestObject[nQuestNum])) i = uHero.GetObjectInInventoryCount(astrQuestObject[nQuestNum]);
+    else return false;
+    
+    if (i >= anQuestObjectsNum[nQuestNum]) return true;
+    return false;
+        
+}
+
+function int CheckQuestBringGold(int nQuestNum, unit uHero) {
+
+    ASSERT(uHero != null);
+    if (uHero.GetMoney() >= anQuestObjectsNum[nQuestNum]) return true;
+    return false;
+
+}
+
+function int CheckQuestTalk(unit uUnit, unit uHero) {
+
+    int nMapping;
+    int i;
+    
+    ASSERT(uHero != null);
+    nMapping = GetUnitMapping(uUnit);
+        
+    for (i = 0; i < eQuestsNum; i++) if ((GetQuestState(i,uHero) == eQuestStateTaken) && ((anQuestType[i] == eQuestTypeTalk) || (anQuestType[i] == eQuestTypeFindAndTalk))) {
+        if (anQuestUnitMapping[i] == nMapping) {
+            SolveQuest(i,uHero,false);
+            anDoActionsOnSolveAfterDialog[uHero.GetHeroPlayerNum()] = i;
+        }    
+    }        
+        
+    return false;
+        
+}
+
+function int CheckQuestKill(int nQuestNum, unit uHero) {
+
+    unit uUnit;
+    
+    ASSERT(uHero != null);
+
+    uUnit = GetUnitFromMission(anQuestUnitMapping[nQuestNum]);
+    if (uUnit == null) return false;
+
+    return IsQuestBodySpotted(uUnit,uHero);
+    
+}
+
+function void CheckQuest(int nQuestNum, unit uHero, mission pMission) {
+
+    int nX,nY;
+    mission tmpMission;
+
+    ASSERT(uHero != null);
+    ASSERT(pMission != null);
+
+    if (!IsQuestTakenByHero(nQuestNum,uHero)) return;    
+    if (GetQuestState(nQuestNum,uHero) != eQuestStateTaken) return; 
+
+    // go away
+    if (anQuestType[nQuestNum] == eQuestTypeGoAway) {
+    
+        tmpMission = GetCampaign().GetMission(anQuestMission[nQuestNum]);    
+        if (tmpMission.GetMarker(MARKER_QUEST_GO_AWAY,anQuestMarker[nQuestNum],nX,nY)) {          
+            if (uHero.DistanceTo(tmpMission,nX,nY) > anQuestRange[nQuestNum]) SolveQuest(nQuestNum,uHero);        
+        }
+        return;
+    
+    }
+
+    // find place
+    if (anQuestType[nQuestNum] == eQuestTypeFindPlace) {
+    
+        if (CheckQuestFindPlace(nQuestNum)) SolveQuest(nQuestNum,uHero);
+        return;
+    
+    }
+
+    // find location
+    if (anQuestType[nQuestNum] == eQuestTypeFindLocation) {
+    
+        if (CheckQuestFindLocation(nQuestNum,uHero)) SolveQuest(nQuestNum,uHero);
+        return;
+    
+    }
+
+    // find object
+    if (anQuestType[nQuestNum] == eQuestTypeFindObject) {
+    
+        if (CheckQuestObjects(nQuestNum,uHero)) SolveQuest(nQuestNum,uHero);
+        return;    
+    
+    }
+    
+    // kill
+    if ((anQuestType[nQuestNum] == eQuestTypeKill) || (anQuestType[nQuestNum] == eQuestTypeFindAndKill)) {
+    
+        if (CheckQuestKill(nQuestNum,uHero)) SolveQuest(nQuestNum,uHero);
+        return;
+    
+    }
+    
+    if (anQuestMission[nQuestNum] != pMission.GetMissionNum()) return;
+        
+    // go
+    if (anQuestType[nQuestNum] == eQuestTypeGo) {
+    
+        if (pMission.GetMarker(MARKER_QUEST_GO,anQuestMarker[nQuestNum],nX,nY)) {          
+            if (uHero.DistanceTo(nX,nY) < anQuestRange[nQuestNum]) SolveQuest(nQuestNum,uHero);        
+        }
+        return;
+    
+    }
+
+    // deliver object
+    if (anQuestType[nQuestNum] == eQuestTypeDeliverObject) {
+       
+        if (pMission.GetMarker(MARKER_QUEST_DELIVER_OBJECT,anQuestMarker[nQuestNum],nX,nY)) {          
+            if ((uHero.DistanceTo(nX,nY) < anQuestRange[nQuestNum])){
+                if((CheckQuestObjects(nQuestNum,uHero))) SolveQuest(nQuestNum,uHero);        
+            }
+        }
+        return;
+    
+    }
+    
+    // clear area
+    if (anQuestType[nQuestNum] == eQuestTypeClearArea) {
+    
+        if (pMission.GetMarker(MARKER_QUEST_CLEAR_AREA,anQuestMarker[nQuestNum],nX,nY)) {          
+            if (uHero.DistanceTo(nX,nY) < anQuestRange[nQuestNum]) 
+            if (!pMission.IsUnitInArea(nX,nY,anQuestRange[nQuestNum],GetSinglePartyArray(anQuestParty[nQuestNum]))) {
+                if (anQuestParty[nQuestNum] == ePartyBandits) {    // uwaga!!!
+                    if (!pMission.IsUnitInArea(nX,nY,anQuestRange[nQuestNum],GetSinglePartyArray(ePartyNeutralBandits))) SolveQuest(nQuestNum,uHero);
+                }
+                else SolveQuest(nQuestNum,uHero);
+            }
+        }
+        return;
+    
+    }
+
+    // open
+    if (anQuestType[nQuestNum] == eQuestTypeOpen) {
+
+        if (pMission.GetObjectMarker(MARKER_GATE,anQuestMarker[nQuestNum]).IsGateOpen() == eGateOpen) SolveQuest(nQuestNum,uHero);
+        return;
+    
+    }    
+    
+}
+
+function int CheckUnitIsDeadOrEnemy(int nMapping, unit uHero, mission pMission) {
+    
+    unit uUnit;
+
+    if (nMapping == eNoMapping) return false; 
+    if (GetCampaign().IsPartyEnemy(ePartyPlayer1 + uHero.GetHeroPlayerNum(),anUnitParty[nMapping])) return true;   
+    if (pMission.GetMissionNum() != anUnitMission[nMapping]) return false;    
+    if (!anQuestUnitIsDead[nMapping]) return false;
+
+    uUnit = GetUnitFromMission(nMapping);
+    if (uUnit == null) return false;
+
+    if (uHero.DistanceTo(uUnit.GetLocationX(),uUnit.GetLocationY()) < eQuestFailRangeA) return true;
+    return false;
+
+}
+
+function void CheckQuestFail(int nQuestNum, unit uHero, mission pMission) {
+
+    int nFail;
+
+    ASSERT(uHero != null);
+    ASSERT(pMission != null);
+
+    nFail = false;
+    
+    if (IsQuestTakenByHero(nQuestNum,uHero) && GetQuestState(nQuestNum,uHero) == eQuestStateTaken) {
+        
+        if ((anQuestType[nQuestNum] == eQuestTypeTalk) || (anQuestType[nQuestNum] == eQuestTypeFindAndTalk)) {
+            nFail |= CheckUnitIsDeadOrEnemy(anQuestUnitMapping[nQuestNum],uHero,pMission);
+        }
+        if ((anQuestType[nQuestNum] == eQuestTypeBringObject) || (anQuestType[nQuestNum] == eQuestTypeBringGold)) {
+            nFail |= CheckUnitIsDeadOrEnemy(anQuestGiverMapping[nQuestNum],uHero,pMission);                
+        }
+        else if (anQuestFlags[nQuestNum] & eBackToGiverMapSign) {
+            nFail |= CheckUnitIsDeadOrEnemy(anQuestGiverMapping[nQuestNum],uHero,pMission);        
+        }
+ 
+    }
+
+    if (IsQuestSolvedByHero(nQuestNum,uHero) && GetQuestState(nQuestNum,uHero) == eQuestStateSolved && (anQuestFlags[nQuestNum] & eBackToGiverMapSign)) {
+
+        nFail |= CheckUnitIsDeadOrEnemy(anQuestGiverMapping[nQuestNum],uHero,pMission);
+        
+    }
+
+
+#ifdef QUESTS_MULTI
+    if (nFail) FailQuestAllHeroes(nQuestNum,-1);
+#else
+    if (nFail) FailCloseQuest(nQuestNum,uHero);
+#endif
+
+}
+
+function void CheckQuests() {
+
+    int i, j;
+    unit uHero;
+    mission pMission;
+
+    for (i = 0; i < GetPlayersCnt(); i++) {
+    
+        if (!IsPlayer(i)) continue;
+        uHero = GetHero(i);
+        pMission = uHero.GetMission();
+        ASSERT(pMission != null);
+
+        for (j = 1; j < eQuestsNum; j++) {
+            CheckQuest(j,uHero,pMission);
+            CheckQuestFail(j,uHero,pMission);
+        }
+
+    }
+        
+}
+
+//======================================        
+// main state
+
+state Nothing {
+          
+    int i;
+    unit uHero;
+    
+    if (!nQuestsOn) return Nothing,30;
+
+    CheckDeadQuestUnits();        
+    CheckQuests();
+    DoDelayedActions();
+    ShowMessageBox();
+    ProcessContainerLockpicked();
+#ifdef QUESTS_MULTI
+    ActivateTeleports();
+    CheckBringObjectLocations();
+#endif    
+    for (i = 0; i < GetPlayersCnt(); i++) {
+        if (!IsPlayer(i)) continue;
+        uHero = GetHero(i);
+        CheckActiveQuestGivers(uHero);
+        CheckMarkerQuestGivers(uHero);
+        CheckIsHeroNearLocation(uHero);        
+        CheckPlaces(uHero);
+    }
+
+    return Nothing,30;
+
+}
+
+//======================================        
+// dialog (events)
+
+function int GetDialogInputFlags(int nQuestNum, unit uHero) {
+
+    int nFlags;
+    int nFinished;
+    int nReputation;
+
+    ASSERT(uHero != null);
+        
+    nFlags = eDialogInputFlags;
+
+    if (anQuestType[nQuestNum] == eQuestTypeFindPlace) {
+        nFinished = CheckQuestFindPlace(nQuestNum);
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeFindLocation) {
+        nFinished = CheckQuestFindLocation(nQuestNum,uHero);
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeBringObject) {
+        nFinished = CheckQuestObjects(nQuestNum,uHero);    
+    }
+    if (anQuestType[nQuestNum] == eQuestTypeBringGold) {
+        nFinished = CheckQuestBringGold(nQuestNum,uHero);    
+    }
+/*   uwaga!!! powinno dzialac, ale byc moze trzeba odkomentowac        
+    if ((anQuestType[nQuestNum] == eQuestTypeKill) || (anQuestType[nQuestNum] == eQuestTypeFindAndKill)) {
+        nFinished = CheckQuestKill(nQuestNum,uHero);
+    }
+*/
+    if (GetQuestState(nQuestNum,uHero) == eQuestStateEnabled) {
+    
+        if (GetQuestDialogState(nQuestNum,uHero) == eQuestDialogFirstTime) {
+
+            nFlags -= eFirstTime;
+
+            uHero.GetAttribute(anQuestReputationGuild[nQuestNum],nReputation);
+            if (nReputation < anQuestReputationLevel[nQuestNum]) {
+                nFlags -= eQuestLowReputation;
+            }
+            else {
+                GiveQuestReward(nQuestNum,eWhenQuestHeared,uHero);        
+                DoQuestAction(nQuestNum,eWhenQuestHeared,uHero.GetMission().GetMissionNum(),uHero);
+                ActivateQuests(nQuestNum,eWhenQuestHeared,uHero);
+                SetQuestDialogState(nQuestNum,uHero,eQuestDialogNotTaken);
+            }
+        
+        }
+        else if (GetQuestDialogState(nQuestNum,uHero) == eQuestDialogNotTaken) nFlags -= eQuestNotTaken;
+#ifdef QUEST_DEBUG
+        else {
+            TRACE("GetDialogInputFlags error: unknown quest dialog state %d                                   \n",GetQuestDialogState(nQuestNum,uHero));
+        }
+#endif       
+        if (nFinished) {
+            nFlags -= eQuestSolved;
+        }
+        else {
+            nFlags -= eQuestNotSolved;        
+            
+        }
+    }      
+    else if (GetQuestState(nQuestNum,uHero) == eQuestStateTaken) {
+        nFlags -= eQuestTaken;
+        if (nFinished) nFlags -= eQuestSolved;
+        else nFlags -= eQuestNotSolved;        
+    }
+    else if (GetQuestState(nQuestNum,uHero) == eQuestStateSolved) {
+        nFlags -= eQuestTaken;
+        nFlags -= eQuestSolved;    
+    }
+    else if (GetQuestState(nQuestNum,uHero) == eQuestStateClosed) {
+        nFlags -= eQuestClosed;
+        return nFlags;
+    }
+    else if (GetQuestState(nQuestNum,uHero) == eQuestStateFailed) {
+        nFlags -= eQuestFailed;
+        return nFlags;
+    }
+#ifdef QUEST_DEBUG
+    else {
+        TRACE("GetDialogInputFlags error: unknown quest state %d                                   \n",GetQuestState(nQuestNum,uHero));
+    }
+#endif    
+
+    return nFlags;
+
+}
+
+function void PlayQuestDialog(unit uDialogUnit, int nHero) {
+
+    int nQuestNum, nFlags;
+    int nFinished;
+    string str;
+    int nMapping;
+    unit uHero;
+
+    uHero = GetHero(nHero);
+    CheckQuestTalk(uDialogUnit,uHero);              
+
+    nQuestNum = GetCurrentQuest(uDialogUnit);
+    nMapping = anQuestGiverMapping[nQuestNum];       
+    nFlags = GetDialogInputFlags(nQuestNum,uHero);
+    str.Format(QUEST_DIALOG,nQuestNum + eFirstQuest);
+
+#ifdef QUEST_DEBUG
+    TRACE("Quest %d: starting dialog %s with flags %d %d                                  \n",nQuestNum,str,nFlags,eDialogInputFlags - nFlags);
+#endif
+
+    GetPlayerInterface(nHero).PlayDialog(GetScriptUID(),nQuestNum,eDefDialogFlags | eEndEventOnStartFadeOut | PlayDialogWaves(uHero),nFlags,str,1,uHero,uDialogUnit);
+
+}
+
+function void UpdateQuestStateAfterDialog(int nQuestNum, int nEndEvent, unit uHero) {
+
+    unit uUnit;
+
+    ASSERT(uHero != null);
+
+    if (nEndEvent & eQuestFightNow) {    
+
+        uUnit = GetQuestGiver(nQuestNum);        
+        ASSERT(uUnit != null) uUnit.SetPartyNum(uHero.GetHeroPlayerNum() + ePartyPlayerEnemy1);
+        uHero.CommandSetArmedMode(true);
+        GiveQuestReward(nQuestNum,eWhenFighting,uHero);        
+        DoQuestAction(nQuestNum,eWhenFighting,uHero.GetMission().GetMissionNum(),uHero);
+        ActivateQuests(nQuestNum,eWhenFighting,uHero);
+        
+    }            
+
+    if (nEndEvent & eQuestTakeNow) {
+
+        TakeQuest(nQuestNum,uHero);            
+
+    }            
+
+    if (nEndEvent & eQuestCloseNow) {
+    
+        if (anQuestType[nQuestNum] == eQuestTypeBringObject) {
+            RemoveQuestObjects(nQuestNum,uHero);
+            AddQuestObjectsToQuestGiver(nQuestNum);
+        }        
+        if (anQuestType[nQuestNum] == eQuestTypeBringGold) {
+            RemoveQuestGold(nQuestNum,uHero);
+        }        
+        CloseQuest(nQuestNum,uHero);
+        
+    }
+    
+}
+
+function void DoActionsOnSolveAfterDialog(int nHero) {
+
+    int nQuestNum;
+    unit uHero;
+
+    if (IsPlayer(nHero) && anDoActionsOnSolveAfterDialog[nHero]) {
+        nQuestNum = anDoActionsOnSolveAfterDialog[nHero];
+        uHero = GetHero(nHero);
+        if ((anQuestType[nQuestNum] != eQuestTypeKill) && (anQuestType[nQuestNum] != eQuestTypeFindAndKill)) GiveQuestReward(nQuestNum,eWhenQuestSolved,uHero);        
+        DoQuestAction(nQuestNum,eWhenQuestSolved,uHero.GetMission().GetMissionNum(),uHero);
+        ActivateQuests(nQuestNum,eWhenQuestSolved,uHero);
+    }
+
+    anDoActionsOnSolveAfterDialog[nHero] = 0;
+
+}
+
+#ifndef QUESTS_MULTI
+
+function void PlayEndFightTrack() {
+
+    int i, count;
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(eMsgPlayEndFightTrack);
+
+}
+
+#endif
+
+event EndTalkDialog(int nPlayerNum, int nDialogUID, int nEndEvent) {
+    
+    int nQuestNum;               
+
+    DoActionsOnSolveAfterDialog(nPlayerNum);
+
+    nQuestNum = nDialogUID;    
+    UpdateQuestStateAfterDialog(nQuestNum,nEndEvent,GetHero(nPlayerNum));
+
+#ifndef QUESTS_MULTI
+    if (nQuestNum == 18) PlayEndFightTrack();
+
+#endif
+
+#ifdef QUEST_DEBUG
+    TRACE("Quest %d: dialog %d finished with event: %d                                   \n",nQuestNum,nDialogUID,nEndEvent);
+#endif
+
+    return true;
+
+}
+
+//======================================        
+// other events
+
+event OnLoadLevel(mission m, int n) {
+
+    int nMission;
+    
+    nMission = m.GetMissionNum();
+    SetGatesNumbers(m);
+    SetQuestGatesClickable(m,GetScriptUID());
+    DoOnLoadLevelActions(m);
+    RegisterQuestUnits(m); 
+      
+    return true;
+
+}
+
+event OnUnloadLevel(mission m) {
+
+    return true;
+
+}
+
+event RemovedUnit(unit uKilled, unit uAttacker, int a) {
+              
+    KillQuestUnit(uKilled,uAttacker);
+#ifdef QUESTS_MULTI
+    RemoveQuestGiverLocation(uKilled);
+#endif    
+    
+    return false;
+
+}
+
+event ClickGateByUnit(unit uByUnit, unit uGate, int bFirstOpen, int bFirstHeroOpen, int& bClosedLockSound, int& bOpenLockSound, int& bBrokenLockpickSound) {
+
+    if (QuestGateClicked(uByUnit,uGate,bFirstOpen,bFirstHeroOpen,bClosedLockSound,bOpenLockSound,bBrokenLockpickSound)) return true;
+    return ProcessHouseDoor(uGate,bFirstOpen,uByUnit,bClosedLockSound,bOpenLockSound,bBrokenLockpickSound);
+
+}
+
+event RemovedNetworkPlayer(int nPlayerNum) {
+
+    int i;
+    for (i = 0; i < eQuestsNum; i++) 
+        if (IsQuestTakenByHero(i,nPlayerNum)) ResetQuestTakenByHero(i,nPlayerNum);
+    return true;
+
+}
+
+event Timer1() {
+
+    UpdateQuestUnitsPositions();
+    return true;
+
+}
+
+//======================================        
+// commands
+
+command Message(int nParam, unit uUnit) {
+
+    if (nParam == eMsgRegisterSingleDoor) {
+    
+//        ASSERT(uUnit != null);
+        if (uUnit != null) AddHouseDoor(uUnit);           
+        return true;
+    
+    }
+
+    return 0;
+
+}
+
+command Message(int nCommand, int nParam, unit uUnit) {
+                
+    if (nCommand == eMsgSetUnitItemsAttribute) {
+
+        SetUnitItemsAttribute(uUnit); 
+        return true;
+          
+    }
+
+    if (nCommand == eMsgSetContainerItemsAttribute) {
+        
+        SetContainerItemsAttribute(uUnit); 
+        return true;
+          
+    }
+
+    if (nCommand == eMsgPlayQuestDialog) {
+
+        PlayQuestDialog(uUnit,nParam);
+        return true;
+
+    }
+    
+    if (nCommand == eMsgLockpicked) {
+    
+        if (uUnit.IsContainer()) anContainerLockpicked[nParam] = true;
+        return true;
+
+    }
+    
+    return 0;
+
+}
+
+command MessageGet(int nCommand, int &nValue1, int &nValue2, int &nValue3) {
+
+    if (nCommand == eMsgGetQuestState) {
+    
+        nValue2 = anQuestState[nValue1];
+        return true;
+    
+    }
+
+    return 0;
+
+}
+
+//======================================        
+// debug
+
+#ifdef USE_COMMAND_DEBUG
+command CommandDebug(string strLine) {
+
+    int nUnit;
+    int i, n;
+    unit uHero;
+    int nHero;
+    int count;    
+    string str;
+    stringW strW;
+    mission pMission;
+    unit uChest;
+    int nCol, nRow, nLayer;    
+    int nX, nY;
+    UnitValues unVal;
+
+    GetArgs(strLine);
+    str = StrArg(0);
+            
+    if (!stricmp(str, "QuestsOn")) {
+        TRACE("QuestsAreOn                                   \n");
+        nQuestsOn = true;
+    }
+    else if (!stricmp(str, "TestQuests")) {
+        uHero = GetHero(0);
+        str = StrArg(1);
+//        for (i = 0; i < 40; i++) uHero.AddInventory("AR_TORCH_01",true);
+//        GetPlayerInterface(0).MessageBox(NOT_ENOUGH_SPACE,MB_OK,true,0,0);
+//        TRACE("%d           \n",GetHero(0).GetMission().GetMaxMarkerNum("MARKER_Q_TRAINING"));
+//        if (!uHero.IsFreePlaceForObjectInInventory()) {
+        if (!uHero.IsFreePlaceForObjectInInventory(GetRealObjectName(str))) {
+            TRACE("no place for %s          \n",GetRealObjectName(str));
+        }
+        else {
+            TRACE("there is place for %s          \n",GetRealObjectName(str));        
+        }
+        if (uHero.AddInventory(str,true)) {
+            TRACE("Added %s                 \n",str);
+        }
+        else {
+            TRACE("Can't add %s                 \n",str);        
+        }
+    }
+    else if (!stricmp(str, "QuestsOff")) {
+        TRACE("QuestsAreOff                                   \n");
+        nQuestsOn = false;
+    }
+    else if (!stricmp(str, "PrintQuestGates")) {
+        TRACE("quest gates number %d                                   \n",nQuestGatesNumber);
+        for (i = 0; i < nQuestGatesNumber; i++) {
+            TRACE("gate %d mission %d marker %d                                   \n",i,anQuestGateMission[i],anQuestGateNumber[i]);
+        }
+    }
+    else if (!stricmp(str, "PrintQuestsWithState")) {
+//        PrintTmpQuests(IntArg(1));
+    }
+    else if (!stricmp(str, "PrintQuestsInfo")) {
+        TRACE("quests units number: %d             \n",nMappingsNum);
+        TRACE("quest actions number: %d                   \n",nCurrentAction); 
+        TRACE("quest activations number %d                \n",nActivationsNumber);
+        TRACE("on load level actions %d                     \n",nOnLoadLevelActionsNumber);
+        TRACE("rewards number %d                      \n",nCurrentReward);
+    }
+    else if (!stricmp(str, "PrintQuestInfo")) {
+        n = IntArg(1);
+        TRACE("quest state: %d             \n",anQuestState[n]);
+        TRACE("quest type: %d             \n",anQuestType[n]);
+        TRACE("quest mission: %d             \n",anQuestMission[n]);
+        TRACE("quest group: %d             \n",anQuestGroup[n]);
+        TRACE("quest flags: %d             \n",anQuestFlags[n]);
+        TRACE("quest level: %d             \n",anQuestLevel[n]);
+        TRACE("quest enable level: %d             \n",anQuestEnableLevel[n]);
+        TRACE("quest giver type: %d             \n",anQuestGiverType[n]);
+        TRACE("quest giver mapping: %d             \n",anQuestGiverMapping[n]);
+        TRACE("quest giver marker: %d             \n",anQuestGiverMarker[n]);
+        TRACE("quest giver marker mission: %d             \n",anQuestGiverMarkerMission[n]);
+        TRACE("quest giver range: %d             \n",anQuestGiverRange[n]);
+        TRACE("quest dialog state: %d             \n",anQuestDialogState[n]);
+        TRACE("quest reputation guild: %d             \n",anQuestReputationGuild[n]);
+        TRACE("quest reputation level: %d             \n",anQuestReputationLevel[n]);
+    }
+    else if (!stricmp(str, "PrintQuests")) {
+        n = IntArg(2);
+        if (!n) n = eQuestsNum;
+        for (i = IntArg(1); i < n; i++) if (anQuestType[i] != eQuestTypeUnknown) PrintQuestInfo(i);
+    }
+    else if (!stricmp(str, "PrintLoadedQuests")) {
+        n = IntArg(2);
+        if (!n) n = eQuestsNum;
+        for (i = IntArg(1); i < n; i++) if (anQuestFlags[i] & eQuestLoaded) PrintQuestInfo(i);
+    }
+    else if (!stricmp(str, "PrintEnabledQuests")) {
+        n = IntArg(2);
+        if (!n) n = eQuestsNum;
+        for (i = IntArg(1); i < n; i++) if (anQuestState[i] == eQuestStateEnabled) PrintQuestInfo(i);
+    }
+    else if (!stricmp(str, "PrintActiveQuests")) {
+        n = IntArg(2);
+        if (!n) n = eQuestsNum;
+        for (i = IntArg(1); i < n; i++) if (anQuestState[i] == eQuestStateTaken) PrintQuestInfo(i);
+    }
+    else if (!stricmp(str, "PrintFinishedQuests")) {
+        n = IntArg(2);
+        if (!n) n = eQuestsNum;
+        for (i = IntArg(1); i < n; i++) if (anQuestState[i] == eQuestStateSolved || anQuestState[i] == eQuestStateClosed) PrintQuestInfo(i);
+    }
+    else if (!stricmp(str, "Add")) {
+         TRACE("Adding %s                                   \n",StrArg(1));
+         n = GetHero(0).AddInventory(StrArg(1),true);
+         TRACE("%d                    \n",n);
+    }
+    else if (!stricmp(str, "SetSkillPoints")) {
+         TRACE("Setting all skill points to %d                                   \n",IntArg(1));
+         unVal = GetHero(0).GetUnitValues();
+         for (i = 0; i < eSkillsCnt; i++) {
+             UnlockSkill(GetHero(0),i);
+             unVal.SetBasicSkill(i,IntArg(1));
+         }
+         GetHero(0).UpdateChangedUnitValues();          
+    }
+    else if (!stricmp(str, "EnableQuest") || !stricmp(str, "eq")) {
+         TRACE("Enabling quest %d                                  \n",IntArg(1));
+         EnableQuest(IntArg(1),GetHero(IntArg(2)));
+    }
+    else if (!stricmp(str, "TakeQuest") || !stricmp(str, "tq")) {
+         TRACE("Taking quest %d                                  \n",IntArg(1));
+         TakeQuest(IntArg(1),GetHero(IntArg(2)));
+    }
+    else if (!stricmp(str, "SolveQuest") || !stricmp(str, "sq")) {
+         TRACE("Solving quest %d                                  \n",IntArg(1));
+         SolveQuest(IntArg(1),GetHero(IntArg(2)));
+    }
+    else if (!stricmp(str, "CloseQuest") || !stricmp(str, "cq")) {
+         TRACE("Closing quest %d                                  \n",IntArg(1));
+         CloseQuest(IntArg(1),GetHero(IntArg(2)));
+    }
+    else if (!stricmp(str, "SetQuestState")) {
+         TRACE("Setting quest %d state to %d                                  \n",IntArg(1),IntArg(2));
+         SetQuestState(IntArg(1),0,IntArg(2));
+    }
+    else if (!stricmp(str, "PrintHeroInventory")) {
+        TRACE("Hero inventory:                                    \n");
+        uHero = GetHero(0);
+        count = uHero.GetInventorySize();
+        for (i = 0; i < count; i++) TRACE("|%s|                                   \n",uHero.GetInventoryObjectID(i));
+    }
+    else if (!stricmp(str, "PrintQuestGivers")) {
+        n = IntArg(2);
+        if (!n) n = eQuestsNum;
+        for (i = IntArg(1); i < n; i++) {
+            TRACE("Quest %d giver mapping %d                                   \n",i,anQuestGiverMapping[i]);
+        }    
+    }
+    else if (!stricmp(str, "AddParamPoints")) {
+        TRACE(" %d ParamPoints added                                   \n",IntArg(1));
+        GetHero().GetUnitValues().SetParamPoints(IntArg(1));        
+    }
+    else if (!stricmp(str, "SetGold")) {
+        TRACE("You have %d gold                              \n",IntArg(1));
+        GetHero().SetMoney(IntArg(1));        
+    }
+    else if (!stricmp(str, "IAmCheater")) {
+        TRACE("Yes, you are...                                   \n");
+        GetHero(0).GetUnitValues().SetBasicPoint(ePointsVitality, 1000);
+        GetHero(0).GetUnitValues().SetBasicPoint(ePointsDexterity,1000);
+        GetHero(0).GetUnitValues().SetBasicPoint(ePointsStrength, 1000);
+        GetHero(0).GetUnitValues().SetBasicPoint(ePointsMagic, 1000);
+        GetHero(0).UpdateChangedUnitValues();    
+    }
+    else if (!stricmp(str, "PrintQuestUnits")) {
+        n = IntArg(2);
+        if (!n) n = nMappingsNum;
+        TRACE("unit mappings number %d                                   \n",nMappingsNum);
+        for (i = IntArg(1); i < n; i++) {
+            TRACE("map %d name %s mission %d number %d                                   \n",i,astrUnitName[i],anUnitMission[i],anUnitNumber[i]);        
+            if (auQuestUnits[i] == null) {
+                TRACE("unit is null!                                   \n");
+            }
+        }
+    }    
+    else if (!stricmp(str, "PrintQuestUnit")) {
+        n = IntArg(1);
+        if (n == 0) n = GetUnitMapping(StrArg(1));
+        if (n == eNoMapping) {
+            TRACE("Can't find unit %s         \n",StrArg(1));
+            return true;
+        }
+        TRACE("Unit %d %s \n",n,StrArg(1));
+        if (auQuestUnits[n] != null) {
+            TRACE("not null           \n");
+        }
+        else {
+            TRACE("null                  \n");
+        }
+        TRACE("name: %s               \n",astrUnitName[n]);
+        TRACE("translate: %d              \n",anUnitNameTranslate[n]);
+        TRACE("mission: %d                  \n",anUnitMission[n]);
+        TRACE("number: %d                 \n",anUnitNumber[n]);
+        TRACE("items: %s              \n",astrUnitItems[n]);
+        TRACE("items add: %s                  \n",astrUnitItemsAdd[n]);
+        TRACE("items remove: %s                 \n",astrUnitItemsRemove[n]);
+        TRACE("state: %d                          \n",anUnitState[n]);
+        TRACE("is dead: %d               \n",anQuestUnitIsDead[n]);
+        TRACE("create string: %s                 \n",astrUnitCreateString[n]);
+        TRACE("party: %d              \n",anUnitParty[n]);
+        if (auQuestUnits[n] != null) {
+            TRACE("real party: %d                  \n",auQuestUnits[n].GetPartiesNums().ElementAt(0));
+        }
+        TRACE("angle: %d                     \n",anUnitAngle[n]);
+        TRACE("dialog: %d                  \n",anUnitStandardDialog[n]);
+    }    
+    else if (!stricmp(str,"PrintLocNum"))
+    {
+        nHero = GetHero(0).GetHeroPlayerNum();
+        TRACE("locations: %d %d/%d g %d/%d d %d/%d\n", nLocationsNum, GetVisitedLocationsCount(nHero), GetLocationsCount(), GetVisitedGraveyardsCount(nHero), GetGraveyardsCount(), GetVisitedDungeonsCount(nHero), GetDungeonsCount() );
+    }
+    else if (!stricmp(str,"PrintGraveyards")) {
+        n = nLocationsNum;
+        for (i = IntArg(1); i < n; i++) {
+            if( anLocationSign[i] == 18 ) {
+                TRACE("graveyard %s mission: %d x: %d y: %d visible: %d range: %d ",astrLocationName[i],anLocationMission[i],anLocationX[i],anLocationY[i],anLocationVisibleByHero[i],anLocationRange[i]);
+                TRACE("sign %d                                   \n",anLocationSign[i]);
+            }
+        }        
+    }
+    else if (!stricmp(str,"PrintLocations")) {
+        n = IntArg(2);
+        if (!n) n = nLocationsNum;
+        TRACE("LocationsNumber: %d                                   \n",nLocationsNum);
+        for (i = IntArg(1); i < n; i++) {
+            TRACE("location %s mission: %d x: %d y: %d visible: %d range: %d ",astrLocationName[i],anLocationMission[i],anLocationX[i],anLocationY[i],anLocationVisibleByHero[i],anLocationRange[i]);
+            TRACE("sign %d                                   \n",anLocationSign[i]);
+        }        
+    }
+    else if (!stricmp(str,"PrintVisibleLocations")) {
+        n = IntArg(2);
+        if (!n) n = nLocationsNum;
+        TRACE("LocationsNumber: %d                                   \n",nLocationsNum);
+        for (i = IntArg(1); i < n; i++) if (anLocationVisibleByHero[i]) {
+            TRACE("location %s mission: %d x: %d y: %d visible: %d range: %d ",astrLocationName[i],anLocationMission[i],anLocationX[i],anLocationY[i],anLocationVisibleByHero[i],anLocationRange[i]);
+            TRACE("sign %d                                   \n",anLocationSign[i]);
+        }        
+    }
+    else if (!stricmp(str,"PrintGraveyardsCount")) {
+        TRACE("Graveyards: %d/%d (%d%%)\n", GetVisitedGraveyardsCount(0), GetGraveyardsCount(), 100 * GetVisitedGraveyardsCount(0) / GetGraveyardsCount() );
+    }
+    else if (!stricmp(str,"PrintDungeonsCount")) {
+        TRACE("Dungeons:   %d/%d (%d%%)\n", GetVisitedDungeonsCount(0), GetDungeonsCount(), 100 * GetVisitedDungeonsCount(0) / GetDungeonsCount() );
+    }
+    else if (!stricmp(str,"PrintLocationsCount")) {
+        TRACE("Locations:  %d/%d (%d%%)\n", GetVisitedLocationsCount(0), GetLocationsCount(), 100 * GetVisitedLocationsCount(0) / GetLocationsCount() );
+    }
+    else if (!stricmp(str,"PrintAllLocationsCount")) {
+        TRACE("--------------------------------\n");
+        TRACE("Graveyards: %d/%d (%d%%)\n", GetVisitedGraveyardsCount(0), GetGraveyardsCount(), 100 * GetVisitedGraveyardsCount(0) / GetGraveyardsCount() );
+        TRACE("Dungeons:   %d/%d (%d%%)\n", GetVisitedDungeonsCount(0), GetDungeonsCount(), 100 * GetVisitedDungeonsCount(0) / GetDungeonsCount() );
+        TRACE("Locations:  %d/%d (%d%%)\n", GetVisitedLocationsCount(0), GetLocationsCount(), 100 * GetVisitedLocationsCount(0) / GetLocationsCount() );
+    }
+    else if (!stricmp(str,"CheckQuestConditions")) {
+        TRACE("\n\n*********  Checking quest conditions   ************             \n\n");
+        i=CheckQuestConditions();
+        if (!i) {
+            TRACE("OK                           \n");        
+        }
+        else {
+            TRACE("%d Errors found                            \n",i);
+        }
+    }
+    else if (!stricmp(str,"CheckSingleQuest")) {
+        TRACE("Checking quest %d:                                   \n",IntArg(1));
+        if (CheckSingleQuest(IntArg(1))) {
+            TRACE("OK                           \n");        
+        }
+        else {
+            TRACE("Errors found                            \n");
+        }
+    }    
+    else if (!stricmp(str,"CheckQuestActions")) {
+        TRACE("Checking quest actions:                                   \n");
+        if (CheckQuestActions(IntArg(1))) {
+            TRACE("OK                           \n");        
+        }
+        else {
+            TRACE("Errors found                            \n\n");
+        }
+    }
+    else if (!stricmp(str,"PrintContainers")) {
+        pMission = GetHero().GetMission();
+        for (i = 0; i < 100; i++) if (pMission.HaveMarker("MARKER_CHEST",i)) {
+            uChest = pMission.GetObjectMarker("MARKER_CHEST",i);
+            if (uChest) {
+                TRACE("MARKER_CHEST %d has object on %d %d                \n",i,uChest.GetLocationX(),uChest.GetLocationY());
+            }
+            else {
+                TRACE("MARKER_CHEST %d doesn't have object             \n",i);
+            }
+        }
+    }
+    else if (!stricmp(str,"PrintQuestActivations")) {
+        n = IntArg(1);
+        for (i = 0; i < nActivationsNumber; i++) if (anActivationQuest[i] == n) {
+            TRACE("activation %d type %d when %d param %d                       \n",i,anActivationType[i],anActivationWhen[i],anActivationParam[i]);
+        }
+    }
+    else if (!stricmp(str,"PrintQuestActions")) {
+        n = IntArg(1);
+        for (i = 0; i < nCurrentAction; i++) if (anActionQuest[i] == n) {
+            TRACE("action %d type %d when %d                       \n",i,anActionType[i],anActionWhen[i]);
+        }
+    }
+    else if (!stricmp(str,"PrintQuestRewards")) {
+        n = IntArg(1);
+        for (i = 0; i < nCurrentReward; i++) if (anRewardQuest[i] == n) {
+            TRACE("reward %d type %d when %d                       \n",i,anRewardType[i],anRewardWhen[i]);
+        }
+    }
+    else if (!stricmp(str, "Header")) {
+        TRACE("\n\n");
+    }
+    else if (!stricmp(str, "PrintHeroPos")) {
+        TRACE("hero position %d %d\n",GetHero().GetLocationX(),GetHero().GetLocationY());
+    }    
+    else if (!stricmp(str, "PrintHeroMission")) {
+        TRACE("hero mission %d                                   \n",GetHero(0).GetMission().GetMissionNum());    
+    }    
+    else if (!stricmp(str, "ResurrectHero")) {
+        GetHero().ResurrectUnit();
+        TRACE("Hero resurrected\n");
+    }    
+    else if (!stricmp(str, "PrintHeroParties")) {       
+        TRACE("hero parties ");
+        for (i = 0; i < GetHero(0).GetPartiesNums().GetSize(); i++) {
+            TRACE("%d ",GetHero(0).GetPartiesNums().ElementAt(i));
+        }
+        TRACE("\n");            
+    }
+    else if (!stricmp(str, "PrintHeroEnemiesParties")) {       
+        TRACE("hero enemies ");
+        for (i = 0; i < GetHero(0).GetEnemiesParties().GetSize(); i++) {
+            TRACE("%d ",GetHero(0).GetEnemiesParties().ElementAt(i));
+        }
+        TRACE("\n");            
+    }
+    else if (!stricmp(str, "PrintHeroReputation")) {       
+        TRACE("hero reputation ");
+        uHero = GetHero(0);
+        for (i = eFirstGuild; i <= eGuildSkelden; i++) {
+            uHero.GetAttribute(i,n);
+            TRACE("guild: %d rep: %d                \n",i,n);
+        }
+        TRACE("\n");            
+    }
+    else if (!stricmp(str, "ShowMap")) {        
+        MissionNum2Level(GetHero(0).GetMission().GetMissionNum(),nCol,nRow,nLayer);
+        TRACE("%c%d                \n",nCol - 1 + 'A',nRow);    
+    }    
+    else if (!stricmp(str, "TranslateMissionNumber")) {
+        MissionNum2Level(IntArg(1),nCol,nRow,nLayer);
+        TRACE("%d -> %c%d                \n",IntArg(1),    nCol - 1 + 'A',nRow);    
+    }
+    else if (!stricmp(str, "GetTime")) {
+        TRACE("current time %d               \n",GetCampaign().GetDayTime());
+    }    
+    else if (!stricmp(str, "JumpQ")) {
+        n = IntArg(1);        
+        for (i = 0; i < GetCampaign().GetMissionsCnt(); i++) 
+            if (GetCampaign().GetMission(i).GetMarker(MARKER_QUEST_START,n,nX,nY)) {
+                GetHero(0).SetImmediatePosition(GetCampaign().GetMission(i),nX,nY,0,0,true);        
+                return true;            
+            }
+    } 
+    else if (!stricmp(str, "JumpQS")) {
+        n = IntArg(1);        
+        if (n == eNoMapping) {
+            TRACE("Can't find quest %d       \n",n);
+            return true;
+        }
+        if (anQuestMission[n] == eNoMission || anQuestMarker[n] == eNoMarker) {
+            TRACE("Can't jump to %s for quest %d. Mission or marker not defined.       \n",MARKER_QUEST_POINT,n);
+        }
+        GetCampaign().GetMission(anQuestMission[n]).GetMarker(MARKER_QUEST_POINT,n,nX,nY);
+        GetHero(0).SetImmediatePosition(GetCampaign().GetMission(anQuestMission[n]),nX,nY,0,0,true);                
+    }               
+    else if (!stricmp(str, "JumpQU")) {
+        n = IntArg(1);
+        if (n == 0) n = GetUnitMapping(StrArg(1));
+        if (n == eNoMapping) {
+            TRACE("Can't find unit %s         \n",StrArg(1));
+            return true;
+        }
+        if (auQuestUnits[n] == null) {
+            TRACE("unit is null, can't jump           \n");
+            return true;
+        }
+        GetHero(0).SetImmediatePosition(GetCampaign().GetMission(anUnitMission[n]),auQuestUnits[n].GetLocationX(),auQuestUnits[n].GetLocationY(),0,0,true);
+    }               
+    else if (!stricmp(str, "PrintDoors")) {
+        TRACE("Doors number: %d        \n",auDoors.GetSize());
+        for (i = 0; i < auDoors.GetSize(); i++) {
+            TRACE("door %d state %d           \n",i,GetDoorState(auDoors[i]));
+        }
+
+    }        
+    else if (!stricmp(strLine,"DebugTowns")) {
+        n = GetCampaign().GetMissionsCnt();
+        for (i = 0; i < n; i++) SendMessageToTownScript(GetCampaign().GetMission(i),eMsgDebugTown);    
+    }
+    else if (!stricmp(strLine,"EndGame")) {
+        strW.Copy("to juz jest koniec");
+        GetPlayerInterface(0).EndGame(strW);
+    }
+    else if (!stricmp(strLine,"JumpActionCreateObject") || !stricmp(strLine,"jaco")) {
+        n = 1;
+        TRACE("tu1\n");
+        for (i = 0; i < nCurrentAction; i++) if (anActionType[i] == eActionObjectCreate && anActionQuest[i] == n) {
+        TRACE("tu2        %d\n",i);
+            pMission = GetCampaign().GetMission(anActionMission[i]);
+            pMission.GetMarker(MARKER_ACTION_CREATE_OBJECT,anActionMarker[i],nX,nY);
+            GetHero(0).SetImmediatePosition(pMission,nX,nY,0,0,true);
+            return true;
+        }
+    }
+    else if (!stricmp(strLine,"TestMarkers")) {
+        pMission = MIS(D7);
+        if (pMission.HaveMarker("MARKER_ENEMY_BANDIT",1)) {
+            TRACE("jest MARKER_ENEMY_BANDIT 1              \n");
+        }
+        TRACE("dodaje i usuwam MARKER_ENEMY_G_MO_BEAR_01 1            \n");
+        pMission.AddMarker("MARKER_ENEMY_G_MO_BEAR_01",1,5,5,0,0,"");
+        pMission.RemoveMarker("MARKER_ENEMY_G_MO_BEAR_01",1);
+        if (pMission.HaveMarker("MARKER_ENEMY_BANDIT",1)) {
+            TRACE("jest MARKER_ENEMY_BANDIT 1              \n");
+        }
+        else {
+            TRACE("nie ma MARKER_ENEMY_BANDIT 1              \n");        
+        }
+    }
+    else if (!stricmp(strLine,"PentagramOn")) {
+        TRACE("Pentagram turned on                     \n");
+        GetCampaign().SetDrawPentagramStrength(100);
+    }
+    else if (!stricmp(strLine,"PentagramOff")) {
+        TRACE("Pentagram turned off                     \n");
+        GetCampaign().SetDrawPentagramStrength(0);
+    }
+    
+    else return false;
+
+    return true;
+
+}
+#endif
+
+//======================================        
+
+#endif

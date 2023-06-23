@@ -1,0 +1,5 @@
+Editor.FillWorldWithColor 0xFFFFFFFF
+Editor.ReplaceColor 0xFF000000 0xFFFFFFFF
+editor.LabelNotDisabledPassableFromMarkers MARKER_TELEPORT_DEST_FROMUPPER MARKER_TELEPORT_DEST_FROMLOWER
+Editor.ReplaceColorOnDisabledTerrain 0xFFFFFFFF 0xFF000000 4
+//editor.savelevel

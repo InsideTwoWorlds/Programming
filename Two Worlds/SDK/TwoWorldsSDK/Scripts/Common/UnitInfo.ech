@@ -1,0 +1,648 @@
+#ifndef COMMON_UNIT_INFO_ECH
+#define COMMON_UNIT_INFO_ECH
+
+#include "Messages.ech"
+#include "Enums.ech"
+
+#define BASE_MARKER_ATTRIBUTE                    "PBM"
+#define CURRENT_QUEST_ATTRIBUTE                  "PCQ"
+#define CUSTOM_FLAGS_ATTRIBUTE                   "PCF"
+#define ENEMY_TYPE_ATTRIBUTE                     "PET"
+#define EXTERNAL_ACTIVITY_ATTRIBUTE              "PEA"
+#define GUILD_ATTRIBUTE                          "PG"
+#define IS_CAMPER_ATTRIBUTE                      "PIC"
+#define IS_FEMALE_ATTRIBUTE                      "PIF"
+#define NO_DIALOG_UNIT_ATTRIBUTE                 "PNDU"
+#define QUEST_UNIT_NUMBER_ATTRIBUTE              "PQUN"
+#define QUEST_UNIT_STATE_ATTRIBUTE               "PQUS"
+#define STANDARD_DIALOG_NUMBER_ATTRIBUTE         "PSDN"
+#define UNIT_NUMBER_ATTRIBUTE                    "PUN"
+
+//======================================
+
+consts {
+
+    // custom flags
+    eUnknownFlag    = 0;
+    eShopMerchant   = 1;
+    eShopNecro      = 2;
+    eShopMage       = 3;
+    eShopWarrior    = 4;
+    eShopThief      = 5;
+    eTrainer1	    = 8;
+    eTrainer2	    = 9;
+    eTrainer3	    = 10;
+    eTrainer4	    = 11;
+    eTrainer5	    = 12;
+    eTrainer6	    = 13;
+    eTrainerMage    = 14;
+    eTrainerNecro   = 15;
+    eGuardRoute	    = 16;
+    eGuardStatic	= 17;
+    eWorkerStatic	= 18;
+    eWorkerWalking	= 19;
+    eTalker		    = 20;
+    eBartender      = 22;
+    eChanger1       = 24;
+    eChanger2       = 25;
+    eGuardAdded     = 26;     
+    eWorkerPlay     = 27;
+    eWorkerDance    = 28;
+    eWorkerPray     = 29;
+    eWorkerWoodcut  = 30;
+    eWorkerBroom    = 31;
+    eWorkerKneel    = 32;
+    eWorkerPitchfork= 33;
+    eWorkerScythe   = 34;
+    eWorkerPinaxe   = 35;
+    eWorkerSitting  = 36;
+    eWorkerCook     = 37;
+    
+    // "external" activity
+    eEActivityUnknown             = 0;
+    eEActivityControlledByTown    = 1;
+    eEActivityControlledByUnit    = 2;
+    eEActivityWorking             = 3;
+    eEActivitySleeping            = 4;
+    eEActivitySitting             = 5;
+    eEActivityQuestUnit           = 6;
+
+    // unit types
+    eUnitTypeUnknown              = 0;
+    eUnitTypeWorkerStatic         = 1;
+    eUnitTypeWorkerDynamic        = 2;
+    eUnitTypePlayer               = 3;
+    eUnitTypeCitizen              = 4;
+    eUnitTypeGuardStatic          = 5;
+    eUnitTypeGuardDynamic         = 7;
+    eUnitTypeBartender            = 9;
+
+    // enemy types    
+    eEnemyUnknown                 = 0;
+    eEnemyArcher                  = 1;
+    eEnemySwordsman               = 2;
+    eEnemyBoss                    = 3;    
+
+    // door states    
+    eUnknownDoorState             = 0;
+    eDoorClosed                   = 1;
+    eDoorOpen                     = 2;
+    eDoorLockpicked               = 3;
+    
+    // quest units types
+    eNoQuestUnit                  = 0;
+    eQuestUnitNotActive           = 1;
+    eQuestUnitActive              = 2;
+    eQuestUnitKilledFlag          = 32;
+
+    eIsDialogUnitValue            = 777;
+    
+}
+
+//======================================
+
+function unit GetNearestHeroA(unit uUnit, int nRange) {
+
+    int i;
+    unit uHero;
+    
+    uHero = null;
+    
+    for (i = 0; i < GetCampaign().GetPlayersCnt(); i++) {
+        if (!GetCampaign().IsPlayer(i)) continue;
+        if (uUnit.DistanceTo(GetCampaign().GetPlayerHeroUnit(i)) < nRange) { 
+            uHero = GetCampaign().GetPlayerHeroUnit(i);
+            nRange = uUnit.DistanceTo(uHero);
+        }
+    }
+                
+    return uHero;
+
+}
+
+//======================================
+
+function void SetCustomFlags(unit uUnit, int nCustomFlags) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(CUSTOM_FLAGS_ATTRIBUTE,nCustomFlags);
+    
+}
+
+function int GetCustomFlags(unit uUnit) {
+
+    int nCustomFlags;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(CUSTOM_FLAGS_ATTRIBUTE,nCustomFlags);
+    return nCustomFlags;
+    
+}
+
+//======================================
+
+function int GetUnitType(unit uUnit) {
+
+// uwaga!!! wszystkie unity, ktore sa kontrolowane w miescie sa "WorkerStatic", a wszystkie kontrolowane w unicie "WorkerDynamic"
+
+    int nFlag;
+    if (uUnit == null) return eUnitTypeUnknown;
+
+    nFlag = GetCustomFlags(uUnit);
+
+    if (nFlag == eUnknownFlag) return eUnitTypeUnknown;
+    if (nFlag == eShopMerchant) return eUnitTypeWorkerStatic;
+    if (nFlag == eShopNecro) return eUnitTypeWorkerStatic;
+    if (nFlag == eShopMage) return eUnitTypeWorkerStatic;
+    if (nFlag == eShopWarrior) return eUnitTypeWorkerStatic;
+    if (nFlag == eShopThief) return eUnitTypeWorkerStatic;
+    if ((nFlag >= eTrainer1) && (nFlag <= eTrainerNecro)) return eUnitTypeWorkerStatic;
+    if (nFlag == eGuardRoute) return eUnitTypeGuardDynamic;
+    if (nFlag == eGuardAdded) return eUnitTypeGuardDynamic;
+    if (nFlag == eGuardStatic) return eUnitTypeGuardStatic;
+    if (nFlag == eWorkerStatic) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerWalking) return eUnitTypeWorkerDynamic;
+    if (nFlag == eTalker) return eUnitTypeCitizen;
+    if (nFlag == eBartender) return eUnitTypeBartender;
+    if ((nFlag >= eChanger1) && (nFlag <= eChanger2)) return eUnitTypeWorkerStatic;
+    if (nFlag == eWorkerPlay) return eUnitTypePlayer;
+    if (nFlag == eWorkerDance) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerPray) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerWoodcut) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerBroom) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerKneel) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerPitchfork) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerScythe) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerPinaxe) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerSitting) return eUnitTypeWorkerDynamic;
+    if (nFlag == eWorkerCook) return eUnitTypeWorkerDynamic;
+
+    return eUnitTypeUnknown;
+   
+}
+
+function int IsGuard(unit uUnit) {
+
+    int nType;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nType = GetUnitType(uUnit);
+    if ((nType == eUnitTypeGuardStatic) || (nType == eUnitTypeGuardDynamic)) return true;
+    return false;
+    
+}
+
+function int IsCoach(unit uUnit) {
+
+    int nFlag;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nFlag = GetCustomFlags(uUnit);
+    if ((nFlag >= eTrainer1) && (nFlag <= eTrainerNecro)) return true;
+    return false;
+
+}
+
+function int IsChanger(unit uUnit) {
+
+    int nFlag;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nFlag = GetCustomFlags(uUnit);
+    if ((nFlag >= eChanger1) && (nFlag <= eChanger2)) return true;
+    return false;
+
+}
+
+//======================================
+
+function void SetExternalActivity(unit uUnit, int nExternalActivity) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(EXTERNAL_ACTIVITY_ATTRIBUTE,nExternalActivity);
+    
+}
+
+function int GetExternalActivity(unit uUnit) {
+
+    int nExternalActivity;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(EXTERNAL_ACTIVITY_ATTRIBUTE,nExternalActivity);
+    return nExternalActivity;
+
+}
+
+//======================================
+
+function int IsFemale(unit uUnit) {
+
+    int nIsFemale;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(IS_FEMALE_ATTRIBUTE,nIsFemale);
+    return nIsFemale;
+    
+}
+
+//======================================
+// base marker
+
+function void SetBaseMarker(unit uUnit, int nClass, int nMarker) {
+
+    nMarker = ((nMarker & 255) << 8) | (nClass & 255);
+    uUnit.SetAttribute(BASE_MARKER_ATTRIBUTE,nMarker);
+
+}
+
+function int GetBaseMarker(unit uUnit) {
+
+    int nMarker;
+    uUnit.GetAttribute(BASE_MARKER_ATTRIBUTE,nMarker);
+    return nMarker;
+    
+}
+
+function int GetEnemyClassFromBaseMarker(int nMarker) {
+
+    return (nMarker & 255);
+
+}
+
+function int GetMarkerNumberFromBaseMarker(int nMarker) {
+
+    return ((nMarker >> 8) & 255);
+
+}
+
+//======================================
+// enemy type
+
+function int GetEnemyType(unit uUnit) {
+
+    int nEnemyType;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit);
+#endif    
+    uUnit.GetAttribute(ENEMY_TYPE_ATTRIBUTE,nEnemyType);
+    return nEnemyType;
+
+}
+
+function void SetEnemyType(unit uUnit, int nEnemyType) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit);
+#endif    
+    uUnit.SetAttribute(ENEMY_TYPE_ATTRIBUTE,nEnemyType);
+
+}
+
+//======================================
+// standard dialog attribute
+
+function void SetStandardDialogNumber(unit uUnit, int nStandardDialogNumber) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(STANDARD_DIALOG_NUMBER_ATTRIBUTE,nStandardDialogNumber);
+
+}
+
+function int GetStandardDialogNumber(unit uUnit) {
+
+    int nStandardDialogNumber;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(STANDARD_DIALOG_NUMBER_ATTRIBUTE,nStandardDialogNumber);
+    return nStandardDialogNumber;
+
+}
+
+//======================================
+// camper
+
+function void SetIsCamper(unit uUnit, int nIsCamper) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(IS_CAMPER_ATTRIBUTE,nIsCamper);
+
+}
+
+function int IsCamper(unit uUnit) {
+
+    int nIsCamper;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(IS_CAMPER_ATTRIBUTE,nIsCamper);
+    return nIsCamper;
+
+}
+
+//======================================
+// unit number
+
+function void SetUnitNumber(unit uUnit, int nUnitNumber) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(UNIT_NUMBER_ATTRIBUTE,nUnitNumber);
+    
+}
+
+function int GetUnitNumber(unit uUnit) {
+
+    int nUnitNumber;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(UNIT_NUMBER_ATTRIBUTE,nUnitNumber);
+    return nUnitNumber;
+
+}
+
+//======================================
+// quest unit number
+
+function void SetQuestUnitNumber(unit uUnit, int nQuestUnitNumber) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(QUEST_UNIT_NUMBER_ATTRIBUTE,nQuestUnitNumber);
+
+}
+
+function int GetQuestUnitNumber(unit uUnit) {
+
+    int nQuestUnitNumber;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(QUEST_UNIT_NUMBER_ATTRIBUTE,nQuestUnitNumber);
+    return nQuestUnitNumber;
+
+}
+
+//======================================
+// quest unit number
+
+function void SetDoorState(unit uUnit, int nDoorState) {
+
+    int nOpen;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    
+    // jesli drzewi questowe to nie ruszamy
+    uUnit.GetAttribute("Open",nOpen);
+    if (nOpen == 2) return;
+    
+    if (nDoorState == eDoorOpen) {
+        uUnit.SetAttribute("Open",0);
+    }
+    else if (nDoorState == eDoorClosed) {
+        uUnit.SetAttribute("Open",1);
+    }
+    else {    // nDoorState == eDoorLockpicked || nDoorState == eUnknownDoorState
+        uUnit.ResetAttribute("Open");
+    }
+    
+}
+
+function int GetDoorState(unit uUnit) {
+
+    int nOpen;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    
+    // jesli nie ma ustawionego atrybutu open
+    if (!uUnit.GetAttribute("Open",nOpen)) {
+        if (uUnit.WasObjectOpen()) return eDoorLockpicked;
+        return eUnknownDoorState;
+    }
+    if (nOpen == 0) return eDoorOpen;
+    return eDoorClosed; // nOpen == 1 || nOpen == 2
+    
+}
+
+//======================================
+// quest unit
+
+function void SetQuestUnitState(unit uUnit, int nQuestUnitState) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(QUEST_UNIT_STATE_ATTRIBUTE,nQuestUnitState);
+
+}
+
+function int GetQuestUnitState(unit uUnit) {
+
+    int nQuestUnitState;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(QUEST_UNIT_STATE_ATTRIBUTE,nQuestUnitState);
+    return nQuestUnitState;
+
+}
+
+function int IsQuestUnit(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    if (GetQuestUnitState(uUnit) == eNoQuestUnit) return false;
+    return true;
+
+}
+
+function void SetCurrentQuest(unit uUnit, int nCurrentQuest) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(CURRENT_QUEST_ATTRIBUTE,nCurrentQuest);
+    
+}
+
+function int GetCurrentQuest(unit uUnit) {
+
+    int nCurrentQuest;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(CURRENT_QUEST_ATTRIBUTE,nCurrentQuest);
+    return nCurrentQuest;
+    
+}
+
+function int QuestClosed(unit uUnit) {
+
+    int i;
+    int count;
+    int nQuestNum;
+    int nQuestState;
+    nQuestNum = GetCurrentQuest(uUnit);
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessageGet(eMsgGetQuestState,nQuestNum,nQuestState,i);
+
+    if (nQuestState == 4) return true;
+    return false;
+
+}
+
+//======================================
+// dialog unit 
+
+function void SetNoDialogUnit(unit uUnit, int nNoDialogUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(NO_DIALOG_UNIT_ATTRIBUTE,nNoDialogUnit);
+
+}
+
+function int IsNoDialogUnit(unit uUnit) {
+
+    int nNoDialogUnit;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(NO_DIALOG_UNIT_ATTRIBUTE,nNoDialogUnit);
+    return nNoDialogUnit;
+
+}
+
+function int GetDialogScriptUID() {
+
+    int i;
+    int nDialogScriptUID;
+    
+    for (i = 0; i < GetCampaign().GetGlobalScriptsCnt(); i++)
+        GetCampaign().GetGlobalScript(i).CommandMessageGet(eMsgGetDialogScriptUID,nDialogScriptUID);
+        
+    return nDialogScriptUID;
+
+}
+
+function int IsDialogUnit(unit uUnit) {
+
+    int nShopEnabled;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+    ASSERT(uUnit.IsUnit());
+#endif    
+    if (uUnit.IsShopUnit()) nShopEnabled = uUnit.IsShopEnabled();
+    else nShopEnabled = true;
+    if (uUnit.IsDialogUnit() && nShopEnabled) return true;
+    return false;
+
+}
+
+function void ResetIsDialogUnit(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.ResetIsDialogUnit();
+    if (uUnit.IsShopUnit()) uUnit.EnableShop(false);
+    
+}
+
+function void SetIsDialogUnit(unit uUnit, int nScriptUID) {
+
+    int nDialog;
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+    ASSERT(uUnit.IsUnit());
+#endif    
+    if (IsQuestUnit(uUnit)) {
+        if (IsNoDialogUnit(uUnit)) ResetIsDialogUnit(uUnit);    
+        else if (!QuestClosed(uUnit)) uUnit.SetIsDialogUnit(1,nScriptUID,eIsDialogUnitValue);
+        else uUnit.SetIsDialogUnit(0,nScriptUID,eIsDialogUnitValue);
+    }
+    else if (uUnit.IsShopUnit()) {
+        uUnit.SetIsDialogUnit(2,nScriptUID,eIsDialogUnitValue);
+        uUnit.EnableShop(true);
+    }
+    else if (IsCoach(uUnit)) uUnit.SetIsDialogUnit(3,nScriptUID,eIsDialogUnitValue);
+    else if (IsChanger(uUnit)) uUnit.SetIsDialogUnit(4,nScriptUID,eIsDialogUnitValue);
+    else if (!IsNoDialogUnit(uUnit)) uUnit.SetIsDialogUnit(0,nScriptUID,eIsDialogUnitValue);
+    else ResetIsDialogUnit(uUnit);
+            
+}
+
+function void SetIsDialogUnit(unit uUnit) {
+
+    SetIsDialogUnit(uUnit,GetDialogScriptUID());
+            
+}
+
+function int CanBeDialogUnit(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+
+    if (!IsNoDialogUnit(uUnit) && (GetStandardDialogNumber(uUnit) || IsQuestUnit(uUnit) || uUnit.IsShopUnit() || IsCoach(uUnit) || IsChanger(uUnit))) return true;
+    return false;
+
+}
+
+//======================================
+// guilds
+
+function void ResetGuild(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(GUILD_ATTRIBUTE,eNoGuild);
+    
+}
+
+function void SetGuild(unit uUnit, int nGuild) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(GUILD_ATTRIBUTE,nGuild);   
+
+}
+
+function int GetGuild(unit uUnit) {
+
+    int nGuild;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(GUILD_ATTRIBUTE,nGuild);
+    return nGuild;
+
+}
+
+//======================================
+
+#endif

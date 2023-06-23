@@ -1,0 +1,691 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> object object </title>
+</head>
+<body>
+<a name="object">
+<hr>
+<objectXX>
+<big><strong>object</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<object_functions_begin>
+private:
+void TraceDbg(string strString)
+void TraceDbg(stringW szString)
+void TraceDbg(int nValue)
+void TraceDbg(unit uItem)
+int  Rand(int nRand)
+int  sqrt(int nVal)
+int  sqrt(int nX, int nY)
+int  sqrt(int nX, int nY, int nZ)
+void TurnRadiusByAngle(int nR, int nAngle, int& pDx, int& pDy)
+int  Distance(int nX, int nY, int nX2, int nY2)
+int  DistanceSqrt(int nX, int nY, int nX2, int nY2)
+int  Distance(mission pWorld1, int nX, int nY, mission pWorld2, int nX2, int nY2)
+int  DistanceSqrt(mission pWorld1, int nX, int nY, mission pWorld2, int nX2, int nY2)
+int  IsPointNearLevelBorder(mission pWorld, int nX, int nY, int nMargin)
+void AppendPartiesArray(array pArr1, array pArr2)
+array GetSinglePartyArray(int nPartyNum)
+void GetObjectName(string strObjectID, stringW& pName)
+void GetObjectName(unit uObject, stringW& pName)
+campaign GetCampaign()
+int  IsEquipment(string strObjectID)
+int  IsWeapon(string strObjectID)
+int  IsMagicCard(string strObjectID)
+int  IsMagicClub(string strObjectID)
+int  IsStoreable(string strObjectID)
+int  IsUnitBase(string strObjectID)
+int  IsUnit(string strObjectID)
+int  IsSimplePassive(string strObjectID)
+int  IsPassive(string strObjectID)
+int  IsArtefact(string strObjectID)
+int  IsSpecialArtefact(string strObjectID)
+int  IsCustomArtefact(string strObjectID)
+int  IsPotionArtefact(string strObjectID)
+int  IsAlchemyFormulaArtefact(string strObjectID)
+int  IsTrap(string strObjectID)
+int  IsMissile(string strObjectID)
+int  IsTeleport(string strObjectID)
+int  IsConnectionTeleport(string strObjectID)
+int  IsStaticTeleport(string strObjectID)
+int  IsDynamicTeleport(string strObjectID)
+EquipmentParams GetEquipmentParams(string strObjectID)
+WeaponParams GetWeaponParams(string strObjectID)
+MagicCardParams GetMagicCardParams(string strObjectID)
+int  GetMagicCardMissileParamsCount(string strObjectID)
+MissileParams GetMagicCardMissileParams(string strObjectID, int nIndex)
+MagicClubParams GetMagicClubParams(string strObjectID)
+SpecialArtefactParams GetSpecialArtefactParams(string strObjectID, object pChangedParams)
+SpecialArtefactParamsSet CastChangedSpecialArtefactParams(string strObjectID, object pChangedParams)
+CustomArtefactParams GetCustomArtefactParams(string strObjectID, object pChangedParams)
+CustomArtefactParamsSet CastChangedCustomArtefactParams(string strObjectID, object pChangedParams)
+PotionArtefactParams GetPotionArtefactParams(string strObjectID, object pChangedParams)
+PotionArtefactParamsSet CastChangedPotionArtefactParams(string strObjectID, object pChangedParams)
+TrapParams GetTrapParams(string strObjectID, object pChangedParams)
+TrapParamsSet CastChangedTrapParams(string strObjectID, object pChangedParams)
+MissileParams GetTrapAmmoMissileParams(string strObjectID, object pChangedParams)
+UnitParams GetUnitParams(string strObjectID)
+MissileParams GetMissileParams(string strObjectID)
+string GetQuiverAmmoID(string strObjectID)
+string GetWeaponAmmoID(string strObjectID)
+int  GetInventoryWeight(string strObjectID, object pChangedParams)
+int  FillEquipmentIDNames(int, int, int, int, int, int, int, int, int, array)
+string SelectRandomMagicCard(int nMagicSchool, int nMinRequiredMagicSchoolSkill, int nMaxRequiredMagicSchoolSkill)
+int  CheckFileExist(string strFile)
+int  sscanf(string pszString, string strFormat, int& pVal1)
+int  sscanf(string pszString, string strFormat, int& pVal1, int& pVal2)
+int  sscanf(string pszString, string strFormat, int& pVal1, int& pVal2, int& pVal3)
+int  strlen(string strString)
+int  strcmp(string pszString1, string strString2)
+int  stricmp(string pszString1, string strString2)
+int  strncmp(string pszString1, string strString2, int nCount)
+int  strnicmp(string pszString1, string strString2, int nCount)
+int  strchr(string strString, int cChar)
+int  strrchr(string strString, int cChar)
+int  GetChar(string strString, int nIndex)
+int  CheckTranslate(string strTranslate)
+int  ReadTextFile(string strFile, array pArrText, int bParseFile)
+void __DevExecuteConsole(string strCommand)
+array GetStaticIntArray(int nIndex)
+int  IsStaticIntArray(int nIndex)
+void DestroyStaticIntArray(int nIndex)
+array GetStaticStringArray(int nIndex)
+int  IsStaticStringArray(int nIndex)
+void DestroyStaticStringArray(int nIndex)
+array GetStaticStringWArray(int nIndex)
+int  IsStaticStringWArray(int nIndex)
+void DestroyStaticStringWArray(int nIndex)
+int  GetObjectMeshFlags(string strObjectID)
+int  GetObjectCustomFlags(string strObjectID)
+void SearchFiles(string strPattern, string arrFiles[])
+<object_functions_private_end>
+<object_functions_end>
+</pre>
+<big>Enums</big>
+<pre>
+<object_enums_begin>
+  eDefaultStateDelay
+Distances:
+  e1m
+  e10cm
+  e20cm
+  e25cm
+  e30cm
+  e40cm
+  e50cm
+  e60cm
+  e70cm
+  e75cm
+  e80cm
+  e90cm
+  e1_5m
+  e2m
+  e2_5m
+  e3m
+  e4m
+  e5m
+  e6m
+  e7m
+  e8m
+  e9m
+  e10m
+  e15m
+  e20m
+  e30m
+Damage types:
+  eDamagePiercing
+  eDamageSlashing
+  eDamageBludgeoning
+  eDamageCold
+  eDamageFire
+  eDamageElectric
+  eDamageSpirit
+  eDamagePoison
+  eDamagesCnt
+  eFirstPhysicalDamage
+  eLastPhysicalDamage
+  ePhysicalDamagesCnt
+  eFirstMagicalDamage
+  eLastMagicalDamage
+  eMagicalDamagesCnt
+Protect types:
+  eProtectPhysical
+  eProtectCold
+  eProtectFire
+  eProtectElectric
+  eProtectSpirit
+  eProtectsCnt
+  eFirstMagicalProtect
+Physical protect types:
+  eProtectPhysicalPiercing
+  eProtectPhysicalSlashing
+  eProtectPhysicalBludgeoning
+  eFirstProtectPhysical
+Skill types:
+  eSkillAttack
+  eSkillDefence
+  eSkillParry
+  eSkillSwimming
+  eSkillStability
+  eSkillStrongHand
+  eSkillCriticalHit
+  eSkillDoubleBlade
+  eSkillKnockDown
+  eSkillHorseRiding
+  eSkillFastAiming
+  eSkillArchery
+  eSkillCloseDistanceShoot
+  eSkillPrecizeAiming
+  eSkillStoneSkin
+  eSkillLockPicking
+  eSkillAlchemy
+  eSkillAirMagic
+  eSkillFireMagic
+  eSkillWaterMagic
+  eSkillEarthMagic
+  eSkillNecromancyMagic
+  eSkillBerserk
+  eSkillDefensiveFight
+  eSkillDirtyTrick
+  eSkillStun
+  eSkillSwordBrake
+  eSkillDismountFromHorse
+  eSkillPullShield
+  eSkillKnifeDeathStrike
+  eSkillDeadlyPiruet
+  eSkillBurn
+  eSkillShieldTrick
+  eSkillDisarmingArrow
+  eSkillMultiArrows
+  eSkillPiercing
+  eSkillArrowOfDust
+  eSkillSneak
+  eSkillStealing
+  eSkillSetTrap
+  eSkillsCnt
+  eFirstNormalSkill
+  eFirstPassiveSkill
+  eLastPassiveSkill
+  ePassiveSkillsCnt
+  eFirstActiveSkill
+  eLastActiveSkill
+  eActiveSkillsCnt
+  eFirstAttackSkill
+  eLastAttackSkill
+  eFirstMagicSkill
+  eLastMagicSkill
+  eMagicSkillsCnt
+Params types:
+  ePointsVitality
+  ePointsDexterity
+  ePointsStrength
+  ePointsMagic
+  ePointsCnt
+  eParamHP
+  eParamDamage
+  eParamAttack
+  eParamDefence
+  eParamMana
+  eParamStamina
+  eParamsCnt
+Subobjects slots:
+  eSlotRightHand
+  eSlotLeftHand
+  eSlotArmourHelmet
+  eSlotArmourBody
+  eSlotArmourGloves
+  eSlotArmourTrousers
+  eSlotArmourBoots
+  eSlotQuiver
+  eSlotKnife
+  eSlotRing0
+  eSlotRing1
+  eSlotRing2
+  eSlotRing3
+  eSlotsCnt
+  eEqSlotNumMask
+  eBlockedEqSlotNumMask
+  eBlockedEqSlotNumShift
+Magic schools (same like skills):
+  eAirMagicSchool
+  eFireMagicSchool
+  eWaterMagicSchool
+  eEarthMagicSchool
+  eNecromancyMagicSchool
+  eMagicSchoolsCnt
+Number of magic slots:
+  eMagicSlotsCnt
+Max powerUp per slot:
+  eMaxPowerUpMagicCardsCnt
+Magic card types:
+  eMagicCardTypePowerUp
+  eMagicCardTypeMissile
+  eMagicCardTypeSummon
+  eMagicCardTypeWeapons
+  eMagicCardTypeGenericOnUnit
+  eMagicCardTypesCnt
+Magic card target types:
+  eMagicCardCommandTypeDirect
+  eMagicCardCommandTypeObject
+  eMagicCardCommandTypesCnt
+Magic card flags:
+  eMagicCardFlagAutoAttackEnemy
+  eMagicCardFlagAutoCastWhenAttacked
+  eMagicCardFlagAutoCastBeforeFight
+  eMagicCardFlagAutoCastDuringFight
+  eMagicCardFlagTalkEnemyMakeMagic
+  eMagicCardFlagTalkHeroMakeMagic
+  eMagicCardFlagTalkHeroMakeHealMagic
+  eMagicCardFlagTalkUnitForHeroMakeMagic
+Types of eMagicCardTypePowerUp:
+  eMagicCardPowerUpDamage
+  eMagicCardPowerUpMagicTime
+  eMagicCardPowerUpUsedMana
+  eMagicCardPowerUpMagicLevel
+  eMagicCardPowerUpSummonLevel
+  eMagicCardPowerUpCnt
+Alchemy slots:
+  eAlchemySlotInput0
+  eAlchemySlotInput1
+  eAlchemySlotInput2
+  eAlchemySlotInput3
+  eAlchemySlotInput4
+  eAlchemySlotResult
+  eAlchemySlotsCnt
+  eAlchemySlotInputLast
+  eAlchemySlotInputCnt
+Equipment types:
+  eEqTypeWeapon
+  eEqTypeArmour
+  eEqTypeShield
+  eEqTypeQuiver
+  eEqTypeRing
+  eEqTypeMagicClub
+  eEqTypeMagicCard
+  eEqTypeTorch
+  eEqTypesCnt
+Equipment flags:
+  eEquipmentCantBePullShield
+  eEquipmentBlockDrawHelmetSlot
+  eEquipmentBlockDrawLegsSlot
+  eEquipmentBlockDrawAllSlotsExceptHands
+  eEquipmentBlockUseBowCrossbowWeapon
+  eEquipmentBlockUseTwoWeapons
+  eEquipmentBlockSwimming
+  eEquipmentBlockDrawHairHandsFeetsSlot
+  eEquipmentStopLoopedSoundOnKilled
+  eEquipmentImpossibleToSell
+  eEquipmentNameFromMesh
+Shop price types:
+  ePriceTypeEqWeapon
+  ePriceTypeEqArmour
+  ePriceTypeEqShield
+  ePriceTypeEqQuiver
+  ePriceTypeEqRing
+  ePriceTypeEqMagicClub
+  ePriceTypeEqMagicCard
+  ePriceTypeEqSpecial
+  ePriceTypeTrap
+  ePriceTypeTeleport
+  ePriceTypePotionArtefact
+  ePriceTypeJoinArtefact
+  ePriceTypeKeyArtefact
+  ePriceTypeCustomArtefact
+  ePriceTypeOtherArtefact
+  ePriceTypesCnt
+  ePriceTypeEqFirst
+event GetCommandState - nCommand:
+  eCommandSetArmedMode
+  eCommandSkillSneak
+Target types modifiers:
+  eTargetTypeModifierLivings
+  eTargetTypeModifierUndead
+  eTargetTypeModifierGreenskins
+  eTargetTypeModifierGolems
+  eTargetTypeModifierDemons
+  eTargetTypeModifierDragons
+  eTargetTypeModifierElementals
+  eTargetTypeModifierMagicalCreatures
+  eTargetTypeModifierOnHorse
+  eTargetTypeModifiersCnt
+  eTargetTypeModifierTypeMask
+  eTargetTypeModifierLivingAnimalMask
+Missile types:
+  eMissileTypeDirect
+  eMissileTypeShoot
+  eMissileTypeShootImmediate
+  eMissileTypeTargetPlace
+  eMissileTypeLaser
+  eMissileTypeMeteor
+  eMissileTypeLightingStorm
+  eMissileTypeTimedHit
+  eMissileTypeFireWall
+  eMissileTypeFireRing
+  eMissileTypeFireField
+  eMissileTypeTrap
+  eMissileTypeShootFireWall
+  eMissileTypesCnt
+Missile flags:
+  eMissileConvertDamageToHP
+  eMissileHitPushed
+  eMissileFollowTarget
+  eMissileTargetZObject
+  eMissileHitForNoDamage
+Weapon types:
+  eWeaponKnife
+  eWeaponSword
+  eWeaponAxe
+  eWeaponMace
+  eWeaponSpear
+  eWeaponBow
+  eWeaponCrossbow
+  eWeaponMagicClub
+  eWeaponsCnt
+Force field types:
+  eForcefieldNone
+  eForcefieldPerlin
+  eForcefieldFreshnellRed
+  eForcefieldFreshnellGreen
+  eForcefieldFreshnellBlue
+  eForcefieldElectric
+  eForcefieldRust
+  eForcefieldMirror
+Weapon flags:
+  eWeaponFlatShootOnly
+  eWeaponCanBeBroken
+  eWeaponCanBrakeSword
+  eWeaponBrokenSword
+  eWeaponCantBeDisarmedByShot
+  eWeaponUseTrail
+IsTargetInAttackRange return value:
+  eNotInRange
+  eInRangeTooClose
+  eInRangeBadHit
+  eInRangeBadAngleBeta
+  eInRangeBadAngleAlpha
+  eInRangeGoodHit
+Fight actions:
+  eFightActionNothing
+  eFightActionStrike
+  eFightActionStrikeCritical
+  eFightActionStrikeStun
+  eFightActionStrikeStunLeftHand
+  eFightActionStrikeStunBothHands
+  eFightActionStrikeShieldTrick
+  eFightActionStrikeDeadlyPiruet
+  eFightActionStrikeKnifeDeathStrike
+  eFightActionStrikeNotHit
+  eFightActionDirtyTrick
+  eFightActionDismountFromHorse
+  eFightActionPullShield
+  eFightActionPullShieldLeftHand
+  eFightActionPullShieldBothHands
+  eFightActionBrakeSword
+  eFightActionBurn
+  eFightActionDodge
+  eFightActionParry
+  eFightActionStepLeft
+  eFightActionStepRight
+  eFightActionStepForward
+  eFightActionStepBack
+  eFightActionHit
+  eFightActionHitFall
+  eFightActionHitBurn
+  eFightActionHitByKnifeDeathStrike
+  eFightActionHitDismountedFromHorse
+  eFightActionHitPushed
+  eFightActionHitDirtyTricked
+  eFightActionHitStunned
+  eFightActionHitLooseWeapon
+  eFightActionShoot
+  eFightActionShootCloseDistance
+  eFightActionShootDisarmingArrow
+  eFightActionShootMultiArrows
+  eFightActionShootPiercing
+  eFightActionShootArrowOfDust
+PotionFlags values:
+  ePotionClearPoison
+  ePotionBlockPoison
+  ePotionChaosEnemyParties
+  ePotionFreezeEffect
+  ePotionStopMovingEffect
+  ePotionBerserk
+  ePotionDirtyTrick
+  ePotionArrowOfDust
+  ePotionHoldingTrap
+  ePotionStun
+  ePotionSlowDown
+  ePotionNotUsable
+SearchUnit - nTargetTypeMask:
+  eTargetTypeUnitBase
+  eTargetTypeUnit
+  eTargetTypeLand
+  eTargetTypeAir
+  eTargetTypeDamagableOnly
+  eTargetTypeArmedOnly
+  eTargetTypeUnarmedOnly
+  eTargetTypeLive
+  eTargetTypeDead
+  eTargetTypeAttackingSummonedUnitOwner
+SearchUnit - nSortType:
+  eSortTypeNone
+  eSortTypeRange
+  eSortTypeHP
+  eSortTypeHPPercent
+Parties nums and types:
+  eAnyPartyNum
+  ePartiesTypeAll
+  ePartiesTypeEnemy
+  ePartiesTypeAllNotOurs
+PlayDialog - nDialogFlags/PlayCutscene - nCutsceneFlags:
+  ePauseCallingScriptState
+  ePauseCallingScriptTimers
+  ePauseAllScriptsState
+  ePauseAllScriptsTimers
+  eFadeInOut
+  eDisableInterface
+  eHideInterface
+  eCanEscapeCutscene
+  eEndEventOnStartFadeOut
+  eNotPlayDialogWaves
+  eDefDialogFlags
+  eDefCutsceneFlags
+SetInterfaceOptions - nOptions:
+  eNoQuestsDialog
+  eNoReputationDialog
+  eNoCommandsDialog
+  eNoMapDialog
+  eNoPlayersDialog
+  eNoMenuButton
+  eNoSkillsDialog
+  eNoMagicDialog
+  eNoInventoryDialog
+Cutscene/Dialog fadeIn/Out ticks:
+  eFadeCutsceneTicks
+  eFadeDialogTicks
+Quest states:
+  eQuestStateInactive
+  eQuestStateActive
+  eQuestStateSolved
+  eQuestStateFailed
+Various values:
+  eInvalidDistanceBetweenMissions
+GetUnitTypeFlags:
+  eUnitTypeRunAwayFromUnits
+SpecialArtefact types:
+  eTypeMoneyArtefact
+  eTypeJoinArtefact
+  eTypeKeyArtefact
+Trap types:
+  eTrapTypeHold
+  eTrapTypeBomb
+Teleport types:
+  eTeleportTypeConnection
+  eTeleportTypeStatic
+  eTeleportTypeDynamic
+Hero flags:
+  eHeroGenderMale
+  eHeroGenderFemale
+  eHeroGenderMaleElf
+  eHeroGenderFemaleElf
+  eHeroTypeCampaign
+  eHeroTypeRPG
+  eHeroTypePVP
+OpenHeroDialog - hero dialog mode
+  eHeroDlgModeSkills
+  eHeroDlgModeInventory
+  eHeroDlgModeMagic
+  eHeroDlgModeQuests
+  eHeroDlgModeReputation
+  eHeroDlgModesCnt
+PlayHeroTalk - talkNum:
+  eHeroTalkAddExperienceLevel
+  eHeroTalkOpenContainer
+  eHeroTalkFailOpenLock
+  eHeroTalkOpenDeadBody
+  eHeroTalkPickupItem
+  eHeroTalkEnterUnderground
+  eHeroTalkResurrected
+  eHeroTalkHit
+  eHeroTalkDying
+  eHeroTalkKilledEnemy
+  eHeroTalkSpotByMonsterEnemy
+  eHeroTalkSpotByLivingEnemy
+  eHeroTalkMakeMagic
+  eHeroTalkMakeHealMagic
+  eHeroTalkEnemyMakeMagic
+  eHeroTalkStartRaining
+  eHeroTalkSnowing
+  eHeroTalkEnterWater
+  eHeroTalkLaught
+  eHeroTalkCallHorse
+  eHeroTalkStartJump
+  eHeroTalkEndJumpFall
+  eHeroTalkCustom1
+  eHeroTalkCustom2
+  eHeroTalkCustom3
+  eHeroTalkCustom4
+  eHeroTalkCustom5
+  eHeroTalksCnt
+PlayWave - volumeIndex:
+  eSoundVolumeTypeFX
+  eSoundVolumeTypeUnit
+  eSoundVolumeTypeEnviroment
+  eSoundVolumeTypeMusicTrack
+  eSoundVolumeTypeInterface
+SetForcedSoundEAXEnvironment - nEnvironment:
+  eSoundEnvironmentGeneric
+  eSoundEnvironmentPaddedCell
+  eSoundEnvironmentRoom
+  eSoundEnvironmentBathroom
+  eSoundEnvironmentLivingroom
+  eSoundEnvironmentStoneRoom
+  eSoundEnvironmentAuditorium
+  eSoundEnvironmentConcertHall
+  eSoundEnvironmentCave
+  eSoundEnvironmentArena
+  eSoundEnvironmentHangar
+  eSoundEnvironmentCarpetedHallway
+  eSoundEnvironmentHallway
+  eSoundEnvironmentStoneCorridor
+  eSoundEnvironmentAlley
+  eSoundEnvironmentForest
+  eSoundEnvironmentCity
+  eSoundEnvironmentMountains
+  eSoundEnvironmentQuarry
+  eSoundEnvironmentPlain
+  eSoundEnvironmentParkinglot
+  eSoundEnvironmentSewerPipe
+  eSoundEnvironmentUnderWater
+  eSoundEnvironmentDrugged
+  eSoundEnvironmentDizzy
+  eSoundEnvironmentPsychotic
+  eSoundEnvironmentCustom0
+  eSoundEnvironmentCustom1
+  eSoundEnvironmentCustom2
+  eSoundEnvironmentCustom3
+  eSoundEnvironmentCustom4
+  eSoundEnvironmentCustom5
+  eSoundEnvironmentCustom6
+  eSoundEnvironmentCustom7
+  eSoundEnvironmentCustom8
+  eSoundEnvironmentCustom9
+  eSoundEnvironmentCustom10
+  eSoundEnvironmentCustom11
+  eSoundEnvironmentCustom12
+  eSoundEnvironmentCustom13
+  eSoundEnvironmentCustom14
+  eSoundEnvironmentCustom15
+GetMeshSlotPosition - nSlotNum
+  eSlotBPlug0
+  eSlotBPlug1
+  eSlotBPlug2
+  eSlotBPlug3
+  eSlotBPlug4
+  eSlotBPlug5
+  eSlotBPlug6
+  eSlotBPlug7
+  eSlotPlace0
+  eSlotPlace1
+  eSlotPlace2
+  eSlotPlace3
+  eSlotPlace4
+  eSlotPlace5
+  eSlotPlace6
+  eSlotPlace7
+  eSlotCenter
+  eSlotSelection
+  eSlotHit
+  eSlotGround
+  eSlotFXEffect
+  eSlotTrack0
+  eSlotTrack1
+  eSlotTrack2
+  eSlotTrack3
+  eSlotWeaponBeg0
+  eSlotWeaponEnd0
+  eSlotWeaponBeg1
+  eSlotWeaponEnd1
+  eSlotSit
+  eSlotSleep
+MessageBox nButtons and result:
+  MB_OKCANCEL
+  MB_OK
+  MB_YESNOCANCEL
+  MB_YESNO
+  MB_RETRYCANCEL
+  MB_ABORTRETRYIGNORE
+  IDOK
+  IDCANCEL
+  IDYES
+  IDNO
+  IDRETRY
+  IDABORT
+  IDIGNORE
+AddHeroNetworkGameModePoints nGameMode:
+  eGameModePointsMonsterkilling
+  eGameModePointsHorseracing
+  eGameModePointsFlagcapturing
+  eGameModePointsPlayerkilling
+  eGameModePointsHorsesstealing
+GetObjectMeshFlags return:
+  eNoShadowMesh
+  eNoAlphaDistance
+  eNotDrawAsSubobject
+  eEqMeshHaveLevelVersion
+  eEqMeshHaveUnitTypeVersion
+  eCastStencilShadows
+  eEqMeshHaveTextureVersion
+  eTransparentCameraBoxes
+  eSetSkinColorOnSubobject
+  eDrawGhost
+  eHideDuringRain
+  eForceHigherBoxes
+<object_enums_end>
+</pre>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

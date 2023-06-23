@@ -1,0 +1,524 @@
+#ifndef UNITS_SKILL_ECH
+#define UNITS_SKILL_ECH
+
+#include "..\\Common\\Stealing.ech"
+
+////    Declarations    ////
+
+state WaitToSetUnarmedModeBeforeSetTrap;
+state SettingUnarmedModeBeforeSetTrap;
+state MovingToSetTrap;
+state SettingTrap;
+state SettingUnarmedModeBeforeSneak;
+state WaitingToSetSneakMode;
+state SettingSneakMode;
+state SettingUnarmedModeBeforeStealing;
+state PrepareStealing;
+state MakingSkillStealing;
+
+int m_nSetTrapX, m_nSetTrapY, m_nSetTrapZ;
+int m_bSetSneakMode;
+
+////    Functions    ////
+
+function int MoveToSetTrapPoint(int bMove)
+{
+    int nX, nY, nZ;
+    
+    if (!FindPlaceToSetTrap(m_nSetTrapX, m_nSetTrapY, m_nSetTrapZ, nX, nY, nZ))
+    {
+        return false;
+    }
+    if (bMove)
+    {
+        CallMoveToPoint(nX, nY, nZ);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void CancelSneakMode()
+{
+    if (IsInSneakMode())
+    {
+        CallSetSneakMode(0);
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetCommandStateSkillSneak()
+{
+    if ((state == SettingUnarmedModeBeforeSneak) ||
+        (state == WaitingToSetSneakMode) ||
+        (state == SettingSneakMode))
+    {
+        if (m_bSetSneakMode)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (IsInSneakMode())
+    {
+        return 1;
+    }
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+////    States    ////
+
+state WaitToSetUnarmedModeBeforeSetTrap
+{
+    if (IsMoving())
+    {
+        return WaitToSetUnarmedModeBeforeSetTrap, 6;
+    }
+    else
+    {
+        m_bAutoArmed = false;
+        CallSetArmedMode(false);
+        return SettingUnarmedModeBeforeSetTrap, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingUnarmedModeBeforeSetTrap
+{
+    if (IsSettingArmedMode())
+    {
+        return SettingUnarmedModeBeforeSetTrap, 5;
+    }
+    else
+    {
+        if (IsHeroUnit())
+        {
+            CallSetTrapAhead();
+            return SettingTrap, 5;
+        }
+        else
+        {
+            if (MoveToSetTrapPoint(true))
+            {
+                return MovingToSetTrap, 5;
+            }
+            else
+            {
+                EndCommand(true);
+                return Nothing, 0;
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MovingToSetTrap
+{
+    if (IsMoving())
+    {
+        return MovingToSetTrap, 10;
+    }
+    else
+    {
+        if (IsInGoodPlaceToSetTrap(m_nSetTrapX, m_nSetTrapY, m_nSetTrapZ))
+        {
+            CallSetTrap(m_nSetTrapX, m_nSetTrapY, m_nSetTrapZ);
+            return SettingTrap, 20;
+        }
+        else
+        {
+            if (MoveToSetTrapPoint(true))
+            {
+                return MovingToSetTrap, 10;
+            }
+            else
+            {
+                EndCommand(true);
+                return Nothing, 0;
+            }
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingTrap
+{
+    if (IsSettingTrap())
+    {
+        return SettingTrap, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingUnarmedModeBeforeSneak
+{
+    if (IsSettingArmedMode())
+    {
+        return SettingUnarmedModeBeforeSneak, 5;
+    }
+    else
+    {
+        CallSetSneakMode(m_bSetSneakMode);
+        return SettingSneakMode, 5;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state WaitingToSetSneakMode
+{
+    if (IsMoving())
+    {
+        return WaitingToSetSneakMode, 5;
+    }
+    else
+    {
+        if (m_bSetSneakMode && IsInArmedMode())
+        {
+            m_bAutoArmed = false;
+            CallSetArmedMode(false);
+            return SettingUnarmedModeBeforeSneak, 6;
+        }
+        else
+        {
+            CallSetSneakMode(m_bSetSneakMode);
+            return SettingSneakMode, 5;
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingSneakMode
+{
+    if (IsSettingSneakMode())
+    {
+        return SettingSneakMode, 5;
+    }
+    else
+    {
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state SettingUnarmedModeBeforeStealing
+{
+    if (IsSettingSneakMode())
+    {
+        return SettingUnarmedModeBeforeStealing, 5;
+    }
+    else
+    {
+        if (!CanMakeSkillStealing(m_uTarget))
+        {
+            m_uTarget = null;
+            EndCommand(true);
+            return Nothing, 0;
+        }
+        else
+        {
+            return PrepareStealing, 5;
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state PrepareStealing
+{
+    int nInRange;
+    
+    if (!CanMakeSkillStealing(m_uTarget))
+    {
+        CallStopCurrentAction();
+        m_uTarget = null;
+        EndCommand(true);
+        return Nothing, 0;        
+    }
+    if (IsMoving())
+    {
+        return PrepareStealing, 5;
+    }
+    else
+    {
+        nInRange = IsTargetInSkillStealingRange(m_uTarget);
+        if ((nInRange == eInRangeGoodHit) || (!IsHeroUnit() && (nInRange == eInRangeBadAngleAlpha)))
+        {
+            CallMakeSkillStealing(m_uTarget);
+            return MakingSkillStealing, 5;
+        }
+        else
+        {
+            return Nothing, 0;
+        }
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+state MakingSkillStealing
+{
+    if (IsMakingSkillStealing())
+    {
+        return MakingSkillStealing, 5;
+    }
+    else
+    {
+        m_uTarget = null;
+        EndCommand(true);
+        return Nothing, 0;
+    }
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+////    Commands    ////
+
+command SkillBerserk() item ITEM_SKILLBERSERK priority PRIOR_SKILLBERSERK
+{
+    SetNextAttackSkill(eSkillBerserk);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int StartSkillStrikeAttack(unit uTarget, int nCameraAngle, int nSkill, int bSecondHand)
+{
+    if (!SetNextAttackSkill(nSkill, bSecondHand))
+    {
+        EndCommand(true);
+        return true;
+    }
+    if (!IsInAttackState())
+    {
+        CHECK_STOP_CURR_ACTION();
+    }
+    if (nSkill != eSkillKnifeDeathStrike)
+    {
+        CHECK_CANCEL_SNEAKMODE();
+    }
+    CallMakeStrikeAttack(uTarget, nCameraAngle);
+    SetAttackTarget(uTarget, false);
+    state StrikeAttackingTarget;
+    SetStateDelay(5);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int StartSkillStrikeAttack(unit uTarget, int nCameraAngle, int nSkill)
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, nSkill, false);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillDefensiveFight() item ITEM_SKILLDEFENSIVEFIGHT priority PRIOR_SKILLDEFENSIVEFIGHT
+{
+    SetNextAttackSkill(eSkillDefensiveFight);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillDirtyTrick(unit uTarget, int nCameraAngle) item ITEM_SKILLDIRTYTRICK priority PRIOR_SKILLDIRTYTRICK
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillDirtyTrick);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillStun(unit uTarget, int nCameraAngle) item ITEM_SKILLSTUN priority PRIOR_SKILLSTUN
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillStun);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillStunSecondHand(unit uTarget, int nCameraAngle) item ITEM_SKILLSTUNSECOND priority PRIOR_SKILLSTUNSECOND
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillStun, true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillSwordBrake(unit uTarget, int nCameraAngle) item ITEM_SKILLSWORDBRAKE priority PRIOR_SKILLSWORDBRAKE
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillSwordBrake);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillDismountFromHorse(unit uTarget, int nCameraAngle) item ITEM_SKILLDISMOUNTFROMHORSE priority PRIOR_SKILLDISMOUNTFROMHORSE
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillDismountFromHorse);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillPullShield(unit uTarget, int nCameraAngle) item ITEM_SKILLPULLSHIELD priority PRIOR_SKILLPULLSHIELD
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillPullShield);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillPullShieldSecondHand(unit uTarget, int nCameraAngle) item ITEM_SKILLPULLSHIELDSECOND priority PRIOR_SKILLPULLSHIELDSECOND
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillPullShield, true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillKnifeDeathStrike(unit uTarget, int nCameraAngle) item ITEM_SKILLKNIFEDEATHSTRIKE priority PRIOR_SKILLKNIFEDEATHSTRIKE
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillKnifeDeathStrike);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillDeadlyPiruet(unit uTarget, int nCameraAngle) item ITEM_SKILLDEADLYPIRUET priority PRIOR_SKILLDEADLYPIRUET
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillDeadlyPiruet);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillBurn(unit uTarget, int nCameraAngle) item ITEM_SKILLBURN priority PRIOR_SKILLBURN
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillBurn);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillShieldTrick(unit uTarget, int nCameraAngle) item ITEM_SKILLSHIELDTRICK priority PRIOR_SKILLSHIELDTRICK
+{
+    return StartSkillStrikeAttack(uTarget, nCameraAngle, eSkillShieldTrick);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillDisarmingArrow() item ITEM_SKILLDISARMINGARROW priority PRIOR_SKILLDISARMINGARROW
+{
+    SetNextAttackSkill(eSkillDisarmingArrow);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillMultiArrows() item ITEM_SKILLMULTIARROWS priority PRIOR_SKILLMULTIARROWS
+{
+    SetNextAttackSkill(eSkillMultiArrows);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillPiercing() item ITEM_SKILLPIERCING priority PRIOR_SKILLPIERCING
+{
+    SetNextAttackSkill(eSkillPiercing);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillArrowOfDust() item ITEM_SKILLARROWOFDUST priority PRIOR_SKILLARROWOFDUST
+{
+    SetNextAttackSkill(eSkillArrowOfDust);
+    EndCommand(true);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillSneak(int bSneak) item ITEM_SKILLSNEAK_0 priority PRIOR_SKILLSNEAK
+{
+    if (bSneak < 0)
+    {
+        m_bSetSneakMode = !GetCommandStateSkillSneak();
+    }
+    else
+    {
+        m_bSetSneakMode = bSneak;
+    }
+    CHECK_STOP_CURR_ACTION();
+    if (IsMoving())
+    {
+        CallStopCurrentAction();
+        state WaitingToSetSneakMode;
+        SetStateDelay(1);
+    }
+    else
+    {
+        if (m_bSetSneakMode && IsInArmedMode())
+        {
+            m_bAutoArmed = false;
+            CallSetArmedMode(false);
+            state SettingUnarmedModeBeforeSneak;
+        }
+        else
+        {
+            CallSetSneakMode(m_bSetSneakMode);
+            state SettingSneakMode;
+        }
+        SetStateDelay(5);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillStealing(unit uTarget) item ITEM_SKILLSTEALING priority PRIOR_SKILLSTEALING
+{
+    int nInRange;
+        
+    if (uTarget == null) {
+    
+        ENABLE_TRACE(true);
+        TRACE("target is null       \n");
+        ENABLE_TRACE(false);
+    
+    }
+    
+    if ((uTarget == null) || !CanMakeSkillStealing(uTarget) || (uTarget == GetThis()))
+    {
+        EndCommand(true);
+        return true;
+    }
+        
+    nInRange = IsTargetInSkillStealingRange(uTarget);
+    if ((nInRange != eInRangeGoodHit) && (IsHeroUnit() || (nInRange != eInRangeBadAngleAlpha)))
+    {
+        EndCommand(true);
+        return true;
+    }
+    CHECK_STOP_CURR_ACTION();
+    m_uTarget = uTarget;
+    if (IsInArmedMode())
+    {
+        m_bAutoArmed = false;
+        CallSetArmedMode(false);
+        state SettingUnarmedModeBeforeStealing;
+        SetStateDelay(5);
+    }
+    else
+    {
+        state PrepareStealing;
+        SetStateDelay(5);
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+command SkillSetTrap(int nX, int nY, int nZ, int nTrapItemNumber, int nTrapID) priority PRIOR_SKILLSETTRAP hidden
+{
+    if (!CanSetTrap(nTrapID, nTrapItemNumber, false) || IsOnHorse())
+    {
+        EndCommand(true);
+        return true;
+    }
+    CHECK_STOP_CURR_ACTION();
+    //hero olewa nX,Y,Z i uklada przed soba
+    m_nSetTrapX = nX;
+    m_nSetTrapY = nY;
+    m_nSetTrapZ = nZ;
+    SetCurrTrap(nTrapID, nTrapItemNumber);
+    if (IsInArmedMode() && !HaveSetTrapAnim())
+    {
+        if (!IsHeroUnit() && !MoveToSetTrapPoint(false))
+        {
+            EndCommand(true);
+            state Nothing;
+        }
+        else
+        {
+            if (IsMoving())
+            {
+                CallStopCurrentAction();
+            }
+            state WaitToSetUnarmedModeBeforeSetTrap;
+            SetStateDelay(1);
+        }
+    }
+    else
+    {
+        if (IsHeroUnit())
+        {
+            CallSetTrapAhead();
+            state SettingTrap;
+            SetStateDelay(20);
+        }
+        else
+        {
+            if (MoveToSetTrapPoint(true))
+            {
+                state MovingToSetTrap;
+                SetStateDelay(10);
+            }
+            else
+            {
+                EndCommand(true);
+                state Nothing;
+            }
+        }
+    }
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_SKILL_ECH

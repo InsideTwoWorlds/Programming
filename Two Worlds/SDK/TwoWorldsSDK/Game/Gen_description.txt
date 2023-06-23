@@ -1,0 +1,8 @@
+
+How to generate random landscapes:
+
+1. Prepare texture set where textures 1-5 are grasses or soils and texture no 13 is a road. 
+2. Generate terrain from terrain generator (Type 2 works best).
+3. Paint road with texture no 13.  No objercts will be generated on this texture.
+4. Open console "C" key. And type @gen_forest#.txt  (in place of #  put number 1-7.
+5. Close console and enjoy the map. 

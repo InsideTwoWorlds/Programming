@@ -1,0 +1,1441 @@
+#ifndef NETWORK_MISSIONCOMMON_ECH
+#define NETWORK_MISSIONCOMMON_ECH
+
+/////////////////////////////////////////
+//  czesc wspolna wszystkich rozgrywek //
+/////////////////////////////////////////
+
+#include "..\\Common\\Generic.ech"
+#include "..\\Common\\Enums.ech"
+#include "..\\Common\\Quest.ech"
+#include "..\\Common\\Levels.ech"
+#include "..\\Common\\CreateStrings.ech"
+
+#define DEFAULT_MARKER   "MARKER"
+#define MARKER_GATE      "MARKER_GATE"
+#define TELE_OUT_EFFECT  "TELE_OUT_EFFECT"
+#define TELE_IN_EFFECT   "TELE_IN_EFFECT"
+#define RESURRECT_EFFECT "RESURRECT_EFFECT"
+
+#define MARKER_SHIFT_VALUE 200 // wartosc przez ktora bedzie mnozony m_nMarkerShift dla map o kilku arenach
+
+////////////////////////////////////////////////////////////////////////////////
+// ogolne
+#define TEXT_LEFTTHEGAME               "translatePvPLeftTheGame"
+#define TEXT_GETREADY                  "translatePvPGetReady"
+#define TEXT_REMAININGSECONDS          "translatePvPRemainingSeconds"
+#define TEXT_WASKILLED                 "translatePvPWasKilled"
+#define TEXT_WASKILLEDBY               "translatePvPWasKilledBy"
+#define TEXT_GETPOINTS                 "translatePvPYouGetRankPoints"
+#define TEXT_LOSEPOINTS                "translatePvPYouLoseRankPoints"
+#define TEXT_GETGOLD                   "translatePvPYouGetGold"
+#define TEXT_LOSEGOLD                  "translatePvPYouLoseGold"
+#define TEXT_GUILDGETSPOINTS           "translatePvPYourGuildGetsRankPoints"
+#define TEXT_GUILDLOSESPOINTS          "translatePvPYourGuildLosesRankPoints"
+#define TEXT_UNKNOWNPLAYER             "translatePvPUnknownPlayer"
+#define TEXT_TIMEFORMAT_ONEDIGITNUMBER "translatePvPTimeFormatOneDigitNumber"
+#define TEXT_TIMEFORMAT_TWODIGITNUMBER "translatePvPTimeFormatTwoDigitNumber"
+#define TEXT_TIMEFORMAT_COLON          "translatePvPTimeFormatColon"
+#define TEXT_TIMEFORMAT_PERIOD         "translatePvPTimeFormatPeriod"
+#define TEXT_GAMEOVER                  "translatePvPGameOver"
+#define TEXT_RACEFINISHED              "translatePvPRaceFinished"
+#define TEXT_NOPLAYERS                 "translateXNetworkCannotPlayAlone"
+// ogolne teamowe
+#define TEXT_TEAM1                     "translatePvPTeam1"
+#define TEXT_TEAM2                     "translatePvPTeam2"
+#define TEXT_TEAM1TEXT                 "translatePvPTeam1Text"
+#define TEXT_TEAM2TEXT                 "translatePvPTeam2Text"
+#define TEXT_CHOOSEATEAM               "translatePvPChooseTeam"
+#define TEXT_CHOSEATEAM                "translatePvPChoseTeam"
+#define TEXT_ATLEASTONEHEROINEACHTEAM  "translatePvPOneHeroInEachTeam"
+#define TEXT_PLAYERSASSIGNEDTOTEAM     "translatePvPPlayersAssignedToTeam"
+#define TEXT_WASKILLEDBY_FF            "translatePvPWasKilledByTeammate"
+#define TEXT_TEAMWINS                  "translatePvPYourTeamWins"
+#define TEXT_TEAMLOSES                 "translatePvPYourTeamLoses"
+#define TEXT_DRAWGAME                  "translatePvPDrawGame"
+#define TEXT_GAMEPOINTS                "translatePvPTeamGamePoints"
+#define TEXT_NOPLAYERSINOTHERTEAM      "translatePvPNoPlayersInOtherTeam"
+// horse racing
+#define TEXT_MOUNTHORSEANDGO           "translatePvPMountHorseAndGo"
+#define TEXT_FINISHEDRACEATPLACE       "translatePvPFinishedRaceAtPlace"
+#define TEXT_DIDNOTFINISH              "translatePvPDidNotFinish"
+#define TEXT_FINISHEDATPLACEWITHTIME   "translatePvPFinishedAtPlaceWithTime"
+#define TEXT_RACERESULTS               "translatePvPRaceResults"
+#define TEXT_RACERESULTENTRY           "translatePvPRaceResultEntry"
+// team deathmatch
+#define TEXT_FIGHT                     "translatePvPFight"
+#define TEXT_KILLLIMIT                 "translatePvPKillsLimit"
+// team assault
+#define TEXT_DESTROY                   "translatePvPDestroyEnemyStatue"
+#define TEXT_TEAMSTATUEDAMAGED         "translatePvPTeamStatueDamaged"
+#define TEXT_ENEMYSTATUEDESTROYED      "translatePvPEnemyStatueWasDestroyed"
+#define TEXT_YOURSTATUEDESTROYED       "translatePvPYourStatueWasDestroyed"
+#define TEXT_ENEMYSTATUEDESTROYEDBY    "translatePvPEnemyStatueWasDestroyedBy"
+#define TEXT_YOURSTATUEDESTROYEDBY     "translatePvPYourStatueWasDestroyedBy"
+// team monster hunt
+#define TEXT_HUNT                      "translatePvPHuntEnemyMonsters"
+#define TEXT_POINTSREQUIREDTOWIN       "translatePvPPointsRequiredToWin"
+#define TEXT_ENEMYMONSTERKILLED        "translatePvPEnemyTeamMonsterWasKilled"
+#define TEXT_YOURMONSTERKILLED         "translatePvPYourTeamMonsterWasKilled"
+#define TEXT_ENEMYMONSTERKILLEDBY      "translatePvPEnemyTeamMonsterWasKilledBy"
+#define TEXT_YOURMONSTERKILLEDBY       "translatePvPYourTeamMonsterWasKilledBy"
+// team rustling 
+#define TEXT_BRING                     "translatePvPBringHorsesToYourPaddock"
+
+////////////////////////////////////////////////////////////////////////////////
+consts
+{
+// gameplay
+    eEntryPoints               = 10,      // punkty zabierane playerowi przy rozpoczeciu gry (PvP)
+    eGuildEntryPoints          = 10,      // punkty zabierane gildii przy rozpoczeciu gry (PvP)
+    eEntryGold                 = 1000,    // zloto zabierane playerowi przy rozpoczeciu gry (RPG Arena)
+    eRespawnItemSeconds        = 20,      // czas respawnu przedmiotow w sekundach
+    eMaxInitRespawnItemSeconds = 40,      // dodatkowy czas respawnu na poczatku (zeby przedmioty nie pojawily sie wszedzie jednoczesnie)
+    eHeroRespawnTicks          = 3 * 30,  // czas miedzy smiercia a respawnem playera
+    eHorseRespawnTicks         = 10 * 30, // czas miedzy smiercia a respawnem konia
+// markery
+    eMarkerPlayerStart      = 1,  // 1-8
+    eMarkerPlayerStartNum   = 8,
+    eMarkerRespawnItemStart = 31, // 31-50
+    eMarkerRespawnItemNum   = 20,
+// interfejs
+    eCountdownConsoleTextTime       =  1 * 30,
+    eDefaultConsoleTextTime         =  4 * 30,
+    eChooseTeamConsoleTextTime      = 10 * 30,
+    eJoinedTeamConsoleTextTime      = 10 * 30,
+    eWarningConsoleTextTime         = 20 * 30,
+    eKilledConsoleTextTime          =  5 * 30,
+    eResultsConsoleTextTime         = 15 * 30,
+    eDefaultGuildGameCountdownTime  = 10 * 30,
+// inne
+    eDefaultMainStateInterval         = 30,     // defaultowy interwal miedzy stepami glownego stanu (potrzebne do respawnu przedmiotow i ludzi)
+    eDefaultCountdownStateOverallTime = 8 * 30, // domyslny calkowity czas odliczania
+    eDefaultCountdownStateShowTime    = 5 * 30, // czas od ktorego beda pokazywane uplywajace sekundy
+// border
+    eNoBorder = 0,
+    eDefaultBorder,
+// trace
+    eStart = 0,
+    eEnd = 1,
+// mapsigny
+    eMapSignTeam1Hero = 26,
+    eMapSignTeam2Hero = 27,
+    eMapSignTeam1Monster = 28,
+    eMapSignTeam2Monster = 29,
+    eMapSignTeam1Statue = 30,
+    eMapSignTeam2Statue = 31,
+    eMapSignTeam1Paddock = 32,
+    eMapSignTeam2Paddock = 33,
+    eMapSignSingleHero = eMapSignTeam1Hero,
+// end game text
+    eEndGameTextCommon = 0, // game over
+    eEndGameTextRace = 1,   // race finished
+    eEndGameTextNoPlayers = 2, // podczas wyboru teamow lub podczas horseracingu zostal 1 gracz
+    eEndGameTextNoPlayersInOtherTeam = 3, // podczas gry teamowej zostal jeden team
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///// MARKERY /////
+int m_arrStartX[];       // markery herosow na starcie
+int m_arrStartY[];
+int m_arrStartAngle[];
+int m_arrItemX[];        // markery dla respawnujacych sie itemow
+int m_arrItemY[];
+///// GRACZE /////
+stringW m_arrHeroNames[]; // tablica imion graczy
+///// GILDIE /////
+int m_arrGuildsNum[];    // numy gildii
+int m_arrGuildsPoints[]; // punkty gildii
+///// INNE /////
+int m_nGameType;  // eGameRPG, eGameRPGArena, eGamePvP
+int m_nGuildGame; // true, false
+int m_nRankedGame; // true, false
+int m_nIsShownEndMessageBox;
+string m_strMissionName; // nazwa levelu bez katalogu i rozszerzenia
+mission m_pCurrentMission;
+int m_nEarthNetPlayerPointsPool;// pula punktow do wygrania dla graczy
+int m_nEarthNetGuildPointsPool; // pula punktow do wygrania dla gildii
+int m_nCountdownCounter;        // licznik do rozpoczecia gry
+int m_nShowCountdownCounter;    // jw ale od ilu sekund bedzie widoczny
+int m_nMainStateTicksInterval;
+int m_nMarkerShift;         // przesuniecie markerow, wykorzystywane przy kilku arenach na jednej mapie
+///// RESPAWN PRZEDMIOTOW /////
+int m_nItemRespawnsAvailable;
+int m_nItemRespawnsEnabled;
+int m_arrRespawnItemTicks[];       // czasy respawnu, jest ich tyle ile respawn markerow
+
+string m_arrRespawnItemNames[];    // mozliwe przedmioty do respawnowania
+int m_arrRespawnItemProbability[]; // prawdopodobienstwo powstania danego przedmiotu
+int m_nProbSum;                    // suma prawdopodobienstw
+
+////////////////////////////////////////////////////////////////////////////////
+function void CommonInit();
+function void InitGameParams();
+function int  InitMarkers(int nMarkerStart, int nMarkerNum, int arrMarkerX[], int arrMarkerY[]);
+function int  InitMarkers(int nMarkerStart, int nMarkerNum, int arrMarkerX[], int arrMarkerY[], int arrMarkerAngle[]);
+function int  InitMarkerNums(int nMarkerStart, int nMarkerNum, int arrMarkerNum[]);
+function int  InitStartMarkers();
+function int  InitRespawnItemMarkers();
+function int  IsItemRespawnsAvailable();
+function int  IsItemRespawnsEnabled();
+function int  EnableItemRespawns(int nEnable);
+function void InitRespawnItems();
+function void InitHeroNames();
+function int  IsGuildsGame();
+function void FindGuilds();
+function void InitGuilds();
+function int  GetHeroIndexFromGuild(int nGuildNum);
+function int  GetMultipliedMarkerShift();
+function void SetBorderMargin(int nFlag);
+function void SetCountdownTimeForGuildGame();
+function int  GetGameType();
+function int  IsGuildsGame();
+
+function int  MoveHeroesToStartMarkers(int nShowTeleOutEffect, int nShowTeleInEffect);
+function int  MoveHeroToStartMarker(int nHeroNum, int nShowTeleOutEffect, int nShowTeleInEffect);
+function int  CheckIfCountdownEnded();
+function void CureHeroes();
+function void RespawnHeroesImmediately();
+function void RespawnItems();
+function int  ChooseItemToRespawn();
+
+function void DistributeEarthNetGuildPoints(int nGuildIndex);
+function void EndGame(int nTextType);
+
+function void ShowTextToAll(stringW strText, int nTextTime, int nAdd);
+function void ShowTextToPlayer(int nPlayerNum, stringW strText, int nTextTime, int nAdd);
+function void ShowBottomTextToAll(stringW strText, int nTextTime, int nAdd);
+function void ShowBottomTextToPlayer(int nPlayerNum, stringW strText, int nTextTime, int nAdd);
+function void ShowTextToAll_NoRepeat(stringW strText, int nTextTime, int nAdd);
+function void ShowTextToPlayer_NoRepeat(int nPlayerNum, stringW strText, int nTextTime, int nAdd);
+function void ShowBottomTextToAll_NoRepeat(stringW strText, int nTextTime, int nAdd);
+function void ShowBottomTextToPlayer_NoRepeat(int nPlayerNum, stringW strText, int nTextTime, int nAdd);
+
+function void ShowEarthNetGuildPointsText();
+
+function void AddStaticMapSignToAll(int nX, int nY, int nMapSignNum);
+function void RemoveStaticMapSign(int nX, int nY);
+function void AddUnitMapSign(unit pUnit, int nMapSignNum);
+function void AddUnitMapSignExceptLocal(unit pUnit, int nMapSignNum);
+
+function int  GetIndexOfValueInArray(int nValue, int arrValues[]);
+function int  GetIndexOfMinValueInArray(int arrValues[]);
+function int  GetIndexOfMaxValueInArray(int arrValues[]);
+function int  AddValueToArray(int nValue, int arrValues[]);
+function int  RemoveValueFromArray(int nValue, int arrValues[]);
+function int  SumValuesInArray(int arrValues[]);
+function int  IsPointInPolygon(int arrX[], int arrY[], int nX, int nY);
+function void ConvertTicksToTime(int nTicks, int &nMinutes, int &nSeconds, int &nMiliseconds);
+function void FormatTime(stringW &strTime, int nMinutes, int nSeconds);
+function void FormatTime(stringW &strTime, int nMinutes, int nSeconds, int nMiliseconds);
+function string GetRandomHorseName();
+
+function void __PrintTraceHeader(int nFlag);
+function void __TraceHeroPoints(int nFlag);
+function void __TraceGuildPoints(int nFlag);
+function void __TraceCommonGamePoints(int nFlag);
+
+////////////////////////////////////////////////////////////////////////////////
+function void __TestMapSigns()
+{
+    int i, j;
+    int arrMapSignsNum[];
+    int nSignIndex;
+    int nStartX, nStartY;
+
+/*    arrMapSignsNum.Add(0);    arrMapSignsNum.Add(1);    arrMapSignsNum.Add(2);     arrMapSignsNum.Add(3);
+    arrMapSignsNum.Add(4);    arrMapSignsNum.Add(10);   arrMapSignsNum.Add(11);    arrMapSignsNum.Add(12);
+    arrMapSignsNum.Add(13);   arrMapSignsNum.Add(14);   arrMapSignsNum.Add(15);    arrMapSignsNum.Add(16);
+    arrMapSignsNum.Add(17);   arrMapSignsNum.Add(18);   arrMapSignsNum.Add(19);    arrMapSignsNum.Add(20);
+    arrMapSignsNum.Add(21);   arrMapSignsNum.Add(22);   arrMapSignsNum.Add(23);    arrMapSignsNum.Add(24);
+    arrMapSignsNum.Add(25);*/
+
+    arrMapSignsNum.Add(26);
+    arrMapSignsNum.Add(27);
+    arrMapSignsNum.Add(28);
+    arrMapSignsNum.Add(29);
+    arrMapSignsNum.Add(30);
+    arrMapSignsNum.Add(31);
+    arrMapSignsNum.Add(32);
+    arrMapSignsNum.Add(33);
+
+    GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).GetLocation(nStartX, nStartY);
+    nSignIndex = 0;
+    for(i = 0; i < 5; i++)
+    {
+        for(j = 0; j < 5; j++)
+        {
+            if( nSignIndex >= arrMapSignsNum.GetSize())
+            {
+                break;
+            }
+            AddStaticMapSignToAll(nStartX + j * 3000, nStartY + i * 3000, arrMapSignsNum[nSignIndex]);
+            nSignIndex++;
+        }
+        
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+function void CommonInit()
+{
+    InitGameParams();
+    GetCampaign().SetEngineFarPlanePercent(130);
+
+    m_pCurrentMission = GetCampaign().GetMission(0);
+    m_nEarthNetPlayerPointsPool = 0;
+    m_nEarthNetGuildPointsPool = 0;
+    m_nCountdownCounter  = eDefaultCountdownStateOverallTime;
+    m_nShowCountdownCounter  = eDefaultCountdownStateShowTime;
+    m_nMainStateTicksInterval = eDefaultMainStateInterval;
+    m_nMarkerShift = 0;
+    m_nIsShownEndMessageBox = false;
+
+    m_nItemRespawnsAvailable = true;
+    if( GetGameType() == eGameRPGArena )
+    {
+        m_nItemRespawnsAvailable = false; // respawn przedmiotow niedostepny na RPG Arenach
+    }
+    EnableItemRespawns(false);
+
+    InitStartMarkers();
+    InitHeroNames();
+    SetBorderMargin(eNoBorder);
+    FindGuilds();
+}//--------------------------------------------------------------------------------------|
+
+function void InitGameParams()
+{
+    m_nGameType = -1;
+    GetCampaign().CommandMessageGet(eMsgGetGameType, m_nGameType);
+    ASSERT(m_nGameType != -1);
+
+    m_nGuildGame = false;
+    GetCampaign().CommandMessageGet(eMsgGetGuildsGame, m_nGuildGame);
+    
+    m_nRankedGame = false;
+    GetCampaign().CommandMessageGet(eMsgGetRankedGame, m_nRankedGame);
+    
+    m_strMissionName;
+    GetCampaign().CommandMessageGet(eMsgGetMissionName, m_strMissionName);
+}//--------------------------------------------------------------------------------------|
+
+function int InitMarkers(int nMarkerStart, int nMarkerNum, int arrMarkerX[], int arrMarkerY[])
+{
+    int nIndex, nX, nY;
+
+    for(nIndex = nMarkerStart; nIndex < nMarkerStart + nMarkerNum; nIndex++)
+    {
+        if( !m_pCurrentMission.GetMarker(DEFAULT_MARKER, nIndex, nX, nY) )
+        {
+            TRACE("!!! Brak markera nr %d !!!\n", nIndex);
+            continue;
+        }
+        arrMarkerX.Add(nX);
+        arrMarkerY.Add(nY);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int InitMarkers(int nMarkerStart, int nMarkerNum, int arrMarkerX[], int arrMarkerY[], int arrMarkerAngle[])
+{
+    int nIndex, nX, nY, nZ, nAngle;
+
+    for(nIndex = nMarkerStart; nIndex < nMarkerStart + nMarkerNum; nIndex++)
+    {
+        if( !m_pCurrentMission.GetMarker(DEFAULT_MARKER, nIndex, nX, nY, nZ, nAngle) )
+        {
+            TRACE("!!! Brak markera nr %d !!!\n", nIndex);
+            continue;
+        }
+        arrMarkerX.Add(nX);
+        arrMarkerY.Add(nY);
+        arrMarkerAngle.Add(nAngle);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int InitMarkerNums(int nMarkerStart, int nMarkerNum, int arrMarkerNum[])
+{
+    int nIndex, nX, nY;
+
+    for(nIndex = nMarkerStart; nIndex < nMarkerStart + nMarkerNum; nIndex++)
+    {
+        if( !m_pCurrentMission.GetMarker(DEFAULT_MARKER, nIndex, nX, nY) )
+        {
+            TRACE("!!! Brak markera nr %d !!!\n", nIndex);
+            continue;
+        }
+        arrMarkerNum.Add(nIndex);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int InitStartMarkers()
+{
+    InitMarkers(eMarkerPlayerStart, eMarkerPlayerStartNum, m_arrStartX, m_arrStartY, m_arrStartAngle);
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int InitRespawnItemMarkers()
+{
+    int nIndex;
+    
+    if( !IsItemRespawnsAvailable() || !IsItemRespawnsEnabled() )
+    {
+        return 0;
+    }
+
+    InitMarkers(eMarkerRespawnItemStart + GetMultipliedMarkerShift(), eMarkerRespawnItemNum, m_arrItemX, m_arrItemY);
+
+// inicjacja czasow
+    for(nIndex = 0; nIndex < m_arrItemX.GetSize(); nIndex++)
+    {
+        m_arrRespawnItemTicks.Add(eRespawnItemSeconds * 30 + Rand(eMaxInitRespawnItemSeconds) * 30);
+    }
+
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int IsItemRespawnsAvailable()
+{
+    return m_nItemRespawnsAvailable;
+}//--------------------------------------------------------------------------------------|
+
+function int IsItemRespawnsEnabled()
+{
+    return m_nItemRespawnsEnabled;
+}//--------------------------------------------------------------------------------------|
+
+function int EnableItemRespawns(int nEnable)
+{
+    if( nEnable == false )
+    {
+        m_nItemRespawnsEnabled = false;
+        return true;
+    }
+    if( IsItemRespawnsAvailable() )
+    {
+        m_nItemRespawnsEnabled = nEnable;
+        return true;
+    }
+    else
+    {
+        m_nItemRespawnsEnabled = false;
+        return false;
+    }
+    return true;
+}//--------------------------------------------------------------------------------------|
+
+#define INIT_RESPAWN_ITEM(name, probability) m_arrRespawnItemNames.Add(name); m_arrRespawnItemProbability.Add(probability);
+
+function void InitRespawnItems()
+{
+    int nIndex;
+    
+    if( !IsItemRespawnsAvailable() || !IsItemRespawnsEnabled() )
+    {
+        return;
+    }
+
+    INIT_RESPAWN_ITEM("POTION_HEALING_01",    40);
+    INIT_RESPAWN_ITEM("POTION_HEALING_02",    20);
+    INIT_RESPAWN_ITEM("POTION_HEALING_03",    10);
+    INIT_RESPAWN_ITEM("POTION_MANA_01",       40);
+    INIT_RESPAWN_ITEM("POTION_MANA_02",       20);
+    INIT_RESPAWN_ITEM("POTION_MANA_03",       10);
+    INIT_RESPAWN_ITEM("POTION_POISON_01",     30);
+    INIT_RESPAWN_ITEM("POTION_SKILL_TIME_01", 15);
+    INIT_RESPAWN_ITEM("POTION_SKILL_TIME_02", 15);
+    INIT_RESPAWN_ITEM("POTION_SKILL_TIME_03", 15);
+    INIT_RESPAWN_ITEM("POTION_SKILL_TIME_04", 10);
+    INIT_RESPAWN_ITEM("POTION_SKILL_TIME_05", 5);
+
+    m_nProbSum = 0;
+    for(nIndex = 0; nIndex < m_arrRespawnItemProbability.GetSize(); nIndex++)
+    {
+        m_nProbSum += m_arrRespawnItemProbability[nIndex];
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void InitHeroNames()
+{
+    int nIndex;
+    stringW strName;
+    
+    m_arrHeroNames.RemoveAll();
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( IsPlayer(nIndex) )
+        {
+            strName = GetPlayerInterface(nIndex).GetPlayerName();
+        }
+        else
+        {
+            strName.Translate(TEXT_UNKNOWNPLAYER);
+        }
+        m_arrHeroNames.Add( strName );
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int GetGameType()
+{
+    return m_nGameType;
+}//--------------------------------------------------------------------------------------|
+
+function int IsGuildsGame()
+{
+    return m_nGuildGame;
+}//--------------------------------------------------------------------------------------|
+
+function int IsRankedGame()
+{
+    return m_nRankedGame;
+}//--------------------------------------------------------------------------------------|
+
+function void FindGuilds()
+{
+    int nIndex;
+    int nGuildNum;
+    int nGuildsPoints;
+    
+    if( !IsGuildsGame() )
+    {
+        return;
+    }
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;
+        }
+        nGuildNum = GetCampaign().GetPlayerHeroUnit(nIndex).GetHeroNetworkGuildNum();
+        if( GetIndexOfValueInArray(nGuildNum, m_arrGuildsNum) == -1 )
+        {
+            m_arrGuildsNum.Add(nGuildNum);
+            TRACE("guild found: %d\n", nGuildNum);
+        }
+    }
+    // musza byc zawsze 2
+    ASSERT( (m_arrGuildsNum.GetSize() == 2) );
+}//--------------------------------------------------------------------------------------|
+
+function void InitGuilds()
+{
+    int nGuildIndex;
+    int nHeroIndex;
+    int nGuildsPoints;
+    
+    if( !IsGuildsGame() )
+    {
+        return;
+    }
+    if( m_arrGuildsNum.GetSize() != 2 )
+    {
+        TRACE("!!! Nieprawidlowa liczba gildii !!!\n");
+        __ASSERT_FALSE();
+        return;
+    }
+    for(nGuildIndex = 0; nGuildIndex < m_arrGuildsNum.GetSize(); nGuildIndex++)
+    {
+        nHeroIndex = GetHeroIndexFromGuild( m_arrGuildsNum[nGuildIndex] );
+        if( nHeroIndex == -1 )
+        {
+            __ASSERT_FALSE();
+            return;    
+        }
+        nGuildsPoints = MIN( eGuildEntryPoints, GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints() );
+        TRACE("guildnum: %d, current points: %d, entry points: %d, ", m_arrGuildsNum[nGuildIndex], GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints(), nGuildsPoints);
+        GetCampaign().GetPlayerHeroUnit(nHeroIndex).AddHeroNetworkGuildRankPoints(-nGuildsPoints);
+        TRACE("points: %d\n", GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints() );
+        m_nEarthNetGuildPointsPool += nGuildsPoints;
+        m_arrGuildsPoints.Add(-nGuildsPoints);
+    }
+    TRACE("guild pool: %d\n", m_nEarthNetGuildPointsPool);
+    // musza byc zawsze 2
+    ASSERT( (m_arrGuildsNum.GetSize() == 2) && (m_arrGuildsPoints.GetSize() == 2) );
+}//--------------------------------------------------------------------------------------|
+
+function int GetHeroIndexFromGuild(int nGuildNum)
+{
+    int nIndex;
+    
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;
+        }
+        if( nGuildNum == GetCampaign().GetPlayerHeroUnit(nIndex).GetHeroNetworkGuildNum() )
+        {
+            return nIndex;
+        }        
+    }
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function int GetMultipliedMarkerShift()
+{
+    return m_nMarkerShift * MARKER_SHIFT_VALUE;
+}//--------------------------------------------------------------------------------------|
+
+function void SetBorderMargin(int nFlag)
+{
+    if( nFlag == eNoBorder )
+    {
+        GetCampaign().SetEndOfTheWorldMargin(0, 0); // 1 arg - przestaje isc
+    }                                               // 2 arg - pokazuje napis
+    else if( nFlag == eDefaultBorder )
+    {
+        GetCampaign().SetEndOfTheWorldMargin(-1, -1);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void SetCountdownTimeForGuildGame()
+{
+    m_nCountdownCounter = eDefaultGuildGameCountdownTime;
+}//--------------------------------------------------------------------------------------|
+
+function int MoveHeroesToStartMarkers(int nShowTeleOutEffect, int nShowTeleInEffect)
+{
+    int arrStartX[];
+    int arrStartY[];
+    int arrStartAngle[];
+    int nIndex;
+    int nX, nY, nAngle;
+    int nMarkerIndex;
+    unit pHero;
+    
+    arrStartX.Copy(m_arrStartX);
+    arrStartY.Copy(m_arrStartY);    
+    arrStartAngle.Copy(m_arrStartAngle);    
+
+    ASSERT( (arrStartX.GetSize() == arrStartY.GetSize()) && (arrStartX.GetSize() == arrStartAngle.GetSize()) );
+
+    if( arrStartX.GetSize() < GetCampaign().GetPlayersCnt() )
+    {
+        TRACE("!!! Jest mniej markerow startowych niz graczy (%d < %d) !!!\n", arrStartX.GetSize(), GetCampaign().GetPlayersCnt() );
+    }
+    
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit(nIndex);
+        if( arrStartX.GetSize() > 0 )
+        {
+            nMarkerIndex = Rand( arrStartX.GetSize() );
+            nX = arrStartX[nMarkerIndex];
+            nY = arrStartY[nMarkerIndex];
+            nAngle = arrStartAngle[nMarkerIndex];
+        }
+        else // jezeli zabraklo markerow startowych to bierz pierwsyz wolny
+        {
+            ASSERT( m_arrStartX.GetSize() > 0 );
+            nX = m_arrStartX[0];
+            nY = m_arrStartY[0];
+            nAngle = m_arrStartAngle[0];
+        }
+        if( nShowTeleOutEffect )
+        {
+            m_pCurrentMission.CreateObject(TELE_OUT_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, 0);
+        }
+        pHero.SetImmediatePosition( nX, nY, 0, nAngle, true);
+        if( nShowTeleInEffect )
+        {
+            m_pCurrentMission.CreateObject(TELE_IN_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, nAngle);
+        }
+        arrStartX.RemoveAt(nMarkerIndex);
+        arrStartY.RemoveAt(nMarkerIndex);
+        arrStartAngle.RemoveAt(nMarkerIndex);
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int MoveHeroToStartMarker(int nHeroNum, int nShowTeleOutEffect, int nShowTeleInEffect)
+{
+    int nX, nY, nAngle;
+    int nMarkerIndex;
+    unit pHero;
+
+    if( !IsPlayer(nHeroNum) )
+    {
+        return 0;
+    }
+    pHero = GetCampaign().GetPlayerHeroUnit(nHeroNum);
+
+    nMarkerIndex = Rand( m_arrStartX.GetSize() );
+    nX = m_arrStartX[nMarkerIndex];
+    nY = m_arrStartY[nMarkerIndex];
+    nAngle = m_arrStartAngle[nMarkerIndex];
+
+    if( nShowTeleOutEffect )
+    {
+        m_pCurrentMission.CreateObject(TELE_OUT_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, 0);
+    }
+    pHero.SetImmediatePosition( nX, nY, 0, nAngle, true);
+    if( nShowTeleInEffect )
+    {
+        m_pCurrentMission.CreateObject(TELE_IN_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, nAngle);
+    }
+    return 0;
+}//--------------------------------------------------------------------------------------|
+
+
+function int CheckIfCountdownEnded()
+{
+    stringW strText, strSecondsText;
+// pokazuj odliczanie    
+    strText.Translate(TEXT_GETREADY);
+    if( (m_nCountdownCounter <= m_nShowCountdownCounter) && (m_nCountdownCounter % 30) ) // tylko pelne sekundy
+    {
+        strSecondsText.FormatTrl(TEXT_REMAININGSECONDS, m_nCountdownCounter/30 + 1);
+        ShowTextToAll(strText, eCountdownConsoleTextTime, false);
+        ShowTextToAll(strSecondsText, eCountdownConsoleTextTime, true);
+    }
+    m_nCountdownCounter--;
+    if( m_nCountdownCounter <= 0 )
+    {
+        return 1;
+    }
+    return 0;
+}//--------------------------------------------------------------------------------------|
+
+function void CureHeroes()
+{
+    int nIndex;
+    unit pHero;
+
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;    
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit(nIndex);
+// tylko zdrowie na max i odtrutka, jezeli ktos zuzyje mane przed walka to jego strata
+        pHero.SetHP( pHero.GetMaxHP() );
+        pHero.HealPoison();
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void RespawnHeroesImmediately()
+{
+    int nIndex;
+    unit pHero;
+
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        if( !IsPlayer(nIndex) )
+        {
+            continue;    
+        }
+        pHero = GetCampaign().GetPlayerHeroUnit(nIndex);
+        if( !pHero.IsLive() )
+        { // bez zmiany polozenia
+            pHero.ResurrectUnit();
+            m_pCurrentMission.CreateObject(TELE_IN_EFFECT, pHero.GetLocationX(), pHero.GetLocationY(), 0, 0);
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void RespawnItems()
+{
+    int nIndex;
+    int nItemToRespawn;
+    
+    if( !IsItemRespawnsAvailable() || !IsItemRespawnsEnabled() )
+    {
+        return;        
+    }
+
+    for(nIndex = 0; nIndex < m_arrItemX.GetSize(); nIndex++)
+    {
+        if( !m_pCurrentMission.GetArtefact(m_arrItemX[nIndex], m_arrItemY[nIndex], true) ) // jezeli nie ma unita na markerze
+        {
+            
+            if( m_arrRespawnItemTicks[nIndex] > 0 ) // dopoki nie minal czas respawnu, zmniejsz licznik czasu
+            {
+                m_arrRespawnItemTicks[nIndex] -= m_nMainStateTicksInterval;
+            }
+            else // jezeli juz minal to respawnuj item
+            {
+                nItemToRespawn = ChooseItemToRespawn();
+                ASSERT( (nItemToRespawn >= 0) &&
+                        (nItemToRespawn < m_arrRespawnItemNames.GetSize()) &&
+                        (nItemToRespawn < m_arrRespawnItemProbability.GetSize()) );
+                m_arrRespawnItemTicks[nIndex] = eRespawnItemSeconds * 30;
+                
+                m_pCurrentMission.CreateObject(TELE_IN_EFFECT, m_arrItemX[nIndex], m_arrItemY[nIndex], 0, 0);                
+                m_pCurrentMission.CreateObject(m_arrRespawnItemNames[nItemToRespawn], m_arrItemX[nIndex], m_arrItemY[nIndex], 0, 0);
+                TRACE("respawned %s at %d\n", m_arrRespawnItemNames[nItemToRespawn], nIndex);
+            }
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int ChooseItemToRespawn()
+{
+    int nIndex, nNumber;
+    
+    nNumber = Rand(m_nProbSum);
+    for(nIndex = 0; nIndex < m_arrRespawnItemProbability.GetSize(); nIndex++)
+    {
+        nNumber -= m_arrRespawnItemProbability[nIndex];
+        if( nNumber <= 0 )
+        {
+            return nIndex;
+        }
+    }
+    return 0;
+}//--------------------------------------------------------------------------------------|
+
+function void DistributeEarthNetGuildPoints(int nGuildIndex)
+{
+    int nHeroIndex;
+    
+    if( !IsGuildsGame() )
+    {
+        return;
+    }
+
+    nHeroIndex = GetHeroIndexFromGuild( m_arrGuildsNum[nGuildIndex] );
+    if( nHeroIndex == -1 )
+    {
+        __ASSERT_FALSE();
+        return;
+    }
+
+    // dodanie punktow z puli
+    TRACE("guildnum: %d, current pts: %d, added: %d, ", m_arrGuildsNum[nGuildIndex], GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints(), m_nEarthNetGuildPointsPool  );
+    GetCampaign().GetPlayerHeroUnit(nHeroIndex).AddHeroNetworkGuildRankPoints(m_nEarthNetGuildPointsPool);
+    m_arrGuildsPoints[nGuildIndex] += m_nEarthNetGuildPointsPool; // korekta tego co bedzie wyswietlane
+    TRACE("overall guild pts: %d, drawn pts: %d\n", GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints(), m_arrGuildsPoints[nGuildIndex]  );
+    m_nEarthNetGuildPointsPool = 0; // wyzerowanie puli 
+}//--------------------------------------------------------------------------------------|
+
+function void EndGame(int nTextType)
+{
+    int nIndex;
+    stringW strText;
+    
+    if( nTextType == eEndGameTextCommon )
+    {
+        strText.Translate(TEXT_GAMEOVER);
+    }
+    else if( nTextType == eEndGameTextRace )
+    {
+        strText.Translate(TEXT_RACEFINISHED);
+    }
+    else if( nTextType == eEndGameTextNoPlayers )
+    {
+        strText.Translate(TEXT_NOPLAYERS);
+    }
+    else if( nTextType == eEndGameTextNoPlayersInOtherTeam )
+    {
+        strText.Translate(TEXT_NOPLAYERSINOTHERTEAM);
+    }
+    else
+    {
+        __ASSERT_FALSE();    
+    }
+
+    if( m_nIsShownEndMessageBox == false )
+    {
+        m_nIsShownEndMessageBox = true;
+        for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+        {
+            if( !IsPlayer(nIndex) )
+            {
+                continue;
+            }
+            GetPlayerInterface(nIndex).EndGame(strText);
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTextToAll(stringW strText, int nTextTime, int nAdd)
+{
+    int nIndex;
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        ShowTextToPlayer(nIndex, strText, nTextTime, nAdd);
+    }    
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTextToPlayer(int nPlayerNum, stringW strText, int nTextTime, int nAdd)
+{
+    if( !IsPlayer(nPlayerNum) )
+    {
+        return;
+    }
+    GetPlayerInterface( nPlayerNum ).SetConsoleText(strText, nTextTime, nAdd);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowBottomTextToAll(stringW strText, int nTextTime, int nAdd)
+{
+    int nIndex;
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        ShowBottomTextToPlayer(nIndex, strText, nTextTime, nAdd);
+    }    
+}//--------------------------------------------------------------------------------------|
+
+function void ShowBottomTextToPlayer(int nPlayerNum, stringW strText, int nTextTime, int nAdd)
+{
+    if( !IsPlayer(nPlayerNum) )
+    {
+        return;
+    }
+    GetPlayerInterface( nPlayerNum ).SetLowConsoleText(strText, nTextTime, nAdd);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTextToAll_NoRepeat(stringW strText, int nTextTime, int nAdd)
+{
+    int nIndex;
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        ShowTextToPlayer_NoRepeat(nIndex, strText, nTextTime, nAdd);
+    }    
+}//--------------------------------------------------------------------------------------|
+
+function void ShowTextToPlayer_NoRepeat(int nPlayerNum, stringW strText, int nTextTime, int nAdd)
+{
+    if( !IsPlayer(nPlayerNum) )
+    {
+        return;
+    }
+    GetPlayerInterface( nPlayerNum ).SetConsoleText(strText, nTextTime, nAdd, true);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowBottomTextToAll_NoRepeat(stringW strText, int nTextTime, int nAdd)
+{
+    int nIndex;
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        ShowBottomTextToPlayer_NoRepeat(nIndex, strText, nTextTime, nAdd);
+    }    
+}//--------------------------------------------------------------------------------------|
+
+function void ShowBottomTextToPlayer_NoRepeat(int nPlayerNum, stringW strText, int nTextTime, int nAdd)
+{
+    if( !IsPlayer(nPlayerNum) )
+    {
+        return;
+    }
+    GetPlayerInterface( nPlayerNum ).SetLowConsoleText(strText, nTextTime, nAdd, true);
+}//--------------------------------------------------------------------------------------|
+
+function void ShowEarthNetGuildPointsText()
+{
+    int nHeroIndex;
+    int nGuildNum, nGuildIndex;
+    stringW strGuildPoints;
+
+    if( !IsGuildsGame() )
+    {
+        return;
+    }
+
+    for(nHeroIndex = 0; nHeroIndex < GetCampaign().GetPlayersCnt(); nHeroIndex++)
+    {
+        if( !IsPlayer(nHeroIndex) )
+        {
+            continue;
+        }
+        nGuildNum = GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildNum();
+        if( nGuildNum == -1 )
+        {
+            __ASSERT_FALSE();
+            return;    
+        }
+        nGuildIndex = GetIndexOfValueInArray(nGuildNum, m_arrGuildsNum);
+        if( nGuildIndex == -1 )
+        {
+            __ASSERT_FALSE();
+            return;    
+        }
+        if( m_arrGuildsPoints[nGuildIndex] == 0 )
+        {
+            continue;
+        }
+        else if( m_arrGuildsPoints[nGuildIndex] > 0 )
+        {
+            strGuildPoints.FormatTrl(TEXT_GUILDGETSPOINTS, m_arrGuildsPoints[nGuildIndex]);
+        }
+        else // if( m_arrGuildsPoints[nGuildIndex] < 0 )
+        {
+            strGuildPoints.FormatTrl(TEXT_GUILDLOSESPOINTS, -m_arrGuildsPoints[nGuildIndex]);
+        }
+        ShowTextToPlayer(nHeroIndex, strGuildPoints, eResultsConsoleTextTime, true);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void AddStaticMapSignToAll(int nX, int nY, int nMapSignNum)
+{
+    int nHeroIndex;
+
+    for(nHeroIndex = 0; nHeroIndex < GetCampaign().GetPlayersCnt(); nHeroIndex++ )
+    {
+        if( !IsPlayer(nHeroIndex) )
+        {
+            continue;
+        }
+        m_pCurrentMission.AddMapSign(nX, nY, nMapSignNum, -1);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void RemoveStaticMapSign(int nX, int nY)
+{
+    int nHeroIndex;
+
+    for(nHeroIndex = 0; nHeroIndex < GetCampaign().GetPlayersCnt(); nHeroIndex++ )
+    {
+        if( !IsPlayer(nHeroIndex) )
+        {
+            continue;
+        }
+        m_pCurrentMission.RemoveMapSign(nX, nY);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void AddUnitMapSign(unit pUnit, int nMapSignNum)
+{
+    pUnit.SetUnitMapSignNum(nMapSignNum);
+}//--------------------------------------------------------------------------------------|
+
+function void AddUnitMapSignExceptLocal(unit pUnit, int nMapSignNum)
+{
+    if( pUnit.IsHeroUnit() && (pUnit != GetCampaign().GetPlayerHeroUnit( GetCampaign().GetLocalPlayerNum())) )
+    {
+        pUnit.SetUnitMapSignNum(nMapSignNum);
+    }
+}//--------------------------------------------------------------------------------------|
+
+function int GetIndexOfValueInArray(int nValue, int arrValues[])
+{
+    int nIndex;
+    
+    for(nIndex = 0; nIndex < arrValues.GetSize(); nIndex++)
+    {
+        if( arrValues[nIndex] == nValue )
+        {
+            return nIndex;
+        }
+    }
+    return -1;
+}//--------------------------------------------------------------------------------------|
+
+function int GetIndexOfMinValueInArray(int arrValues[])
+{
+    int nIndex;
+    int nValueIndex;
+    int nValue;
+
+    nValueIndex = -1;
+    nValue = INT_MAX;
+
+    for(nIndex = 0; nIndex < arrValues.GetSize(); nIndex++)
+    {
+        if( arrValues[nIndex] < nValue )
+        {
+           nValueIndex = nIndex;
+           nValue = arrValues[nIndex];
+        }
+    }
+    return nValueIndex;
+}//--------------------------------------------------------------------------------------|
+
+function int GetIndexOfMaxValueInArray(int arrValues[])
+{
+    int nIndex;
+    int nValueIndex;
+    int nValue;
+
+    nValueIndex = -1;
+    nValue = INT_MIN;
+
+    for(nIndex = 0; nIndex < arrValues.GetSize(); nIndex++)
+    {
+        if( arrValues[nIndex] > nValue )
+        {
+           nValueIndex = nIndex;
+           nValue = arrValues[nIndex];
+        }
+    }
+    return nValueIndex;
+}//--------------------------------------------------------------------------------------|
+
+function int AddValueToArray(int nValue, int arrValues[])
+{
+    int nIndex;
+    for( nIndex = 0; nIndex < arrValues.GetSize(); nIndex++ )
+    {
+        if( arrValues[nIndex] == nValue )
+        {
+            return 0;
+        }
+    }
+    arrValues.Add(nValue);
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+function int RemoveValueFromArray(int nValue, int arrValues[])
+{
+    int nIndex;
+    for( nIndex = 0; nIndex < arrValues.GetSize(); nIndex++ )
+    {
+        if( arrValues[nIndex] == nValue )
+        {
+            arrValues.RemoveAt(nIndex);
+            return 1;
+        }
+    }
+    return 0;
+}//--------------------------------------------------------------------------------------|
+
+function int SumValuesInArray(int arrValues[])
+{
+    int nIndex;
+    int nSum;
+    nSum = 0;
+    for( nIndex = 0; nIndex < arrValues.GetSize(); nIndex++ )
+    {
+        nSum += arrValues[nIndex];
+    }
+    return nSum;
+}//--------------------------------------------------------------------------------------|
+
+function int IsPointInPolygon(int arrX[], int arrY[], int nX, int nY)
+{
+    int nNum;
+    int i, j, nRet;
+
+    ASSERT(arrX.GetSize() == arrY.GetSize());
+    ASSERT(arrX.GetSize() >= 3);
+    nNum = arrX.GetSize();
+    nRet = 0;
+    i = 0;
+
+    for (j = nNum - 1; i < nNum; j = i++)
+    {
+        if( ( ((arrY[i] <= nY) && (nY < arrY[j])) ||
+              ((arrY[j] <= nY) && (nY < arrY[i])) ) &&
+            (nX < (arrX[j] - arrX[i]) * (nY - arrY[i]) / (arrY[j] - arrY[i]) + arrX[i]) )
+        {
+            nRet = !nRet;
+        }
+    }
+    return nRet;
+}//--------------------------------------------------------------------------------------|
+
+function void ConvertTicksToTime(int nTicks, int &nMinutes, int &nSeconds, int &nMiliseconds)
+{
+    nMiliseconds = (nTicks % 30) * 10 / 3;
+    nSeconds = nTicks / 30;
+    nMinutes = nSeconds / 60;
+    nSeconds %= 60;
+}//--------------------------------------------------------------------------------------|
+
+function void FormatTime(stringW &strTime, int nMinutes, int nSeconds)
+{
+    stringW strAdd;
+    stringW strColon;
+    
+    strColon.Translate(TEXT_TIMEFORMAT_COLON);
+    
+    strAdd.FormatTrl(TEXT_TIMEFORMAT_TWODIGITNUMBER, nMinutes);
+    strTime = strAdd;
+    strTime.Append(strColon);
+
+    if( nSeconds <= 9 )
+    {
+        strAdd.FormatTrl(TEXT_TIMEFORMAT_ONEDIGITNUMBER, nSeconds);
+    }
+    else
+    {
+        strAdd.FormatTrl(TEXT_TIMEFORMAT_TWODIGITNUMBER, nSeconds);
+    }
+    strTime.Append(strAdd);
+    
+}//--------------------------------------------------------------------------------------|
+
+function void FormatTime(stringW &strTime, int nMinutes, int nSeconds, int nMiliseconds)
+{
+    stringW strAdd;
+    stringW strPeriod;
+    
+    strPeriod.Translate(TEXT_TIMEFORMAT_PERIOD);
+    
+    FormatTime(strTime, nMinutes, nSeconds);
+    strTime.Append(strPeriod);
+    
+    if( nMiliseconds <= 9 )
+    {
+        strAdd.FormatTrl(TEXT_TIMEFORMAT_ONEDIGITNUMBER, nMiliseconds);
+    }
+    else
+    {
+        strAdd.FormatTrl(TEXT_TIMEFORMAT_TWODIGITNUMBER, nMiliseconds);
+    }
+    strTime.Append(strAdd);
+}//--------------------------------------------------------------------------------------|
+
+function string GetRandomHorseName()
+{
+    int nIndex;
+
+    nIndex = Rand(11);
+    if( nIndex == 0 )      return "MO_HORSE_04";
+    else if( nIndex == 1 ) return "MO_HORSE_05";
+    else if( nIndex == 2 ) return "MO_HORSE_06";
+    else if( nIndex == 3 ) return "MO_HORSE_07";
+    else if( nIndex == 4 ) return "MO_HORSE_08";
+    else if( nIndex == 5 ) return "MO_HORSE_09";
+    else if( nIndex == 6 ) return "MO_HORSE_10";
+    else if( nIndex == 7 ) return "MO_MUTARI_01";
+    else if( nIndex == 8 ) return "MO_MUTARI_02";
+    else if( nIndex == 9 ) return "MO_MUTARI_03";
+    return "MO_SKELETONHORSE_01";
+}//--------------------------------------------------------------------------------------|
+
+function void __PrintTraceHeader(int nFlag)
+{
+    if( nFlag == 0 )
+    {
+        TRACE("##### START: ");
+    }
+    else
+    {
+        TRACE("##### END:   ");
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void __TraceHeroPoints(int nFlag)
+{
+    int nIndex;
+
+    __PrintTraceHeader(nFlag);
+    TRACE("Liczba herosow: %d\n", GetCampaign().GetPlayersCnt() );
+    for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+    {
+        __PrintTraceHeader(nFlag);
+        if( !IsPlayer(nIndex) )
+        {
+            TRACE("H ?\n");
+        }
+        else
+        {
+            if( GetGameType() == eGamePvP )
+            {
+                if( GetCampaign().GetLocalPlayerNum() == nIndex )
+                {
+                   TRACE("H %d L\n", GetCampaign().GetPlayerHeroUnit(nIndex).GetHeroNetworkRankPoints() );
+                }
+                else
+                {
+                   TRACE("H %d\n", GetCampaign().GetPlayerHeroUnit(nIndex).GetHeroNetworkRankPoints() );
+                }
+            }
+            else
+            {
+                if( GetCampaign().GetLocalPlayerNum() == nIndex )
+                {
+                   TRACE("H %d L\n", GetCampaign().GetPlayerHeroUnit(nIndex).GetMoney() );
+                }
+                else
+                {
+                   TRACE("H %d\n", GetCampaign().GetPlayerHeroUnit(nIndex).GetMoney() );
+                }
+            }
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void __TraceGuildPoints(int nFlag)
+{
+    int nIndex;
+    int nHeroIndex;
+
+    if( !IsGuildsGame() )
+    {
+        return;    
+    }
+    __PrintTraceHeader(nFlag);
+    TRACE("Liczba gildii: %d\n", m_arrGuildsNum.GetSize() );
+    for(nIndex = 0; nIndex < m_arrGuildsNum.GetSize(); nIndex++)
+    {
+        __PrintTraceHeader(nFlag);
+        nHeroIndex = GetHeroIndexFromGuild(m_arrGuildsNum[nIndex]);
+        if( nHeroIndex == -1 )
+        {
+            TRACE("G ?\n");
+        }
+        else
+        {
+            if( GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildNum() == GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).GetHeroNetworkGuildNum() )
+            {
+                TRACE("G %d L\n", GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints() );
+            }
+            else
+            {
+                TRACE("G %d\n", GetCampaign().GetPlayerHeroUnit(nHeroIndex).GetHeroNetworkGuildRankPoints() );
+            }
+        }
+    }
+}//--------------------------------------------------------------------------------------|
+
+function void __TraceCommonGamePoints(int nFlag)
+{
+    __TraceGuildPoints(nFlag);
+    __TraceHeroPoints(nFlag);
+}//--------------------------------------------------------------------------------------|
+
+function int CommonCommandDebug(string strLine)
+{
+    string strCommand;
+    int nX, nY;
+    int nIndex;
+    mission pMission;
+    string strName;
+
+    strCommand = strLine;
+    if (!strCommand.CompareNoCase("PrintScriptName"))
+    {
+        TRACE("MissionCommon\n");
+    }
+    else if (!strCommand.CompareNoCase("TestMapSigns"))
+    {
+        __TestMapSigns();
+    }
+    else if (!strCommand.CompareNoCase("PrintLocalHeroLocation"))
+    {
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).GetLocation(nX, nY);
+        TRACE("Local player pos: %d, %d\n", nX, nY);
+    }
+    else if (!strCommand.CompareNoCase("multiTraceOn"))
+    {
+        ENABLE_TRACE(true);
+    }
+    else if (!strCommand.CompareNoCase("multiTraceOff"))
+    {
+        ENABLE_TRACE(false);
+    }
+    else if (!strnicmp(strCommand, "AddLocalHeroNetworkRankPoints", strlen("AddLocalHeroNetworkRankPoints")))
+    {
+        strCommand = strLine;
+        strCommand.Mid(strlen("AddLocalHeroNetworkRankPoints") + 1);
+        strCommand.TrimLeft();
+        sscanf(strCommand, "%d", nIndex);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddHeroNetworkRankPoints(nIndex);
+    }
+    else if (!strnicmp(strCommand, "GetLocalHeroNetworkRankPoints", strlen("GetLocalHeroNetworkRankPoints")))
+    {
+        TRACE("Local hero rank points: %d\n", GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).GetHeroNetworkGuildRankPoints() );
+    }
+    else if (!strnicmp(strCommand, "AddLocalHeroNetworkGuildRankPoints", strlen("AddLocalHeroNetworkGuildRankPoints")))
+    {
+        strCommand = strLine;
+        strCommand.Mid(strlen("AddLocalHeroNetworkGuildRankPoints") + 1);
+        strCommand.TrimLeft();
+        sscanf(strCommand, "%d", nIndex);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddHeroNetworkRankPoints(nIndex);
+    }
+    else if (!strnicmp(strCommand, "GetLocalHeroNetworkGuildRankPoints", strlen("GetLocalHeroNetworkGuildRankPoints")))
+    {
+        TRACE("Local hero guild rank points: %d\n", GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).GetHeroNetworkGuildRankPoints() );
+    }
+    else if (!strnicmp(strCommand, "GoToMarker", strlen("GoToMarker")))
+    {
+        strCommand = strLine;
+        strCommand.Mid(strlen("GoToMarker") + 1);
+        strCommand.TrimLeft();
+        sscanf(strCommand, "%d", nIndex);
+        if( !m_pCurrentMission.GetMarker(DEFAULT_MARKER, nIndex , nX, nY) )
+        {
+            TRACE("Nie takiego markera %d\n", nIndex);
+            return 1;
+        }
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).SetImmediatePosition(nX, nY, 0, 0, true);
+    }
+    else if (!strCommand.CompareNoCase("PrintPossibleRespawnItems"))
+    {
+        TRACE("Liczba mozliwych przedmiotow do respawnu: %d (%d)\n", m_arrRespawnItemNames.GetSize(), m_nProbSum);
+        for(nIndex = 0; nIndex < m_arrRespawnItemNames.GetSize(); nIndex++)
+        {
+            TRACE("%s %d.%d%%\n", m_arrRespawnItemNames[nIndex], 100 * m_arrRespawnItemProbability[nIndex] / m_nProbSum, (10000 * m_arrRespawnItemProbability[nIndex] / m_nProbSum) % 100);
+        }
+    }
+    else if (!strCommand.CompareNoCase("PrintPlayersNum"))
+    {
+        TRACE("Liczba graczy: %d\n", GetCampaign().GetPlayersCnt());
+    }
+    else if (!strCommand.CompareNoCase("PrintPlayers"))
+    {
+        TRACE("Liczba graczy: %d\n", GetCampaign().GetPlayersCnt());
+        ASSERT( GetCampaign().GetPlayersCnt() == m_arrHeroNames.GetSize() )
+        for(nIndex = 0; nIndex < m_arrHeroNames.GetSize(); nIndex ++)
+        {
+            TRACE("%d ", nIndex);
+            TRACE("%s\n", m_arrHeroNames[nIndex]);
+        }
+    }
+    else if (!strCommand.CompareNoCase("PrintGuilds"))
+    {
+        TRACE("Liczba gildii: %d\n", m_arrGuildsNum.GetSize() );
+        for(nIndex = 0; nIndex < m_arrGuildsNum.GetSize(); nIndex ++)
+        {
+            TRACE("guildnum %d guildpts %d\n", m_arrGuildsNum[nIndex], m_arrGuildsPoints[nIndex]);
+        }
+    }
+    else if (!strCommand.CompareNoCase("PrintGuildPointsPool"))
+    {
+        if( IsGuildsGame() )
+        {
+            TRACE("Pula pkt (gildie): %d\n", m_nEarthNetGuildPointsPool);
+        }
+        else
+        {
+            TRACE("Niedostepne (gra miedzy playerami)\n");
+        }
+        
+    }
+    else if (!strCommand.CompareNoCase("PrintPlayerPointsPool"))
+    {
+        if( !IsGuildsGame() )
+        {
+            TRACE("Pula pkt (gracze): %d\n", m_nEarthNetPlayerPointsPool);
+        }
+        else
+        {
+            TRACE("Niedostepne (gra miedzy gildiami)\n");
+        }
+        
+    }
+    else if (!strCommand.CompareNoCase("AddRespawnItems"))
+    {
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_HEALING_01", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_HEALING_02", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_HEALING_03", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_MANA_01", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_MANA_02", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_MANA_03", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_POISON_01", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_SKILL_TIME_01", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_SKILL_TIME_02", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_SKILL_TIME_03", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_SKILL_TIME_04", true);
+        GetCampaign().GetPlayerHeroUnit(GetLocalPlayerNum()).AddInventory("POTION_SKILL_TIME_05", true);
+    }
+    else
+    {
+        return 0;
+    }
+    return 1;
+}//--------------------------------------------------------------------------------------|
+
+
+#endif //NETWORK_MISSIONCOMMON_ECH

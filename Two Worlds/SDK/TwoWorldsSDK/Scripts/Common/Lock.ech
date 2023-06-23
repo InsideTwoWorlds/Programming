@@ -1,0 +1,146 @@
+#ifndef COMMON_LOCK_ECH
+#define COMMON_LOCK_ECH
+
+#include "Debug.ech"
+#include "enums.ech"
+#include "messages.ech"
+
+//nieuzywane do wykorzystania:
+//LockFlags (w gate/container i keyArtefact) -> gdyby byly potrzebne: ew. zamki ktore mozna otworzyc tylko pasujacym kluczem
+
+#define NO_LOCK        0
+#define PRIMITIVE_LOCK 1
+#define EASY_LOCK      2
+#define REGUILAR_LOCK  3
+#define IMPROVED_LOCK  4
+#define SOLID_LOCK     5
+#define ADVANCED_LOCK  6
+#define MASTER_LOCK    7
+
+function int CalcOpenLockChance(int nLockLevel, unit pHero)
+{
+    int nLockLevelDiff;
+    
+    ASSERT( (pHero != null) && pHero.IsHeroUnit());
+
+    nLockLevelDiff = nLockLevel - pHero.GetUnitValues().GetSkill(eSkillLockPicking);
+    if      (nLockLevelDiff <  -8) return 99;
+    else if (nLockLevelDiff == -8) return 98;
+    else if (nLockLevelDiff == -7) return 95;
+    else if (nLockLevelDiff == -6) return 90;
+    else if (nLockLevelDiff == -5) return 85;
+    else if (nLockLevelDiff == -4) return 80;
+    else if (nLockLevelDiff == -3) return 75;
+    else if (nLockLevelDiff == -2) return 70;
+    else if (nLockLevelDiff == -1) return 60;
+    else if (nLockLevelDiff == 0) return  40;
+    else if (nLockLevelDiff == 1) return  20;
+    else if (nLockLevelDiff == 2) return  10;
+    else if (nLockLevelDiff == 3) return   5;
+    else if (nLockLevelDiff == 4) return   2;
+    else if (nLockLevelDiff == 5) return   1;
+    return 0;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CalcOpenLockChance(unit pLockObject, unit pHero, int nAddLockLevel)
+{
+    ASSERT((pLockObject != null) && (pLockObject.IsGate() || pLockObject.IsContainer()) && (pHero != null) && pHero.IsHeroUnit());
+    if (pLockObject.GetLockLevel() <= NO_LOCK) return 100;
+
+    return CalcOpenLockChance(pLockObject.GetLockLevel()+nAddLockLevel, pHero);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int TryOpenLock(unit pLockObject, unit pHero, int& bClosedLockSound, int& bOpenLockSound, int& bBrokenLockpickSound)
+{
+    int nItemIndex, nLockFlags, nLockLevel,i;
+    int nChance;
+    
+    int nIndex,nAverageHeroesLevel,nCount,nAddLockLevel;    
+    nAddLockLevel=0;
+    if (GetCampaign().IsNetworkGame())
+    {
+    
+        nAverageHeroesLevel=0;
+        nCount=0;
+        for(nIndex = 0; nIndex < GetCampaign().GetPlayersCnt(); nIndex++)
+        {
+            if( GetCampaign().IsPlayer(nIndex) )
+            {
+                nAverageHeroesLevel += GetCampaign().GetPlayerHeroUnit(nIndex).GetUnitValues().GetLevel();
+                nCount++;
+            }
+        }
+        nAverageHeroesLevel = MAX(1, nAverageHeroesLevel / nCount);
+        nAddLockLevel=MIN(8,nAverageHeroesLevel/5);//to samo w info.ech
+    }
+
+    ASSERT((pLockObject != null) && (pLockObject.IsGate() || pLockObject.IsContainer()) && (pHero != null) && pHero.IsHeroUnit());
+    bClosedLockSound = bOpenLockSound = bBrokenLockpickSound = false;
+    if (pLockObject.GetLockLevel() <= NO_LOCK)
+    {
+        //bez zamka
+        return true;
+    }
+    if (pLockObject.IsUnitInsideExternalDoorGate(pHero))
+    {
+        
+        return true;
+    }
+    if (GetCampaign().IsNetworkChannelGame())
+    {
+        bClosedLockSound = true; 
+        return false; // nie otwiera sie drzwi w miastach sieciowych
+    }
+    nChance = CalcOpenLockChance(pLockObject, pHero,nAddLockLevel);
+    if (pHero.GetKeyArtefactsInInventoryCount(0, false) == 0 || nChance <= 0)
+    {
+        bClosedLockSound = true; 
+        return false;
+    }
+    if (Rand(100) < nChance)
+    {
+        bOpenLockSound = true;
+        if( pLockObject.GetLockLevel() == MASTER_LOCK )
+        {
+            GetCampaign().CommandMessage(eMsgAchievement, eAchievementOpenMasterLock, pHero);
+        }
+        GetCampaign().GetPlayerInterface(pHero.GetHeroPlayerNum()).SetConsoleText("translateLockOpened",120,true,true);
+        GetCampaign().CommandMessage(eMsgLockpicked,pHero.GetHeroPlayerNum(),pLockObject);
+        
+        i=0;
+        pHero.GetAttribute("L",i);
+        i++;
+        pHero.SetAttribute("L",i);
+        if(i==GetNextSkillPointLimit(i-1))
+        {
+            pHero.SetAttribute("AddSP",3);
+        }
+        return true;
+    }
+    //lamiemy jeden wytrych
+    if (pHero.FindKeyArtefactInInventory(0, false, nItemIndex, nLockFlags, nLockLevel))
+    {
+        pHero.RemoveObjectFromInventory(nItemIndex, 1, false);
+        bBrokenLockpickSound = true;
+        GetCampaign().GetPlayerInterface(pHero.GetHeroPlayerNum()).SetConsoleText("translateLockpickBroken",120,true,true);
+        i=0;
+        pLockObject.GetAttribute("BOMB",i);
+         if (!i && GetCampaign().IsNetworkGame() && pLockObject.IsContainer() && pHero != null &&!Rand(3))
+         {
+              pHero.GetMission().CreateObject("EXP_TRAP_BOMB_01", pLockObject.GetLocationX(), pLockObject.GetLocationY(), 0, 0);
+              pHero.SetHP(pHero.GetHP()*Rand(30)/100);
+              pLockObject.SetAttribute("BOMB",1);//zeby juz nie wybuchal
+              //nIndex = pHero.GetUnitValues().GetBasicPoint(ePointsVitality)-1;
+              //pHero.GetUnitValues().SetBasicPoint(ePointsVitality, MAX(5,nIndex));
+              //pHero.UpdateChangedUnitValues();
+              
+         }   
+    }
+    else
+    {
+        __ASSERT_FALSE();
+    }
+    return false;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //COMMON_LOCK_ECH

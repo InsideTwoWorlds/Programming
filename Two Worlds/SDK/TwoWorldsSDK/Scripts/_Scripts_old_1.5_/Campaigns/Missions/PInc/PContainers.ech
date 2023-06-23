@@ -1,0 +1,108 @@
+#ifndef _P_CONTAINERS_
+#define _P_CONTAINERS_
+
+string astrContainerName[];
+int anContainerMission[];
+int anContainerNumber[];
+string astrContainerItemsAdd[];
+string astrContainerItemsRemove[];
+int nContainersNumber;
+
+//======================================        
+
+function int GetContainerMapping(string strContainerName) {
+
+    int i;
+    for (i = 0; i < nContainersNumber; i++) if (astrContainerName[i].EqualNoCase(strContainerName)) return i;
+#ifdef CONTAINERS_DEBUG
+    TRACE("GetContainerMapping warning: can't find %s\n",strContainerName);
+#endif    
+    return eNoMapping;
+    
+}
+
+function int GetContainerMapping(int nNumber, int nMission) {
+
+    int i;
+    for (i = 0; i < nContainersNumber; i++) if ((anContainerMission[i] == nMission) && (anContainerNumber[i] == nNumber)) return i;
+#ifdef CONTAINERS_DEBUG
+    TRACE("GetContainerMapping warning: can't find %d %d\n",nNumber,nMission);
+#endif    
+    return eNoMapping;
+
+}
+
+function int GetContainerMapping(unit uContainer) {
+
+    int nMission;
+    int nNumber;
+    
+    nMission = uContainer.GetMission().GetMissionNum();
+    uContainer.GetAttribute("ContainerNumber",nNumber);
+    
+    if (nNumber != 0) return GetContainerMapping(nNumber,nMission);
+    return eNoMapping;
+    
+}
+
+//======================================        
+
+function void AddItemToContainer(int nMapping, string strItem) {
+
+    astrContainerItemsAdd[nMapping] = AddTextToString(strItem,astrContainerItemsAdd[nMapping]);
+
+}
+
+function void AddItemToContainer(string strContainerName, string strItem) {
+
+    int nMapping;
+    nMapping = GetContainerMapping(strContainerName);
+    if (nMapping != eNoMapping) AddItemToContainer(nMapping,strItem);
+
+}
+
+function void RemoveItemFromContainer(int nMapping, string strItem) {
+
+    astrContainerItemsRemove[nMapping] = AddTextToString(strItem,astrContainerItemsRemove[nMapping]);
+
+}
+
+function void RemoveItemFromContainer(string strContainerName, string strItem) {
+
+    int nMapping;
+    nMapping = GetContainerMapping(strContainerName);
+    if (nMapping != eNoMapping) RemoveItemFromContainer(nMapping,strItem);
+
+}
+
+function void SetContainerItemsAttribute(unit uContainer) {
+
+    int nMapping;    
+    nMapping = GetContainerMapping(uContainer);
+    if (nMapping == eNoMapping) return;
+    uContainer.SetAttribute("ContainerItemsAdd",astrContainerItemsAdd[nMapping]);
+    astrContainerItemsAdd[nMapping] = "";
+    uContainer.SetAttribute("ContainerItemsRemove",astrContainerItemsRemove[nMapping]);
+    astrContainerItemsRemove[nMapping] = "";
+        
+}
+
+//======================================        
+
+function void AddContainer(string strName, int nNumber, int nMission) {
+
+#ifdef CONTAINERS_DEBUG
+    TRACE("AddContainer(%s,%d,%d)\n",strName,nNumber,nMission);
+#endif
+    
+    astrContainerName.Add(strName);
+    anContainerNumber.Add(nNumber);
+    anContainerMission.Add(nMission);
+    astrContainerItemsAdd.Add("");
+    astrContainerItemsRemove.Add("");
+
+    nContainersNumber = astrContainerName.GetSize();
+    
+}
+
+#endif

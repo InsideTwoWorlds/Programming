@@ -1,0 +1,5 @@
+//reset level backups
+editor.SetLevelsSourceDir xxx
+editor.SetLevelsBackupDir xxx
+editor.SetLevelsSourceUsers xxx
+Editor.IgnoreLevelsCheckouts 1

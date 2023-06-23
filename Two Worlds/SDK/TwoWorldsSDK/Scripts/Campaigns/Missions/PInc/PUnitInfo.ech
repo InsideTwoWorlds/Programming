@@ -1,0 +1,647 @@
+#ifndef _P_UNIT_INFO_
+#define _P_UNIT_INFO_
+
+#include "PCommon.ech"
+#include "..\\..\\..\\Common\\UnitInfo.ech"
+
+#ifndef UNIT_ARRAY
+unit auTmpArray[1];
+#define UNIT_ARRAY auTmpArray
+#define UNIT_ARRAY_SIZE 1
+#endif
+
+function int GetUnitNumber(unit uUnit);
+
+//======================================
+
+function int IsUnitArmed(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif        
+    if (uUnit.IsInArmedMode() || uUnit.IsSettingArmedMode() || uUnit.IsAttacking()) return true;
+    return false;
+
+}
+
+function int IsUnitInDialogMode(unit uUnit) {
+
+    int nFlag;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    if (uUnit.IsInDialogTalk()) return true;
+    if (!uUnit.IsHeroUnit()) {
+        uUnit.GetAttribute("PreparingToDialog",nFlag);
+        if (nFlag) return true;    
+    }
+    return false;
+
+}
+
+function int IsUnitInPartyPlayer(unit uUnit) {
+
+    int i;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    for (i = 0; i < GetPlayersCnt(); i++) if (uUnit.IsInParty(ePartyPlayer1 + i)) return true;
+    return false;
+
+}
+
+function int HasNoQuestItems(unit uUnit) {
+    
+    string str;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute("UnitItems",str);
+    if (str.EqualNoCase("")) return true;
+    return false;
+    
+}
+
+//======================================
+// death
+
+function int IsUnitActive(unit uUnit) {
+
+    if ((uUnit != null) && (uUnit.IsLive())) return true;
+    return false;
+    
+}
+
+function int IsUnitActive(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return IsUnitActive(UNIT_ARRAY[nUnit]);
+    
+}
+
+function int IsUnitDead(unit uUnit) {
+
+    if ((uUnit != null) && (!uUnit.IsLive())) return true;
+    return false;
+    
+}
+
+function int IsUnitDead(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return IsUnitDead(UNIT_ARRAY[nUnit]);
+
+}
+
+//======================================
+// main state
+
+function int GetMainState(unit uUnit) {
+
+    int nMainState;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(MAIN_STATE_ATTRIBUTE,nMainState);
+    return nMainState;
+
+}
+
+//======================================
+// daily state
+
+function void SetDailyState(unit uUnit, int nDailyState) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(DAILY_STATE_ATTRIBUTE,nDailyState);
+           
+}
+
+function void SetDailyState(int nUnit, int nDailyState) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    SetDailyState(UNIT_ARRAY[nUnit],nDailyState);
+           
+}
+
+function int GetDailyState(unit uUnit) {
+
+    int nDailyState;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(DAILY_STATE_ATTRIBUTE,nDailyState);
+    return nDailyState;
+
+}
+
+function int GetDailyState(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetDailyState(UNIT_ARRAY[nUnit]);
+
+}
+
+//======================================
+// activity
+
+function void SetActivity(unit uUnit, int nActivity) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+
+    uUnit.SetAttribute(ACTIVITY_ATTRIBUTE,nActivity);
+    
+}
+
+function void SetActivity(int nUnit, int nActivity) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+
+    SetActivity(UNIT_ARRAY[nUnit],nActivity);
+    
+}
+
+function int GetActivity(unit uUnit) {
+
+    int nActivity;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(ACTIVITY_ATTRIBUTE,nActivity);
+    return nActivity;
+
+}
+
+function int GetActivity(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetActivity(UNIT_ARRAY[nUnit]);
+
+}
+
+function void SetExternalActivity(int nUnit, int nExternalActivity) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    SetExternalActivity(UNIT_ARRAY[nUnit],nExternalActivity);
+    
+}
+
+function int GetExternalActivity(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetExternalActivity(UNIT_ARRAY[nUnit]);
+    
+}
+
+//======================================
+// unit type/custom flags
+
+function int GetUnitType(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetUnitType(UNIT_ARRAY[nUnit]);
+
+}
+
+function int GetCustomFlags(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetCustomFlags(UNIT_ARRAY[nUnit]);
+    
+}
+
+function int IsGuard(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return IsGuard(UNIT_ARRAY[nUnit]);
+    
+}
+
+function int IsShop(unit uUnit) {
+
+    int nFlag;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nFlag = GetCustomFlags(uUnit);
+    if ((nFlag == eShopMerchant) || (nFlag == eShopNecro) || (nFlag == eShopMage) || (nFlag == eShopWarrior) || (nFlag == eShopThief)) return true;
+    return false;
+
+}
+
+//======================================
+// "masked" attributes
+
+function void SetMask(unit uUnit, int nMask) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(UNIT_MASK_ATTRIBUTE,nMask);
+
+}
+
+function int GetMask(unit uUnit) {
+
+    int nMask;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(UNIT_MASK_ATTRIBUTE,nMask);
+    return nMask;
+    
+}
+
+function void SetGuardAlarmedByUnit(unit uUnit, int nParam) {
+    
+    int nMask;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nMask = GetMask(uUnit);
+    if (nParam) nMask |= eMaskGuardAlarmedByUnit;
+    else nMask &= (~eMaskGuardAlarmedByUnit);
+    SetMask(uUnit,nMask);
+
+}
+
+function int IsGuardAlarmedByUnit(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    if (GetMask(uUnit) & eMaskGuardAlarmedByUnit) return true;
+    return false;
+
+}
+
+function void SetEnemyFound(unit uUnit, int nParam) {
+    
+    int nMask;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nMask = GetMask(uUnit);
+    if (nParam) nMask |= eMaskEnemyFound;
+    else nMask &= (~eMaskEnemyFound);
+    SetMask(uUnit,nMask);
+
+}
+
+function int IsEnemyFound(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    if (GetMask(uUnit) & eMaskEnemyFound) return true;
+    return false;
+
+}
+
+function void SetCriminalFound(unit uUnit, int nParam) {
+    
+    int nMask;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nMask = GetMask(uUnit);
+    if (nParam) nMask |= eMaskCriminalFound;
+    else nMask &= (~eMaskCriminalFound);
+    SetMask(uUnit,nMask);
+
+}
+
+function int IsCriminalFound(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    if (GetMask(uUnit) & eMaskCriminalFound) return true;
+    return false;
+
+}
+
+function void SetBodySpotted(unit uUnit, int nParam) {
+    
+    int nMask;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nMask = GetMask(uUnit);
+    if (nParam) nMask |= eMaskBodySpotted;
+    else nMask &= (~eMaskBodySpotted);
+    SetMask(uUnit,nMask);
+
+}
+
+function int IsBodySpotted(unit uUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    if (GetMask(uUnit) & eMaskBodySpotted) return true;
+    return false;
+
+}
+
+//======================================
+// town attributes
+    
+function void SetBedNumber(unit uUnit, int nBedNumber) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(BED_NUMBER_ATTRIBUTE,nBedNumber);
+
+}
+
+function int GetBedNumber(unit uUnit) {
+
+    int nBedNumber;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(BED_NUMBER_ATTRIBUTE,nBedNumber);
+    return nBedNumber;
+    
+}
+
+function void SetGuardWorkState(unit uUnit, int nGuardWorkState) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(GUARD_WORK_STATE_ATTRIBUTE,nGuardWorkState);
+    
+}
+
+function void SetGuardWorkState(int nUnit, int nGuardWorkState) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    SetGuardWorkState(UNIT_ARRAY[nUnit],nGuardWorkState);
+
+}
+
+function int GetGuardWorkState(unit uUnit) {
+
+    int nGuardWorkState;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(GUARD_WORK_STATE_ATTRIBUTE,nGuardWorkState);
+    return nGuardWorkState;
+
+}
+
+function int GetGuardWorkState(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetGuardWorkState(UNIT_ARRAY[nUnit]);
+
+}
+
+//======================================
+// quest attributes
+
+function void SetQuestBodySpotted(unit uUnit, int nHero) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(QUEST_BODY_SPOTTED_ATTRIBUTE,1 << nHero);
+
+}
+
+function void SetQuestBodySpotted(unit uUnit, unit uHero) {
+
+    SetQuestBodySpotted(uUnit,uHero.GetHeroPlayerNum());
+
+}
+
+function int IsQuestBodySpotted(unit uUnit, int nHero) {
+
+    int nSpotted;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    nHero = 1 << nHero;
+    uUnit.GetAttribute(QUEST_BODY_SPOTTED_ATTRIBUTE,nSpotted);
+    if (nSpotted & nHero) return true;
+    return false;
+    
+}
+
+function int IsQuestBodySpotted(unit uUnit, unit uHero) {
+
+    return IsQuestBodySpotted(uUnit,uHero.GetHeroPlayerNum());
+    
+}
+
+//======================================
+// gate/house attributes
+
+function void SetGateAuto(unit uGate, int nGateAuto) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uGate != null);
+#endif    
+    uGate.SetAttribute(GATE_AUTO_ATTRIBUTE,nGateAuto);
+
+}
+
+function int GetGateAuto(unit uGate) {
+
+    int nGateAuto;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uGate != null);
+#endif    
+    uGate.GetAttribute(GATE_AUTO_ATTRIBUTE,nGateAuto);
+    return nGateAuto;
+   
+}
+
+function void SetGateNumber(unit uGate, int nGateNumber) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uGate != null);
+#endif    
+    uGate.SetAttribute(GATE_NUMBER_ATTRIBUTE,nGateNumber);
+
+}
+
+function int GetGateNumber(unit uGate) {
+
+    int nGateNumber;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uGate != null);
+#endif    
+    uGate.GetAttribute(GATE_NUMBER_ATTRIBUTE,nGateNumber);
+    return nGateNumber;
+   
+}
+
+//======================================
+// hero attributes
+
+function void SetKilledBandits(unit uUnit, int nKilledBandits) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(KILLED_BANDITS_ATTRIBUTE,nKilledBandits);
+
+}
+
+function int GetKilledBandits(unit uUnit) {
+
+    int nKilledBandits;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(KILLED_BANDITS_ATTRIBUTE,nKilledBandits);
+    return nKilledBandits;
+    
+}
+
+//======================================
+// other attributes
+
+function void SetCreateString(unit uUnit, string strCreateString) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(CREATE_STRING_ATTRIBUTE,strCreateString);
+    
+}
+
+function string GetCreateString(unit uUnit) {
+
+    string strCreateString;
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.GetAttribute(CREATE_STRING_ATTRIBUTE,strCreateString);
+    return strCreateString;
+    
+}
+
+function int IsFemale(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return IsFemale(UNIT_ARRAY[nUnit]);
+
+}
+
+function void SetIsFemale(unit uUnit, int nIsFemale) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+    uUnit.SetAttribute(IS_FEMALE_ATTRIBUTE,nIsFemale);
+    
+}
+
+function void SetIsFemale(int nUnit, int nIsFemale) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    SetIsFemale(UNIT_ARRAY[nUnit],nIsFemale);
+    
+}
+
+//======================================
+// guilds
+
+function void ResetGuild(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    ResetGuild(UNIT_ARRAY[nUnit]);
+    
+}
+
+function void SetGuild(int nUnit, int nGuild) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    SetGuild(UNIT_ARRAY[nUnit],nGuild);
+
+}
+
+function int GetGuild(int nUnit) {
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT((nUnit >= 0) && (nUnit < UNIT_ARRAY_SIZE));
+#endif    
+    return GetGuild(UNIT_ARRAY[nUnit]);
+    
+}
+
+function void SetInitialGuild(unit uUnit) {
+
+    int nFlags;
+
+#ifdef SHOW_UNIT_INFO_ASSERTS
+    ASSERT(uUnit != null);
+#endif    
+
+    if (IsChanger(uUnit)) {
+        SetGuild(uUnit,eGuildMage);
+    }
+    else if (IsCoach(uUnit)) {
+        nFlags = GetCustomFlags(uUnit);
+        if (nFlags == eTrainerMage) SetGuild(uUnit,eGuildMage);
+        else if (nFlags == eTrainerNecro) SetGuild(uUnit,eGuildNecro);
+        else SetGuild(uUnit,eGuildWarrior);
+    }
+    else if (IsShop(uUnit)) {
+        nFlags = GetCustomFlags(uUnit);
+        if (nFlags == eShopNecro) SetGuild(uUnit,eGuildNecro);
+        else if (nFlags == eShopMage) SetGuild(uUnit,eGuildMage);
+        else if (nFlags == eShopWarrior) SetGuild(uUnit,eGuildWarrior);
+        else if (nFlags == eShopThief) SetGuild(uUnit,eGuildThief);
+        else SetGuild(uUnit,eGuildMerchant);    
+    }
+   
+}
+
+//======================================
+
+#endif

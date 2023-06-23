@@ -1,0 +1,668 @@
+#ifndef _P_QUEST_UNITS_
+#define _P_QUEST_UNITS_
+
+#include "PUnitInfo.ech"
+
+//======================================        
+
+unit auQuestUnits[];
+string astrUnitName[];
+int anUnitNameTranslate[];
+int anUnitMission[];
+int anUnitNumber[];
+string astrUnitItems[];
+string astrUnitItemsAdd[];
+string astrUnitItemsRemove[];
+int anUnitState[];
+int anQuestUnitIsDead[];
+string astrUnitCreateString[];
+int anUnitParty[];
+int anUnitAngle[];
+int anUnitStandardDialog[];
+string astrUnitMagicCard[];
+
+int nMappingsNum;
+
+function void AddRewardToBody(int nQuestNum, int nWhen, unit uUnit, unit uHero);
+function void SetQuestUnitAttributes(int nMapping);
+function void ActivateQuestGiverMapping(int nMapping);
+
+#define TELEPORT_EFFECT "TELE_OUT_EFFECT"
+
+//======================================        
+
+function int GetUnitMapping(string strUnitName) {
+
+    int i;
+    for (i = 0; i < nMappingsNum; i++) if (astrUnitName[i].EqualNoCase(strUnitName)) return i;
+#ifdef QUEST_UNITS_DEBUG
+    TRACE("GetUnitMapping warning: can't find %s                                   \n",strUnitName);
+#endif    
+    return eNoMapping;
+    
+}
+
+function int GetUnitMapping(int nNumber, int nMission) {
+
+    int i;
+    for (i = 0; i < nMappingsNum; i++) if ((anUnitNumber[i] == nNumber) && (anUnitMission[i] == nMission)) return i;
+#ifdef QUEST_UNITS_DEBUG
+    TRACE("GetUnitMapping warning: can't find %d %d                                   \n",nNumber,nMission);
+#endif    
+    return eNoMapping;
+
+}
+
+function int GetUnitMapping(unit uUnit) {
+
+    int i;
+    int nMission;
+    int nNumber;
+
+    // najpierw sprawdzamy tablice unitow
+    for (i = 0; i < nMappingsNum; i++) if (auQuestUnits[i] == uUnit) return i;
+
+    // to nie zawsze moze dzialac bo nie kazdy unit ma przypisany numer
+    nMission = uUnit.GetMission().GetMissionNum();
+    nNumber = GetUnitNumber(uUnit);
+    
+    return GetUnitMapping(nNumber,nMission);
+
+}
+
+function unit GetUnitFromMission(int nMapping) {
+
+    if (nMapping == eNoMapping) return null;
+    return auQuestUnits[nMapping];
+
+}
+
+function unit GetQuestGiver(int nQuestNum) {
+ 
+    if (nQuestNum == eNoQuest) return null;
+    if ((anQuestGiverType[nQuestNum] != eQuestGiverActive) && (anQuestGiverType[nQuestNum] != eQuestGiverPassive)) return null;
+    return GetUnitFromMission(anQuestGiverMapping[nQuestNum]);
+    
+}
+
+function unit GetQuestUnit(int nQuestNum) {
+
+    if (nQuestNum == eNoQuest) return null;
+    return GetUnitFromMission(anQuestUnitMapping[nQuestNum]);
+        
+}
+
+function void GetQuestUnitPosition(int nMapping, int &nX, int &nY) {
+
+    mission pMission;
+
+    pMission = GetCampaign().GetMission(anUnitMission[nMapping]);
+
+    if (auQuestUnits[nMapping] != null) {
+        nX = auQuestUnits[nMapping].GetLocationX();
+        nY = auQuestUnits[nMapping].GetLocationY();
+        return;
+    }
+       
+    if (pMission.GetMarker(MARKER_QUEST_START,anUnitNumber[nMapping],nX,nY));
+    else {
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("GetQuestUnitPosition: can't find %s %d in mission %d             \n",MARKER_QUEST_START,anUnitNumber[nMapping],anUnitMission[nMapping]);    
+#endif        
+        nX = eNoCoord;       
+        nY = eNoCoord;
+    }
+
+}
+
+function mission GetQuestUnitMission(int nMapping) {
+
+    return GetCampaign().GetMission(anUnitMission[nMapping]);
+
+}
+
+//======================================        
+// unit actions
+
+function int CreateQuestGiver(int nMapping) {
+
+    int nX, nY;
+    mission pMission;
+    int nMarker;
+    int nMission;
+    unit uUnit;    
+    if (auQuestUnits[nMapping] != null) return true;
+    
+    nMarker = anUnitNumber[nMapping];
+    nMission = anUnitMission[nMapping];
+    pMission = GetCampaign().GetMission(nMission);
+
+    if (!pMission.GetMarker(MARKER_QUEST_START,nMarker,nX,nY)) {
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("CreateQuestGiver: can't find %s %d in mission %d mapping: %d                          \n",MARKER_QUEST_START,nMarker,nMission,nMapping);
+#endif
+        return false;
+    }
+
+#ifdef QUEST_UNITS_DEBUG
+    TRACE("CreateQuestGiver: CreateObject  %s                                  \n",astrUnitCreateString[nMapping]);
+#endif
+        
+    auQuestUnits[nMapping] = pMission.CreateObject(astrUnitCreateString[nMapping],nX,nY,0,anUnitAngle[nMapping]);
+    if (IsHeroNearUnit(auQuestUnits[nMapping]) && (GetCampaign().GetGameTick() > 30)) pMission.CreateObject(TELEPORT_EFFECT,nX,nY,0,0);
+    anUnitState[nMapping] = eQuestUnitActive;        
+    
+    SetQuestUnitAttributes(nMapping);
+    
+    
+    ActivateQuestGiverMapping(nMapping);  
+    
+    if(IsQuestDisabled(16) && !strnicmp(astrUnitCreateString[nMapping],"NPC_Q_005",strlen("NPC_Q_005")))//gandohar
+    {
+        auQuestUnits[nMapping].SetAttribute("INDEST",1);
+    }
+    if(!strnicmp(astrUnitCreateString[nMapping],"NPC_Q_006",strlen("NPC_Q_006")))//Reist
+        auQuestUnits[nMapping].SetAttribute("INDEST",1);
+    if(!strnicmp(astrUnitCreateString[nMapping],"SISTER",strlen("SISTER")))//Kira
+        auQuestUnits[nMapping].SetAttribute("INDEST",1);
+    
+    
+    auQuestUnits[nMapping].GetUnitValues().SetBasicSkill(eSkillKnockDown,5+Rand(6));
+    
+    SendMessageToGlobalScripts(eMsgRegisterSingleDialogUnit,auQuestUnits[nMapping]);
+    if (anQuestUnitIsDead[nMapping]) auQuestUnits[nMapping].KillObject();
+   
+    return true;   
+   
+}
+
+function void TeleportUnit(int nMapping, int nMarker, int nMission) {
+
+    int nX, nY;
+    int nNewMarker;
+    mission pMission;
+
+    // if unit is dead we cannot teleport him
+    if (anQuestUnitIsDead[nMapping]) return;
+        
+    // removing old marker and old unit
+    if (auQuestUnits[nMapping] != null) {
+        auQuestUnits[nMapping].GetMission().CreateObject(TELEPORT_EFFECT,auQuestUnits[nMapping].GetLocationX(),auQuestUnits[nMapping].GetLocationY(),0,0);
+        auQuestUnits[nMapping].RemoveObject();
+    }
+    GetCampaign().GetMission(anUnitMission[nMapping]).RemoveMarker(MARKER_QUEST_START,anUnitNumber[nMapping]);
+    
+    // creating new marker
+    pMission = GetCampaign().GetMission(nMission);
+    if (!pMission.GetMarker(MARKER_ACTION_TELEPORT_UNIT,nMarker,nX,nY)) {
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("TeleportUnit: can't find %s %d in mission %d                         \n",MARKER_ACTION_TELEPORT_UNIT,nMarker,nMission);
+#else        
+        __ASSERT_FALSE();
+#endif        
+        return;
+    }
+        
+    nNewMarker = FindFreeMarkerQuestUnit(pMission);
+    ASSERT(nNewMarker != eNoMarker);
+    pMission.AddMarker(MARKER_QUEST_START,nNewMarker,nX,nY,0,0,"");
+    
+#ifdef QUEST_UNITS_DEBUG
+    TRACE("AddUnit: CreateObject  %s                                  \n",astrUnitCreateString[nMapping]);
+#endif
+    
+    // creating new unit
+    pMission.CreateObject(TELEPORT_EFFECT,nX,nY,0,0);
+    
+    auQuestUnits[nMapping] = pMission.CreateObject(astrUnitCreateString[nMapping],nX,nY,0,anUnitAngle[nMapping]);
+
+    anUnitState[nMapping] = eQuestUnitActive;    
+    anUnitNumber[nMapping] = nNewMarker;
+    anUnitMission[nMapping] = nMission;
+    
+    SetQuestUnitAttributes(nMapping);    
+    ActivateQuestGiverMapping(nMapping);  
+    SendMessageToGlobalScripts(eMsgRegisterSingleDialogUnit,auQuestUnits[nMapping]);
+    
+    if(IsQuestDisabled(17) && !strnicmp(astrUnitCreateString[nMapping],"NPC_Q_005",strlen("NPC_Q_005")))//gandohar
+    {
+        auQuestUnits[nMapping].SetAttribute("INDEST",1);
+    }
+    if(!strnicmp(astrUnitCreateString[nMapping],"NPC_Q_006",strlen("NPC_Q_006")))//Reist
+        auQuestUnits[nMapping].SetAttribute("INDEST",1);
+    if(!strnicmp(astrUnitCreateString[nMapping],"SISTER",strlen("SISTER")))//Kira
+        auQuestUnits[nMapping].SetAttribute("INDEST",1);
+
+    auQuestUnits[nMapping].GetUnitValues().SetBasicSkill(eSkillKnockDown,5+Rand(6));
+    
+}
+
+function void RemoveUnit(int nMapping) {
+    
+#ifdef QUEST_UNITS_DEBUG       
+    TRACE("Unit %d in mission %d removed - mapping %d                   \n",anUnitNumber[nMapping],anUnitMission[nMapping],nMapping);
+#endif    
+        
+    if (auQuestUnits[nMapping] != null) {
+        auQuestUnits[nMapping].GetMission().CreateObject(TELEPORT_EFFECT,auQuestUnits[nMapping].GetLocationX(),auQuestUnits[nMapping].GetLocationY(),0,0);
+        auQuestUnits[nMapping].RemoveObject();
+        auQuestUnits[nMapping] = null;
+    }
+    anUnitState[nMapping] = eQuestUnitNotActive;
+    
+}    
+
+function void ActivateUnit(int nMapping) {
+
+    if (nMapping == eNoMapping) {
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("ActivateUnit: wrong unit mapping            \n");
+#endif                    
+        return;
+    }    
+    CreateQuestGiver(nMapping);
+
+}
+
+function void KillUnit(int nMapping) {
+
+    anQuestUnitIsDead[nMapping] = true;
+    if (auQuestUnits[nMapping] != null) auQuestUnits[nMapping].KillObject();
+
+}
+
+//======================================        
+
+function void SetQuestUnitAttributes(int nMapping) {
+
+    unit uUnit;
+    uUnit = auQuestUnits[nMapping];
+
+    SetExternalActivity(uUnit,eEActivityQuestUnit);    
+    SetQuestUnitNumber(uUnit,anUnitNumber[nMapping]);
+    SetCustomFlags(uUnit,eUnknownFlag);
+    SetQuestUnitState(uUnit,anUnitState[nMapping]);
+    SetStandardDialogNumber(uUnit,anUnitStandardDialog[nMapping]);    
+    uUnit.SetPartyNum(anUnitParty[nMapping]);
+    uUnit.SetNPCNameNum(anUnitNameTranslate[nMapping]);
+    uUnit.SetAlarmModeUnit(true);
+    SetMagicSkill(uUnit,astrUnitMagicCard[nMapping]);
+#ifdef QUEST_UNITS_DEBUG
+    TRACE("SetQuestUnitAttributes  unit: %d,   translate:%d                                  \n",nMapping,anUnitNameTranslate[nMapping]);
+#endif
+
+}
+
+//======================================        
+
+function void SetQuestGiver(int nQuestNum, int nQuestGiverType, int nQuestGiverMapping, int nFinishingFlag) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestGiver(%d,%d,%d,%d)                                   \n",nQuestNum,nQuestGiverType,nQuestGiverMapping,nFinishingFlag);
+#endif
+
+#ifndef QUESTS_MULTI
+    if(nQuestGiverMapping == eNoMapping)
+    {
+        TRACE ("ERROR - Quest Giver nr %d           \n",nQuestNum);
+    }
+    ASSERT(nQuestGiverMapping != eNoMapping);
+    if (nQuestGiverMapping == eNoMapping) return;
+#endif
+
+    anQuestGiverType[nQuestNum] = nQuestGiverType;
+    anQuestGiverMapping[nQuestNum] = nQuestGiverMapping;
+    anQuestFlags[nQuestNum] |= nFinishingFlag;
+
+}  
+
+function void ActivateQuestGiver(int nQuestNum) {
+
+    unit uUnit;
+    int nLastQuest;
+    int nMapping;
+    
+    if (nQuestNum == eNoQuest) return;                                       
+    if (anQuestGiverMapping[nQuestNum] == eNoMapping) {
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("ActivateQuestGiver warning: quest %d has no quest giver                                   \n",nQuestNum);
+#endif                
+        return;        
+    }
+        
+    uUnit = GetQuestGiver(nQuestNum);
+    
+    if (uUnit == null) {
+        CreateQuestGiver(anQuestGiverMapping[nQuestNum]);
+        uUnit = GetQuestGiver(nQuestNum);
+    }
+
+    if (uUnit == null) {
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("ActivateQuestGiver warning: GetQuestGiver returned null                                   \n");
+#endif                
+        return;            
+    }
+            
+    anUnitState[anQuestGiverMapping[nQuestNum]] = eQuestUnitActive;            
+    SetQuestUnitState(uUnit,eQuestUnitActive);
+        
+    nLastQuest = GetCurrentQuest(uUnit);
+    if (nLastQuest != eNoQuest) if (IsQuestMoreAdvancedThan(nQuestNum,nLastQuest)) return;
+    SetCurrentQuest(uUnit,nQuestNum);
+    SendMessageToGlobalScripts(eMsgRegisterSingleDialogUnit,uUnit);
+#ifdef QUEST_UNITS_DEBUG
+        TRACE("ActivateQuestGiver - nQuestGiver: %d: nMission: %d nUnit: %d                                   \n",nQuestNum,uUnit.GetMission().GetMissionNum(),GetUnitNumber(uUnit));
+#endif                
+                                          
+}
+
+function void ActivateQuestGiverMapping(int nMapping) {
+
+    int i;
+                    
+    if (nMapping == eNoMapping) return;                
+    for (i = 0; i < eQuestsNum; i++) if (anQuestGiverMapping[i] == nMapping) {
+        if (!IsQuestDisabled(i)) ActivateQuestGiver(i);
+    }
+            
+}
+
+function int DeactivateQuestGiver(int nQuestNum) {
+
+    unit uUnit;    
+    int nActive;
+    
+    // jesli w misji nie ma givera to "raczej" nie mozemy go usunac
+    if (anQuestGiverMapping[nQuestNum] == eNoMapping) return false;    
+    uUnit = GetQuestGiver(nQuestNum);
+
+    if (uUnit != null) {
+//        anUnitState[anQuestGiverMapping[nQuestNum]] = eQuestUnitActive;            //uwaga!!! zmienione z eQuestUnitActive na eNoQuestUnit
+        anUnitState[anQuestGiverMapping[nQuestNum]] = eNoQuestUnit;
+        SetQuestUnitState(uUnit,eNoQuestUnit);
+        SetCurrentQuest(uUnit,eNoQuest);
+        nActive = true;
+    }
+    anQuestGiverMapping[nQuestNum] = eNoMapping;
+
+#ifdef QUEST_UNITS_DEBUG
+    TRACE("Quest %d: quest giver is not active                                   \n",nQuestNum);
+#endif                
+
+    return nActive;
+
+}
+
+function int DeactivateQuestGiverMapping(int nMapping) {
+
+    int i;
+    int nActive;
+    
+    for (i = 0; i < eQuestsNum; i++) if (anQuestGiverMapping[i] == nMapping) {
+        nActive |= DeactivateQuestGiver(i);
+    }
+
+    return nActive;
+        
+}
+
+function void KillQuestUnit(unit uUnit, unit uAttacker) {
+
+    int nMapping;
+    int i;
+
+    if (uAttacker == null) return; // RemoveObject()
+    if (!IsQuestUnit(uUnit)) return;
+
+    nMapping = GetUnitMapping(uUnit);
+    if (nMapping == eNoMapping) return;
+    
+    // dodajemy nagrode, jesli byl to unit do zabicia w quescie kill        
+    for (i = 0; i < eQuestsNum; i++) 
+        if ((anQuestType[i] == eQuestTypeKill) || (anQuestType[i] == eQuestTypeFindAndKill))
+            if (anQuestUnitMapping[i] == nMapping) {
+                AddRewardToBody(i,eWhenQuestSolved,uUnit,uAttacker);
+                OpenGateOnSolveQuestKill(i);
+            }
+    
+    anQuestUnitIsDead[nMapping] = true;
+                
+}
+
+//======================================        
+
+function void CheckActiveQuestGivers(unit uHero) {
+
+    int i;
+    mission pMission;
+    int nMission;
+    unit uUnit;
+    int nMapping;
+    int nX, nY;
+
+    ASSERT(uHero != null);
+    if (!uHero.IsLive()) return;
+    pMission = uHero.GetMission();
+    ASSERT(pMission != null);
+    nMission = pMission.GetMissionNum();
+ 
+    for (i = 0; i < eQuestsNum; i++) {
+    
+        if (GetQuestState(i,uHero.GetHeroPlayerNum()) != eQuestStateEnabled) continue;
+        if (anQuestGiverType[i] != eQuestGiverActive) continue;
+        nMapping = anQuestGiverMapping[i];
+        if (nMapping == eNoMapping) {
+#ifdef QUEST_UNITS_DEBUG
+            TRACE("CheckActiveQuestGivers: illegal unit mapping in quest %d            \n",i);
+#else
+//            __ASSERT_FALSE();
+#endif
+            return;                                    
+        }
+        if (anUnitMission[nMapping] != nMission) continue;
+    
+        uUnit = GetQuestGiver(i);
+        if (uUnit == null) continue;
+        if (!uUnit.IsLive()) continue;
+        if (!IsDialogUnit(uUnit)) continue;
+        if (uUnit.IsEnemy(uHero)) continue;
+
+#ifndef QUESTS_MULTI
+        if (i == 18) { // uwaga!!! rozmowa z gandoharem na koniec gry
+            nX = A2G(uHero.GetLocationX());
+            nY = A2G(uHero.GetLocationY());
+            if (nX >= 55 && nX <= 71 && nY >= 72 && nY <= 83) {
+                anQuestGiverType[i] = eQuestGiverPassive;
+                PlayQuestDialog(uUnit,uHero.GetHeroPlayerNum());
+                continue;
+            }
+        }
+#endif        
+        if (uHero.DistanceTo(uUnit) < eActiveQuestGiverRangeA) {
+        
+            anQuestGiverType[i] = eQuestGiverPassive;
+            PlayQuestDialog(uUnit,uHero.GetHeroPlayerNum());
+            
+        }
+    
+    }   
+
+}
+
+//======================================        
+
+function void SetQuestGiverIsMarker(int nQuestNum, int nMarker, int nMission, int nRange) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("SetQuestGiverIsMarker(%d,%d,%d)                                   \n",nQuestNum,nMarker,nMission);
+#endif
+
+    anQuestGiverType[nQuestNum] = eQuestGiverMarker;
+    anQuestGiverMarker[nQuestNum] = nMarker;
+    anQuestGiverMarkerMission[nQuestNum] = nMission;
+    anQuestGiverRange[nQuestNum] = nRange;
+
+}
+
+function void CheckMarkerQuestGivers(unit uHero) {
+
+    int i;
+    mission pMission;
+    int nMission;
+
+    ASSERT(uHero != null);
+    pMission = uHero.GetMission();
+    ASSERT(pMission != null);
+    nMission = pMission.GetMissionNum();
+ 
+    for (i = 0; i < eQuestsNum; i++) if (anQuestGiverMarkerMission[i] == nMission) {
+
+        if (GetQuestState(i,uHero.GetHeroPlayerNum()) != eQuestStateEnabled) continue;
+        if (anQuestGiverType[i] != eQuestGiverMarker) continue;
+        if (IsUnitNearMarkerG(pMission,uHero,MARKER_QUEST_GIVER,anQuestGiverMarker[i],A2G(anQuestGiverRange[i]))) TakeQuest(i,uHero);    
+
+    }   
+
+}
+
+//======================================        
+
+function int SetQuestUnitMagicCard(int nMapping, string strItem) {
+
+    if (IsMagicCard(strItem)) {
+        astrUnitMagicCard[nMapping] = strItem;
+        return true;
+    }    
+    return false;
+        
+}
+
+function void AddItemToUnit(int nMapping, string strItem) {
+
+    if (SetQuestUnitMagicCard(nMapping,strItem)) return;
+
+    astrUnitItemsAdd[nMapping] = AddTextToString(strItem,astrUnitItemsAdd[nMapping]);    
+    astrUnitItems[nMapping] = AddTextToString(strItem,astrUnitItems[nMapping]);
+
+}
+
+function void AddItemToUnit(string strUnitName, string strItem) {
+
+    int nMapping;
+    nMapping = GetUnitMapping(strUnitName);
+    if (nMapping != eNoMapping) AddItemToUnit(nMapping,strItem);
+
+}
+
+function void RemoveItemFromUnit(int nMapping, string strItem) {
+
+    astrUnitItemsRemove[nMapping] = AddTextToString(strItem,astrUnitItemsRemove[nMapping]);
+    astrUnitItems[nMapping] = RemoveTextFromString(strItem,astrUnitItems[nMapping]);
+
+}
+
+function void RemoveItemFromUnit(string strUnitName, string strItem) {
+
+    int nMapping;
+    nMapping = GetUnitMapping(strUnitName);
+    if (nMapping != eNoMapping) RemoveItemFromUnit(nMapping,strItem);
+
+}    
+
+function void SetUnitItemsAttribute(unit uUnit) {
+
+    int nMapping;
+    ASSERT(uUnit != null);
+    nMapping = GetUnitMapping(uUnit);
+    if (nMapping == eNoMapping) return;
+    uUnit.SetAttribute("UnitItems",astrUnitItems[nMapping]);
+    uUnit.SetAttribute("UnitItemsAdd",astrUnitItemsAdd[nMapping]);
+    astrUnitItemsAdd[nMapping] = "";
+    uUnit.SetAttribute("UnitItemsRemove",astrUnitItemsRemove[nMapping]);  
+    astrUnitItemsRemove[nMapping] = "";
+
+}
+
+//======================================        
+
+function void AddUnitMapping(string strName, int nNameTranslate, int nNumber, int nMission, int nAngle, int nLector, int nParty, 
+             int nGuild, int nLevel, int nRemove, string strCreateString, int nStandardDialog) {
+
+#ifdef QUEST_FUNCTIONS_DEBUG
+    TRACE("AddUnitMapping(%s,%d,%d,%d,",strName,nNameTranslate,nNumber,nMission);
+    TRACE("%d,%d,%d,%d,%d,%d,",nAngle,nLector,nParty,nGuild,nLevel,nRemove,nMappingsNum);
+    TRACE("%s,%d)       nMappingsNum =%d                                                         \n",strCreateString,nStandardDialog);
+#endif
+
+    auQuestUnits.Add(null);
+    astrUnitName.Add(strName);
+    anUnitNameTranslate.Add(nNameTranslate);
+    anUnitNumber.Add(nNumber);
+    anUnitMission.Add(nMission);
+
+    anUnitAngle.Add(nAngle);
+    astrUnitCreateString.Add(strCreateString);
+    anUnitStandardDialog.Add(nStandardDialog);
+    astrUnitMagicCard.Add("");
+
+    if (nParty != 0) anUnitParty.Add(nParty);
+    else anUnitParty.Add(eNoParty);    
+
+    if (!nRemove) anUnitState.Add(eQuestUnitActive);
+    else anUnitState.Add(eQuestUnitNotActive);
+    anQuestUnitIsDead.Add(false);
+
+    astrUnitItems.Add("");
+    astrUnitItemsAdd.Add("");
+    astrUnitItemsRemove.Add("");
+
+    nMappingsNum = auQuestUnits.GetSize();
+
+}
+
+function void RegisterQuestUnits(mission pMission) {
+
+    int i;
+    int nMission;
+    int nUnitsRegistered;
+    
+    ASSERT(pMission != null);    
+    pMission.GetAttribute(QUEST_UNITS_REGISTERED_ATTRIBUTE,nUnitsRegistered);
+    if (nUnitsRegistered) return;
+                 
+    nMission = pMission.GetMissionNum();
+    for (i = 0; i < nMappingsNum; i++) if (anUnitMission[i] == nMission) {
+        if (auQuestUnits[i] != null) continue;
+        if (anUnitState[i] == eQuestUnitActive) CreateQuestGiver(i);
+    }
+
+    pMission.SetAttribute(QUEST_UNITS_REGISTERED_ATTRIBUTE,true);
+
+}
+
+//======================================        
+
+function void CheckDeadQuestUnits() {
+
+    int nHero;
+    int nMission;
+    int nUnit;
+    
+    for (nHero = 0; nHero < GetPlayersCnt(); nHero++) {
+        
+        if (!IsPlayer(nHero)) continue;
+        nMission = GetHero(nHero).GetMission().GetMissionNum();
+        for (nUnit = 0; nUnit < nMappingsNum; nUnit++) {
+            if (anUnitMission[nUnit] != nMission) continue;
+            if (auQuestUnits[nUnit] == null) continue;
+            if (auQuestUnits[nUnit].IsLive()) continue;
+            if (IsQuestBodySpotted(auQuestUnits[nUnit],nHero)) continue;
+            if (GetHero(nHero).DistanceTo(auQuestUnits[nUnit].GetLocationX(),auQuestUnits[nUnit].GetLocationY()) < eQuestBodySpottedRangeA) SetQuestBodySpotted(auQuestUnits[nUnit],nHero);        
+        }
+    
+    }
+
+}
+
+#endif

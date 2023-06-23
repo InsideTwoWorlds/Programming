@@ -1,0 +1,38 @@
+#version 110
+
+uniform mat4		gModelviewMatrix;
+uniform mat4		gProjectionMatrix;
+uniform mat4		gModelviewMatrixIT;
+uniform mat4		gProjectionMatrixIT;
+uniform vec4		gCameraPosition;
+uniform vec4		gLightPosition;
+uniform vec4		gLightDirection;
+uniform vec4		gAmbientColor;
+uniform vec4		gDiffuseColor;
+uniform vec4		gSpecularColor;
+uniform vec4		gSideColor;
+uniform vec4		gDestructionColor;
+uniform vec4		gFurFactor;
+uniform float       gFurNS;
+uniform vec4		gDestructionTilesFactor;
+uniform float		gTimeFactor;
+uniform vec4        gWindFactor;
+uniform vec4	    gColorFactor0;
+uniform vec4	    gColorFactor1;
+uniform vec4	    gColorFactor2;
+uniform vec4	    gColorFactor3;
+uniform sampler2D	gBaseTexture;
+uniform sampler2D	gBumpTexture;
+uniform sampler2D	gDestructionTexture;
+uniform sampler2D	gColorTexture;
+uniform samplerCube gCubeTexture;
+uniform sampler3D	g3DNoiseTexture;
+
+varying vec2        OUT_UV;
+
+///////////////////////////////////////////////////////////////////////////////
+void main(void)
+{
+ gl_FragColor = texture2D(gBaseTexture, OUT_UV.xy);
+}
+///////////////////////////////////////////////////////////////////////////////

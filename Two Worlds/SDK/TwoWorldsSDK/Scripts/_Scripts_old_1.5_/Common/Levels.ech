@@ -1,0 +1,204 @@
+#ifndef COMMON_LEVELS_ECH
+#define COMMON_LEVELS_ECH
+
+#include "Debug.ech"
+#include "Messages.ech"
+
+#define MIS(name) GetMission(#name)
+
+consts
+{
+    eLevelColsCnt   = 9,
+    eLevelRowsCnt   = 12;
+    eLevelLayersCnt = 5;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int Level2LevelNum(int nCol, int nRow, int nLayer)
+{
+    ASSERT((nCol >= 1) && (nCol <= eLevelColsCnt));
+    ASSERT((nRow >= 1) && (nRow <= eLevelRowsCnt));
+    ASSERT((nLayer >= 0) && (nLayer < eLevelLayersCnt));
+    return (nCol - 1)*eLevelRowsCnt*eLevelLayersCnt + (nRow - 1)*eLevelLayersCnt + nLayer;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void LevelNum2Level(int nLevelNum, int& nCol, int& nRow, int& nLayer)
+{
+    ASSERT((nLevelNum >= 0) && (nLevelNum < eLevelColsCnt*eLevelRowsCnt*eLevelLayersCnt));
+    nCol = 1 + nLevelNum/(eLevelRowsCnt*eLevelLayersCnt);
+    nRow = 1 + (nLevelNum/eLevelLayersCnt)%eLevelRowsCnt;
+    nLayer = nLevelNum%eLevelLayersCnt;
+    ASSERT((nCol >= 1) && (nCol <= eLevelColsCnt));
+    ASSERT((nRow >= 1) && (nRow <= eLevelRowsCnt));
+    ASSERT((nLayer >= 0) && (nLayer < eLevelLayersCnt));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int LevelNum2MissionNum(int nLevelNum)
+{
+    ASSERT((nLevelNum >= 0) && (nLevelNum < eLevelColsCnt*eLevelRowsCnt*eLevelLayersCnt));
+    return GetCampaign().CommandMessage(eMsgCampaignLevelNum2MissionNum, nLevelNum);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MissionNum2LevelNum(int nMissionNum)
+{
+    ASSERT((nMissionNum >= 0) && (nMissionNum < GetCampaign().GetMissionsCnt()));
+    return GetCampaign().CommandMessage(eMsgCampaignMissionNum2LevelNum, nMissionNum);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int Level2MissionNum(int nCol, int nRow, int nLayer)
+{
+    if ((nCol >= 'A') && (nCol <= 'Z'))
+    {
+        nCol = 1 + (nCol - 'A');
+    }
+    else if ((nCol >= 'a') && (nCol <= 'z'))
+    {
+        nCol = 1 + (nCol - 'a');
+    }
+    if ((nCol < 1) || (nCol > eLevelColsCnt) || 
+        (nRow < 1) || (nRow > eLevelRowsCnt) || 
+        (nLayer < 0) || (nLayer >= eLevelLayersCnt))
+    {
+        __ASSERT_FALSE();
+        return -1;
+    }
+    return LevelNum2MissionNum(Level2LevelNum(nCol, nRow, nLayer));
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int Level2MissionNum(int nCol, int nRow)
+{
+    return Level2MissionNum(nCol, nRow, 0);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MissionNum2Level(int nMissionNum, int& nCol, int& nRow, int& nLayer)
+{
+    int nLevelNum;
+    
+    nLevelNum = MissionNum2LevelNum(nMissionNum);
+    if (nLevelNum < 0)
+    {
+        __ASSERT_FALSE();
+        nCol = nRow = 1;
+        nLayer = 0;
+    }
+    LevelNum2Level(nLevelNum, nCol, nRow, nLayer);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void MissionNum2Level(int nMissionNum, int& nCol, int& nRow)
+{
+    int nLayer;
+    
+    MissionNum2Level(nMissionNum, nCol, nRow, nLayer);
+    ASSERT(nLayer == 0);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function mission GetMission(int nCol, int nRow, int nLayer)
+{
+    int nMissionNum;
+    
+    nMissionNum = Level2MissionNum(nCol, nRow, nLayer);
+    if (nMissionNum < 0)
+    {
+        return null;
+    }
+    return GetCampaign().GetMission(nMissionNum);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function mission GetMission(int nCol, int nRow)
+{
+    return GetMission(nCol, nRow, 0);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function mission GetMission(string strMission)
+{
+    int nCol, nRow, nLayer, nIndex;
+    string strM;
+    
+    strM = strMission;
+    nCol = strM.GetAt(0);
+    strM.Mid(1);
+    if (sscanf(strM, "%d_%d", nRow, nLayer) == 2)
+    {
+        return GetMission(nCol, nRow, nLayer);
+    }
+    else if (sscanf(strM, "%d", nRow) == 1)
+    {
+        return GetMission(nCol, nRow);
+    }
+    __ASSERT_FALSE();
+    return null;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetSinglePlayerMission(string strMission, int &nCol, int &nRow) {
+
+    string str;
+    str = strMission;
+
+    if (str.EqualNoCase("Net_M_01")) {
+        nCol = 'D';
+        nRow = 1;
+    }
+    else if (str.EqualNoCase("Net_M_02")) {
+        nCol = 'F';
+        nRow = 1;
+    }
+    else if (str.EqualNoCase("Net_M_03")) {
+        nCol = 'H';
+        nRow = 1;
+    }
+    else if (str.EqualNoCase("Net_M_04")) {
+        nCol = 'D';
+        nRow = 4;
+    }
+    else if (str.EqualNoCase("Net_M_05")) {
+        nCol = 'F';
+        nRow = 3;
+    }
+    else if (str.EqualNoCase("Net_M_06")) {
+        nCol = 'D';
+        nRow = 6;
+    }
+    else if (str.EqualNoCase("Net_M_07")) {
+        nCol = 'B';
+        nRow = 6;
+    }
+    else if (str.EqualNoCase("Net_M_08")) {
+        nCol = 'A';
+        nRow = 7;
+    }
+    else if (str.EqualNoCase("Net_M_09")) {
+        nCol = 'C';
+        nRow = 9;
+    }
+    else if (str.EqualNoCase("Net_M_10")) {
+        nCol = 'B';
+        nRow = 11;
+    }
+    else if (str.EqualNoCase("Net_M_11")) {
+        nCol = 'E';
+        nRow = 8;
+    }
+    else if (str.EqualNoCase("Net_M_12")) {
+        nCol = 'E';
+        nRow = 10;
+    }
+    else if (str.EqualNoCase("Net_M_13")) {
+        nCol = 'G';
+        nRow = 10;
+    }
+    else if (str.EqualNoCase("Net_M_14")) {
+        nCol = 'H';
+        nRow = 8;
+    }
+    else if (str.EqualNoCase("Net_M_15")) {
+        nCol = 'G';
+        nRow = 6;
+    }
+    else {
+        return false;
+    }
+
+    return true;
+
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //COMMON_LEVELS_ECH

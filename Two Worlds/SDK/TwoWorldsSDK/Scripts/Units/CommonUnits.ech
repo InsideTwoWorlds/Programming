@@ -1,0 +1,77 @@
+#ifndef UNITS_COMMONUNITS_ECH
+#define UNITS_COMMONUNITS_ECH
+
+#include "..\\Common\\Generic.ech"
+#include "..\\Common\\Messages.ech"
+#include "Items.ech"
+
+#ifdef STOPCURRENTACTION
+#define CHECK_STOP_CURR_ACTION() \
+	if (!StopCurrentAction()) \
+    { \
+        return false; \
+    }
+#else
+#define CHECK_STOP_CURR_ACTION()
+#endif //STOPCURRENTACTION
+
+#ifdef CANCELSNEAKMODE
+#define CHECK_CANCEL_SNEAKMODE() CancelSneakMode()
+#else
+#define CHECK_CANCEL_SNEAKMODE()
+#endif //CANCELSNEAKMODE
+
+#ifdef _DEBUG
+command UserOneParam9(int nMode) hidden
+{
+	if (nMode == -1)
+	{
+		nMode = m_bDisabledTrace;
+	}
+    ENABLE_TRACE(nMode);
+    return true;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+#endif //_DEBUG
+
+//(p)
+function void SendMessageToScripts(int nMessage, unit uUnit, unit uHero) {
+
+    int i, count;
+    mission pMission;
+    
+    if (!uHero.IsHeroUnit()) return;
+    ASSERT(uUnit != null);
+    ASSERT(uUnit.IsUnit());
+    pMission = uUnit.GetMission();
+    ASSERT(pMission != null);
+    count = pMission.GetMissionScriptsCnt();
+    for (i = 0; i < count; i++) pMission.GetMissionScript(i).CommandMessage(nMessage,uHero.GetHeroPlayerNum(),uUnit);
+    count = GetCampaign().GetGlobalScriptsCnt();
+    for (i = 0; i < count; i++) GetCampaign().GetGlobalScript(i).CommandMessage(nMessage,uHero.GetHeroPlayerNum(),uUnit);
+
+}
+
+function int IsPreparingToDialog(unit uUnit) {
+
+    int nFlag;
+    uUnit.GetAttribute("PreparingToDialog",nFlag);
+    return nFlag;
+
+}
+
+function int IsPreparingToDialog() {
+
+    return IsPreparingToDialog(GetThis());
+
+}
+
+function int HasCommonParty(unit uUnit) {
+
+    int i;
+    for (i = 0; i < GetPartiesNums().GetSize(); i++) if (uUnit.IsInParty(GetPartiesNums().ElementAt(i))) return true;
+    return false;
+
+}
+//(p)
+
+#endif //UNITS_COMMONUNITS_ECH

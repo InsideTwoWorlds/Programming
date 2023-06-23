@@ -1,0 +1,11 @@
+
+editor.SetCreateRect 0 0 128 128 
+
+
+Editor.RemoveGrassWhereTexture 0 2 1
+Editor.RemoveGrassWhereTexture 1 2 1
+Editor.RemoveGrassWhereTexture 2 2 1
+
+Editor.RemoveGrassWhereTexture 0 6 1
+Editor.RemoveGrassWhereTexture 1 6 1
+Editor.RemoveGrassWhereTexture 2 6 1

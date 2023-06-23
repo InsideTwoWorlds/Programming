@@ -1,0 +1,380 @@
+WhizzEdit v 1.95
+2007.04.20
+
+Document history:
+
+2007.04.20: added chapter '16. Checking and fixing tags'
+2007.04.16: added chapter '15. Filtering Content'
+
+earlier: Points 8 and 11 are new.
+
+
+1. Installation
+2. Screen sections
+3. Colors
+4. Search replace and filters
+  4.1 Search for text
+  4.2 Search for untranslated items
+  4.3 Search for updated items
+  4.4 Filtering
+  4.5 Search and replace
+  4.6 Search for Worlflow markers
+5. File structure
+6. Updating txu files
+7. Spellcheck
+8. Printing recording scripts
+9. Workflow markers 
+  9.1. Replacing workflow markers
+10. Line breaking
+11. Statistics
+12. Word count
+13. Characters count
+14. Checking recorded files
+15. Filtering Content
+16. Checking and fixing tags
+
+======================================================================
+1. Installation
+
+Unpack TranslateTool.zip.
+Copy file WhizzEdit.exe to directory where old whizz edit was stored.
+
+Launch program by clicking WhizzEdit.Exe or one of the batches p.e. LargeFonts.bat
+
+
+======================================================================
+2. Screen sections
+
+
+
+Screen is divided into tree sections:
+ A) Tree control - at the left
+ B) Source view - at the top 
+ C) Working area - in the middle
+
+
+
+ A) Tree Control
+
+ This section shows all items to be translated, grouped into folders. 
+ To see item x in Source view and working area you must first select it in tree control.
+ At the top of this section are buttons for loading and saving files and executing tools.
+
+
+ B) Source view
+
+ This section shows you the source version of a selected item. If an item has been changed
+ or already translated, this window is where you can see its original texts.
+
+ This window can be also used to compare your work with other language versions. 
+ To do it open the [Source] combobox and choose a version which you want to be displayed in source view.
+
+
+ C) Working area
+
+ This is where you will spend most of the time - translating text.
+ 
+ The Working area can work in one of the 3 display modes. 
+
+ Directory mode - in this mode it displays only items in one directory - selected in A) Tree control.
+
+ All mode - in this mode it displays all items from the file.
+
+ Change modes by clicking on the small tab at the upper right corner of the Working Area. 
+ This tab has  text 'All' or 'Dir' indicating current mode.
+
+======================================================================
+
+3. Colors
+
+Some items are colored to highlight dialog structure. 
+Colors can be switched off by  clicking [C] button on the toolbar.
+
+======================================================================
+
+4. Search
+ 
+ The Search function allows you to search for texts, non translated items and updated items.
+
+ Search function works only if you have an active Working area. It will not work in TreeControl or Source View.
+ 
+ If Working area is in  Directory mode, search will be  done only in actual directory. 
+ If you want to search in All file mode, switch to All mode.
+ 
+
+ 4.1 Search for text
+  Type a word of phrase for search in 'Search' editbox. Press Enter or F3.
+  Text with found word will be centered highlighted with red mark at the beginning of the line.
+  You can search again by pressing F3 button.
+
+
+ 4.2 Search for not translated items
+  You can search for not translated items by pressing F4 key. 
+  You can highlight all not translated items by pressing [not translated] button.
+  All Not translated texts will be highlighted with a blue mark at the beginning of a line.
+
+
+ 4.3 Search for updated items
+  You can search for updated items by pressing F5 key.
+  You can highlihtd all updated items by pressing [updated] button.
+  All Updated texts will be highlighted with green mark at the begining of the line.
+
+
+ 4.4 Filtering
+  Program in version 1.3 contains 3 filters. 
+ 
+  
+  By default filter is inactive and program shows all texts.
+  To activate filter click [F] button. Texts will dissapear.
+  Now click [updated] or [not translated] button to show those texts.
+
+  This function will be improved in future versions.
+
+
+ 4.5 Search and replace
+
+  Search and replace function can be activated by Ctrl+H shortcut. 
+  You have to be in working area to activate this shortcut.
+  
+  Search and replace function works in translated and original texts. 
+  Anyway source won't be changed. Just copy with changed text will be created in txu file.
+
+4.6 Search for Worlflow markers
+   To search for texts with secific workflow markers you have to use word "State:" in search window before name of the marker.
+   Examples:
+      State:OK
+      State:RP Draft
+      State:Draft
+       
+
+
+======================================================================
+5. File structure
+
+ Whizz edit uses 2 kinds of files idx and txu.
+
+ idx file is only ine and contains information about texts structure and source version of all texts.
+ 
+ txu files are related to different languages. So there can be few txu files.
+ txu file contains only translated texts and source version of those texts. Truring translation txu file grows longer and longer.
+
+
+ We strongly suggest that you backup your txu file everyday. IF you lost idx file we can  send you a new one. But if you lost txu file - all your work is lost.
+
+
+======================================================================
+6. Updating txu files
+
+ From time to time we will send you new idx file. This file will contain new texts and  probably some changes to the  old ones.
+ You can simply  update your version by exchanging  old idx file with the new one in your working folder. 
+
+ After loading new file in the program, new texts will be available. They will be marked as not translated. 
+
+ More important are [updated] texts. Those are texts which were changed after you translated them. 
+ You should  find them, take a look at the source and retranslate them. Mostly the cahnages are minor.
+
+
+ You can find not translated and updated texts using the Search function see points 4.2 4.3
+
+
+ Warning. When you change something in [updated] or [not translated] text, it will be displayed as normal text from this moment.
+ Such text won't be searchable as [updated] or [not translated] anymore.
+ So be careful!
+
+ This behaviour will be changed in the next version.
+
+======================================================================
+7. Spellcheck
+
+ To activate spellcheck click [Tools->] button, from drop down menu select [Spelling>] 
+ and then Language.
+
+ WARNING! Spellcheck works only in active editbox during text editing. 
+ Spelling mistakes will not be highlighted in the list. 
+
+=======================================================================
+8. Printing recording scripts
+
+To print recrding scrippt choose  Tools-> and than Print Recordings.
+Inside this file  mark lector/ lectors whom shopuld be printed and press [Generate]
+
+Warning! There is a checkbox called: Add Comment to not "OK' texts.
+If its on every text whi does not have OK marker set will have added status text.
+It will cearly shows on  recording lists which lines are not ready yet. 
+
+If you  kow that everything is translated but markers are not set correctly you can 
+remove those extra texts by unchecking the checkbox.
+
+
+You can choose also directory where to save recording scripts.
+
+For each lector 2 files will be generated one xls and one txt file. 
+
+Xls file contains macro in excel to load and fpormat txtx file.
+Open Xls file in Excel program. During this operation excel will ask if want to you enable macros - allow him. 
+
+[If excel does not ask for macros it  may be the case that his security lelel is too high. 
+You may cznge it in  Tools->Macros->Security Level  set it to medium. Close excel and open xls file again].
+
+
+Excel will converst txt file into xls file and delete txt file. 
+Now you may print recording script. 
+
+
+NOTE: Multichoice dialogs for Hero lector don't have to be translater. 
+Don't be sirprized that they are not highlighted on recording list.
+
+
+
+=======================================================================
+9. Workflow markers 
+
+There is a status field added for each text. 
+ OK    - text translated and checked. This status is set by user.
+ Draft -  text under translation - needs to be checked. This status is set by user.
+ NotTranslated - original text. This status is set by program.
+ Source updated - text in source was changed after translation. Translation have to be checked again. This status is set by program.
+ RP Draft - state added in ver 1.4. Show texts changed by RP team.
+
+To quickly change status click on it's field and press first leter of desired status "O" "D" "N" "S"
+
+
+9.1. Replacing workflow markers
+
+To quckly replace many workflow markers you should select a directory in tree view and press F6 key.
+Dialog window will appear where you can choose what markers should be replace with which ones.
+
+=======================================================================
+10. Line breaking
+
+To enter line break in text us Ctrl+Enter
+
+
+======================================================================
+11. Statistics
+
+Statistics are displayed only if TXU file is selected in working area. 
+Statistics are displayed at the bottom of the screen 
+Statistics are based on workflow markers.
+
+======================================================================
+12. Word count
+
+From version 1.6 word count is displayed in every line. 
+There is a new column called 'WC'
+This column shows noumber of words in each text. 
+
+Counting words in directories:
+
+To count words in directory select directory in tree view and press F5.
+2 numbers willbe displayed 
+ WC - all words in directory 
+ RWC - words to be recorded (this information could be important for lrctors and sound studio). 
+
+
+======================================================================
+13. Character count
+
+To count characters in directory, select directory in tree view and press F7.
+2 numbers willbe displayed 
+ CC - all characters including spaces and periods commas etc.
+ ANC - only alfanumeric characters are counted
+
+
+======================================================================
+14. Checking recorded files
+
+Version 1.8 allowves easy checking of the recorded files. 
+
+After recording files put them into right directories - lector number== directory name.
+Put all of those directories into one directory. 
+Launch WhizzEdit
+Choose Tools -> Print/Check Recordings
+
+
+Browse to directory where other directories with sounds are. 
+Press [Select all] button to select all lectors or check  lectors which you want to test. 
+Press [Check Sounds] button. 
+
+Be patient it will take some toime to check files. 
+In the column [Missing sound files] will be listed all missing file numbers. 
+If all files are OK word NONE will be displayed. 
+
+Please check all sound files before sending them for compilation into the game. 
+
+
+
+======================================================================
+15. Filtering COntent
+
+available from version 1.9
+
+To filter content, carry out following steps:
+
+I. First make sure that the button [ALL] is activated (this button is in the upper right part of the screen, next to the search engine). Now you can see all the filtered items regardless of the catalog they are stored in.
+
+II. Make sure that [FILTER] button is activated (pressed). This button is in the same row that [ALL] button. Now you see only the filtered items.
+
+III. Customize the rules according to which the items are filtered. Press [HIGHLIGHT] button (it is located to the left to [FILTER] button) to call out an option window with several checkboxes and dialogs.
+
+In the option window you just called out you see five rows you can customize. Every row of options allow you to set one rule. 
+* In the first column you check if the rule is active. Possible options:
+	- checked,
+	- unchecked
+
+* In the second column you choose what is the subject of the rule. Possible options:
+	- ID		- helps filter by item ID
+	- Name		- helps filter by item name
+	- State		- helps filter by item state (like if it's 'OK', or 'not translated')
+	- Translate	- helps filter by the words used
+	- Word count	- helps filter by word count.
+
+* In the third column you see the operators. They have meaning in the reference of the second and fourth column and link these colums in a logic statement. Every option from the second column has a separate list of Operators.
+
+* In the fourth column you see the values. You may be prompted to type a value (i.e. in case of word count) or you will select from available options (i.e. 'draft' or 'not translated' or 'OK')
+
+
+Now set the rules according to your needs. You can set up to 5 simultaneously, just remember of checking them with the checkbox in the first column.
+
+When you ready, press [APPLY] and you shoudl see results. 
+When you want to disable the filter, select [REMOVE] in the option window or unselect [FILTER] button.
+
+
+Troubleshooting: 
+________________
+
+If you don't see any results, try to select any dialog line so you see it on the screen and then repeat the procedure. If you still have a problem, check if the [FILTER] button is pressed.
+
+
+Example:
+________
+
+To see only items with Status not translated and the same time only those that DOES NOT include the word 'easy' and the same time with  the word count no lesser than 15 words set the following options:
+
+Check first column with:	Status 		equals 			OK
+Check second column with:	Translate	not contains		easy
+Check second column with:	Word count 	is greater then		14
+
+Now press [APPLY] and see the results.
+
+
+
+======================================================================
+16. Checking and fixing tags 
+
+Available from version 1.95
+
+There is a new column called 'Tags'
+This column describes tags status in translated texts using one of following values:
+  None  - no tags found in translated text, but some exists in source (should be fixed by hand)
+  Error - tags count in translated text does not match source tags count (should be fixed by hand)
+  Diff  - translated text and source tags counts match, but there are differences inside (can be auto-fixed using F12 key)
+  OK    - all OK, translated text and source tags match
+
+When tags status is 'Diff' it can be auto-fixed using F12 when corresponding row is selected in current view panel.
+
+For easy checking You can use Highlight/Filter described in "15. Filtering Content" using following rule:
+  'Tags Status'   'not equals'   'OK'
+
+
+

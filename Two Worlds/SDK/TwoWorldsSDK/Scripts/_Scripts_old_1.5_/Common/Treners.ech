@@ -1,0 +1,155 @@
+function int GetSkillNum(int nTrener,int nEndEvent)//podaje numer skilla na podstawie eventa i numeru treneraustawia na podstawie ceny i bierzacych skilli gracza
+{//38 skilli
+    if (nTrener == 1) //0k
+    {
+        if(nEndEvent & 1)return eSkillParry;
+        if(nEndEvent & 2)return eSkillDefensiveFight;                 //<<<<<zmiana  
+        if(nEndEvent & 4)return eSkillStability;//new
+        if(nEndEvent & 8)return eSkillCriticalHit;
+        if(nEndEvent & 16)return eSkillKnockDown;//new  passive
+    }   
+    else if (nTrener == 2)//ok
+    {
+        if(nEndEvent & 1)return eSkillBerserk;
+        if(nEndEvent & 2)return eSkillDoubleBlade;
+        if(nEndEvent & 4)return eSkillDeadlyPiruet;//new
+        if(nEndEvent & 8)return eSkillStun;                   //<<<<<<<<zmiana
+        if(nEndEvent & 16)return eSkillDismountFromHorse;
+    }
+    else if (nTrener == 3)//ok
+    {
+        if(nEndEvent & 1)return eSkillBurn;
+        if(nEndEvent & 2)return eSkillShieldTrick;//new
+        if(nEndEvent & 4)return eSkillDirtyTrick;
+        if(nEndEvent & 8)return eSkillPullShield;              //<<<<<<<<zmiana
+        if(nEndEvent & 16)return eSkillSwordBrake;             //<<<<<zmiana
+    }
+    else if (nTrener == 4)//ok
+    {
+        
+        if(nEndEvent & 1)return eSkillSneak;
+        if(nEndEvent & 2)return eSkillKnifeDeathStrike;
+        if(nEndEvent & 4)return eSkillLockPicking;            //<<<<<<<<zmiana
+        if(nEndEvent & 8)return eSkillStealing;               //<<<<<<<<zmiana
+        if(nEndEvent & 16)return eSkillSwimming;                  //<<<<<<<<zmiana
+    }
+    else if (nTrener == 5)
+    {
+        if(nEndEvent & 1)return eSkillPrecizeAiming;
+        if(nEndEvent & 2)return eSkillArchery;
+        if(nEndEvent & 4)return eSkillCloseDistanceShoot;      //overdraw
+        if(nEndEvent & 8)return eSkillSetTrap;
+        if(nEndEvent & 16)return eSkillHorseRiding;
+    }
+    else if (nTrener == 6)
+    {
+        if(nEndEvent & 1)return eSkillDisarmingArrow;
+        if(nEndEvent & 2)return eSkillMultiArrows;
+        if(nEndEvent & 4)return eSkillPiercing;                       
+        if(nEndEvent & 8)return  eSkillFastAiming;             //fast drawing
+        if(nEndEvent & 16)return eSkillArrowOfDust;
+    }    
+    else if (nTrener == 7)//ok
+    {
+        if(nEndEvent & 1)return eSkillAirMagic;
+        if(nEndEvent & 2)return eSkillFireMagic;
+        if(nEndEvent & 4)return eSkillWaterMagic;
+        if(nEndEvent & 8)return eSkillEarthMagic;
+    }
+    else if (nTrener == 8)//0k
+    {
+        if(nEndEvent & 1)return eSkillNecromancyMagic;
+        if(nEndEvent & 2)return eSkillAlchemy;                 //<<<<<<<<zmiana
+        if(nEndEvent & 4)return eSkillStoneSkin;               //<<<<<<<<zmiana
+        if(nEndEvent & 8)return eSkillStrongHand;              //<<<<<<<<zmiana
+    }  
+    return 0;  
+}
+/*
+        
+
+*/
+
+function int GetSkill(unit uHero, int nTrener,int nEndEvent)//podaje numer skilla na podstawie eventa i numeru treneraustawia na podstawie ceny i bierzacych skilli gracza
+{
+    int nSkill;
+    nSkill=GetSkillNum(nTrener,nEndEvent);
+//    return uHero.GetUnitValues().GetBasicSkill(nSkill);
+    return !IsLockedSkill(uHero,nSkill);
+}
+
+
+function int CalculatePriceFlags(unit uHero, unit uTrener)//wycenia gracza
+{
+    int i,j;
+    int nGuild;
+    int nReputation;
+    nGuild = GetGuild(uTrener);
+    uHero.GetAttribute(nGuild,nReputation);
+    i=uHero.GetUnitValues().GetLevel() - nReputation;
+        
+    j=eAllMoneyFlags; //ePrice100+ePrice300+ePrice1000+ePrice3000+ePrice10000;
+    
+    if(i<=4)return j-ePrice100;
+    if(i<=7)return j-ePrice300;
+    if(i<=12)return j-ePrice1000;
+    if(i<=16)return j-ePrice3000;
+    return j-ePrice10000;
+}
+function int CalculatePriceFromFlags(int nEndEvent)//wycenia gracza
+{
+    if(!(nEndEvent&ePrice100))return 100;
+    else if(!(nEndEvent&ePrice300))return 300;
+    else if(!(nEndEvent&ePrice1000))return 1000;
+    else if(!(nEndEvent&ePrice3000))return 3000;
+    return 10000;
+}
+function int CalculatePriceFromFlagsAfterDialog(int nEndEvent)//wycenia gracza
+{
+    if(nEndEvent&ePrice100)return 100;
+    else if(nEndEvent&ePrice300)return 300;
+    else if(nEndEvent&ePrice1000)return 1000;
+    else if(nEndEvent&ePrice3000)return 3000;
+    return 10000;
+}
+
+function int CalculateSkillFlags(unit uHero, int nTrener,int nPriceFlags)//ustawia na podstawie ceny i bierzacych skilli gracza
+{
+    int nFlags,nGold,nPrice;
+        
+    nGold = uHero.GetMoney();
+    nPrice = CalculatePriceFromFlags(nPriceFlags);
+    TRACE("          Trener: %d    Gold:  %d     Price: %d             \n", nTrener, nGold, nPrice);
+    if(nGold < nPrice) return eAllSkillsFlag-eNoGold-eIWantToLearn;
+    
+    nFlags=eNoGold;
+    
+// znam wszystko -  usunac wszystko oprócz eIKnowAll;
+// nie mam kasy - usunac wszystko oprócz eNoGold i eIwantToLearn;
+
+    if(GetSkill(uHero, nTrener, 1)) nFlags |=  1;
+    if(GetSkill(uHero, nTrener, 2)) nFlags |=  2;
+    if(GetSkill(uHero, nTrener, 4)) nFlags |=  4;
+    if(GetSkill(uHero, nTrener, 8)) nFlags |=  8;
+    if(GetSkill(uHero, nTrener,16)) nFlags |= 16;
+    
+    if((nTrener==8 && nFlags==3) ||
+       (nTrener==7 &&nFlags==15)||
+       (nTrener<7 &&nFlags==31))
+    {
+        
+    }
+    else
+        nFlags+=eIKnowAll;
+    return nFlags;
+}
+
+function int AddSkillFromEvent(unit uHero, int nTrener, int nEndEvent)
+{
+    int nSkill;
+    nSkill=GetSkillNum(nTrener,nEndEvent);
+    UnlockSkill(uHero,nSkill);
+    uHero.GetUnitValues().SetBasicSkill(nSkill,1);
+    uHero.UpdateChangedUnitValues();
+    return nSkill;
+}

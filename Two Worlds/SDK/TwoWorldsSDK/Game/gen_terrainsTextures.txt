@@ -1,0 +1,7 @@
+editor.SetCreateRect 0 0 127 127
+editor.AddGrassOnTexture 0 1 1 1 1
+editor.AddGrassOnTexture 1 1 1 1 1
+editor.AddGrassOnTexture 2 1 2 1 1
+
+
+

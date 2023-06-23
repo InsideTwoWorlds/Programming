@@ -1,0 +1,563 @@
+//dwa ponizsze do przegenerowania duzych mapek
+//engine.minimaprtsize=2048
+//engine.reloadshaders
+
+// przez iLe dzielic to 256 z kanalu i z tego jest max liczba drzewek na kratke
+
+
+
+Engine.HorTreeDivider = 24   
+
+Engine.HorizonTexMultiplier 1.2  
+Engine.HorizonTexDarkener 0.6  
+eNGINE.HorizonTreesDiv 1
+
+// MINIMALNA wsplrzedna x mapy
+Engine.HorTreeOffX = -640    
+// MINIMALNA wspolrzedna y mapy
+Engine.HorTreeOffY = -1536   
+
+Editor.IgnoreLevelsCheckouts 1
+Engine.CLearHorizon
+
+game.CreateEditorObjects 0
+
+Editor.LoadLevel Sea_Map.lnd
+
+Engine.AddHorizonWorldEx 0 0 0 1
+Engine.AddHorizonWorldEx 128 0 0 1
+
+//SEA ROW -1
+Engine.AddHorizonWorldEx -640 256 0 1
+Engine.AddHorizonWorldEx -512 256 0 1
+Engine.AddHorizonWorldEx -384 256 0 1
+Engine.AddHorizonWorldEx -256 256 0 1
+Engine.AddHorizonWorldEx -128 256 0 1
+Engine.AddHorizonWorldEx 0 256 0 1
+Engine.AddHorizonWorldEx 128 256 0 1
+Engine.AddHorizonWorldEx 256 256 0 1
+
+//SEA ROW 0
+Engine.AddHorizonWorldEx -640 128 0 1
+Engine.AddHorizonWorldEx -512 128 0 1
+Engine.AddHorizonWorldEx -384 128 0 1
+Engine.AddHorizonWorldEx -256 128 0 1
+Engine.AddHorizonWorldEx -128 128 0 1
+Engine.AddHorizonWorldEx 0 128 0 1
+Engine.AddHorizonWorldEx 128 128 0 1
+Engine.AddHorizonWorldEx 256 128 0 1
+
+
+
+//SEA ROW 1
+Engine.AddHorizonWorldEx -640 0 0 1
+Engine.AddHorizonWorldEx -512 0 0 1
+Engine.AddHorizonWorldEx -384 0 0 1
+Engine.AddHorizonWorldEx -256 0 0 1
+Engine.AddHorizonWorldEx -128 0 0 1
+Engine.AddHorizonWorldEx 0 0 0 1
+Engine.AddHorizonWorldEx 128 0 0 1
+
+//SEA ROW 2
+Engine.AddHorizonWorldEx -640 -128 0 1
+Engine.AddHorizonWorldEx -512 -128 0 1
+Engine.AddHorizonWorldEx -384 -128 0 1
+Engine.AddHorizonWorldEx -256 -128 0 1
+Engine.AddHorizonWorldEx -128 -128 0 1
+Engine.AddHorizonWorldEx 0 -128 0 1
+Engine.AddHorizonWorldEx 128 -128 0 1
+
+
+//SEA ROW 3
+Engine.AddHorizonWorldEx -640 -256 0 1
+Engine.AddHorizonWorldEx -512 -256 0 1
+Engine.AddHorizonWorldEx -384 -256 0 1
+Engine.AddHorizonWorldEx -256 -256 0 1
+Engine.AddHorizonWorldEx -128 -256 0 1
+Engine.AddHorizonWorldEx 0 -256 0 1
+
+
+
+//SEA ROW 4
+Engine.AddHorizonWorldEx -640 -384 0 1
+Engine.AddHorizonWorldEx -512 -384 0 1
+Engine.AddHorizonWorldEx -384 -384 0 1
+Engine.AddHorizonWorldEx -256 -384 0 1
+Engine.AddHorizonWorldEx -128 -384 0 1
+Engine.AddHorizonWorldEx 0 -384 0 1
+
+
+//SEA ROW 5
+Engine.AddHorizonWorldEx -640 -512 0 1
+Engine.AddHorizonWorldEx -512 -512 0 1
+Engine.AddHorizonWorldEx -384 -512 0 1
+Engine.AddHorizonWorldEx -256 -512 0 1
+Engine.AddHorizonWorldEx -128 -512 0 1
+Engine.AddHorizonWorldEx 0 -512 0 1
+Engine.AddHorizonWorldEx 128 -512 0 1
+
+//SEA ROW 6
+Engine.AddHorizonWorldEx -640 -640 0 1
+Engine.AddHorizonWorldEx -512 -640 0 1
+Engine.AddHorizonWorldEx -384 -640 0 1
+Engine.AddHorizonWorldEx -256 -640 0 1
+Engine.AddHorizonWorldEx -128 -640 0 1
+Engine.AddHorizonWorldEx 0 -640 0 1
+
+//SEA ROW 7
+Engine.AddHorizonWorldEx -640 -768 0 1
+Engine.AddHorizonWorldEx -512 -768 0 1
+Engine.AddHorizonWorldEx -384 -768 0 1
+Engine.AddHorizonWorldEx -256 -768 0 1
+Engine.AddHorizonWorldEx -128 -768 0 1
+
+//SEA ROW 8
+Engine.AddHorizonWorldEx -640 -896 0 1
+Engine.AddHorizonWorldEx -512 -896 0 1
+Engine.AddHorizonWorldEx -384 -896 0 1
+Engine.AddHorizonWorldEx -256 -896 0 1
+Engine.AddHorizonWorldEx -128 -896 0 1
+
+//SEA ROW 9
+Engine.AddHorizonWorldEx -640 -1024 0 1
+Engine.AddHorizonWorldEx -512 -1024 0 1
+Engine.AddHorizonWorldEx -384 -1024 0 1
+Engine.AddHorizonWorldEx -256 -1024 0 1
+Engine.AddHorizonWorldEx -128 -1024 0 1
+
+//SEA ROW 10
+Engine.AddHorizonWorldEx -640 -1152 0 1
+Engine.AddHorizonWorldEx -512 -1152 0 1
+Engine.AddHorizonWorldEx -384 -1152 0 1
+Engine.AddHorizonWorldEx -256 -1152 0 1
+Engine.AddHorizonWorldEx -128 -1152 0 1
+
+//SEA ROW 11
+Engine.AddHorizonWorldEx -640 -1280 0 1
+Engine.AddHorizonWorldEx -512 -1280 0 1
+Engine.AddHorizonWorldEx -384 -1280 0 1
+Engine.AddHorizonWorldEx -256 -1280 0 1
+Engine.AddHorizonWorldEx -128 -1280 0 1
+
+
+//SEA ROW 12
+Engine.AddHorizonWorldEx -640 -1408 0 1
+Engine.AddHorizonWorldEx -512 -1408 0 1
+Engine.AddHorizonWorldEx -384 -1408 0 1
+Engine.AddHorizonWorldEx -256 -1408 0 1
+Engine.AddHorizonWorldEx -128 -1408 0 1
+Engine.AddHorizonWorldEx 0 -1408 0 1
+
+
+//SEA ROW 13
+Engine.AddHorizonWorldEx -640 -1536 0 1
+Engine.AddHorizonWorldEx -512 -1536 0 1
+Engine.AddHorizonWorldEx -384 -1536 0 1
+Engine.AddHorizonWorldEx -256 -1536 0 1
+Engine.AddHorizonWorldEx -128 -1536 0 1
+Engine.AddHorizonWorldEx 0 -1536 0 1
+Engine.AddHorizonWorldEx 128 -1536 0 1
+Engine.AddHorizonWorldEx 256 -1536 0 1
+Engine.AddHorizonWorldEx 384 -1536 0 1
+
+//SEA ROW 14
+Engine.AddHorizonWorldEx -640 -1664 0 1
+Engine.AddHorizonWorldEx -512 -1664 0 1
+Engine.AddHorizonWorldEx -384 -1664 0 1
+Engine.AddHorizonWorldEx -256 -1664 0 1
+Engine.AddHorizonWorldEx -128 -1664 0 1
+Engine.AddHorizonWorldEx 0 -1664 0 1
+Engine.AddHorizonWorldEx 128 -1664 0 1
+Engine.AddHorizonWorldEx 256 -1664 0 1
+Engine.AddHorizonWorldEx 384 -1664 0 1
+
+//SEA ROW 15
+Engine.AddHorizonWorldEx -640 -1792 0 1
+Engine.AddHorizonWorldEx -512 -1792 0 1
+Engine.AddHorizonWorldEx -384 -1792 0 1
+Engine.AddHorizonWorldEx -256 -1792 0 1
+Engine.AddHorizonWorldEx -128 -1792 0 1
+Engine.AddHorizonWorldEx 0 -1792 0 1
+Engine.AddHorizonWorldEx 128 -1792 0 1
+Engine.AddHorizonWorldEx 256 -1792 0 1
+Engine.AddHorizonWorldEx 384 -1792 0 1
+
+
+
+Editor.LoadLevel Map_C01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 256 0 0
+Editor.LoadLevel Map_D01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 384 0 0
+Editor.LoadLevel Map_E01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 512 0 0
+Editor.LoadLevel Map_F01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 640 0 0
+Editor.LoadLevel Map_G01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 768 0 0
+Editor.LoadLevel Map_H01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 896 0 0
+Editor.LoadLevel Map_I01.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 1024 0 0
+
+
+Editor.LoadLevel Map_C02.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 256 -128 0
+Editor.LoadLevel Map_D02.lnd
+	//Editor.SaveLevelBMP 
+     Engine.AddHorizonWorld 384 -128 0
+Editor.LoadLevel Map_E02.lnd
+	//Editor.SaveLevelBMP
+     Engine.AddHorizonWorld 512 -128 0
+Editor.LoadLevel Map_F02.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -128 0
+Editor.LoadLevel Map_G02.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -128 0
+Editor.LoadLevel Map_H02.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -128 0
+Editor.LoadLevel Map_I02.lnd
+	//Editor.SaveLevelBMP
+    
+    Engine.AddHorizonWorld 1024 -128 0
+
+
+Editor.LoadLevel Map_B03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -256 0
+Editor.LoadLevel Map_C03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -256 0
+Editor.LoadLevel Map_D03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -256 0
+Editor.LoadLevel Map_E03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -256 0
+Editor.LoadLevel Map_F03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -256 0
+Editor.LoadLevel Map_G03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -256 0
+Editor.LoadLevel Map_H03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -256 0
+Editor.LoadLevel Map_I03.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -256 0
+
+
+
+Editor.LoadLevel Map_B04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -384 0
+Editor.LoadLevel Map_C04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -384 0
+Editor.LoadLevel Map_D04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -384 0
+Editor.LoadLevel Map_E04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -384 0
+Editor.LoadLevel Map_F04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -384 0
+Editor.LoadLevel Map_G04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -384 0
+Editor.LoadLevel Map_H04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -384 0
+Editor.LoadLevel Map_I04.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -384 0
+
+//line 5
+Editor.LoadLevel Map_C05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -512 0
+Editor.LoadLevel Map_D05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -512 0
+Editor.LoadLevel Map_E05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -512 0
+Editor.LoadLevel Map_F05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -512 0
+Editor.LoadLevel Map_G05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -512 0
+Editor.LoadLevel Map_H05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -512 0
+Editor.LoadLevel Map_I05.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -512 0
+
+
+//line 6
+Editor.LoadLevel Map_B06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -640 0
+Editor.LoadLevel Map_C06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -640 0
+Editor.LoadLevel Map_D06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -640 0
+Editor.LoadLevel Map_E06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -640 0
+Editor.LoadLevel Map_F06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -640 0
+Editor.LoadLevel Map_G06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -640 0
+Editor.LoadLevel Map_H06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -640 0
+Editor.LoadLevel Map_I06.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -640 0
+
+//line 7
+Editor.LoadLevel Map_A07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 0 -768 0
+Editor.LoadLevel Map_B07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -768 0
+Editor.LoadLevel Map_C07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -768 0
+Editor.LoadLevel Map_D07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -768 0
+Editor.LoadLevel Map_E07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -768 0
+Editor.LoadLevel Map_F07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -768 0
+Editor.LoadLevel Map_G07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -768 0
+Editor.LoadLevel Map_H07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -768 0
+Editor.LoadLevel Map_I07.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -768 0
+
+
+//line 8
+Editor.LoadLevel Map_A08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 0 -896 0
+Editor.LoadLevel Map_B08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -896 0
+Editor.LoadLevel Map_C08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -896 0
+Editor.LoadLevel Map_D08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -896 0
+Editor.LoadLevel Map_E08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -896 0
+Editor.LoadLevel Map_F08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -896 0
+Editor.LoadLevel Map_G08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -896 0
+Editor.LoadLevel Map_H08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -896 0
+Editor.LoadLevel Map_I08.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -896 0
+
+//line 9
+Editor.LoadLevel Map_A09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 0 -1024 0
+Editor.LoadLevel Map_B09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -1024 0
+Editor.LoadLevel Map_C09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -1024 0
+Editor.LoadLevel Map_D09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -1024 0
+Editor.LoadLevel Map_E09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -1024 0
+Editor.LoadLevel Map_F09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -1024 0
+Editor.LoadLevel Map_G09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -1024 0
+Editor.LoadLevel Map_H09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -1024 0
+Editor.LoadLevel Map_I09.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -1024 0
+
+//line 10
+Editor.LoadLevel Map_A10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 0 -1152 0
+Editor.LoadLevel Map_B10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -1152 0
+Editor.LoadLevel Map_C10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -1152 0
+Editor.LoadLevel Map_D10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -1152 0
+Editor.LoadLevel Map_E10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -1152 0
+Editor.LoadLevel Map_F10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -1152 0
+Editor.LoadLevel Map_G10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -1152 0
+Editor.LoadLevel Map_H10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -1152 0
+Editor.LoadLevel Map_I10.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -1152 0
+
+//line 11
+Editor.LoadLevel Map_A11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 0 -1280 0
+Editor.LoadLevel Map_B11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -1280 0
+Editor.LoadLevel Map_C11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -1280 0
+Editor.LoadLevel Map_D11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -1280 0
+Editor.LoadLevel Map_E11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -1280 0
+Editor.LoadLevel Map_F11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -1280 0
+Editor.LoadLevel Map_G11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -1280 0
+Editor.LoadLevel Map_H11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -1280 0
+Editor.LoadLevel Map_I11.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -1280 0
+
+//line 12
+Editor.LoadLevel Map_B12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 128 -1408 0
+Editor.LoadLevel Map_C12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 256 -1408 0
+Editor.LoadLevel Map_D12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 384 -1408 0
+Editor.LoadLevel Map_E12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 512 -1408 0
+Editor.LoadLevel Map_F12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 640 -1408 0
+Editor.LoadLevel Map_G12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 768 -1408 0
+Editor.LoadLevel Map_H12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 896 -1408 0
+Editor.LoadLevel Map_I12.lnd
+	//Editor.SaveLevelBMP
+    Engine.AddHorizonWorld 1024 -1408 0
+
+
+
+//add distant land objects
+
+//tharbakin
+Horizon.addObject FENCES\wall02\TOWN_02_HOR.vdf 22960 -7480 1840
+//yamalin
+Horizon.addObject FENCES\wall02\TOWN_02_HOR.vdf 28360 3200 3440
+
+//cathalon
+Horizon.addObject FENCES\wall04\TOWN_04_HOR.vdf 27140 -27740 -8
+
+//Ashos
+Horizon.addObject FENCES\wall06\TOWN_06_HOR.vdf 9032 -42396 -480
+
+//Qudinaar
+Horizon.addObject FENCES\wall04\QUDINAR_HOR.vdf 19218 -32610 -406
+
+//GorGamar
+Horizon.addObject FENCES\wall07\GORGAMAR_HOR.vdf 28458 -51975 1074
+
+//Osgaroth
+Horizon.addObject FENCES\wall08\OSGAROTH_HOR.vdf 38396 -23035 2081
+
+
+//necro
+Horizon.addObject STRUCTURES\TEMPLENECRO\TEMPLe_NECRO_01_HOR.vdf 18240 -17600 960
+Horizon.addObject STRUCTURES\TEMPLENECRO\TEMPLe_NECRO_01_HOR.vdf 34160 -29520 960
+Horizon.addObject STRUCTURES\TEMPLENECRO\TEMPLe_NECRO_01_HOR.vdf 2720 -29520 960
+Horizon.addObject STRUCTURES\TEMPLENECRO\TEMPLe_NECRO_01_HOR.vdf 8800 -48000 960
+Horizon.addObject STRUCTURES\TEMPLENECRO\TEMPLe_NECRO_01_HOR.vdf 28360 -48000 960
+
+
+Editor.IgnoreLevelsCheckouts 0
+
+// zapisac horizon do pliku
+Engine.SaveHorizon c:\gry\2w\Levels\horizont.hor
+
+game.CreateEditorObjects 1
+
+// load horizona z pliku
+//Engine.LoadHorizon c:\gry\2w\Levels\horizont.hor
+
+// ustawienie wlasnego offsetu w ktorym obecnie jestesmy!
+// Engine.SetHorizonOffset 0 0 0
+
+
+//load map_D03
+//Engine.LoadHorizon c:\gry\2w\Levels\horizont.hor
+//Engine.SetHorizonOffset -384 256 0
+//Horizon.addObject FENCES\wall02\wall_02_01_lod.vdf 23040 -11840 5000
+//Horizon.deLeteObjects
+
+
+// wspolrzedne  kazda mapa ma 5120x5120 czyli 128*40 na 128*40
+// tharbakin X: 512+64 = 23040     Y: -256-40 = -11840

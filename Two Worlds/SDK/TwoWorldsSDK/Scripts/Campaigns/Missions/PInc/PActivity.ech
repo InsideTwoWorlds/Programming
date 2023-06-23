@@ -1,0 +1,728 @@
+#ifndef _P_ACTIVITY_
+#define _P_ACTIVITY_
+
+#include "PEnums.ech"
+#include "PMission.ech"
+#include "PDailyState.ech"
+
+//======================================
+
+consts {
+
+    // activities    
+    eActivityUnknown          = 0;
+    eActivityDoingNothing     = 1;
+    eActivityWalking          = 2;
+    eActivityStartingDialog   = 3;
+    eActivityDialog           = 4;
+    eActivityWorking          = 5;
+    eActivitySitting          = 6;
+    eActivitySleeping         = 7;
+    eActivityNoActivity       = -1;
+    
+    // ranges
+    eActivityTalkRangeA       = eUnitDialogRangeA;
+    eActivityWalkRangeG       = 1;
+    eRestingInTavernRangeA    = 1024;
+    eTooCloseToBartenderRangeA= M2A(2);
+    eUnitIsInTavernRangeA     = M2A(10);    
+    eWorkerStaticRangeA       = 256;
+    ePublicPlaceMaxRangeA     = 1024;
+    ePublicPlaceMinRangeA     = 128;
+
+    eDialogAngle              = 0x10;
+    
+    // taverns
+    eMaxUnitsInTavern         = 20;
+
+    eChatDialogTotalUIDs      = 200;
+    
+}
+
+#define RAND_WORK_TIME (Rand(eActivityTime / 2) + eActivityTime / 2)
+
+//======================================
+ 
+int anActivityTimer[UNIT_ARRAY_SIZE];
+int anLastActivity[UNIT_ARRAY_SIZE];
+int anLastActivityTimer[UNIT_ARRAY_SIZE];
+
+int anMarkerTavernNumber[];
+int anUnitsInTavern[];
+int nTavernsNumber;
+
+int anDialogUnit[UNIT_ARRAY_SIZE];
+
+int anPublicPlaces[];
+int nPublicPlacesNumber;
+
+int anChatDialogUID[];
+int anChatDialogUnit1[];
+int anChatDialogUnit2[];
+int nCurrentChatDialogUID;
+
+function void ActivityFinishDialog(int nUnit);
+function int GetTargetHero(int nUnit);
+
+//======================================
+
+function void ResetActivityTimer(int nUnit) {
+
+    anActivityTimer[nUnit] = GetCampaign().GetGameTick() + RAND_WORK_TIME;
+    
+}
+
+function int IsActivityFinished(int nUnit) {
+
+    if (GetCampaign().GetGameTick() > anActivityTimer[nUnit]) return true;
+    return false;
+
+}
+
+function int IsDoingNothing(int nUnit) {
+
+    int nActivity;
+    ASSERT(UNIT_ARRAY[nUnit]);
+    nActivity = GetActivity(nUnit);
+    if (!IsUnitInDialogMode(UNIT_ARRAY[nUnit]) && !UNIT_ARRAY[nUnit].IsMoving() && !IsUnitArmed(UNIT_ARRAY[nUnit]) && (GetTargetHero(nUnit) == eNoUnit) && (nActivity == eActivityDoingNothing || nActivity == eActivityUnknown || nActivity == eActivityNoActivity)) return true;
+    return false;
+    
+}
+
+function int IsDoingNothing(unit uUnit) {
+
+    return IsDoingNothing(GetUnitNumber(uUnit));
+    
+}
+
+function int IsUnitReadyToDialog(int nUnit) {
+
+    int nActivity;    
+    ASSERT(UNIT_ARRAY[nUnit]);
+    if (GetCustomFlags(UNIT_ARRAY[nUnit]) == eBartender) return false;
+    nActivity = GetActivity(nUnit);        
+    if ((nActivity == eActivityDoingNothing) || (nActivity == eActivityWalking) || (nActivity == eActivityWorking) || (nActivity == eActivityNoActivity)) return true;
+    return false;
+
+}
+
+//======================================
+// public places
+
+function void InitializePublicPlaces() {
+    
+    int i, nMaxNum;
+
+    anPublicPlaces.RemoveAll();    
+    nMaxNum = GetMaxMarkerNum(MARKER_PUBLIC_PLACE);
+    for (i = 1; i <= nMaxNum; i++) if (HaveTownMarker(MARKER_PUBLIC_PLACE,i)) anPublicPlaces.Add(i);    
+    nPublicPlacesNumber = anPublicPlaces.GetSize();
+
+}
+
+function void GoToPublicPlace(unit uUnit, int nPublicPlace) {
+
+    int nX, nY;
+    int nTargetX, nTargetY;
+    int nCount;
+    int nAngle;
+    int nRange;
+
+    GetMarker(MARKER_PUBLIC_PLACE,anPublicPlaces[nPublicPlace],nX,nY);        
+
+    nCount = 0;
+    
+    do {
+    
+        nAngle = Rand(256);
+        nRange = Rand(ePublicPlaceMaxRangeA - ePublicPlaceMinRangeA) + ePublicPlaceMinRangeA;
+        TurnRadiusByAngle(nRange,nAngle,nTargetX,nTargetY);
+        nTargetX += nX;
+        nTargetY += nY;    
+        nCount++;
+    
+    } while ((nCount < 100) && (!IsGoodPointForUnit(nTargetX,nTargetY)));
+
+    FAST_MOVE(uUnit,nTargetX,nTargetY);
+
+}
+
+//======================================
+// taverns
+
+function void InitializeTaverns() {
+
+    int i, nMaxNum;
+    nMaxNum = GetMaxMarkerNum(MARKER_TAVERN);
+    for (i = 1; i <= nMaxNum; i++) {
+        if (HaveTownMarker(MARKER_TAVERN,i)) {
+            anMarkerTavernNumber.Add(i);
+            anUnitsInTavern.Add(0);
+        }
+    }
+    
+    nTavernsNumber = anMarkerTavernNumber.GetSize();
+    
+}
+
+function int IsPlaceInTaverns() {
+
+    int i;
+    for (i = 0; i < nTavernsNumber; i++) if (anUnitsInTavern[i] < eMaxUnitsInTavern) return true;
+    return false;
+    
+}
+
+function void ChooseTavern(int nUnit) {
+
+    int i;
+    int anTaverns[];
+    anTaverns.RemoveAll();
+    for (i = 0; i < nTavernsNumber; i++) if (anUnitsInTavern[i] < eMaxUnitsInTavern) anTaverns.Add(i);
+    
+    if (anTaverns.GetSize() == 0) {
+        anTargetTavern[nUnit] = eNoTavern;
+        return;
+    }
+
+    if (anTaverns.GetSize() == 1) i = anTaverns[0];
+    else i = anTaverns[Rand(anTaverns.GetSize())];
+    
+    anTargetTavern[nUnit] = anMarkerTavernNumber[i];
+
+}
+
+function void CountUnitsInTaverns() {
+
+    int i;
+    int nX, nY;
+
+    for (i = 0; i < nTavernsNumber; i++) {
+    
+        GetMarker(MARKER_TAVERN,anMarkerTavernNumber[i],nX,nY);
+        SearchUnitsInArea(nX,nY,eUnitIsInTavernRangeA,GetSinglePartyArray(nPartyTownNPCs));
+        anUnitsInTavern[i] = GetSearchUnitsInAreaCount();
+    
+    }
+
+}
+
+function int GetRandomPositionInTavern(string strMarker, int nMarker, int &nX, int &nY) {
+
+    int nTmpX;
+    int nTmpY;
+    int nRange;
+    int nCount;
+    unit uTavern;
+    
+    if (!GetMarker(strMarker,nMarker,nX,nY)) return false;
+    uTavern = GetHouseFromPoint(nX,nY);        
+        
+    nCount = 0;
+    do {
+    
+        nRange = (eRestingInTavernRangeA >> 1) + Rand(eRestingInTavernRangeA >> 1);
+        TurnRadiusByAngle(nRange,Rand(256),nTmpX,nTmpY);
+        if (IsGoodPointForUnit(nX + nTmpX,nY + nTmpY) && (Distance(nTmpX,nTmpY,0,0) > eTooCloseToBartenderRangeA) && (GetHouseFromPoint(nX + nTmpX,nY + nTmpY) == uTavern)) {
+        
+            nX += nTmpX;
+            nY += nTmpY;
+            return true;
+        
+        }
+        nCount++;
+        
+    } while (nCount < 32);
+    
+    return false;
+    
+}
+
+function void GoToTavern(int nUnit) {
+
+    int nX, nY;    
+    if (anTargetTavern[nUnit] == eNoTavern) ChooseTavern(nUnit);
+    if (anTargetTavern[nUnit] == eNoTavern) return;
+    if (!GetRandomPositionInTavern(MARKER_TAVERN,MARKER_TAVERN_NUMBER,nX,nY)) return;
+    FAST_MOVE(UNIT_ARRAY[nUnit],nX,nY);
+
+}
+
+//======================================
+// nothing
+
+function void SetActivityDoingNothing(int nUnit) {
+
+    SetActivity(nUnit,eActivityDoingNothing);
+    ResetActivityTimer(nUnit);
+        
+}
+
+//======================================
+// walking
+
+function void SetActivityWalking(int nUnit) {
+
+    int i, nLimit;
+    int nX, nY;
+    int nTargetX, nTargetY;
+    int nDailyState;
+
+    SetExternalActivity(nUnit,eEActivityControlledByTown);
+    SetActivity(nUnit,eActivityWalking);
+    nDailyState = GetDailyState(nUnit);
+
+    if (nDailyState == eRestingInTavern) {
+    
+        if (!GetRandomPositionInTavern(MARKER_TAVERN,MARKER_TAVERN_NUMBER,nX,nY)) {
+        
+            __ASSERT_FALSE();
+            return;
+        
+        }
+    
+        DEBUG_MOVE(UNIT_ARRAY[nUnit],nX,nY);
+    
+    }
+    
+    if (nDailyState == eRestingOutside) {
+    
+        if (nPublicPlacesNumber == 0) {
+#ifdef TOWN_DEBUG
+            TRACE("SetActivityWalking: no public places found                                     \n");
+#else
+            __ASSERT_FALSE();
+#endif
+            SetActivityDoingNothing(nUnit);
+            return;                                        
+        }
+        else if (nPublicPlacesNumber == 1) i = 0;
+        else {
+            nLimit = nPublicPlacesNumber;
+            do {
+                if (nLimit <= 0)
+                {
+                    i = -1;
+                    break;
+                }
+                nLimit--;
+                i = Rand(nPublicPlacesNumber);       
+            } while (IsUnitNearMarkerG(UNIT_ARRAY[nUnit],MARKER_PUBLIC_PLACE,anPublicPlaces[i],eActivityWalkRangeG));
+        }
+
+        if (i >= 0)
+        {
+            GoToPublicPlace(UNIT_ARRAY[nUnit],i);
+        }
+        
+    }
+    
+}
+
+//======================================
+// dialog
+
+function int ValidLector(int nLector1, int nLector2) {
+
+    if (nLector1 == 0 && nLector2 == 1) return true;
+    if (nLector1 == 0 && nLector2 == 2) return true;
+    if (nLector1 == 3 && nLector2 == 1) return true;
+    if (nLector1 == 3 && nLector2 == 4 && nTownType == eTownTypeCathalon) return true;
+    return false;
+
+}
+
+function int ValidDialog(int nDialog1, int nDialog2) {
+
+//    TRACE("ValidDialog(%d,%d)                 \n",nDialog1,nDialog2);
+    if ((nDialog1 % 10) != (nDialog2 % 10)) return false;
+    return ValidLector((nDialog1 / 10) % 10,(nDialog2 / 10) % 10);
+
+}
+
+function void StartChatDialog(int nUnitActive, int nUnitPassive) {
+
+    int nDialog1, nDialog2;
+    int nLector1, nLector2;
+    string str;
+    
+    nDialog1 = GetStandardDialogNumber(UNIT_ARRAY[nUnitActive]);
+    nDialog2 = GetStandardDialogNumber(UNIT_ARRAY[nUnitPassive]);
+        
+    if (nDialog1 == nDialog2) return;
+
+    if (!ValidDialog(nDialog1,nDialog2)) {
+        SWAP(nDialog1,nDialog2);
+        if (!ValidDialog(nDialog1,nDialog2)) {
+            SetActivityDoingNothing(nUnitActive);
+            return;    
+        }
+        SWAP(nUnitActive,nUnitPassive);
+    }
+    
+    nLector1 = GetLectorByDialogNumber(nDialog1);
+    nLector2 = GetLectorByDialogNumber(nDialog2);
+    
+    str.Format(DIALOG_CHAT,nDialog1,nDialog2,Rand(3) + 1);
+
+    nCurrentChatDialogUID = (nCurrentChatDialogUID + 1) % eChatDialogTotalUIDs;
+    anChatDialogUnit1.Add(nUnitActive);
+    anChatDialogUnit2.Add(nUnitPassive);
+    anChatDialogUID.Add(nCurrentChatDialogUID);
+
+#ifdef ACTIVITY_DEBUG    
+    TRACE("PlayChatDialog(%s,%d,%d,%d,%d,%d)                    \n",str,nCurrentChatDialogUID,nLector1,nLector2,nDialog1,nDialog2);
+    TRACE("at: %d %d                    \n",A2G(UNIT_ARRAY[nUnitActive].GetLocationX()),A2G(UNIT_ARRAY[nUnitActive].GetLocationY()));
+#endif
+    PlayChatDialog(GetScriptUID(),nCurrentChatDialogUID,str,nLector1,UNIT_ARRAY[nUnitActive],nLector2,UNIT_ARRAY[nUnitPassive]);
+        
+}
+
+function void FinishChatDialog(int nChatDialogUID) {
+
+    int i;
+    int count;
+    
+#ifdef ACTIVITY_DEBUG    
+    TRACE("FinishChatDialog(%d)            \n",nChatDialogUID);
+#endif
+    
+    count = anChatDialogUID.GetSize();
+    for (i = 0; i < count; i++)
+        if (anChatDialogUID[i] == nChatDialogUID) {
+#ifdef ACTIVITY_DEBUG    
+            TRACE("finishing chat dialog %d              \n",nChatDialogUID);
+#endif
+            ActivityFinishDialog(anChatDialogUnit1[i]);
+            ActivityFinishDialog(anChatDialogUnit2[i]);        
+            anChatDialogUnit1.RemoveAt(i);
+            anChatDialogUnit2.RemoveAt(i);
+            anChatDialogUID.RemoveAt(i);            
+            return;
+        }    
+
+}
+
+function void ActivityStartDialog(int nUnitActive, int nUnitPassive) {
+
+    unit uUnit1, uUnit2;
+    int nTurning;
+
+    uUnit1 = UNIT_ARRAY[nUnitActive];
+    uUnit2 = UNIT_ARRAY[nUnitPassive];
+
+    nTurning = false;
+    if (ABS(uUnit1.GetRelativeAngleTo(uUnit2)) > eDialogAngle) {
+        uUnit1.CommandStop();
+        uUnit1.CommandTurn(uUnit1.AngleTo(uUnit2));    
+        nTurning = true;
+    }
+    if (ABS(uUnit2.GetRelativeAngleTo(uUnit1)) > eDialogAngle) {
+        uUnit2.CommandStop();
+        uUnit2.CommandTurn(uUnit2.AngleTo(uUnit1));    
+        nTurning = true;
+    }
+    if (nTurning) return;
+    
+    anLastActivity[nUnitActive] = GetActivity(nUnitActive);
+    anLastActivityTimer[nUnitActive] = anActivityTimer[nUnitActive];
+    anLastActivity[nUnitActive] = GetActivity(nUnitActive);
+    anLastActivityTimer[nUnitActive] = anActivityTimer[nUnitActive];
+
+    ResetActivityTimer(nUnitActive);
+    SetActivity(nUnitActive,eActivityDialog);
+    ResetActivityTimer(nUnitPassive);
+    SetActivity(nUnitPassive,eActivityDialog);
+    SetExternalActivity(nUnitPassive,eEActivityControlledByTown);
+
+    StartChatDialog(nUnitActive,nUnitPassive);
+
+}
+
+function void ActivityFinishDialog(int nUnit) {
+        
+#ifdef ACTIVITY_DEBUG    
+    TRACE("ActivityFinishDialog(%d)           \n",nUnit);        
+#endif
+        
+    if (anLastActivity[nUnit] == eActivityStartingDialog) SetActivityWalking(nUnit);
+    else if (anLastActivity[nUnit] == eActivityWalking) SetActivityWalking(nUnit);
+    else SetActivity(nUnit,eActivityDoingNothing);
+
+    anDialogUnit[nUnit] = eNoDialogUnit;
+
+}
+
+function void SetActivityDialog(int nUnit) {
+
+    int nRange;
+    int i, count;
+    int nX, nY;
+    unit uUnitPassive;
+    int nUnitPassive;
+    unit uUnit;
+    int nDialog;
+    unit uHouse;        
+        
+    uUnit = UNIT_ARRAY[nUnit];
+    nRange = uUnit.GetSightRange();               
+    nDialog = GetStandardDialogNumber(uUnit);
+    uHouse = uUnit.GetHouseWithObject();
+    
+    SetExternalActivity(nUnit,eEActivityControlledByTown);
+
+    // uwaga!!! sklepy nie rozmawiaja    
+    if ((!IsShop(uUnit)) && (uUnit.SearchUnits(nRange,GetSinglePartyArray(PARTY_NPC),eSortTypeRange))) {
+    
+        count = uUnit.GetSearchUnitsCount();
+        for (i = 0; i < count; i++) {
+
+            uUnitPassive = uUnit.GetSearchUnit(i);            
+            nUnitPassive = GetUnitNumber(uUnitPassive);
+            if (nUnitPassive == 0) continue;
+
+            if (!ValidDialog(nDialog,GetStandardDialogNumber(uUnitPassive)) && !ValidDialog(GetStandardDialogNumber(uUnitPassive),nDialog)) continue;
+                        
+            if (!IsUnitReadyToDialog(nUnitPassive)) continue;
+        
+            if (uUnitPassive.GetHouseWithObject() != uHouse) continue;
+                        
+            if (uUnit.DistanceTo(uUnitPassive) < eActivityTalkRangeA) {                        
+                ActivityStartDialog(nUnit,nUnitPassive);
+            }
+            else {
+                if (uUnitPassive.IsMoving()) {
+                    MoveToUnit(uUnit,uUnitPassive,M2A(1));
+   //                 uUnitPassive.CommandTurn(uUnitPassive.AngleTo(uUnit));
+                }                                        
+            }
+       
+            uUnit.ClearSearchUnitsArray();
+            return;
+        
+        }
+        uUnit.ClearSearchUnitsArray();
+
+    }
+    else SetActivityWalking(nUnit);
+
+}
+
+function void UpdateActivityStartingDialog(int nUnit) {
+
+    int nFinishDialog;
+    int nDialogUnit;
+
+    nFinishDialog = false;
+    if (anDialogUnit[nUnit] == eNoDialogUnit) nFinishDialog = true;
+    else if (!IsUnitReadyToDialog(anDialogUnit[nUnit])) nFinishDialog = true;
+    
+    if (nFinishDialog) {
+        anDialogUnit[nUnit] = eNoDialogUnit;
+        SetActivityDoingNothing(nUnit);
+        return;
+    }
+
+    nDialogUnit = anDialogUnit[nUnit];
+    if (UNIT_ARRAY[nUnit].DistanceTo(UNIT_ARRAY[nDialogUnit]) < eActivityTalkRangeA) {                        
+        ActivityStartDialog(nUnit,nDialogUnit);
+    }
+    else if (!UNIT_ARRAY[nUnit].IsMoving()) {
+        DEBUG_MOVE(UNIT_ARRAY[nUnit],UNIT_ARRAY[nDialogUnit].GetLocationX(),UNIT_ARRAY[nDialogUnit].GetLocationY());            
+    }
+
+}
+
+function void UpdateActivityDialog(int nUnit) {
+
+    int i;
+    unit uUnit1, uUnit2;
+    int nUnit2;
+    int count;
+
+#ifdef ACTIVITY_DEBUG    
+    TRACE("UpdateActivityDialog(%d)      \n",nUnit);
+#endif
+
+    uUnit1 = UNIT_ARRAY[nUnit];
+
+    count = anChatDialogUID.GetSize();
+    for (i = 0; i < count; i++) {
+        if (anChatDialogUnit1[i] == nUnit) uUnit2 = UNIT_ARRAY[anChatDialogUnit2[i]];
+        else if (anChatDialogUnit2[i] == nUnit) uUnit2 = UNIT_ARRAY[anChatDialogUnit1[i]];
+        if (uUnit2) break;
+    }
+
+    if (!uUnit2) {
+        if (!uUnit1.IsInDialogChat()) ActivityFinishDialog(nUnit);
+        return;
+    }
+    
+    nUnit2 = GetUnitNumber(uUnit2);
+
+    if (!uUnit1.IsInDialogChat() || !uUnit2.IsInDialogChat()) {
+        FinishChatDialog(anChatDialogUID[i]);    
+        return;
+    }    
+    
+}
+
+//======================================
+// chair
+
+function void SetActivitySitting(int nUnit) {
+
+    SetExternalActivity(nUnit,eEActivitySitting);
+    SetActivity(nUnit,eActivitySitting);                                    
+    ResetActivityTimer(nUnit);
+
+}
+
+//======================================
+// bed
+
+function void SetActivitySleeping(int nUnit) {
+
+    SetExternalActivity(nUnit,eEActivitySleeping);
+    SetActivity(nUnit,eActivitySleeping);                                    
+    
+}
+
+//======================================
+
+function void SetRandomActivity(int nUnit) {
+
+    int nX, nY;
+    int nActivity;
+    int nDailyState;
+
+    nDailyState = GetDailyState(nUnit);
+
+    if (nDailyState == eRestingInTavern) {
+    
+        if (!IsUnitNearMarkerA(UNIT_ARRAY[nUnit],MARKER_TAVERN,MARKER_TAVERN_NUMBER,eRestingInTavernRangeA)) {
+    
+            GoToTavern(nUnit);
+            SetActivity(nUnit,eActivityWalking);
+            return;
+
+        }
+
+        nActivity = Rand(10);
+        if (nActivity < 3) SetActivityDoingNothing(nUnit);
+        else if (nActivity < 7) SetActivitySitting(nUnit);
+        else SetActivityDialog(nUnit);
+    
+    }    
+    
+    if (nDailyState == eRestingOutside) {
+    
+        nActivity = Rand(10);
+        if (nActivity < 3) SetActivityWalking(nUnit);
+        else if (nActivity < 6) SetActivityDialog(nUnit);
+        else if (nActivity < 9) SetActivitySitting(nUnit);
+        else SetActivityDoingNothing(nUnit);
+    
+    }
+
+     
+}
+
+//======================================
+
+function void UpdateWorking(int nUnit) {
+
+    int nX, nY, nZ;
+    int nAngle;
+    int nUnitType;
+    int nTavern;
+    unit uTavern;
+             
+    nUnitType = GetUnitType(nUnit);
+
+    if (GetActivity(nUnit) == eActivityDialog) {
+        UpdateActivityDialog(nUnit);
+//        if (IsActivityFinished(nUnit)) SetActivityWalking(nUnit);
+        return;
+    }    
+
+    SetActivity(nUnit,eActivityWorking);
+        
+    if (nUnitType == eUnitTypeWorkerStatic) {
+        
+        SetExternalActivity(nUnit,eEActivityControlledByTown);
+        if (!IsUnitNearMarkerA(UNIT_ARRAY[nUnit],MARKER_WORK,MARKER_WORK_NUMBER,eWorkerStaticRangeA)) MoveToMarker(UNIT_ARRAY[nUnit],MARKER_WORK,MARKER_WORK_NUMBER);
+    
+    }    
+    else if (nUnitType == eUnitTypeWorkerDynamic || nUnitType == eUnitTypeBartender || nUnitType == eUnitTypePlayer || nUnitType == eUnitTypeGuardStatic || nUnitType == eUnitTypeUnknown) {
+
+        SetExternalActivity(nUnit,eEActivityWorking);
+        
+    }            
+    else { // eUnitTypeCitizen, eUnitTypeGuardStatic2, eUnitTypeGuardDynamic, eUnitTypeUnknown
+    
+        SetExternalActivity(nUnit,eEActivityControlledByTown);
+    
+    }
+                            
+}
+
+function void UpdateSleeping(int nUnit) { 
+  
+    SetActivitySleeping(nUnit);
+          
+}
+
+function void UpdateResting(int nUnit) {
+
+    int nActivity;    
+    nActivity = GetActivity(nUnit);
+
+    if (IsShopNearHero(nUnit)) return;
+
+    if (nActivity == eActivitySitting) {
+        if (IsActivityFinished(nUnit)) SetActivityWalking(nUnit);
+        return;
+    }
+
+    SetExternalActivity(nUnit,eEActivityControlledByTown);
+
+    if (nActivity == eActivityDoingNothing) {
+        if (IsActivityFinished(nUnit)) SetRandomActivity(nUnit);
+        return;
+    }    
+    if (nActivity == eActivityStartingDialog) {
+        UpdateActivityStartingDialog(nUnit);
+        return;
+    }
+    if (nActivity == eActivityDialog) {
+        UpdateActivityDialog(nUnit);
+//        if (IsActivityFinished(nUnit)) SetActivityWalking(nUnit);
+        return;
+    }    
+    if (nActivity == eActivityWalking) {    
+        if (!UNIT_ARRAY[nUnit].IsMoving()) SetRandomActivity(nUnit);
+        return;
+    }    
+    
+    SetRandomActivity(nUnit);
+    
+}
+
+function void UpdateActivity(int nUnit) {
+
+    int nDailyState;
+    
+    ASSERT(UNIT_ARRAY[nUnit]);
+    nDailyState = GetDailyState(nUnit);
+
+    if (nDailyState == eWorking) UpdateWorking(nUnit);
+    if (nDailyState == eSleeping) UpdateSleeping(nUnit);
+    if (nDailyState == eRestingInTavern) UpdateResting(nUnit);
+    if (nDailyState == eRestingOutside) UpdateResting(nUnit);
+
+}
+
+//======================================
+
+#endif

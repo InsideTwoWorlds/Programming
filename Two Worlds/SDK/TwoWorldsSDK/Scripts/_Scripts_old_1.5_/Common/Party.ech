@@ -1,0 +1,96 @@
+#ifndef COMMON_PARTY_ECH
+#define COMMON_PARTY_ECH
+function void SetPartyEnemies(int a,int b)
+{
+    SetPartyEnemy(a,b);
+    SetPartyEnemy(b,a);
+}
+
+function void SetPartyEnemies(int a,int b, int c)
+{
+    int i;
+    for(i=b;i<=c;i++)
+        if(a != i) SetPartyEnemies(a, i);
+}
+
+function void InitalizePartyForTwoWorldsCampaign()
+{
+    int i,j;
+    /*
+    ePartyPlayer1 = 0;
+    ePartyPlayer2 = 1;
+    ePartyPlayer3 = 2;
+    ePartyPlayer4 = 3;
+    ePartyPlayer5 = 4;
+    ePartyPlayer6 = 5;
+    ePartyPlayer7 = 6;
+    ePartyPlayer8 = 7;
+    ePartyPlayer9 = 8;
+
+    ePartyPlayerEnemy1 = 9;
+    ePartyPlayerEnemy2 = 10;
+    ePartyPlayerEnemy3 = 11;
+    ePartyPlayerEnemy4 = 12;
+    ePartyPlayerEnemy5 = 13;
+    ePartyPlayerEnemy6 = 14;
+    ePartyPlayerEnemy7 = 15;
+    ePartyPlayerEnemy8 = 16;
+    ePartyPlayerEnemy9 = 17;
+
+    ePartyEnemies = 18;
+    ePartyAnimals = 18;
+    ePartyGreenskins = 19;
+    ePartyBandits = 20;
+    
+    ePartyUndead = 21;
+    ePartyTaintUndead = 22;
+    ePartyEvilWarriors = 23;
+    ePartyGhosts = 24;
+    
+    ePartyHumans = 25;  //general neutral NPC
+    ePartyCathalon = 26;     ePartyF7 = 26;
+    ePartyQudinaar = 27;     ePartyD8 = 27;
+    ePartyAshos = 28;        ePartyB10 = 28;
+    ePartyKomorin = 29;      ePartyE2 = 29;
+    ePartyKarga = 30;       ePartyF3 = 30;//dawne kilofy
+    ePartySkelden = 31;       ePartyE4 = 31;//dawne hammers clan
+    ePartyWindmill = 32;     ePartyD7 = 32;
+    ePartyCovenant = 33;     ePartyD2 = 33;
+    eParty4Stones = 34;      ePartyE6 = 34;
+    ePartyClovelly = 35;     ePartyC6 = 35;
+    ePartyOutpost = 36;      ePartyG1 = 36;
+    ePartyKehar = 37;        ePartyH8 = 37;
+    ePartySettlement = 38;   ePartyD4 = 38;
+    ePartyNecroVillage = 39; ePartyE11 = 39;
+    ePartyGorelin = 40;      ePartyD3 = 40;
+    ePartyRovan = 41;      ePartyD3_2 = 41;
+    ePartyTharbakin = 42;    ePartyE3 = 42;
+    ePartyLastVillage = 42;
+    
+    ePartyNeutralBandits = 43;
+  
+    */
+    
+    for(i=0;i<=8;i++) //gracze wrogami wrogow osobistych, zwierat undeadow itp.
+    {
+        SetPartyEnemies(ePartyPlayer1+i, ePartyPlayerEnemy1+i);
+        SetPartyEnemies(ePartyPlayer1+i, ePartyAnimals,ePartyGhosts);
+        SetPartyEnemies(ePartyPlayerEnemy1+i, ePartyAnimals,ePartyGhosts);
+    }
+    
+    for(i=ePartyHumans;i<=ePartyLastVillage;i++)// ludzie wrogami wszystkich zwierzat,greenskinów i undeadów
+    {
+        SetPartyEnemies(i, ePartyAnimals,ePartyGhosts);
+    }
+    
+    SetPartyEnemies(ePartyNeutralBandits, ePartyAnimals, ePartyGhosts);
+    
+    for(i=ePartyAnimals;i<=ePartyBandits;i++) //zwierzeta, greenskini,bandyci wrogamio undeadow
+    {
+        SetPartyEnemies(i, ePartyAnimals,ePartyGhosts);
+    }
+}
+
+
+#endif
+    

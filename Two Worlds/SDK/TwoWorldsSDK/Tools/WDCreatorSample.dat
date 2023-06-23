@@ -1,0 +1,50 @@
+#ifdef Sample
+<wdFile Sample.wd
+<align 2048
+
+//All game files available in D:\Games\TwoWorlds will be put into Sample.wd here
+
+//Editor.wd
+<add "D:\Games\TwoWorlds/Editor/>.*"
+
+//MeshCache.wd
+<add "D:\Games\TwoWorlds/_MeshCache_/>.*"
+
+//Parameters.wd
+<add "D:\Games\TwoWorlds/Parameters/*.par"
+<add "D:\Games\TwoWorlds/Parameters/*.dat"
+<add <text "D:\Games\TwoWorlds/Parameters/*.txt"
+<add <text "D:\Games\TwoWorlds/Parameters/*.con"
+
+//Scripts.wd
+<add <archive "D:\Games\TwoWorlds/Scripts/>.eco"
+<add <text "D:\Games\TwoWorlds/Scripts/>.txt"
+<add <text "D:\Games\TwoWorlds/Scripts/>.qtx"
+
+//Graphics.wd
+<add "D:\Games\TwoWorlds/Models/>.*"
+<add "D:\Games\TwoWorlds/Scalers/>.*"
+<add "D:\Games\TwoWorlds/Physic/>.*"
+<add "D:\Games\TwoWorlds/Particles/>*.prt"
+<add "D:\Games\TwoWorlds/Textures/>.*"
+
+//Interface.wd
+<add "D:\Games\TwoWorlds/Interface/>.*"
+<add "D:\Games\TwoWorlds/Fonts/>.*"
+
+//Levels.wd
+<add "D:\Games\TwoWorlds/Levels/*.lhc"
+<add "D:\Games\TwoWorlds/CameraTracks/>.*"
+<add "D:\Games\TwoWorlds/Editor/WorldConf/*.*"
+<add "D:\Games\TwoWorlds/Levels/*.hor"
+<add <text "D:\Games\TwoWorlds/Levels/*.cfg"
+<add <text "D:\Games\TwoWorlds/Levels/*.tga"
+<add <archive "D:\Games\TwoWorlds/Levels/*.lnd"
+<add "D:\Games\TwoWorlds/Levels/MipMaps/*.dds"
+<add <store "D:\Games\TwoWorlds/Levels/physic/*.phx"
+
+//Shaders.wd
+<add "D:\Games\TwoWorlds/efx/>.*"
+<add "D:\Games\TwoWorlds/_ShadersCache_/>.SHC"
+
+#endif

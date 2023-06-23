@@ -1,0 +1,4 @@
+editor.cookphysx.mode geomipmap
+editor.cookphysx.strength = 1.0
+editor.cookphysx.overwrite = 1
+editor.cookphysx.pc out

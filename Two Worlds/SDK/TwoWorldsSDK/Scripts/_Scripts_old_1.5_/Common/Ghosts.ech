@@ -1,0 +1,528 @@
+#ifndef COMMON_GHOSTS_ECH
+#define COMMON_GHOSTS_ECH
+
+//======================================
+
+#define FX_CREATE_GHOST "GHOST_IN"
+#define FX_KILL_GHOST   "GHOST_OUT"
+
+//#define GHOSTS_DEBUG
+
+consts {
+
+    eGhostMarkerRangeA = 16;
+
+    eFirstGhost       = 0;
+    eGhostBear        = 1;
+    eGhostBoar        = 2;
+    eGhostWolf        = 3;
+    eGhostDaemon      = 4;   
+    eGhostGoblin      = 5;
+    eGhostInsect      = 6;
+    eGhostLizardman   = 7;
+    eGhostMantis      = 8;
+    eGhostReptile     = 9;
+    eGhostSpider      = 10;
+    eGhostYeti        = 11;
+    eGhostZombie      = 12;    
+    eGhostSkeleton    = 13;
+    eGhostMinion      = 14;
+    eGhostHellWarrior = 15;
+    eGhostSeaGuy      = 16;    
+    eGhostInsectGuy   = 17;   
+    eGhostJackal      = 18; 
+    eGhostNecro       = 19;
+    eGhostHellmaster  = 20;
+    eGhostDeadKnight  = 21;
+    eGhostDwarf       = 22;
+    eGhostOgr         = 23;
+    eGhostCyclope     = 24;
+    eGhostHideous     = 25;
+    eGhostMummy       = 26;    
+    eGhostGhoul       = 27;    
+    eGhostVyvern      = 28;
+    eLastGhost        = 29;
+
+}
+
+string astrGhostMarker[eLastGhost];
+
+//======================================
+
+function void InitializeGhosts() {
+
+    astrGhostMarker[eGhostBear] = "MARKER_ENEMY_G_MO_BEAR_01";
+    astrGhostMarker[eGhostBoar] = "MARKER_ENEMY_G_MO_BOAR_01";
+    astrGhostMarker[eGhostWolf] = "MARKER_ENEMY_G_MO_WOLF_01";
+    astrGhostMarker[eGhostDaemon] = "MARKER_ENEMY_G_MO_DAEMON_01_1";
+    astrGhostMarker[eGhostGoblin] = "MARKER_ENEMY_G_GOBLIN_01";
+    astrGhostMarker[eGhostInsect] = "MARKER_ENEMY_G_MO_SCORPIO_01";
+    astrGhostMarker[eGhostLizardman] = "MARKER_ENEMY_G_MO_SNAKE_01";
+    astrGhostMarker[eGhostMantis] = "MARKER_ENEMY_G_MO_MANTIS_01";
+    astrGhostMarker[eGhostReptile] = "MARKER_ENEMY_G_MO_RAPTOR_01_1";
+    astrGhostMarker[eGhostSpider] = "MARKER_ENEMY_G_MO_SPIDER_01";
+    astrGhostMarker[eGhostYeti] = "MARKER_ENEMY_G_MO_YETI_01_1";
+    astrGhostMarker[eGhostZombie] = "MARKER_ENEMY_G_MO_ZOMBIE_01";
+    astrGhostMarker[eGhostSkeleton] = "MARKER_ENEMY_G_SKELETON_01";
+    astrGhostMarker[eGhostMinion] = "MARKER_ENEMY_G_MINION_01";
+    astrGhostMarker[eGhostHellWarrior] = "MARKER_ENEMY_G_HELLWARIOR";
+    astrGhostMarker[eGhostSeaGuy] = "MARKER_ENEMY_G_SEAGUY_01";
+    astrGhostMarker[eGhostInsectGuy] = "MARKER_ENEMY_G_INSECTGUY_01";
+    astrGhostMarker[eGhostJackal] = "MARKER_ENEMY_G_JACKAL_01";
+    astrGhostMarker[eGhostNecro] = "MARKER_ENEMY_G_NECRO_01";
+    astrGhostMarker[eGhostHellmaster] = "MARKER_ENEMY_G_HELLMASTER_01";
+    astrGhostMarker[eGhostDeadKnight] = "MARKER_ENEMY_G_DEADKNIGHT_01";
+    astrGhostMarker[eGhostDwarf] = "MARKER_ENEMY_G_DWARF_01";
+    astrGhostMarker[eGhostOgr] = "MARKER_ENEMY_G_MO_OGR";
+    astrGhostMarker[eGhostCyclope] = "MARKER_ENEMY_G_MO_CYCLOPE";
+    astrGhostMarker[eGhostHideous] = "MARKER_ENEMY_G_MO_HIDEOUS_01";
+    astrGhostMarker[eGhostMummy] = "MARKER_ENEMY_G_MO_MUMMY_01";
+    astrGhostMarker[eGhostGhoul] = "MARKER_ENEMY_G_MO_GHOUL_01";
+    astrGhostMarker[eGhostVyvern] = "MARKER_ENEMY_G_MO_VYVERN_01";
+
+}
+
+//======================================
+
+function int GetGhostLevel(int nBaseLevel, int nAddToLevel, int nMin, int nMax) {
+
+    nBaseLevel += nAddToLevel;
+    if (nBaseLevel < nMin) return nMin;
+    if (nBaseLevel > nMax) return nMax;
+    return nBaseLevel;
+
+}
+
+//======================================
+
+function string GetGhostCreateString(int nGhostClass) {
+
+    string str;
+    int nLevel;
+
+    nLevel = GetHeroesAvgLevel();
+
+    if (nGhostClass == eGhostBear) 
+    {
+        str.Format("G_MO_BEAR_01(%d)",GetGhostLevel(nLevel,2,7,12));            
+    }
+    else if (nGhostClass == eGhostBoar) 
+    {
+        str.Format("G_MO_BOAR_01(%d)",GetGhostLevel(nLevel,1,2,8));                
+    }
+    else if (nGhostClass == eGhostWolf) 
+    {
+        str.Format("G_MO_WOLF_01(%d)",GetGhostLevel(nLevel,0,1,4));                
+    }
+    else if (nGhostClass == eGhostDaemon) 
+    {
+        str.Format("G_MO_DAEMON_0%d_1(%d)",1+Rand(3),GetGhostLevel(nLevel,0,20,30));                
+    }
+    else if (nGhostClass == eGhostGoblin) 
+    {
+        if (Rand(2)) str.Format("G_GOBLIN_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,6,10));
+        else str.Format("G_GOBLIN_02_02(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,2,4));
+    }
+    else if (nGhostClass == eGhostInsect) 
+    {
+        str.Format("G_MO_SCORPIO_01(%d)",GetGhostLevel(nLevel,0,20,25));                        
+    }
+    else if (nGhostClass == eGhostLizardman) 
+    {
+        str.Format("G_MO_SNAKE_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,25,25));                        
+    }
+    else if (nGhostClass == eGhostMantis) 
+    {
+        str.Format("G_MO_MANTIS_01(%d)",GetGhostLevel(nLevel,0,10,25));        
+    }
+    else if (nGhostClass == eGhostReptile) 
+    {
+        str.Format("G_MO_RAPTOR_0%d_1(%d)",1+Rand(4),GetGhostLevel(nLevel,0,10,15));
+    }
+    else if (nGhostClass == eGhostSpider) 
+    {
+        str.Format("G_MO_SPIDER_01(%d)",GetGhostLevel(nLevel,0,5,20));                        
+    }
+    else if (nGhostClass == eGhostYeti) 
+    {
+        str.Format("G_MO_YETI_01_1(%d)",GetGhostLevel(nLevel,0,15,20));                        
+    }
+    else if (nGhostClass == eGhostZombie) 
+    {
+        str.Format("G_MO_ZOMBIE_0%d(%d)",1+Rand(3),GetGhostLevel(nLevel,0,5,12));                        
+    }
+    else if (nGhostClass == eGhostSkeleton) 
+    {
+        str.Format("G_SKELETON_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,3,10));                        
+    }
+    else if (nGhostClass == eGhostMinion) 
+    {
+        str.Format("G_MINION_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,20,25));                        
+    }
+    else if (nGhostClass == eGhostHellWarrior) 
+    {
+        str.Format("G_HELLWARIOR(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,20,25));                        
+    }
+    else if (nGhostClass == eGhostSeaGuy) 
+    {
+        str.Format("G_SEAGUY_0%d(%d)#WP_SWORD_0(1,0,1)",1+Rand(4),GetGhostLevel(nLevel,0,8,20));                        
+    }
+    else if (nGhostClass == eGhostInsectGuy) 
+    {
+        str.Format("G_INSECTGUY_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,10,20));                        
+    }
+    else if (nGhostClass == eGhostJackal) 
+    {
+        str.Format("G_JACKAL_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,15,20));                        
+    }
+    else if (nGhostClass == eGhostNecro) 
+    {
+        str.Format("G_NECRO_0%d(%d)#WP_SWORD_0(1,0,1)",1+Rand(2),GetGhostLevel(nLevel,0,15,40));                        
+    }
+    else if (nGhostClass == eGhostHellmaster) 
+    {
+        str.Format("G_HELLMASTER_0%d(%d)#WP_SWORD_0(1,0,1)",1+Rand(2),GetGhostLevel(nLevel,0,30,40));                        
+    }
+    else if (nGhostClass == eGhostDeadKnight) 
+    {
+        str.Format("G_DEADKNIGHT_0%d(%d)#WP_SWORD_0(1,0,1)",1+Rand(5),GetGhostLevel(nLevel,0,15,40));                        
+    }
+    else if (nGhostClass == eGhostDwarf) 
+    {
+        str.Format("G_DWARF_01(%d)#WP_SWORD_0(1,0,1)",GetGhostLevel(nLevel,0,6,10));                        
+    }
+    else if (nGhostClass == eGhostOgr) 
+    {
+        str.Format("G_MO_OGR(%d)",GetGhostLevel(nLevel,0,15,20));                        
+    }
+    else if (nGhostClass == eGhostCyclope) 
+    {
+        str.Format("G_MO_CYCLOPE(%d)",GetGhostLevel(nLevel,0,30,35));                        
+    }
+    else if (nGhostClass == eGhostHideous) 
+    {
+        str.Format("G_MO_HIDEOUS_01(%d)",GetGhostLevel(nLevel,0,25,35));                        
+    }
+    else if (nGhostClass == eGhostMummy) 
+    {
+        str.Format("G_MO_MUMMY_01(%d)",GetGhostLevel(nLevel,0,25,35));                        
+    }
+    else if (nGhostClass == eGhostGhoul) 
+    {
+        str.Format("G_MO_GHOUL_01(%d)",GetGhostLevel(nLevel,0,6,10));                        
+    }
+    else if (nGhostClass == eGhostVyvern) 
+    {
+        str.Format("G_MO_VYVERN_01(%d)",GetGhostLevel(nLevel,0,10,25));                        
+    }
+    else {
+        __ASSERT_FALSE();
+    }
+    
+    return str;
+
+}
+
+//======================================
+
+function void RemoveGhost(unit uUnit)
+{
+    int i,nX,nY;
+    mission pMission;
+    uUnit.GetAttribute("EnemyClass",i);    
+    if(i==eGhost || i==eGhostDwarfEnemy)
+    {
+        pMission=uUnit.GetMission();
+        uUnit.GetLocation(nX,nY);
+        pMission.CreateObject(FX_KILL_GHOST,nX,nY,0, 0);
+        uUnit.RemoveObject();
+    }
+}
+
+//======================================
+
+function void AddGhostMarker(mission pMission, int nGhost, int nNum, int nRand, int nX, int nY) {
+
+    int i;
+    int nFirst;
+    int nTargetX;
+    int nTargetY;
+        
+    nNum += Rand(1 + nRand);
+    nNum=1;//XXXMD changed in patch 1 only one ghost per marker.  It was too much ghosts in the game.
+    nFirst = pMission.GetMaxMarkerNum(astrGhostMarker[nGhost]);
+    if (nFirst == -1) nFirst = 0;
+    for (i = 1; i <= nNum; i++) {
+        nTargetX = nX + Rand(eGhostMarkerRangeA) - (eGhostMarkerRangeA >> 1);
+        nTargetY = nY + Rand(eGhostMarkerRangeA) - (eGhostMarkerRangeA >> 1);
+        pMission.AddMarker(astrGhostMarker[nGhost],nFirst + i,nTargetX,nTargetY,0,0,"");    
+#ifdef GHOSTS_DEBUG
+        TRACE("Ghost marker added: %s %d                  \n",astrGhostMarker[nGhost],nFirst + i);
+#endif        
+    }
+
+}
+
+function void AddGhostMarkers(mission pMission, int nEnemyClass, int nX, int nY, int nQuantityFactor) {
+
+    int n;
+
+    if (nEnemyClass == eClassAnimal || nEnemyClass == eClassAnimal2) {
+        n = Rand(3);
+        if (n == 0) AddGhostMarker(pMission,eGhostBear,1,0,nX,nY);    
+        if (n == 1) AddGhostMarker(pMission,eGhostBoar,1,3,nX,nY);    
+        if (n == 2) AddGhostMarker(pMission,eGhostWolf,2,2,nX,nY);    
+    }
+    else if (nEnemyClass == eClassDaemon || nEnemyClass == eClassDaemon2 || nEnemyClass == eClassDaemon3) {
+        AddGhostMarker(pMission,eGhostDaemon,1,0,nX,nY);
+    }
+    else if (nEnemyClass == eClassGoblin || nEnemyClass == eClassGoblin2) {
+        AddGhostMarker(pMission,eGhostGoblin,2,2,nX,nY);    
+    }
+    else if (nEnemyClass == eClassInsect) {
+        AddGhostMarker(pMission,eGhostInsect,1,1,nX,nY);    
+    }
+    else if (nEnemyClass == eClassLizardman) {
+        AddGhostMarker(pMission,eGhostLizardman,1,3,nX,nY);    
+    }
+    else if (nEnemyClass == eClassMantis) {
+        AddGhostMarker(pMission,eGhostMantis,1,3,nX,nY);        
+    }
+    else if (nEnemyClass == eClassReptile || nEnemyClass == eClassReptile2 || nEnemyClass == eClassReptile3 || nEnemyClass == eClassReptile4) {
+        AddGhostMarker(pMission,eGhostReptile,1,4,nX,nY);        
+    }
+    else if (nEnemyClass == eClassSpider) {    
+        AddGhostMarker(pMission,eGhostSpider,1,0,nX,nY);    
+    }
+    else if (nEnemyClass == eClassYeti) {
+        AddGhostMarker(pMission,eGhostYeti,1,0,nX,nY);        
+    }
+    else if (nEnemyClass == eClassZombie || nEnemyClass == eClassZombie2 || nEnemyClass == eClassZombie3) {
+        AddGhostMarker(pMission,eGhostZombie,2,3,nX,nY);        
+    }
+    else if (nEnemyClass == eClassSkeleton || nEnemyClass == eClassSkeleton2 || nEnemyClass == eClassSkeleton3) {
+        AddGhostMarker(pMission,eGhostSkeleton,2,1,nX,nY);        
+    }
+    else if (nEnemyClass == eClassMinion) {
+        AddGhostMarker(pMission,eGhostMinion,1,1,nX,nY);
+        AddGhostMarker(pMission,eGhostHellWarrior,1,0,nX,nY);
+    }
+    else if (nEnemyClass == eClassSeaGuy) {
+        AddGhostMarker(pMission,eGhostSeaGuy,2,2,nX,nY);    
+    }
+    else if (nEnemyClass == eClassInsectGuy) {
+        AddGhostMarker(pMission,eGhostInsectGuy,2,2,nX,nY);            
+    }
+    else if (nEnemyClass == eClassJackal) {
+        AddGhostMarker(pMission,eGhostJackal,2,2,nX,nY);            
+    }
+    else if (nEnemyClass == eClassNecro) {
+        AddGhostMarker(pMission,eGhostNecro,2,4,nX,nY);            
+    }
+    else if (nEnemyClass == eClassHellmaster) {
+        AddGhostMarker(pMission,eGhostHellmaster,1,3,nX,nY);            
+    }
+    else if (nEnemyClass == eClassDeadKnight) {
+        AddGhostMarker(pMission,eGhostDeadKnight,1,3,nX,nY);            
+    }
+    else if (nEnemyClass == eClassDwarf) {
+        if (nQuantityFactor) AddGhostMarker(pMission,eGhostDwarf,nQuantityFactor,0,nX,nY);            
+        else AddGhostMarker(pMission,eGhostDwarf,2,4,nX,nY);            
+    }
+    else if (nEnemyClass == eClassOgr) {
+        AddGhostMarker(pMission,eGhostOgr,1,0,nX,nY);            
+    }
+    else if (nEnemyClass == eClassCyclope) {
+        AddGhostMarker(pMission,eGhostCyclope,1,0,nX,nY);            
+    }
+    else if (nEnemyClass == eClassHideous) {
+        AddGhostMarker(pMission,eGhostHideous,1,2,nX,nY);            
+    }
+    else if (nEnemyClass == eClassMummy) {
+        AddGhostMarker(pMission,eGhostMummy,1,3,nX,nY);            
+    }
+    else if (nEnemyClass == eClassUndead) {
+        AddGhostMarker(pMission,eGhostGhoul,1,3,nX,nY);            
+    }
+    else if (nEnemyClass == eClassVyvern1 || nEnemyClass == eClassVyvern2 || nEnemyClass == eClassVyvern3 || nEnemyClass == eClassVyvern4) {
+        AddGhostMarker(pMission,eGhostVyvern,1,2,nX,nY);            
+    }
+
+}
+
+function void AddGhostMarkers(mission pMission, int nX, int nY, int nEnemyClass) {
+
+    AddGhostMarkers(pMission,nX,nY,nEnemyClass,0);
+
+}
+
+function void RemoveGhostMarker(unit uKilled) {
+
+    int n;
+    int nMarker;
+    string strMarker;
+    mission pMission;
+    
+    uKilled.GetAttribute("EnemyClass",n);
+    if (n != eGhost) return;
+    
+    n = GetBaseMarker(uKilled);
+    nMarker = GetMarkerNumberFromBaseMarker(n);
+    strMarker = astrGhostMarker[GetEnemyClassFromBaseMarker(n)];
+    
+    if (nMarker == 0) return;   
+    
+    pMission = uKilled.GetMission();
+    if (pMission.HaveMarker(strMarker,nMarker)) {
+        pMission.RemoveMarker(strMarker,nMarker);
+#ifdef GHOSTS_DEBUG
+     TRACE("%s %d removed              \n",strMarker,nMarker);    
+#endif     
+    }    
+    
+}
+
+//======================================
+
+function void CreateGhosts(mission pMission, int nGhosts) {
+
+    int i, nMaxNum;
+    int nX, nY;
+    string str;
+    unit uUnit;
+
+    nGhosts += 1;
+    pMission.SetAttribute("Ghosts",nGhosts);
+
+    if (nGhosts == eLastGhost) return;
+
+#ifdef GHOSTS_DEBUG
+    TRACE("Creating Ghosts %d            \n",nGhosts);
+#endif
+    
+    nMaxNum = pMission.GetMaxMarkerNum(astrGhostMarker[nGhosts]);
+    for (i = 1; i <= nMaxNum; i++)
+        if (pMission.GetMarker(astrGhostMarker[nGhosts],i,nX,nY)) {
+            str = GetGhostCreateString(nGhosts);
+#ifdef GHOSTS_DEBUG
+            TRACE("Creating on %s %d: %s                       \n",astrGhostMarker[nGhosts],i,str);
+#endif
+            pMission.CreateObject(FX_CREATE_GHOST,nX,nY,0,Rand(255));
+            uUnit = pMission.CreateObject(str,nX,nY,0,Rand(255));        
+            if (uUnit) {
+                uUnit.SetPartyNum(ePartyGhosts);
+                uUnit.SetRemoveOnUnloadLevel(true);
+                uUnit.SetAttribute("EnemyClass",eGhost);    
+                SetBaseMarker(uUnit,nGhosts,i);                                        
+                uUnit.CommandUserOneParam0(true);
+                uUnit.UpdateChangedUnitValues();
+             }
+         }
+
+
+}
+
+function void RemoveGhosts(mission pMission) {
+
+    int i;
+    int count;
+    unit uUnit;
+
+#ifdef GHOSTS_DEBUG
+    TRACE("RemoveGhosts                 \n");
+#endif
+
+    pMission.SearchUnitsInArea(G2A(64),G2A(64),G2A(128),GetSinglePartyArray(ePartyGhosts));
+    count = pMission.GetSearchUnitsInAreaCount();
+    for (i = 0; i < count; i++) {
+        uUnit = pMission.GetSearchUnitInArea(i);
+        ASSERT(uUnit != null);
+        uUnit.KillObject();
+    }
+    pMission.ClearSearchUnitsInAreaArray();
+
+    pMission.SetAttribute("Ghosts",eFirstGhost);
+           
+}
+
+function void ResetGhostsCreated(mission pMission) {
+
+    pMission.SetAttribute("Ghosts",eFirstGhost);
+
+}
+
+function int ProcessGhosts(mission pMission) {
+
+    int nTime;
+    int nGhosts;
+    
+    nGhosts = eFirstGhost;
+    pMission.GetAttribute("Ghosts",nGhosts);
+    nTime = GetCampaign().GetDayTime();
+    
+    if (nTime > 18 && nTime < 240) {//dzien
+        if (nGhosts > eFirstGhost) RemoveGhosts(pMission);
+    }  
+    else {
+        if (nGhosts < eLastGhost) {
+            CreateGhosts(pMission,nGhosts);    
+            return true;
+        }
+    }
+        
+    return false;        
+        
+}
+
+//======================================
+/*
+G_SKELETON_01
+G_MO_SNAKE_01
+G_MO_OGR
+G_MO_CYCLOPE
+G_MO_DAEMON_01_1
+G_MO_DAEMON_02_1
+G_MO_DAEMON_03_1
+G_MO_ZOMBIE_01
+G_MO_ZOMBIE_02
+G_MO_ZOMBIE_03
+G_MO_HIDEOUS_01
+G_MO_MUMMY_01
+G_MO_GHOUL_01
+G_MO_YETI_01_1
+G_MO_VYVERN_01
+G_MO_MANTIS_01
+G_MO_SCORPIO_01
+G_MO_SPIDER_01
+G_MO_RAPTOR_01_1
+G_MO_RAPTOR_02_1
+G_MO_RAPTOR_03_1
+G_MO_RAPTOR_04_1
+G_MO_BOAR_01
+G_MO_BEAR_01
+G_MO_WOLF_01
+G_GOBLIN_01
+G_GOBLIN_02_02
+G_MINION_01
+G_INSECTGUY_01
+G_JACKAL_01
+G_SEAGUY_01
+G_SEAGUY_02
+G_SEAGUY_03
+G_SEAGUY_04
+G_NECRO_01
+G_NECRO_02
+G_HELLMASTER_01
+G_HELLMASTER_02
+G_HELLWARIOR
+G_DEADKNIGHT_01
+G_DEADKNIGHT_02
+G_DEADKNIGHT_03
+G_DEADKNIGHT_04
+G_DEADKNIGHT_05
+G_DWARF_01
+
+*/
+//======================================
+
+#endif

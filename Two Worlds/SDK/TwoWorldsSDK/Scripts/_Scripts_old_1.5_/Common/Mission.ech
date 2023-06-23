@@ -1,0 +1,56 @@
+#include "Quest.ech"
+
+
+function int IsUnitNearMarker(unit uUnit, string strMarker, int nMarkerNum, int nRangeG);
+function int IsUnitNearMarker(unit uUnit, int nMarkerNum, int nRangeG);
+function int IsHeroNearMarker(int nMarkerNum, int nRangeG);
+function unit CreateObjectAtMarker(string strObject,string strMarker, int nMarker,int nOffsetX, int nOffsetY, int nAngle);
+function unit CreateObjectAtMarker(string strObject,string strMarker, int nMarker,int nOffsetX, int nOffsetY);
+function unit CreateObjectAtMarker(string strObject, int nMarker);
+
+//===========================================================================================
+function void OpenGate(int nMarker,int bImmediately)
+{
+    OpenGate(GetThis(), nMarker,bImmediately);
+}
+//===========================================================================================
+function void CloseGate(int nMarker,int bImmediately)
+{
+    CloseGate(GetThis(), nMarker,bImmediately);
+}
+
+//===========================================================================================
+function int IsUnitNearMarker(unit uUnit, string strMarker, int nMarkerNum, int nRangeG)
+{
+    mission pMission;
+    pMission = GetThis();
+    return IsUnitNearMarker(pMission, uUnit, strMarker, nMarkerNum, nRangeG);
+}
+
+function int IsUnitNearMarker(unit uUnit, int nMarkerNum, int nRangeG)
+{
+    return IsUnitNearMarker(uUnit, DEFAULT_MARKER, nMarkerNum, nRangeG);   
+}
+
+function int IsHeroNearMarker(int nMarkerNum, int nRangeG)
+{
+    return IsUnitNearMarker(GetCampaign().GetPlayerHeroUnit(0), nMarkerNum, nRangeG);   
+}
+
+//===========================================================================================
+
+function unit CreateObjectAtMarker(string strObject,string strMarker, int nMarker,int nOffsetX, int nOffsetY, int nAngle)
+{
+    mission pMission;
+    pMission = GetThis();
+    return CreateObjectAtMarker(pMission,strObject,strMarker, nMarker,nOffsetX, nOffsetY, nAngle);
+}
+function unit CreateObjectAtMarker(string strObject,string strMarker, int nMarker,int nOffsetX, int nOffsetY)
+{
+    return CreateObjectAtMarker(strObject,strMarker, nMarker,nOffsetX, nOffsetY, Rand(255));
+}
+function unit CreateObjectAtMarker(string strObject, int nMarker)
+{
+    return CreateObjectAtMarker(strObject, DEFAULT_MARKER, nMarker, 0,0);
+}
+//===========================================================================================

@@ -1,0 +1,298 @@
+[editor.foreachlevel] editor.TraceUsedObjects output.txt [objectID]
+
+editor.setlevelsize Level.lnd newWidth newHeight offsetDx offsetDy NewLevel.lnd
+editor.setlevelsize Net_P_01.lnd 128 128 16 16 Net_P_01new.lnd
+
+editor.SaveAllLevelsToTexture layer mode output.tga fillColor ORcolor/fillLockedColor tex texColor texMinAlpa tex2 tex2Color tex2MinAlpha ...
+  editor.SaveAllLevelsToTexture 0 0 WorldRoads.tga 0x00000000 0 terrains\texture_01.dds 0xFFFFFFFF 120
+  editor.SaveAllLevelsToTexture 1 1 WorldUndergroundColors.tga 0x00000000 0xFFFFFFFF
+  editor.SaveAllLevelsToTexture 1 2 WorldUndergroundLocked.tga 0x00000000 0xFFFFFFFF
+  editor.SaveAllLevelsToTexture 1 3 WorldUndergroundNotLocked.tga 0x00000000 0xFFFFFFFF
+
+
+Editor.ReplaceTexSet terrains\Texture_28.dds terrains\Texture_03.dds ( old new) {Editor.ReplaceTexSet "terrains\Texture_04 copy.dds" terrains\Texture_04.dds}
+
+editor.BuildInsideHouseObjectsDef
+editor.WriteInsideHouseObjectsDef file.txt
+editor.LoadInsideHouseObjectsDef file.txt
+editor.ClearObjectsInsideHouse
+editor.CreateObjectsInsideHouseFromDef
+
+
+Editor.SetDrawMapMarkers MARKER_ENEMY_* 0xFFFF0000 MARKER_B_WOODCUT 0xFFFFFF00 .... 
+Editor.SetDrawMapMarkers x - turn off
+editor.MapMarkerSize 2 
+
+Editor.SetDrawMapObjects OBJ_ID_* 0xFFFF0000 ....
+Editor.SetDrawMapObjects x
+Editor.UpdateDrawMapObjects
+
+Editor.IncPlaneHeight
+Editor.IncAngle
+
+Editor.SetMissingObjectMarkersNumbers
+Editor.DeleteBadMarkers
+Editor.DeleteBadObjectMarkers markerID
+
+ParticleEdit.PrintUsedFiles -> Z:\Game\ParticleEditUsedFiles.txt
+
+Editor.FixupTextureEdges -- 
+
+Editor.LoadObjectsForConnectedLevel 0/1
+Editor.LockVertexesWithConnectedLevel size
+Editor.CopyAltitudeFromConnected size mode(0/1/2/3)
+  Mode: 0 - flat, 1 - mirror, 2 - mirror inverted, 3 - linear approx.
+Editor.ClearLockedVertexes
+Editor.CopyEdgeFromConnected - copy last additional vertex line from right/upper edge of connected level
+
+
+////// Altitudes
+
+Editor.LoadBmp file.bmp factor
+  file.bmp - from directory game\Editor\Heightmaps, grayscale, bmp size <= 4*level size
+  factor - multiply of height scale (multiply by difference between highest and lowest color)
+
+editor.LoadRaw filename.raw BitsCnt HeaderSize TotalSizeX TotalSizeY StartX StartY StartAltitudeG HeightScaleG
+  filename.raw - raw heightmap from directory game\Editor\Heightmaps
+  BitsCnt - (8/16)
+  HeaderSize - raw header size (0)
+  TotalSizeX,Y - total raw size
+  StartX,Y - from which raw pixel have to copy
+  StartAltitudeG - mimimum height in grids (def. 16) (height of black pixel)
+  HeightScaleG - height scale (white pixel height: StartAltitudeG + HeightScaleG)
+  (waring: StartAltitudeG >= 2; StartAltitudeG + HeightScaleG < 128)
+  fe.:
+  editor.loadraw 3a.raw 16 0 513 513 0 0 16 10
+
+
+Editor.SetSquareAltitudesAverage avrgRange factor - flattening
+  avrgRange - range of calculating flattening (0,1,...)
+  factor - flattening multiply (0.5, 1, ...)
+  fe:
+  Editor.MakeAverageAltitude 2 1
+
+Editor.saveRaw filename.raw BitsCnt HeaderSize(0) TotalSizeX TotalSizeY StartX StartY StartAltitudeG HeightScaleG
+  fe.
+  Editor.saveRaw  Map_C01.raw 16 0 512 512 0 0 0 1  (
+
+///////// Textures
+
+Editor.TextureFromBitmapEx GENtexture.bmp 1024 2048 
+  terrain texturing from bmp, 1024 2048- start x, start y
+
+Editor.LockTexture 7 1 
+  texture locking textura 1- locked, 0 - unlocked
+
+
+Editor.foreachlevel @edtex.txt
+
+edtex.txt:
+Editor.LoadRightConnectedLevel
+Editor.LoadBottomConnectedLevel
+Editor.CopyEdgeFromConnected
+Editor.CopyColorFromConnected
+Editor.CleanupInvisibleTextures 1
+Editor.CopyTexturesFromConnected
+Editor.SaveAllLevels
+
+
+////// Underground
+
+//at begin:
+Editor.foreachundergroundlevel Editor.FillWorldWithColor 0xFFFFFFFF 
+
+Editor.foreachundergroundlevel @edundgr.txt
+
+edundgr.txt:
+Editor.ReplaceColor 0xFF000000 0xFFFFFFFF
+editor.LabelNotDisabledPassableFromMarkers MARKER_TELEPORT_DEST_FROMUPPER MARKER_TELEPORT_DEST_FROMLOWER
+Editor.ReplaceColorOnDisabledTerrain 0xFFFFFFFF 0xFF000000 4
+editor.savelevel
+
+
+//Editor.ClearDisabled
+//Editor.foreachsurfacelevel 
+//Editor.foreachundergroundlevel 
+
+//editor.deletebadmarkers
+
+
+===============================================================================
+---------------------------------Grass----------------------------------------
+===============================================================================
+
+Editor.ClampGrassToLimit 1 0.5 // grass clamp to limit; [1 - 8] grass number, 0.0 1.0 -> limit
+
+/// remove traw from texture
+Editor.RemoveGrassWhereTexture texture grass respect_texture_alpha
+Editor.RemoveGrassWhereTexture 5 1 1
+
+Editor.BlurGrass grass_number blur_steps
+Editor.BlurGrass -1 10
+
+  grass from 1 not from 0 !!!
+  (-1 means all grasses)
+
+editor.AddGrassOnTexture texNum minTexAlpha grassNum grassQuantity multiplyGrassTexAlpha
+  add/remove grass - like paiting grass in editor
+  texNum - texture number
+  minTexAlpha - 1 do 255 - minimum texture alpha
+  grassNum - grass number - from 1
+  grassQuantity - float - od -1.0 do 1.0 (< 0 - decreasing)
+  multiplyGrassTexAlpha - 0/1 - do multiply grassQuantity by teksture alpha?
+
+editor.ReplaceGrass oldNum newNum
+
+editor.setgrasstexture 8 grasses/fern.dds
+
+Editor.RemoveGrassWhereWater
+
+
+===============================================================================
+---------------------------------Objects----------------------------------------
+===============================================================================
+
+editor.DeleteMArker ID min max
+Editor.DeleteBadObjectMarkers ID
+
+editor.SetCreateRect left top right bottom [MinZ MaxZ]
+  set area for function below
+
+editor.SetCreateMinMaxZ MinZ MaxZ 
+  set z' range for function below (0 0 - no limit)
+  (can be float: editor.SetCreateMinMaxZ 10 30.5)
+
+editor.CreateObjectsOnArea objectID count minRange [standMask]
+  count == 0 -> defining minRange for objectID
+  standMask: 0x100 - box to lowest ground
+           0x7 - glue to ground
+
+editor.ResetCreateObjectsOnArea
+  reseting createRect & Min/MaxZ
+
+Editor.DeleteAllObjects objectID
+
+editor.DeleteObjectsOnArea objectID count
+  count - number to remove or -1: all
+  objectID - can be:
+   NULL - all objects
+   Created - defined by CreateObjectsOnArea
+
+editor.CreateObjectsNearObjectsOnArea objectID nearObjectID count minRange maxRange [standMask]
+  min/maxRange - if > 32 then "small" coordinates
+
+editor.SetTextureOnObjects objectID texNum count fullRange maxRange
+  count - number to paint or -1: all
+  fullRange - full alpha up to this range
+  maxRange - zero alpha on this range
+  range - if > 32 then "small" coordinates
+
+editor.AddCreateObjectsLockedTexture texNum minTexAlpha
+  - editor.CreateObjects will not create objects on texNum texture
+  - minTexAlpha - min. texture alpha
+  editor.AddCreateObjectsLockedTexture clear - clear above
+
+Editor.SetCreateObjectsOnType bCreateOnWater bCreateOnObjects bCreateOnWalkableObjects bCreateInsideHouses bCreateOnNotPassableTerrain bCreateUnitOnNotWalkableSurface
+
+
+--------------------------------------------------------------------------
+Editor.ReplaceObject old new
+-------------------------------------------------------------------------
+
+editor.deletemarker markerID num 
+editor.deletemarker markerID minNum maxNum
+
+Editor.DeleteObjectsOnEdges
+Editor.DeleteObjectsOnEdgesMargin 32        32=0.5m  256=4m
+
+
+editor.SaveLevelBmp
+
+joining levels:
+editor.joinlevels Map_E03.lnd Map_F03.lnd Map_E04.lnd Map_F04.lnd Joined_EF34.lnd
+  textures must be synchronized first
+
+
+Editor.ReplaceTexture oldNum newNum
+Editor.ReplaceGrass oldNum newNum
+
+
+
+
+
+===============================================================================
+---------------------------Autotexturing---------------------------------
+===============================================================================
+
+
+
+
+
+Editor.AutoTextureEx float Angle1 int Texture1_0 int Texture1_1 int percent1
+  			  float Angle2 int Texture2_0 int Texture2_1 int percent2
+			  float Angle3 int Texture3_0 int Texture3_1 int percent3
+			  float Angle4 int Texture4_0 int Texture4_1 int percent4
+
+
+Editor.AutoTextureEx 0.1 1 2 0.2 2 3 0.4 9 10 0.5 9 10
+Editor.SetWaterColor 1 0 0
+
+Editor.TextureFromBitmapEx test2.bmp 512 512
+Editor.TextureFromBitmap test.bmp
+
+
+----------------------------------
+// texmixer
+Editor.TexMixerEx1 int Texture1 float Percent1
+	      int Texture2 float Percent2
+	      int Texture3 float Percent3
+	      int Texture4 float Percent4
+	      int intensity
+
+Editor.TexMixerEx1 1 30 2 30 3 30 4 30 100
+
+
+Editor.TexMixerEx2 int Texture1 float Percent1
+	      int Texture2 float Percent2
+	      int Texture3 float Percent3
+	      int Texture4 float Percent4
+	      int intensity
+	      int WhereTextureExist
+
+Editor.TexMixerEx2 1 30 2 30 3 30 4 30 8 10
+
+
+
+
+
+
+
+===============================================================================
+-----------------------------------Other--------------------------------------
+===============================================================================
+
+Editor.RemoveLocalFog
+
+editor.foreachlevel @e
+
+editor.savelevel 0
+
+editor.setwaterh 850
+
+editor.stepidleunit 0/1
+
+editor.LoadLevel level.lnd
+editor.AddZToAll xxx
+
+createEd x y z alpha [beta phi] objectID [meshVariant] [meshScale]
+z == 0 ground
+z - ground == 16*256
+
+editor.ScrollDistDiv
+editor.ScrollDistDivMin
+editor.ScrollDistDivMax
+editor.ZoomDistDiv
+editor.ZoomDistDivMin
+editor.ZoomDistDivMax
+
+editor.SaveLevelBmp

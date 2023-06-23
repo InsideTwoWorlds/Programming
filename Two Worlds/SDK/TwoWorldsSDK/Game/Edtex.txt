@@ -1,0 +1,9 @@
+Engine.GFadeNear 0
+Engine.GFadeFar 0.1
+Editor.LoadRightConnectedLevel
+Editor.LoadBottomConnectedLevel
+Editor.CopyEdgeFromConnected
+Editor.CopyColorFromConnected
+Editor.CleanupInvisibleTextures 1
+Editor.CopyTexturesFromConnected
+Editor.SaveAllLevels

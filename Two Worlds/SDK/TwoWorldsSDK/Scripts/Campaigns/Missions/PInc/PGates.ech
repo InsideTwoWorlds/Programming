@@ -1,0 +1,283 @@
+#ifndef _P_GATES_
+#define _P_GATES_
+
+#include "..\\..\\..\\Common\\Messages.ech"
+#include "PEnums.ech"
+#include "PCommon.ech"
+#include "PUnitInfo.ech"
+
+#ifndef MISSION_SCRIPT
+int anQuestGateMission[];
+int anQuestGateNumber[];
+unit auGates[];
+int nQuestGatesNumber;
+unit auDoors[];
+#endif
+
+//======================================        
+
+function void SetGatesNumbers(mission pMission) {
+
+    int i, nMaxNum;
+    unit uGate;
+    nMaxNum = pMission.GetMaxMarkerNum(MARKER_GATE);
+    for (i = 1; i <= nMaxNum; i++) {
+        if (pMission.HaveMarker(MARKER_GATE,i)) {
+            uGate = pMission.GetObjectMarker(MARKER_GATE,i);
+            if (uGate != null) SetGateNumber(uGate,i);
+        }    
+    }
+
+}
+
+#ifndef MISSION_SCRIPT
+
+//======================================        
+// house doors
+
+function int FindDoor(unit uDoor) {
+
+    int i;
+    int count;
+    count = auDoors.GetSize();
+    for (i = 0; i < count; i++) 
+        if (auDoors[i] == uDoor) return i;
+    return eNoDoor;
+ 
+}
+
+
+function void AddHouseDoor(unit uDoor) {
+
+    if (FindDoor(uDoor) != eNoDoor) return;        
+    auDoors.Add(uDoor);
+    uDoor.SetGateScriptOwnerUID(GetScriptUID());
+
+}
+
+function int ProcessHouseDoor(unit uDoor, int nFirstOpen, unit uByUnit, int& bClosedLockSound, int& bOpenLockSound, int& bBrokenLockpickSound) {
+
+    int nDoor;
+    int nDoorState;
+            
+    nDoor = FindDoor(uDoor);
+    if (nDoor == eNoDoor) return false;
+    nDoorState = GetDoorState(uDoor);
+            
+    if (nDoorState == eUnknownDoorState) {
+        return false;
+    }        
+    else if (nDoorState == eDoorOpen || nDoorState == eDoorLockpicked) {
+        if (uDoor.IsGateOpen()) {
+            uDoor.SetGateOpen(false);
+        }
+        else {
+            uDoor.SetGateOpen(true); 
+        }
+    }
+    else {
+        if (uDoor.IsGateClosed()) {
+            if (!TryOpenLock(uDoor,uByUnit,bClosedLockSound,bOpenLockSound,bBrokenLockpickSound)) {
+                return true;
+            }
+            SetDoorState(uDoor,eDoorLockpicked);
+            uDoor.SetGateScriptOwnerUID(-1);
+            auDoors.RemoveAt(nDoor);
+        }  
+        else if (uDoor.IsGateOpen()) {
+            uDoor.SetGateOpen(false);  
+        }
+    }
+
+    return true;
+
+}    
+
+//======================================        
+// quest gates
+
+function void SetQuestGatesClickable(mission pMission, int nScriptUID) {
+
+    int i;
+    int nMission;
+    unit uGate;
+    ASSERT(pMission != null);
+    nMission = pMission.GetMissionNum();
+        
+    for (i = 0; i < nQuestGatesNumber; i++) if (anQuestGateMission[i] == nMission) {
+        ASSERT(pMission.HaveMarker(MARKER_GATE,anQuestGateNumber[i]));
+        uGate = pMission.GetObjectMarker(MARKER_GATE,anQuestGateNumber[i]);
+        if (uGate != null) {
+            if (auGates[i] == null) auGates[i] = uGate;
+            uGate.SetGateScriptOwnerUID(nScriptUID);
+            uGate.SetAttribute("Open",2);
+            uGate.SetGateLockForUnits(true);
+        }
+    }
+
+}
+
+function int IsQuestGate(int nMission, int nGate) {
+
+    int i;
+    for (i = 0; i < nQuestGatesNumber; i++) {
+        if (anQuestGateMission[i] == nMission)
+            if (nGate == anQuestGateNumber[i]) return true;   
+    }
+   
+    return false;
+
+}
+
+function int IsQuestGate(unit uGate) {
+
+    return IsQuestGate(uGate.GetMission().GetMissionNum(),GetGateNumber(uGate));
+       
+}
+
+function void AddQuestGate(int nMission, int nGate) {
+
+    mission pMission;
+    unit uGate;
+
+    if (IsQuestGate(nMission,nGate)) return;
+
+    pMission = GetCampaign().GetMission(nMission);
+    ASSERT(pMission != null);
+    uGate = pMission.GetObjectMarker(MARKER_GATE,nGate);
+    if (uGate != null) {
+        if (uGate.IsGateOpen()) uGate.SetGateOpen(false);
+        uGate.SetAttribute("Open",2);
+        uGate.SetGateScriptOwnerUID(GetScriptUID());
+        uGate.SetGateLockForUnits(true);
+    }
+
+    anQuestGateMission.Add(nMission);
+    anQuestGateNumber.Add(nGate);
+    auGates.Add(uGate);
+
+    nQuestGatesNumber = anQuestGateMission.GetSize();
+
+#ifdef QUEST_GATES_DEBUG
+    TRACE("AddQuestGate - i: %d nMission: %d nGate: %d\n",nQuestGatesNumber - 1,nMission,nGate);
+#endif
+
+}
+
+function void RemoveQuestGate(int nMission, int nGate) {
+
+    int i;
+    unit uGate;
+    
+    if (nQuestGatesNumber == 0) return;
+
+    for (i = 0; i < nQuestGatesNumber; i++)
+        if (anQuestGateMission[i] == nMission)
+            if (nGate == anQuestGateNumber[i]) break;   
+
+    if (i == nQuestGatesNumber) return;
+
+    uGate = auGates[i];
+    if (uGate != null) {
+        uGate.SetGateScriptOwnerUID(-1);
+        uGate.SetAttribute("Open",0);
+        uGate.SetGateLockForUnits(false);
+    }
+
+    anQuestGateMission.RemoveAt(i);
+    anQuestGateNumber.RemoveAt(i);
+    auGates.RemoveAt(i);
+
+    nQuestGatesNumber = anQuestGateMission.GetSize();
+
+    SendMessageToTownScript(GetCampaign().GetMission(nMission),eMsgRegisterCityGate,nGate);
+
+#ifdef QUEST_GATES_DEBUG
+    TRACE("RemoveQuestGate - i: %d nMission: %d nGate: %d\n",i,nMission,nGate);
+#endif
+
+}
+             
+function int QuestGateClicked(unit uByUnit, unit uGate, int bFirstOpen, int bFirstHeroOpen, int& bClosedLockSound, int& bOpenLockSound, int& bBrokenLockpickSound) {
+                                                    
+    if (IsQuestGate(uGate) && uByUnit.IsHeroUnit()) {        
+        if (uGate.IsGateOpen()) ConsoleTextOut(uByUnit.GetHeroPlayerNum(),TEXT_GATE_OPEN);
+        else ConsoleTextOut(uByUnit.GetHeroPlayerNum(),TEXT_GATE_CLOSED);
+        return true;
+    }    
+                        
+    return false;
+
+}
+
+#else
+
+//======================================        
+// city gates
+
+function void InitializeCityGates() {
+
+    int i, nMaxNum;
+    nMaxNum = GetMaxMarkerNum(MARKER_GATE);
+    for (i = 1; i <= nMaxNum; i++) {
+          
+        if (!HaveTownMarker(MARKER_GATE,i)) continue;
+        GetObjectMarker(MARKER_GATE,i).SetGateScriptOwnerUID(GetScriptUID());
+    
+    }
+
+}
+
+function void RegisterCityGate(int nGate) {
+
+    unit uGate;
+
+    uGate = GetObjectMarker(MARKER_GATE,nGate);
+    if (uGate == null || uGate.GetHouseWithObject() != null) return;
+    uGate.SetGateScriptOwnerUID(GetScriptUID());
+ 
+}
+
+function void IsHeroNearCityGate(unit uHero) {
+
+    int i, nMaxNum;
+    unit uGate;
+
+    nMaxNum = GetMaxMarkerNum(MARKER_GATE);
+    for (i = 1; i <= nMaxNum; i++) {
+        if (!HaveTownMarker(MARKER_GATE,i)) continue;
+        uGate = GetObjectMarker(MARKER_GATE,i);
+        if (uGate.GetHouseWithObject() != null) continue; // drzwi w jakims domu, nie interesuja nas
+        if (IsUnitNearMarkerG(uHero,MARKER_GATE,i,eOpenCityGateRangeG) && (anHeroCrimePoints[uHero.GetHeroPlayerNum()] == 0) && (!GetCampaign().IsPartyEnemy(PARTY_NPC,ePartyPlayer1 + uHero.GetHeroPlayerNum()))) {
+            if (!uGate.IsGateOpen()) {
+                uGate.SetGateOpen(true);
+                SetGateAuto(uGate,true);
+            }
+        }
+        else {
+            if (uGate.IsGateOpen()) {
+                if (!IsUnitNearMarkerG(uHero,MARKER_GATE,i,eOpenCityGateRangeG)) uGate.SetGateOpen(false);        
+                SetGateAuto(uGate,false);
+            }
+        }
+    }
+
+}
+
+function int CityGateClicked(unit uGate) {
+
+    if (uGate.GetHouseWithObject() != null) return false; // drzwi "w domu", nie interesuja nas
+    if (GetGateAuto(uGate)) return true;
+
+    if (uGate.IsGateOpen()) uGate.SetGateOpen(false);
+    else uGate.SetGateOpen(true);    
+
+    return true;
+    
+}
+
+#endif
+
+//======================================        
+
+#endif

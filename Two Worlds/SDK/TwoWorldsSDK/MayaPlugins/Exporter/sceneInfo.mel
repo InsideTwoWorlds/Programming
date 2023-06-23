@@ -1,0 +1,36 @@
+global proc int CreateSceneInfoObject()
+{
+ int $sinfo_exist = 0;
+
+ select -all;
+ string $getNames[] = (`ls -sl`);
+
+ for ($i=0;$i<(`size $getNames`);$i++) 
+ {
+      if ($getNames[$i] == "SCENE_INFO")
+		  $sinfo_exist = 1;
+ }
+ 
+ if ($sinfo_exist == 0)
+ {
+	string $sl[] = `spaceLocator -p 0 0 0`;
+	eval("rename |"+$sl[0]+"\"SCENE_INFO\";");
+
+	addAttr -ln TriangulateBeforeExport -at bool |SCENE_INFO;
+	addAttr -ln RespectExportNameDir -at bool |SCENE_INFO;
+	addAttr -ln ExportDirectory -dt "string"  |SCENE_INFO;
+	addAttr -ln AnimationFileName -dt "string"  |SCENE_INFO;
+
+	addAttr -ln FileType -at "enum" -en "Bones:Character:All" |SCENE_INFO;
+
+	addAttr -ln StartFrame -at "float" |SCENE_INFO;
+	setAttr SCENE_INFO.StartFrame 0.0;
+
+	addAttr -ln EndFrame -at "float" |SCENE_INFO;
+	setAttr SCENE_INFO.EndFrame 100.0;
+ }
+
+ return 1;
+}
+
+CreateSceneInfoObject();

@@ -1,0 +1,374 @@
+#ifndef _P_TOWN_GENERATOR_
+#define _P_TOWN_GENERATOR_
+
+#include "PEnums.ech"
+
+//======================================
+
+int nUnitsLeft;  
+    
+int anTGTypeNumber[];
+int anTGMarkerNumber[];
+
+int anTownMarkerType[];
+string astrTownMarkerName[];
+int anTownMarkerSex[];
+int anTownMarkerCustomFlags[];
+    
+string astrAnimals[];    
+    
+//======================================
+
+#ifdef USE_COMMAND_DEBUG
+
+function void CheckTownMarker(string strMarker, int nMarker) {
+
+    if (HaveTownMarker(strMarker,nMarker)) {
+        TRACE("%s %d exists\n",strMarker,nMarker);
+    }
+    
+}
+
+function void PrintTownMarkers() {
+    
+    int i, nMaxNum;
+    int nType;
+         
+    TRACE("Town markers:\n");
+            
+    for (nType = 0; nType < anTownMarkerType.GetSize(); nType++) {
+        nMaxNum = GetMaxMarkerNum(astrTownMarkerName[nType]);
+        for (i = 1; i <= nMaxNum; i++) CheckTownMarker(astrTownMarkerName[nType],i);    
+    }
+        
+}
+
+#endif
+
+//======================================
+
+function int IsVillage() {
+
+    if (nPartyTownNPCs == ePartyC6) return true;
+    if (nPartyTownNPCs == ePartyD2) return true;
+    if (nPartyTownNPCs == ePartyD3) return true;
+    if (nPartyTownNPCs == ePartyD4) return true;
+    if (nPartyTownNPCs == ePartyD7) return true;
+    if (nPartyTownNPCs == ePartyE2) return true;
+    if (nPartyTownNPCs == ePartyE6) return true;
+    if (nPartyTownNPCs == ePartyE11) return true;
+    if (nPartyTownNPCs == ePartyG1) return true;
+    if (nPartyTownNPCs == ePartyH8) return true;
+    if (nPartyTownNPCs == ePartySkelden) return true;
+    if (nPartyTownNPCs == ePartyKarga) return true;
+    return false;
+
+}
+
+function void InitializeAnimals() {
+
+    astrAnimals.RemoveAll();
+    astrAnimals.Add("GOOSE_01");
+    astrAnimals.Add("HEN_01");
+    astrAnimals.Add("DUCK_01");
+
+}
+
+function void GenerateAnimal(int nX, int nY) {
+
+    string str;
+    if (!astrAnimals.GetSize()) return;
+    str = astrAnimals[Rand(astrAnimals.GetSize())];
+    CreateObject(str,nX,nY,0,Rand(256));
+
+}
+
+//======================================
+
+function int CheckTavernObject(int nTavern) {
+
+    if (GetObjectMarker(MARKER_TAVERN,nTavern) == null) {
+#ifdef TOWN_DEBUG
+        TRACE("%s %d doesn't have object                  \n",MARKER_TAVERN,nTavern);        
+#endif
+        return false;        
+    }
+    return true;
+
+}
+
+function void SetTownMarker(int nType, string strMarker, int nSex, int nCustomFlags) {
+
+    anTownMarkerType.Add(nType);
+    astrTownMarkerName.Add(strMarker); 
+    anTownMarkerSex.Add(nSex);
+    anTownMarkerCustomFlags.Add(nCustomFlags);        
+        
+}
+
+function string GetTownMarkerName(int nType, int nSex) {
+
+    int i;
+    int count;
+    count = anTownMarkerType.GetSize();
+    for (i = 0; i < count; i++) 
+        if (anTownMarkerType[i] == nType && anTownMarkerSex[i] == nSex) return astrTownMarkerName[i];
+    
+#ifdef TOWN_DEBUG
+    TRACE("GetTownMarkerName: can't find marker name for type %d sex %d                   \n",nType,nSex);
+#else   
+    __ASSERT_FALSE();
+#endif
+    return "";
+
+}
+
+function int CheckIsFemale(int nSex) {
+
+    if (nSex == eRandomSex) {
+        if (Rand(2)) return true;
+        return false;
+    }
+    if (nSex == eFemale) return true;
+    return false;
+    
+}
+
+function void AddTGMarker(int nTypeNumber, int nNumber) {
+
+    anTGTypeNumber.Add(nTypeNumber);
+    anTGMarkerNumber.Add(nNumber);    
+    nUnitsLeft++;
+
+}
+
+function void InitializeTownGenerator() {
+    
+    int i, j, nMaxNum;
+    int count;
+
+    InitializeAnimals();
+    
+    nUnitsLeft = 0;    
+    
+    if (nTownType == eTownUnknownType) nTownType = eTownTypeWindbreak;
+
+    // town marker types
+    anTownMarkerType.RemoveAll();
+    astrTownMarkerName.RemoveAll();
+    anTownMarkerSex.RemoveAll();
+    anTownMarkerCustomFlags.RemoveAll();
+    // shops
+    SetTownMarker(eTGShopMerchant,MARKER_SHOP,eMale,eShopMerchant);
+    SetTownMarker(eTGShopNecro,MARKER_SHOP_NECRO,eMale,eShopNecro);
+    SetTownMarker(eTGShopMage,MARKER_SHOP_MAGE,eMale,eShopMage);
+    SetTownMarker(eTGShopWarrior,MARKER_SHOP_WARRIOR,eMale,eShopWarrior);
+    SetTownMarker(eTGShopThief,MARKER_SHOP_FENCE,eMale,eShopThief);
+    // coaches
+    SetTownMarker(eTGCoach1,MARKER_COACH_1,eMale,eTrainer1);
+    SetTownMarker(eTGCoach2,MARKER_COACH_2,eMale,eTrainer2);
+    SetTownMarker(eTGCoach3,MARKER_COACH_3,eMale,eTrainer3);
+    SetTownMarker(eTGCoach4,MARKER_COACH_4,eMale,eTrainer4);
+    SetTownMarker(eTGCoach5,MARKER_COACH_5,eMale,eTrainer5);
+    SetTownMarker(eTGCoach6,MARKER_COACH_6,eMale,eTrainer6);
+    SetTownMarker(eTGCoachMage,MARKER_COACH_7,eMale,eTrainerMage);
+    SetTownMarker(eTGCoachNecro,MARKER_COACH_8,eMale,eTrainerNecro);
+    // changers
+    SetTownMarker(eTGChanger1,MARKER_CHANGER_1,eMale,eChanger1);
+    SetTownMarker(eTGChanger2,MARKER_CHANGER_2,eMale,eChanger2);
+    // bartender
+    SetTownMarker(eTGBartender,MARKER_TAVERN,eMale,eBartender);
+    // guards
+    SetTownMarker(eTGGuardStatic,MARKER_GUARD,eMale,eGuardStatic);
+    SetTownMarker(eTGGuardDynamic,MARKER_GUARD_PATROL,eMale,eGuardRoute);
+    // male workers
+    SetTownMarker(eTGWorkerPray,MARKER_PRAY,eMale,eWorkerPray);
+    SetTownMarker(eTGWorkerWoodcut,MARKER_WOODCUT,eMale,eWorkerWoodcut);
+    SetTownMarker(eTGWorkerBroom,MARKER_BROOM,eMale,eWorkerBroom);
+    SetTownMarker(eTGWorkerKneel,MARKER_KNEEL,eMale,eWorkerKneel);
+    SetTownMarker(eTGWorkerPitchfork,MARKER_PITCHFORK,eMale,eWorkerPitchfork);
+    SetTownMarker(eTGWorkerScythe,MARKER_SCYTHE,eMale,eWorkerScythe);
+    SetTownMarker(eTGWorkerPinaxe,MARKER_PINAXE,eMale,eWorkerPinaxe);
+    SetTownMarker(eTGWorkerSitting,MARKER_SITTING,eMale,eWorkerSitting);
+    SetTownMarker(eTGCitizen,MARKER_CITIZEN,eMale,eTalker);
+    // female workers
+    SetTownMarker(eTGWorkerDance,MARKER_F_DANCE,eFemale,eWorkerDance);
+    SetTownMarker(eTGCitizen,MARKER_F_CITIZEN,eFemale,eTalker);        
+    SetTownMarker(eTGWorkerCook,MARKER_F_COOK,eFemale,eWorkerCook);
+    SetTownMarker(eTGWorkerPray,MARKER_F_PRAY,eFemale,eWorkerPray);
+    SetTownMarker(eTGWorkerBroom,MARKER_F_BROOM,eFemale,eWorkerBroom);
+    SetTownMarker(eTGWorkerKneel,MARKER_F_KNEEL,eFemale,eWorkerKneel);
+            
+//    TRACE("Obszar miasta %d,%d - %d,%d                        \n",nTownX1,nTownY1,nTownX2,nTownY2);
+    
+    anTGTypeNumber.RemoveAll();
+    anTGMarkerNumber.RemoveAll();
+    count = anTownMarkerType.GetSize();
+    for (i = 0; i < count; i++) {
+        nMaxNum = GetMaxMarkerNum(astrTownMarkerName[i]);
+        for (j = 1; j <= nMaxNum; j++) {    
+
+            // special cases
+            if (anTownMarkerType[i] == eTGBartender) {
+                if (HaveTownMarker(MARKER_TAVERN,j) && CheckTavernObject(j)) AddTGMarker(i,j);
+            }
+            // other
+            else {
+                if (HaveTownMarker(astrTownMarkerName[i],j)) AddTGMarker(i,j);
+            }
+
+        }
+                
+    }
+//    TRACE(" Znaleziono %d markerow do postaci w miescie                           \n", nUnitsLeft);
+        
+}
+
+//======================================
+
+function void FindPositionForGeneratedUnit(int nX, int nY, int nRadius, int &nTargetX, int &nTargetY) {
+
+    do {
+    
+        nTargetX = nX + Rand(nRadius * 2) - nRadius;
+        nTargetY = nY + Rand(nRadius * 2) - nRadius;
+        
+    } while (!IsGoodPointForUnit(nTargetX,nTargetY));
+
+}
+
+function void InitializeGeneratedUnit(int nUnit, int nCustomFlags, int nShift) {
+
+    unit uUnit;
+
+    uUnit = UNIT_ARRAY[nUnit];
+    SetUnitNumber(uUnit,nUnit);
+    SetMask(uUnit,0);    
+
+    ResetUnitTimers(nUnit);
+    SetTargetHero(nUnit,eNoUnit);
+    uUnit.SetAlarmModeUnit(true);            
+    InitDailyState(nUnit,nShift);
+    SetCustomFlags(uUnit,nCustomFlags);
+
+    // special cases
+    if (nCustomFlags == eGuardStatic) {
+        InitializeGuard(nUnit);
+        nGuardsNumber++;        
+    }
+    else if (nCustomFlags == eGuardRoute) {
+        InitializeGuard(nUnit);
+        nDynamicGuardsNumber++;
+        nGuardsNumber++;
+    }
+    // other
+    else {
+        InitializeNPC(nUnit);    
+    }    
+
+}
+
+function void GenerateUnit(int nUnit, int nType, int nMarker, int nShift, int nSex, int nCustomFlags) {
+
+    string str;
+    string strMarker;
+    int nX, nY;
+    int nDialog;
+    int nCol, nRow, nLayer;
+    int nIsFemale;
+    int nMagic;
+    unit uUnit;
+    
+    strMarker = GetTownMarkerName(nType,nSex);
+    nIsFemale = CheckIsFemale(nSex);
+
+    if (!GetMarker(strMarker,nMarker,nX,nY)) {
+#ifdef TOWN_DEBUG
+        TRACE("GenerateUnit: can't find %s %d                    \n",strMarker,nMarker);
+#else            
+        __ASSERT_FALSE();
+#endif            
+        return;
+    }    
+
+    LevelNum2Level(GetMissionNum(),nCol,nRow,nLayer);
+    str = GetCreateString(nTownType,nType,nIsFemale,nDialog,nCol,nRow,nMagic);
+    if (str.EqualNoCase("")) return; // uwaga!!!
+    UNIT_ARRAY[nUnit] = CreateObject(str,nX,nY,0,Rand(256));
+    uUnit=UNIT_ARRAY[nUnit];
+    uUnit.GetUnitValues().SetBasicSkill(eSkillKnockDown,Rand(11));
+
+    if (UNIT_ARRAY[nUnit] == null) {
+#ifdef TOWN_DEBUG
+        TRACE("GenerateUnit: can't create object %s on %s %d in mission %d                    \n",str,strMarker,nMarker,GetMissionNum());    
+#endif
+        return;
+    }    
+
+    SetLookAtAngle(UNIT_ARRAY[nUnit]);
+    SetStandardDialogNumber(UNIT_ARRAY[nUnit],nDialog);
+    SetIsFemale(UNIT_ARRAY[nUnit],nIsFemale);
+    SetMagicSkill(UNIT_ARRAY[nUnit],nMagic);
+    AddMarker(MARKER_NPC,nUnit,UNIT_ARRAY[nUnit].GetLocationX(),UNIT_ARRAY[nUnit].GetLocationY(),0,0,"");
+    InitializeGeneratedUnit(nUnit,nCustomFlags,nShift);
+      
+    SendMessageToGlobalScripts(eMsgRegisterSingleDialogUnit,UNIT_ARRAY[nUnit]);
+
+    if (IsVillage()) GenerateAnimal(nX,nY);
+
+}
+
+function int GenerateUnit(int nUnit) {
+
+    int n;
+    int nMarker;
+    int nType;
+    int nTypeNumber;
+
+    if (!anTGTypeNumber.GetSize()) return false;
+    if (nUnitsLeft <= 0) return false;
+    
+    n = Rand(anTGMarkerNumber.GetSize());
+    nTypeNumber = anTGTypeNumber[n];
+    nType = anTownMarkerType[nTypeNumber];
+
+    if ((nType == eTGBartender) || (nType == eTGGuardStatic) || (nType == eTGGuardDynamic)) {
+        GenerateUnit(nUnit,nType,anTGMarkerNumber[n],eShiftWorkoholic,eMale,anTownMarkerCustomFlags[nTypeNumber]);    
+    }
+    else if (nType == eTGCitizen) {
+        GenerateUnit(nUnit,nType,anTGMarkerNumber[n],eShiftCitizen,anTownMarkerSex[nTypeNumber],anTownMarkerCustomFlags[nTypeNumber]);    
+    }
+    else {
+        GenerateUnit(nUnit,nType,anTGMarkerNumber[n],eShiftNormal,anTownMarkerSex[nTypeNumber],anTownMarkerCustomFlags[nTypeNumber]);
+    }
+        
+    anTGTypeNumber.RemoveAt(n);
+    anTGMarkerNumber.RemoveAt(n);
+    nUnitsLeft--;
+    nUnitsNumber++;
+    
+    return true;
+
+}
+
+//======================================
+
+function int GenerateTownUnits() {
+
+    int i;
+
+    InitializeTownGenerator();
+    
+    for (i = 1; i < UNIT_ARRAY_SIZE; i++) if ((UNIT_ARRAY[i] == null) && (!HaveMarker(MARKER_NPC,i))) {
+    
+        if ((nUnitsLeft <= 0) || (nTownType == eTownUnknownType)) return i-1;    
+        GenerateUnit(i);
+                
+    }
+    return i;
+
+}
+
+//======================================
+
+#endif

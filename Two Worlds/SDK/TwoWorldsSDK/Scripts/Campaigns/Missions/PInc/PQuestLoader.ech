@@ -1,0 +1,683 @@
+#ifndef _P_QUEST_LOADER_
+#define _P_QUEST_LOADER_
+
+consts {
+
+    eLoaderUnknownValue = -1;
+
+}
+
+int nCurrentQuest;
+int nCurrentUnit;
+int nCurrentContainer;
+int nCurrentLine;
+
+#include "PFileParser.ech"
+
+//======================================        
+
+function string GetCommand(string strLine) {
+
+    int i;
+    int nSize;
+    string strCommand;
+    string str;
+    str = strLine;
+    
+    strCommand = "";
+    nSize = str.GetLength();
+    i = 0;
+    while ((GetChar(str,i) != ' ') && (i < nSize)) {
+        strCommand.Append(GetChar(str,i));
+        i++;
+    }
+    
+    return strCommand;
+
+}
+
+//======================================        
+
+function int ParseQuestNumber(string strLine) {
+
+    int nQuestNum;
+    sscanf(strLine,"Q_%d",nQuestNum);
+    nQuestNum -= eFirstQuest;    
+    if (nQuestNum > 0 && nQuestNum < eQuestsNum) return nQuestNum;              
+    return eNoQuest;
+    
+}
+
+function int ParseGiverNumber(string strLine) {
+
+    int nGiverNum;
+    sscanf(strLine,"NPC_%d",nGiverNum);
+    nGiverNum -= eFirstQuestUnit;
+    if (nGiverNum > 0 && nGiverNum < eQuestUnitsNum) return nGiverNum;
+    return eNoUnit;
+    
+}
+
+function int ParseGiverType(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("PASSIVE")) return eQuestGiverPassive;
+    if (str.EqualNoCase("ACTIVE")) return eQuestGiverActive;
+    if (str.EqualNoCase("MARKER")) return eQuestGiverMarker;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Quest Giver Type: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseFinishingCondition(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("OTHER")) return eQuestTypeUnknown;
+    if (str.EqualNoCase("GO")) return eQuestTypeGo;
+    if (str.EqualNoCase("GO_AWAY")) return eQuestTypeGoAway;
+    if (str.EqualNoCase("OPEN")) return eQuestTypeOpen;
+    if (str.EqualNoCase("FIND_PLACE")) return eQuestTypeFindPlace;
+    if (str.EqualNoCase("FIND_LOCATION")) return eQuestTypeFindLocation;
+    if (str.EqualNoCase("CLEAR_AREA")) return eQuestTypeClearArea;
+    if (str.EqualNoCase("FIND_OBJECT")) return eQuestTypeFindObject;
+    if (str.EqualNoCase("BRING_OBJECT")) return eQuestTypeBringObject;
+    if (str.EqualNoCase("BRING_GOLD")) return eQuestTypeBringGold;
+    if (str.EqualNoCase("DELIVER_OBJECT")) return eQuestTypeDeliverObject;    
+    if (str.EqualNoCase("TALK")) return eQuestTypeTalk;
+    if (str.EqualNoCase("FIND_TALK")) return eQuestTypeFindAndTalk;
+    if (str.EqualNoCase("KILL")) return eQuestTypeKill;
+    if (str.EqualNoCase("FIND_KILL")) return eQuestTypeFindAndKill;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Finishing Condition: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseActivationType(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("PROMOTE")) return eActivationPromote;
+    if (str.EqualNoCase("TAKE")) return eActivationTake;
+    if (str.EqualNoCase("DISABLE")) return eActivationDisable;
+    if (str.EqualNoCase("SOLVE")) return eActivationSolve;
+    if (str.EqualNoCase("CLOSE")) return eActivationClose;
+    if (str.EqualNoCase("FAIL_CLOSE")) return eActivationFailClose;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Activation Type: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseActionType(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("OPEN")) return eActionOpen;
+    if (str.EqualNoCase("CLOSE")) return eActionClose;
+    if (str.EqualNoCase("NPC_GO")) return eActionNPCGo;
+    if (str.EqualNoCase("NPC_TELEPORT")) return eActionNPCTeleport;
+    if (str.EqualNoCase("NPC_CREATE")) return eActionNPCCreate;
+    if (str.EqualNoCase("NPC_REMOVE")) return eActionNPCRemove;    
+    if (str.EqualNoCase("NPC_KILL")) return eActionNPCKill;
+    if (str.EqualNoCase("NPC_DIALOG")) return eActionNPCDialog;
+    if (str.EqualNoCase("NPC_CHANGE_PARTY")) return eActionNPCChangeParty;
+    if (str.EqualNoCase("OBJECT_CREATE")) return eActionObjectCreate;
+    if (str.EqualNoCase("OBJECT_ADD")) return eActionObjectAdd;
+    if (str.EqualNoCase("OBJECT_REMOVE")) return eActionObjectRemove;
+    if (str.EqualNoCase("ENEMY_CREATE")) return eActionEnemyCreate;
+    if (str.EqualNoCase("CHANGE_RELATIONS")) return eActionChangeRelations;
+    if (str.EqualNoCase("KILL_AREA")) return eActionKillArea;
+    if (str.EqualNoCase("CLEAR_AREA")) return eActionClearArea;
+    if (str.EqualNoCase("SHOW_LOCATION")) return eActionShowLocation;
+    if (str.EqualNoCase("CREATE_EFFECT")) return eActionEffectCreate;
+    if (str.EqualNoCase("SET_WORLD_STATE")) return eActionSetWorldState;
+    if (str.EqualNoCase("PLAY_CUTSCENE")) return eActionPlayCutscene;
+    if (str.EqualNoCase("ACTIVATE_LEVEL")) return eActionActivateLevel;
+    if (str.EqualNoCase("DISABLE_TOWN")) return eActionDisableTown;
+    // delayed actions
+    if (str.EqualNoCase("KILL_AREA_DELAYED")) return eActionKillAreaDelayed;
+    if (str.EqualNoCase("HERO_TELEPORT_DELAYED")) return eActionTeleportHero;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Action Type: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+   
+}
+
+function int ParseWhen(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("ENABLE")) return eWhenQuestEnabled;
+    if (str.EqualNoCase("TAKE")) return eWhenQuestTaken;
+    if (str.EqualNoCase("HEAR")) return eWhenQuestHeared;
+    if (str.EqualNoCase("SOLVE")) return eWhenQuestSolved;
+    if (str.EqualNoCase("CLOSE")) return eWhenQuestClosed;
+    if (str.EqualNoCase("FAIL")) return eWhenQuestFailed;
+    if (str.EqualNoCase("FIGHT")) return eWhenFighting;
+    if (str.EqualNoCase("NONE")) return eDontKnowWhen;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Action Mode: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParsePartyRelation(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("PASSIVE")) return eRelationPassive;
+    if (str.EqualNoCase("AGGRESSIVE")) return eRelationAggressive;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Party Status: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseRewardType(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("GLD")) return eRewardGold;
+    if (str.EqualNoCase("REP")) return eRewardReputation;
+    if (str.EqualNoCase("EXP")) return eRewardExperience;
+    if (str.EqualNoCase("SKL")) return eRewardSkillPoints;
+    if (str.EqualNoCase("ITM")) return eRewardItem;
+    if (str.EqualNoCase("RND")) return eRewardRandom;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Reward Type: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseQuantityType(string strLine) {
+
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("SMALL")) return eQuantitySmall;
+    if (str.EqualNoCase("MEDIUM")) return eQuantityMedium;
+    if (str.EqualNoCase("HIGH")) return eQuantityBig;
+
+    return eQuantityCustom;
+
+}
+
+function int ParseItemQuantity(string strLine) {
+
+    string str;
+    int nQuantity;
+    str = strLine;
+
+    // jesli to wartosc liczbowa to zwracamy
+    sscanf(str,"%d",nQuantity);
+    if (nQuantity) return nQuantity;
+    
+    // wpp jesli to wartosc 0 to 0 a jesli cokolwiek innego to 1
+    if (str.EqualNoCase("0")) return 0;
+    return 1;
+
+}
+
+function int ParseParty(string strLine) {
+
+    int nParty;
+    sscanf(strLine,"%d",nParty);
+    return nParty;
+
+}
+
+function int ParseGuild(string strLine) {
+
+    int nGuild;
+    string str;
+    str = strLine;
+    
+    if (str.EqualNoCase("GUILD_CONGREGATION")) return eGuildMage;
+    if (str.EqualNoCase("GUILD_BROTHERHOOD")) return eGuildWarrior;
+    if (str.EqualNoCase("GUILD_MERCHANTS")) return eGuildMerchant;
+    if (str.EqualNoCase("GUILD_GRIZA")) return eGuildThief;
+    if (str.EqualNoCase("GUILD_NECROMANCERS")) return eGuildNecro;
+    
+    sscanf(strLine,"%d",nGuild);
+    if (nGuild != 0) return nGuild;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Guild: %s                                   \n",strLine);
+#endif
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseFinishingFlag(string strLine) {
+
+    int nLevel;
+    string str;
+    str = strLine;
+
+    if (str.EqualNoCase("BACK_TO_GIVER")) return eBackToGiver;
+    if (str.EqualNoCase("BACK_TO_GIVER_MAP_SIGN")) return eBackToGiverMapSign;
+    if (str.EqualNoCase("AUTO_CLOSE_ON_SOLVE")) return eAutoCloseOnSolve;
+
+#ifdef QUEST_LOADER_DEBUG
+    TRACE("Unknown Finishing Flag: %s                                   \n",strLine);
+#endif
+
+    return eLoaderUnknownValue;
+
+}
+
+function int ParseEnemyType(string siType)
+{
+    string sType;
+    sType.Copy(siType);
+    
+    if (sType.EqualNoCase("ENEMY_ANIMAL")) return eClassAnimal;
+    if (sType.EqualNoCase("ENEMY_BANDIT")) return eClassBandit;
+    if (sType.EqualNoCase("ENEMY_DAEMON")) return eClassDaemon;
+    if (sType.EqualNoCase("ENEMY_GOBLIN")) return eClassGoblin;
+    if (sType.EqualNoCase("ENEMY_GOLEM_FLESH")) return eClassGolemFlesh;
+    if (sType.EqualNoCase("ENEMY_GOLEM_WOOD")) return eClassGolemWood;
+    if (sType.EqualNoCase("ENEMY_GOLEM_STEEL")) return eClassGolemSteel;
+    if (sType.EqualNoCase("ENEMY_GOLEM_STONE")) return eClassGolemStone;
+    if (sType.EqualNoCase("ENEMY_INSECT")) return eClassInsect;
+    if (sType.EqualNoCase("ENEMY_LIZARDMAN")) return eClassLizardman;
+    if (sType.EqualNoCase("ENEMY_MANTIS")) return eClassMantis; 
+    if (sType.EqualNoCase("ENEMY_ORC")) return eClassOrc;
+    if (sType.EqualNoCase("ENEMY_ORC_2")) return eClassOrc2;
+    if (sType.EqualNoCase("ENEMY_REPTILE")) return eClassReptile;
+    if (sType.EqualNoCase("ENEMY_YETI")) return eClassYeti;
+    if (sType.EqualNoCase("ENEMY_SPIDER")) return eClassSpider;
+    if (sType.EqualNoCase("ENEMY_UNDEAD")) return eClassUndead;
+    if (sType.EqualNoCase("ENEMY_UNDEAD_ANIMAL")) return eClassUndeadAnimal;
+    if (sType.EqualNoCase("ENEMY_ZOMBIE")) return eClassZombie;
+    if (sType.EqualNoCase("ENEMY_SKELETON")) return eClassSkeleton;
+    if (sType.EqualNoCase("ENEMY_MINION")) return eClassMinion;
+    if (sType.EqualNoCase("ENEMY_SEA_GUY")) return eClassSeaGuy;
+    if (sType.EqualNoCase("ENEMY_INSECT_GUY")) return eClassInsectGuy;
+    if (sType.EqualNoCase("ENEMY_SNOW_ORC")) return eClassSnowOrc;    
+    if (sType.EqualNoCase("ENEMY_JACKAL")) return eClassJackal; 
+    if (sType.EqualNoCase("ENEMY_DRAGON")) return eClassDragon; 
+    if (sType.EqualNoCase("ENEMY_WHITE_DRAGON")) return eClassWhiteDragon; 
+    if (sType.EqualNoCase("ENEMY_STONE_DRAGON")) return eClassStoneDragon; 
+    if (sType.EqualNoCase("ENEMY_LAVA_DRAGON")) return eClassLavaDragon; 
+    if (sType.EqualNoCase("ENEMY_SNOW_ANIMAL")) return eClassSnowAnimal;
+    if (sType.EqualNoCase("ENEMY_NECRO")) return eClassNecro;
+    if (sType.EqualNoCase("ENEMY_GOBLIN2")) return eClassGoblin2;
+    if (sType.EqualNoCase("ENEMY_HELLMASTER")) return eClassHellmaster;
+    if (sType.EqualNoCase("ENEMY_DEAD_KNIGHT")) return eClassDeadKnight;
+    if (sType.EqualNoCase("ENEMY_DWARF")) return eClassDwarf;
+    if (sType.EqualNoCase("ENEMY_BRO_WARRIOR")) return eClassBroWarrior;
+    if (sType.EqualNoCase("ENEMY_SOLDIER_04")) return eClassSoldier04;
+    if (sType.EqualNoCase("ENEMY_OGR")) return eClassOgr;
+    if (sType.EqualNoCase("ENEMY_WOLF")) return eClassWolf;
+    if (sType.EqualNoCase("GHOST_DWARF")) return eClassGhostDwarf;
+    if (sType.EqualNoCase("ENEMY_KHAN")) return eClassKhan;
+    if (sType.EqualNoCase("ENEMY_DRAGONFLY2")) return eClassDragonfly;
+    if (sType.EqualNoCase("ENEMY_DEADMEAT")) return eClassDeadmeat;
+    if (sType.EqualNoCase("ENEMY_SKULL")) return eClassSkull;
+    return eClassGoblin;
+}
+       
+//======================================        
+
+function void ParseQUEST(string strLine) {
+
+    string str;
+
+    GetArgs(strLine);
+    nCurrentQuest = ParseQuestNumber(StrArg(1));
+    
+    if (nCurrentQuest == eNoQuest) return;
+        
+    anQuestEnableLevel[nCurrentQuest] = IntArg(2);
+    anQuestGroup[nCurrentQuest] = IntArg(3);
+    anQuestReputationGuild[nCurrentQuest] = ParseGuild(StrArg(4));
+    anQuestReputationLevel[nCurrentQuest] = IntArg(5);
+    
+    str = StrArg(6);
+    if (str.EqualNoCase("False")) anQuestFlags[nCurrentQuest] |= eDontAddToLog;
+    anQuestFlags[nCurrentQuest] |= eQuestLoaded;
+
+}
+
+function void ParseGIVER(string strLine) {
+
+    int nGiverType;
+    int nWhen;
+
+    GetArgs(strLine);
+    nGiverType = ParseGiverType(StrArg(1));
+        
+    if (nGiverType == eQuestGiverActive) {
+        SetQuestGiver(nCurrentQuest,eQuestGiverActive,GetUnitMapping(StrArg(2)),ParseFinishingFlag(StrArg(3)));
+        nWhen = ParseWhen(StrArg(4));
+        if ((nWhen != eDontKnowWhen) && (nWhen != eLoaderUnknownValue)) AddActionNPCRemove(nCurrentQuest,nWhen,anQuestGiverMapping[nCurrentQuest]);
+    }
+    else if (nGiverType == eQuestGiverPassive) {
+        SetQuestGiver(nCurrentQuest,eQuestGiverPassive,GetUnitMapping(StrArg(2)),ParseFinishingFlag(StrArg(3)));
+        nWhen = ParseWhen(StrArg(4));
+        if ((nWhen != eDontKnowWhen) && (nWhen != eLoaderUnknownValue)) AddActionNPCRemove(nCurrentQuest,nWhen,anQuestGiverMapping[nCurrentQuest]);
+    }
+    else if (nGiverType == eQuestGiverMarker) {
+        SetQuestGiverIsMarker(nCurrentQuest,IntArg(2),ParseMissionNumber(StrArg(3)),M2A(IntArg(4)));
+    }
+
+}
+
+function void ParseFC(string strLine) {
+
+    int nFinishingCondition;
+
+    GetArgs(strLine);
+    nFinishingCondition = ParseFinishingCondition(StrArg(1));
+
+    if (nFinishingCondition == eQuestTypeUnknown) {
+        SetQuestUnknown(nCurrentQuest);
+    }
+    else if (nFinishingCondition == eQuestTypeGo) {
+        SetQuestGo(nCurrentQuest,IntArg(2),ParseMissionNumber(StrArg(3)),M2A(IntArg(4)));
+    }
+    else if (nFinishingCondition == eQuestTypeGoAway) {
+        SetQuestGoAway(nCurrentQuest,IntArg(2),ParseMissionNumber(StrArg(3)),M2A(IntArg(4)));
+    }
+    else if (nFinishingCondition == eQuestTypeOpen) {
+        SetQuestOpen(nCurrentQuest,IntArg(2),ParseMissionNumber(StrArg(3)));                
+    }
+    else if (nFinishingCondition == eQuestTypeFindPlace) {
+        SetQuestFindPlace(nCurrentQuest,IntArg(2),ParseMissionNumber(StrArg(3)),M2A(IntArg(4)));
+    }
+    else if (nFinishingCondition == eQuestTypeFindLocation) {
+        SetQuestFindLocation(nCurrentQuest,StrArg(2));        
+    }
+    else if (nFinishingCondition == eQuestTypeClearArea) {
+        SetQuestClearArea(nCurrentQuest,IntArg(2),ParseMissionNumber(StrArg(3)),M2A(IntArg(4)),ParseParty(StrArg(5)));
+    }
+    else if (nFinishingCondition == eQuestTypeFindObject) {
+        SetQuestFindObject(nCurrentQuest,StrArg(2));
+    }
+    else if (nFinishingCondition == eQuestTypeBringObject) {
+        SetQuestBringObject(nCurrentQuest,StrArg(2),IntArg(3));
+    }
+    else if (nFinishingCondition == eQuestTypeBringGold) {
+        SetQuestBringGold(nCurrentQuest,IntArg(2));
+    }    
+    else if (nFinishingCondition == eQuestTypeDeliverObject) {
+        SetQuestDeliverObject(nCurrentQuest,StrArg(2),IntArg(3),IntArg(4),ParseMissionNumber(StrArg(5)),M2A(IntArg(6)));
+    }
+    else if (nFinishingCondition == eQuestTypeTalk) {
+        SetQuestTalk(nCurrentQuest,GetUnitMapping(StrArg(2)));
+    }
+    else if (nFinishingCondition == eQuestTypeFindAndTalk) {
+        SetQuestFindAndTalk(nCurrentQuest,GetUnitMapping(StrArg(2)));
+    }
+    else if (nFinishingCondition == eQuestTypeKill) {
+        SetQuestKill(nCurrentQuest,GetUnitMapping(StrArg(2)));
+    }
+    else if (nFinishingCondition == eQuestTypeFindAndKill) {
+        SetQuestFindAndKill(nCurrentQuest,GetUnitMapping(StrArg(2)));
+    }
+    
+}
+
+function void ParseAOQ(string strLine) {
+
+    GetArgs(strLine);
+    AddActivation(nCurrentQuest,ParseActivationType(StrArg(1)),ParseWhen(StrArg(2)),ParseQuestNumber(StrArg(3)));
+
+}
+
+function void ParseACT(string strLine) {
+
+    int nActionType;
+
+    GetArgs(strLine);
+    nActionType = ParseActionType(StrArg(1));
+
+    if (nActionType == eActionOpen) {
+        AddActionOpen(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3),ParseMissionNumber(StrArg(4)));
+    }
+    else if (nActionType == eActionClose) {
+        AddActionClose(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3),ParseMissionNumber(StrArg(4)));
+    }
+    else if (nActionType == eActionNPCGo) {
+        AddActionNPCGo(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)),IntArg(4));
+    }
+    else if (nActionType == eActionNPCTeleport) {
+        AddActionNPCTeleport(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)),IntArg(4),ParseMissionNumber(StrArg(5)),IntArg(6));
+    }
+    else if (nActionType == eActionNPCCreate) {
+        AddActionNPCCreate(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)));
+    }
+    else if (nActionType == eActionNPCRemove) {
+        AddActionNPCRemove(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)));
+    }
+    else if (nActionType == eActionNPCKill) {
+        AddActionNPCKill(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)));
+    }
+    else if (nActionType == eActionNPCDialog) {
+        AddActionNPCDialog(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)),StrArg(4));        
+    }
+    else if (nActionType == eActionNPCChangeParty) {
+        AddActionNPCChangeParty(nCurrentQuest,ParseWhen(StrArg(2)),GetUnitMapping(StrArg(3)),ParseParty(StrArg(4)));
+    }
+    else if (nActionType == eActionObjectCreate) {
+        AddActionObjectCreate(nCurrentQuest,ParseWhen(StrArg(2)),StrArg(3),IntArg(4),ParseMissionNumber(StrArg(5)));    
+    }
+    else if (nActionType == eActionObjectAdd) {
+        AddActionObjectAdd(nCurrentQuest,ParseWhen(StrArg(2)),StrArg(3),StrArg(4),IntArg(5));
+    }
+    else if (nActionType == eActionObjectRemove) {
+        AddActionObjectRemove(nCurrentQuest,ParseWhen(StrArg(2)),StrArg(3),StrArg(4),IntArg(5));
+    }
+    else if (nActionType == eActionEnemyCreate) {
+        //AddActionEnemyCreate(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3),IntArg(4),IntArg(5),IntArg(6),IntArg(7),IntArg(8));
+        AddActionEnemyCreate(nCurrentQuest,
+        ParseWhen(StrArg(2)),
+        ParseEnemyType(StrArg(3)),//string ENEMY_GOBLIN
+        IntArg(4),//ilosc
+        IntArg(5),//Level
+        IntArg(6),//3
+        ParseMissionNumber(StrArg(7)),//Map
+        ParseParty(StrArg(8)));//Party
+    }
+    else if (nActionType == eActionChangeRelations) {
+        AddActionChangeRelations(nCurrentQuest,ParseWhen(StrArg(2)),ParseParty(StrArg(3)),ParseParty(StrArg(4)),ParsePartyRelation(StrArg(5)));
+    }
+    else if (nActionType == eActionKillArea) {
+        AddActionKillArea(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3),ParseMissionNumber(StrArg(4)),M2A(IntArg(5)),ParseParty(StrArg(6)));
+    }
+    else if (nActionType == eActionClearArea) {
+        AddActionClearArea(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3),ParseMissionNumber(StrArg(4)),M2A(IntArg(5)),ParseParty(StrArg(6)));
+    }
+    else if (nActionType == eActionShowLocation) {
+        AddActionShowLocation(nCurrentQuest,ParseWhen(StrArg(2)),StrArg(3));    
+    }
+    else if (nActionType == eActionEffectCreate) {
+        AddActionEffectCreate(nCurrentQuest,ParseWhen(StrArg(2)),StrArg(3),IntArg(4),IntArg(5),ParseMissionNumber(StrArg(6)));     
+    }
+    else if (nActionType == eActionSetWorldState) {
+        AddActionSetWorldState(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3));
+    }
+    else if (nActionType == eActionPlayCutscene) {
+        AddActionPlayCutscene(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3));
+    }
+    else if (nActionType == eActionActivateLevel) {
+        AddActionActivateLevel(nCurrentQuest,ParseWhen(StrArg(2)),StrArg(3));
+    }
+    else if (nActionType == eActionDisableTown) {
+        AddActionDisableTown(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3),IntArg(4),ParseMissionNumber(StrArg(5)));
+    }
+
+    // delayed actions
+    else if (nActionType == eActionKillAreaDelayed) {
+        AddActionKillArea(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(4),ParseMissionNumber(StrArg(5)),M2A(IntArg(6)),ParseParty(StrArg(7)));
+        SetCurrentActionDelay(IntArg(3));    
+    }
+    else if (nActionType == eActionTeleportHero) {
+        AddActionTeleportHero(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(4),ParseMissionNumber(StrArg(5)),IntArg(6));
+        SetCurrentActionDelay(IntArg(3));    
+    }
+
+}
+
+function void ParseRWD(string strLine) {
+
+    int nRewardType;
+
+    GetArgs(strLine);
+    nRewardType = ParseRewardType(StrArg(1));
+
+    if (nRewardType == eRewardGold) {
+        AddRewardGold(nCurrentQuest,ParseWhen(StrArg(2)),ParseQuantityType(StrArg(3)),IntArg(3));
+    }
+    else if (nRewardType == eRewardReputation) {
+        AddRewardReputation(nCurrentQuest,ParseWhen(StrArg(2)),ParseQuantityType(StrArg(3)),IntArg(3),ParseGuild(StrArg(4)));
+    }
+    else if (nRewardType == eRewardExperience) {
+        AddRewardExperience(nCurrentQuest,ParseWhen(StrArg(2)),ParseQuantityType(StrArg(3)),IntArg(3));
+    }
+    else if (nRewardType == eRewardSkillPoints) {
+        AddRewardSkillPoints(nCurrentQuest,ParseWhen(StrArg(2)),IntArg(3));
+    }
+    else if (nRewardType == eRewardItem) {
+        AddRewardItem(nCurrentQuest,ParseWhen(StrArg(2)),ParseItemQuantity(StrArg(3)),StrArg(4));
+    }
+    else if (nRewardType == eRewardRandom) {
+        AddRewardRandom(nCurrentQuest,ParseWhen(StrArg(2)),ParseQuantityType(StrArg(3)));
+    }
+
+}
+
+function void ParseNPC(string strLine) {
+
+    GetArgs(strLine);
+    if (ParseGiverNumber(StrArg(1)) == eNoUnit) return;
+    AddUnitMapping(StrArg(1),IntArg(2),IntArg(3),ParseMissionNumber(StrArg(4)),IntArg(5),IntArg(6),
+    ParseParty(StrArg(7)),ParseGuild(StrArg(8)),IntArg(9),IntArg(10),StrArg(11),IntArg(12));
+    nCurrentUnit = nMappingsNum - 1;
+
+}
+
+function void ParseCONTAINER(string strLine) {
+
+    GetArgs(strLine);
+    AddContainer(StrArg(1),IntArg(2),ParseMissionNumber(StrArg(3)));    
+    nCurrentContainer = nContainersNumber - 1;
+
+}
+
+function void ParseOBJECTS(string strLine) {
+
+    string str;
+    int nArg;
+
+    GetArgs(strLine);
+    nArg = 2;        
+    str = StrArg(nArg++);
+    
+    while (!str.EqualNoCase("")) {
+        if (nCurrentUnit != eNoUnit) AddItemToUnit(nCurrentUnit,str);
+        if (nCurrentContainer != eNoContainer) AddItemToContainer(nCurrentContainer,str);
+        str = strArg(nArg++);        
+    } 
+
+}
+
+function void ParseLOCATION(string strLine) {
+
+    GetArgs(strLine);
+    AddLocation(StrArg(1),IntArg(2),IntArg(3),ParseMissionNumber(StrArg(4)),M2A(IntArg(5)),IntArg(6));
+
+}
+
+function void ParseEND() {
+
+    nCurrentQuest = eNoQuest;
+    nCurrentUnit = eNoUnit;
+    nCurrentContainer = eNoContainer;
+
+}
+
+function void Parse(string strLine) {
+
+    string strCommand;
+        
+    strCommand = GetCommand(strLine);
+    if (strCommand.EqualNoCase("QUEST")) ParseQUEST(strLine);
+    else if (nCurrentQuest != eNoQuest) {
+        if (strCommand.EqualNoCase("GIVER")) ParseGIVER(strLine);
+        else if (strCommand.EqualNoCase("FC")) ParseFC(strLine);
+        else if (strCommand.EqualNoCase("AOQ")) ParseAOQ(strLine);
+        else if (strCommand.EqualNoCase("ACTION")) ParseACT(strLine);
+        else if (strCommand.EqualNoCase("REWARD")) ParseRWD(strLine);
+    }
+    else if (strCommand.EqualNoCase("NPC")) ParseNPC(strLine);
+    else if (strCommand.EqualNoCase("CONTAINER")) ParseCONTAINER(strLine);
+    else if (strCommand.EqualNoCase("OBJECTS")) ParseOBJECTS(strLine);    
+    else if (strCommand.EqualNoCase("LOCATION")) ParseLOCATION(strLine);    
+    else if (strCommand.EqualNoCase("END")) ParseEND();
+    else if (nCurrentQuest == eNoQuest) return; // jestesmy poza blokiem QUEST... END wiec olewamy
+
+#ifdef QUEST_LOADER_DEBUG
+    else TRACE("Unknown command %s                                   \n",strCommand);
+#endif
+
+}
+
+//======================================        
+
+function void LoadQuests1(string strFilename) {
+
+    int i;
+                      
+    astrLines.RemoveAll();
+    ReadTextFile(strFilename,astrLines,true);
+    nLinesNum = astrLines.GetSize();
+
+    nCurrentQuest = eNoQuest;
+    
+    for (nCurrentLine = 0; nCurrentLine < nLinesNum / 2; nCurrentLine++) Parse(astrLines[nCurrentLine]);
+        
+}
+
+function void LoadQuests2() {
+
+    for (; nCurrentLine < nLinesNum; nCurrentLine++) Parse(astrLines[nCurrentLine]);
+
+}
+
+//======================================        
+
+#endif

@@ -1,0 +1,446 @@
+#ifndef RPGCOMPUTE_WEAPON_ECH
+#define RPGCOMPUTE_WEAPON_ECH
+
+#include "Equipment.ech"
+
+
+function int SumDamage(EquipmentValues wVal, WeaponParams wPar, int nUsage, int bAllDamage)
+{
+	int nDamage, nDamageSum, i, k, nLastDamage;
+    int nMin, nMax;
+	
+	nDamage = CalculateDamageFromLevel(wVal.GetLevel());
+	nDamage = CalculateMultipliedValue(nDamage, MIN(eMaxEqClass,wVal.GetMultiplied()));
+	
+    if(bAllDamage)nLastDamage = eDamagesCnt;
+    else nLastDamage = eLastPhysicalDamage+1;
+    
+	nDamageSum = 0;
+	for (i = 0; i < nLastDamage; i++)
+	{
+		nMin = (wPar.GetMinDamage(i)*wVal.GetWeaponVarMin())/100;
+		nMax = (wPar.GetMaxDamage(i)*wVal.GetWeaponVarMax())/100;
+		if (nUsage >= 100) 
+        {
+            nDamageSum += (nDamage*nMax)/100;
+        }
+		else 
+		{
+			k = ((nMax - nMin)*nUsage/100) + nMin; // podniesienie minimalnego  damagu przez  nUsage
+			nDamageSum += (nDamage*k)/100; // Wyliczenie damage w oparciu o nowy wspolczynnik.
+		}
+	}
+	return nDamageSum;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+function int SumDamage(EquipmentValues wVal, WeaponParams wPar, int nUsage)
+{
+	return SumDamage(wVal, wPar, nUsage, true);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+function int CalcSkillDamagePercent(unit pUnit, int nSkill);
+function int IsInBerserkMode(unit pUnit);
+function int IsInDefenceMode(unit pUnit);
+
+function int GetDamage(unit pUnit, EquipmentValues wVal, WeaponParams wPar, int nDamageType, int nRand, int nStrength,int bBow)
+{
+    int nDamage,nDamage1,nDamage2, k, nPotion, nPotionCnt;
+    int nMin, nMax, nMul;
+	
+    nMul=100;
+	nDamage1 = CalculateDamageFromLevel(wVal.GetLevel());
+	nDamage2 = CalculateMultipliedValue(nDamage1, MIN(eMaxEqClass,wVal.GetMultiplied()));
+	
+    if(nDamageType > eDamageBludgeoning && wVal.GetWeaponExtraDamageType()==nDamageType)//XXXMD
+    {
+        nDamage=(nDamage1*wVal.GetWeaponExtraDamagePercent())/100; 
+    }
+    else
+    {
+        nMin = (wPar.GetMinDamage(nDamageType)*wVal.GetWeaponVarMin())/100;
+	    nMax = (wPar.GetMaxDamage(nDamageType)*wVal.GetWeaponVarMax())/100;
+        
+        if (nRand >= 100) nRand=100;
+        
+        k = ((nMax-nMin)*nRand)/100 + nMin;
+        nDamage = ((nDamage2+nStrength)*k)/100;
+    }
+    
+    if (pUnit != null && nDamageType <= eDamageBludgeoning)
+    {
+        nPotionCnt = pUnit.GetPotionsCount();
+        for (nPotion = 0; nPotion < nPotionCnt; nPotion++)
+        {
+            if (pUnit.GetPotionValues(nPotion).GetDamageTicks() == 0)
+            {
+                nDamage = MAX(nDamage + pUnit.GetPotionValues(nPotion).GetDamage(nDamageType), 0);
+            }
+        }
+    }
+    
+    if(bBow || nDamageType > eDamageBludgeoning) return MIN(99999,nDamage);// Dodane damtype>blunt 12.09 do patcha 1.6
+    
+    nMul = CalcSkillDamagePercent(pUnit, eSkillStrongHand);
+        
+    if (IsInDefenceMode(pUnit))
+    {
+        nMul = nMul * CalcSkillDamagePercent(pUnit, eSkillDefensiveFight) / 100;
+    }
+    if(IsInBerserkMode(pUnit))
+    {
+        nMul = nMul * CalcSkillDamagePercent(pUnit, eSkillBerserk) / 100;
+    }
+    k=MIN(99999,(nDamage*nMul)/100);
+	return k;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetBowDamage(EquipmentValues wVal,WeaponParams wPar)
+{
+    int nDamage;
+    nDamage = CalculateDamageFromLevel(wVal.GetLevel())*2;
+    nDamage = CalculateMultipliedValue(nDamage, MIN(eMaxEqClass,wVal.GetMultiplied()));
+    return (wPar.GetMinDamage(0)*nDamage)/100;
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetBowDamageWithPotions(unit pUnit,EquipmentValues wVal,WeaponParams wPar)
+{
+    int nAddDamage,nDamage,nIndex,nEquipmentCnt;
+    EquipmentValues eVal;
+    
+    nDamage = GetBowDamage(wVal,wPar);
+    
+    if (pUnit != null)
+    {
+        nAddDamage=0;
+        nEquipmentCnt = pUnit.GetEquipmentCount();
+        for (nIndex = 0; nIndex < nEquipmentCnt; nIndex++)
+        {
+            eVal = pUnit.GetEquipmentValuesOnIndex(nIndex);
+            if (eVal != null)
+            {
+                nAddDamage += eVal.GetAddParam(eParamDamage);
+            }
+        }
+        nDamage += nAddDamage;
+        #ifdef NEW_BALANCING  
+        
+        if(pUnit.IsHeroUnit())
+        {
+            nAddDamage = (pUnit.GetUnitValues().GetPoint(ePointsDexterity)  * 2 *  (10+pUnit.GetUnitValues().GetLevel())/5);
+        }
+        else 
+        {
+            nAddDamage = (pUnit.GetUnitValues().GetPoint(ePointsDexterity)  *  (10+pUnit.GetUnitValues().GetLevel())/10);
+        }
+        
+        #else
+        
+            nAddDamage = pUnit.GetUnitValues().GetPoint(ePointsDexterity)*2;
+        #endif
+        nDamage += nAddDamage;
+    }
+    return nDamage;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void CalculateWeaponPrice(EquipmentValues wVal, WeaponParams wPar)
+{
+    int nPrice;
+    if(wPar.GetWeaponType() == eWeaponBow)
+    {
+        nPrice = GetBowDamage(wVal,wPar)*4;
+    }
+    else
+    {
+        nPrice = SumDamage(wVal, wPar, 50)*4;
+    }
+    nPrice = nPrice*wPar.GetPriceModifier()/100;
+    wVal.SetPrice(wVal.GetPrice() + nPrice);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+    /*
+    eForcefieldNone,
+        eForcefieldPerlin,
+        eForcefieldFreshnellRed,
+        eForcefieldFreshnellGreen,
+        eForcefieldFreshnellBlue,
+        eForcefieldElectric,
+        
+    
+    */
+function void UpdateWeaponForceFieldType(WeaponParams wPar, EquipmentValues wVal)
+{
+    int i;
+    
+    i=wVal.GetWeaponExtraDamageType();
+    if(i==eDamageSpirit)
+    {
+        wVal.SetForceFieldType(eForcefieldFreshnellBlue);
+        wVal.SetWeaponExtraExplosionType(eForcefieldFreshnellBlue);
+        wVal.SetWeaponTrailNormalColor(0xFFBBFFFF);
+    }
+    else if(i==eDamageFire)
+    {
+        wVal.SetForceFieldType(eForcefieldFreshnellRed);
+        wVal.SetWeaponExtraExplosionType(eForcefieldFreshnellRed);
+        wVal.SetWeaponTrailNormalColor(0xFFFF9000);
+    }
+    else if(i==eDamageElectric)
+    {
+        wVal.SetForceFieldType(eForcefieldElectric);
+        wVal.SetWeaponExtraExplosionType(eForcefieldElectric);
+        wVal.SetWeaponTrailNormalColor(0xFFA0BBFF);
+    }
+    else if(i==eDamageCold)
+    {
+        wVal.SetForceFieldType(eForcefieldPerlin);
+        wVal.SetWeaponExtraExplosionType(eForcefieldPerlin);
+        wVal.SetWeaponTrailNormalColor(0xFFFFFFFF);
+    }
+    else if(i==eDamagePoison)
+    {
+        wVal.SetForceFieldType(eForcefieldFreshnellGreen);
+        wVal.SetWeaponExtraExplosionType(eForcefieldFreshnellGreen);
+        wVal.SetWeaponTrailNormalColor(0xFF00FF00);
+    }
+    else
+    {
+        wVal.SetForceFieldType(eForcefieldNone);
+        wVal.SetWeaponExtraExplosionType(eForcefieldNone);
+        wVal.SetWeaponTrailNormalColor(0xFFFFFFFF);
+    }
+    wVal.SetWeaponTrailHitColor(0xFFFF0000);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void InitWeapon(EquipmentValues wVal, WeaponParams wPar, int nLevel, int nClass, int nMeshNum)
+{
+    int nVarMin, nVarMax;
+    int i,nPrice;
+    
+    //equipment
+    InitEquipment(wVal, wPar, nLevel, nClass, nMeshNum);
+
+    //Damage varMin/Max
+    if(wVal.GetMultiplied()>eMaxEqClass) wVal.SetMultiplied(eMaxEqClass);    
+    i=wVal.GetMultiplied();
+    
+    if(i>10)
+    {
+        nVarMin = 100; nVarMax = 100;
+    }
+    else if (i<2)
+    {
+	    nVarMin = 80 + Rand(20);
+	    nVarMax = 100 + Rand(20);
+    }
+    else
+    {
+        nVarMin = 100-20+i*2 + Rand(20-i*2);
+	    nVarMax = 100 +  Rand(20-i*2);
+    }
+    if (nVarMax < nVarMin)
+    {
+        SWAP(nVarMax, nVarMax);
+    }
+    
+    
+    wVal.SetWeaponVarMin(nVarMin);
+    wVal.SetWeaponVarMax(nVarMax);
+
+    i=wVal.GetMeshNum();
+    if(i==82 && wPar.GetWeaponType()==eWeaponSword) //sword offire
+    { 
+       wVal.SetWeaponExtraDamageType(eDamageFire);
+       wVal.SetWeaponExtraDamagePercent(30+Rand(50)); 
+    }
+    else if(i==81 && wPar.GetWeaponType()==eWeaponSword)     //Sword of deep water - cold
+    {  //
+       wVal.SetWeaponExtraDamageType(eDamageCold);
+       wVal.SetWeaponExtraDamagePercent(30+Rand(50)); 
+    }
+    else if(nClass>0)
+    {
+        if(Rand(3)>0) 
+        {
+            /*eDamageCold,
+            eDamageFire,
+            eDamageElectric,
+            eDamageSpirit,
+            */
+           i=eDamageCold+Rand(4);
+           wVal.SetWeaponExtraDamageType(i);
+           wVal.SetWeaponExtraDamagePercent(30+Rand(50)); 
+           
+        }
+        else if(!Rand(10))//zatruta broñ
+        {
+            wVal.SetWeaponExtraDamageType(eDamagePoison);
+            wVal.SetWeaponExtraDamagePercent(30+Rand(50)); 
+        }
+    }
+    else wVal.SetWeaponExtraDamageType(0);
+    
+    UpdateWeaponForceFieldType(wPar, wVal);
+    
+    //price
+    CalculateWeaponPrice(wVal, wPar);
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void InitBrokenWeapon(EquipmentValues wBrokenVal, WeaponParams wBrokenPar, EquipmentValues wNewVal, WeaponParams wNewPar)
+{
+    InitWeapon(wNewVal, wNewPar, 1, 0, 0);
+    wNewVal.SetMultiplied(MIN(eMaxEqClass,wBrokenVal.GetMultiplied()));
+    
+    wNewVal.SetMeshNum(wBrokenVal.GetMeshNum());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+function int Rand(int a,int b)
+{
+    return (Rand(b-a))+a;
+}
+function int Rand(int a,int b,int nRand)
+{
+    return ((b-a)*nRand/100)+a;
+}
+function int GetTrapDamage(MissileParams mPar,int nIndex,int nDamage, int nRand)
+{
+    int k,nMin,nMax;
+    nMin = mPar.GetMinDamage(nIndex);
+    nMax = mPar.GetMaxDamage(nIndex);
+	if (nRand >= 100) return (nDamage*nMax)/100; 
+    k = ((nMax - nMin)*nRand/100) + nMin; // wyliczenie wartosci wspolczynnika k w zaleznosci od nRand
+    return (nDamage*k)/100; // Wyliczenie damage w oparciu o nowy wspolczynnik k.
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int GetMissileDamage(unit pUnit,MissileParams mPar,int nIndex, EquipmentValues eVal,int nRand,int nStrength)
+{
+    int k,nMin,nMax,nDamage,nLevel,nPotion,nPotionCnt;
+    nLevel = eVal.GetLevel();
+    nDamage = CalculateDamageFromLevel(nLevel);
+    nDamage = CalculateMultipliedValue(nDamage, MIN(eMaxEqClass,eVal.GetMultiplied()));    
+    
+    
+    nMin = mPar.GetMinDamage(nIndex);
+    nMax = mPar.GetMaxDamage(nIndex);
+    
+    
+	if (nRand >= 100) 
+    {
+        k = nMax;
+    }
+    else
+    {
+
+    	k = ((nMax - nMin)*nRand/100) + nMin; // wyliczenie wartosci wspolczynnika k w zaleznosci od nRand
+    }
+    
+	nDamage = (nDamage*k)/100; // Wyliczenie damage w oparciu o nowy wspolczynnik k.
+    
+    if (pUnit != null)//dodanie damage od potionow
+    {
+        nPotionCnt = pUnit.GetPotionsCount();//
+        for (nPotion = 0; nPotion < nPotionCnt; nPotion++)
+        {
+            if (pUnit.GetPotionValues(nPotion).GetDamageTicks() == 0)
+            {
+                nDamage = MAX(nDamage + pUnit.GetPotionValues(nPotion).GetDamage(nIndex), 0);
+            }
+        }
+    }    
+    return nDamage + (nStrength * (nMin+nMax)/200);
+    
+    // wzór    str*srednia z min i max + dmage* random z min,max
+	
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+//  eVal i ePar - oznaczaj¹ quiver
+function void InitBowMissile(unit pUnit, MissileValues mVal, MissileParams mPar, EquipmentValues eVal, EquipmentParams ePar, EquipmentValues wBowVal, WeaponParams wBowPar,int nHitPercentMultiplier, int nBowStrength)
+{
+	
+	int arrDamage[eDamagesCnt];
+	int nDamageSum;
+    int i, k, nMin, nMax;
+
+    nDamageSum = 0;
+    for (i = 0; i < eDamagesCnt; i++)
+    {
+        if(i<3)
+            arrDamage[i]=GetMissileDamage(pUnit, mPar,i,eVal,Rand(100),nBowStrength);
+        else
+            arrDamage[i] = GetDamage(pUnit,wBowVal,wBowPar,i,100,0,true);
+		nDamageSum += arrDamage[i];
+    }
+  	if (!nDamageSum)
+    {
+        arrDamage[eLastPhysicalDamage] = nBowStrength;
+    }
+
+	// wpisaæ do  missile'a
+	for (i = 0; i < eDamagesCnt; i++)
+    {
+        mVal.SetDamage(i, (arrDamage[i]*nHitPercentMultiplier)/100);
+    }
+    
+    for (i = 0; i < eTargetTypeModifiersCnt; i++)
+    {
+        mVal.SetTargetTypeModifier(i, 100);
+    }
+	mVal.SetDamageRangeA(mPar.GetDamageRangeA());
+    mVal.SetExtraExplosionType(wBowVal.GetWeaponExtraExplosionType());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void InitMissile(unit pUnit, MissileValues mVal, EquipmentValues wVal, WeaponParams wPar, int bIsOnHorse, int nHitPercentMultiplier, int nStrength)
+{
+	int nDamage, nLevel;
+	int arrDamage[eDamagesCnt];
+	int nDamageSum,bBow;
+    int i, k, nMin, nMax;
+
+	nDamage = CalculateDamageFromLevel(wVal.GetLevel());
+	nLevel  = (wVal.GetLevel()/3)*3;
+	nDamage = CalculateMultipliedValue(nDamage, MIN(eMaxEqClass,wVal.GetMultiplied()));
+    
+    if(wPar.GetWeaponType() == eWeaponBow)bBow = true; else bBow = false;
+	
+    nDamageSum = 0;
+    for (i = 0; i < eDamagesCnt; i++)
+	{
+		arrDamage[i] = GetDamage(pUnit, wVal,wPar,i,Rand(100),nStrength,bBow);
+		nDamageSum += arrDamage[i];
+	}
+	if (!nDamageSum)
+    {
+        arrDamage[eLastPhysicalDamage] = nStrength;
+    }
+    
+	// wpisaæ do  missile'a
+	for (i = 0; i < eDamagesCnt; i++)
+    {
+        mVal.SetDamage(i, (arrDamage[i]*nHitPercentMultiplier)/100);
+    }
+	for (i = 0; i < eTargetTypeModifiersCnt; i++)
+    {
+        if (bIsOnHorse)
+        {
+            mVal.SetTargetTypeModifier(i, wPar.GetTargetTypeModifier(i)*wPar.GetTargetTypeModifierMulFromHorse()/100);
+        }
+        else
+        {
+		    mVal.SetTargetTypeModifier(i, wPar.GetTargetTypeModifier(i));
+        }
+    }
+    //XXX
+    i=wVal.GetWeaponExtraDamageType();
+           //XXX
+    if(i==eDamageSpirit)mVal.SetTargetForcefieldType(eForcefieldFreshnellBlue);
+    if(i==eDamageFire)mVal.SetTargetForcefieldType(eForcefieldFreshnellRed);
+    if(i==eDamageElectric)mVal.SetTargetForcefieldType(eForcefieldElectric);
+    if(i==eDamageCold)mVal.SetTargetForcefieldType(eForcefieldPerlin);
+    if(i==eDamagePoison)mVal.SetTargetForcefieldType(eForcefieldFreshnellGreen);
+    if(i==eDamageCold ||i==eDamageFire ||i==eDamageElectric ||i==eDamageSpirit ||i==eDamagePoison)
+    {
+        mVal.SetTargetForcefieldAmount(100);
+        mVal.SetTargetForcefieldTicks(5);
+    }
+    mVal.SetExtraExplosionType(wVal.GetWeaponExtraExplosionType());
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //RPGCOMPUTE_WEAPON_ECH

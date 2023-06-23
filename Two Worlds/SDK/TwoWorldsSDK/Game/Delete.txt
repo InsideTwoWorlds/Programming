@@ -1,0 +1,39 @@
+editor.SetCreateRect 0 0 256 256
+
+
+Editor.DeleteAllObjects MUSHROOM_01
+Editor.DeleteAllObjects MUSHROOM_02
+Editor.DeleteAllObjects MUSHROOM_03
+Editor.DeleteAllObjects MUSHROOM_04
+Editor.DeleteAllObjects MUSHROOM_05
+Editor.DeleteAllObjects MUSHROOM_06
+Editor.DeleteAllObjects ING_01
+Editor.DeleteAllObjects ING_02
+Editor.DeleteAllObjects ING_03
+Editor.DeleteAllObjects ING_04
+Editor.DeleteAllObjects ING_05
+Editor.DeleteAllObjects ING_06
+Editor.DeleteAllObjects ING_07
+Editor.DeleteAllObjects ING_08
+Editor.DeleteAllObjects ING_09
+Editor.DeleteAllObjects ING_10
+Editor.DeleteAllObjects ING_11
+Editor.DeleteAllObjects ING_12
+Editor.DeleteAllObjects ING_13
+Editor.DeleteAllObjects ING_14
+Editor.DeleteAllObjects ING_15
+Editor.DeleteAllObjects ING_16
+Editor.DeleteAllObjects ING_17
+Editor.DeleteAllObjects ING_18
+Editor.DeleteAllObjects ING_19
+Editor.DeleteAllObjects ING_20
+Editor.DeleteAllObjects ING_21
+Editor.DeleteAllObjects ING_22
+Editor.DeleteAllObjects ING_23
+Editor.DeleteAllObjects ING_24
+Editor.DeleteAllObjects ING_25
+Editor.DeleteAllObjects ING_26
+Editor.DeleteAllObjects ING_27
+Editor.DeleteAllObjects ING_28
+Editor.DeleteAllObjects ING_29
+Editor.DeleteAllObjects ING_30

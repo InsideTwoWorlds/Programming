@@ -1,0 +1,124 @@
+#ifndef COMMON_GENERIC_ECH
+#define COMMON_GENERIC_ECH
+
+#include "Debug.ech"
+
+consts
+{
+    e16m = 16*e1m;
+    e30m = 30*e1m;
+    e40m = 40*e1m;
+    e45m = 45*e1m;
+    e60m = 60*e1m;
+    e80m = 80*e1m;
+    e100m = 100*e1m;
+    
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#define INT_MAX 2147483647
+#define INT_MIN (-2147483647 - 1)
+
+#define A2G(nA) ((nA) >> 8)
+#define G2A(nG) ((nG) << 8)
+#define G2AMID(nG) (((nG) << 8) + 0x80)
+#define M2A(a) ((a) << 6)
+#define A2M(a) ((a) >> 6)
+
+//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int ABS(int nVal)
+{
+    if (nVal < 0)
+    {
+        return -nVal;
+    }
+    return nVal;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MIN(int nVal1, int nVal2)
+{
+    if (nVal1 < nVal2)
+    {
+        return nVal1;
+    }
+    return nVal2;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MIN(int nVal1, int nVal2, int nVal3)
+{
+    if (nVal1 < nVal2)
+    {
+        if (nVal1 < nVal3)
+        {
+            return nVal1;
+        }
+        else
+        {
+            return nVal3;
+        }
+    }
+    else if (nVal2 < nVal3)
+    {
+        return nVal2;
+    }
+    return nVal3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MAX(int nVal1, int nVal2)
+{
+    if (nVal1 > nVal2)
+    {
+        return nVal1;
+    }
+    return nVal2;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int MAX(int nVal1, int nVal2, int nVal3)
+{
+    if (nVal1 > nVal2)
+    {
+        if (nVal1 > nVal3)
+        {
+            return nVal1;
+        }
+        else
+        {
+            return nVal3;
+        }
+    }
+    else if (nVal2 > nVal3)
+    {
+        return nVal2;
+    }
+    return nVal3;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CLAMP(int nVal1, int nVal2, int nVal3)
+{
+    ASSERT(nVal2 <= nVal3);
+	if (nVal1 < nVal2)
+    {
+		return nVal2;
+    }
+	if (nVal1 > nVal3)
+    {
+		return nVal3;
+    }
+	return nVal1;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function void SWAP(int& nVar1, int& nVar2)
+{
+    int nTmp;
+    
+    nTmp = nVar1;
+    nVar1 = nVar2;
+    nVar2 = nTmp;
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+function int CAST_ANGLE(int nVal)
+{
+    return (nVal & 0xFF);
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //COMMON_GENERIC_ECH

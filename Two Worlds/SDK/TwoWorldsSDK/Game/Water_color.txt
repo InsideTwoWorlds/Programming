@@ -1,0 +1,244 @@
+game.CreateEditorObjects 1
+
+			Editor.LoadLevel Map_sea.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+			Editor.LoadLevel Map_F07.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+
+			Editor.LoadLevel Map_A05.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_A06.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_A07.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_A08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_A09.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_A10.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_B06.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+			Editor.LoadLevel Map_B07.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_B08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_B09.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_B10.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_B11.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_B12.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_C04.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_C05.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_C06.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_C08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_C09.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_D08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_D09.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_E07.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_E08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_F04.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_F05.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_F06.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_F07.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_F08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+			Editor.LoadLevel Map_G04.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_G05.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_G06.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_G07.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_G08.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_H03.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+			Editor.LoadLevel Map_H04.lnd
+editor.setwatercolor 0.5 0.25 0.15
+editor.savelevel 1
+
+
+
+
+

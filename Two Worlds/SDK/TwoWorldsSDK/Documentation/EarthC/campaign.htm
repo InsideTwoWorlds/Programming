@@ -1,0 +1,101 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title> campaign object </title>
+</head>
+<body>
+<a name="campaign">
+<hr>
+<campaign>
+<big><strong>campaign</strong> object</big><br><br>
+<big>Functions</big>
+<pre>
+<campaign_functions_begin>
+public:
+campaign GetThis()
+void LoadLevelsHeadersCache(string strLevelsCacheFile)
+void CleanupLevelsHeadersCache()
+void CreateMission(string pszLevel, string strScript, int nWorldNum)
+void EndGame()
+int  EventGetDifficultyLevel()
+int  IsNetworkGame()
+int  IsNetworkChannelGame()
+unit GetPlayerHeroUnit(int nPlayer)
+void SetPartyEnemy(int nPartyNum, int nEnemyPartyNum)
+void SetPartyNeutral(int nPartyNum, int nNeutralPartyNum)
+int  IsPartyEnemy(int nPartyNum, int nEnemyPartyNum)
+array GetPartyEnemies(int nPartyNum)
+array GetPartyEnemies(array pArrPartiesNums)
+int  GetMissionsCnt()
+mission GetMission(int nMissionNum)
+int  GetGlobalScriptsCnt()
+global GetGlobalScript(int nIndex)
+global AddGlobalScript(string strScriptFile)
+global AddGlobalScript(string strScriptFile, int bExecuteFirstState)
+mission FindMissionScript(int nScriptUID)
+global FindGlobalScript(int nScriptUID)
+basescript FindScript(int nScriptUID)
+void LoadRPGComputeScript(string strScriptFile)
+void SetLevelsHorizon(string strFile)
+void SetPentagram(string strPentaConfig)
+void SetDrawPentagramStrength(int nPercent)
+int  GetGameTick()
+int  GetGameSec()
+int  GetDayTime()
+void SetDayTime(int nTime)
+void SetDayLength(int nDayLength, int nSunRise, int nSunSet)
+void SetWind(int nWindSpeed, int nWindDir)
+void SetWind(int nWindSpeed, int nWindDir, string strWindWav, int nWindWavVolume)
+void SetWindWav(string strWindWav, int nWindWavVolume)
+void SetWindWavVolume(int nWindWavVolume)
+void SetRain(int nRainIntensity)
+void SetRain(int nRainIntensity, string strRainWav, int nRainWavVolume)
+void SetRainWav(string strRainWav, int nRainWavVolume)
+void SetRainWavVolume(int nRainWavVolume)
+void SetSnow(int nSnowIntensity)
+void LoadLevelConfiguration(string strConfigFile, int bLoadDayState, int bLoadSkyTextures, int nMorphTicks)
+int  IsMorphingDayNightSkyTexture(int nAddBeforeTicks)
+void SetSkyBoxColorFadeFromFog(int bSet)
+void SetEndOfTheWorldMargin(int nSmallMarginA, int nWideMarginA)
+void SetEngineFarPlanePercent(int nFarPlanePercent)
+int  GetFillChannelLevelsListCommonPlayerAttribute(int nKey, int& pValue)
+int  GetFillChannelLevelsListCommonPlayerAttribute(string strKey, int& pValue)
+int  GetFillChannelLevelsListCommonPlayerAttribute(int nKey, string strValue)
+int  GetFillChannelLevelsListCommonPlayerAttribute(string pszKey, string strValue)
+int  GetFillChannelLevelsListSelectedHeroFlags()
+void CreateNewNetworkGame(string pszGameScriptFile, string pszGameScriptParam, string strGameMissionName)
+void SetEndOfTheWorldSouthMargin(int nSmallMarginA, int nWideMarginA)
+void SetEndOfTheWorldNorthMargin(int nSmallMarginA, int nWideMarginA)
+void SetEndOfTheWorldEastMargin(int nSmallMarginA, int nWideMarginA)
+void SetEndOfTheWorldWestMargin(int nSmallMarginA, int nWideMarginA)
+void SetLimitedWorldStepRange(int nRange)
+int  IsCampaignGame()
+int  IsMainMenuCutscene()
+void SendXBoxHeroNetworkGameModePoints()
+<campaign_functions_public_end>
+<campaign_functions_end>
+</pre>
+<big>Commands</big>
+<pre>
+<campaign_commands_begin>
+int  InitializeCampaign(int, string)
+int  FillNetworkChannelLevelsList(string, array, array, array, array, array, array, array)
+int  FillNetworkXMissionsList_unused(int, array, array, array, array, array, array, array, array)
+int  FillNetworkXMissionModes_unused(string, array, array, array)
+int  FillNetworkMissionsList(array, array, array, array, array, array, array, array)
+int  FillNetworkMissionModes(string, array, array)
+int  BonusCode(string)
+<campaign_commands_end>
+</pre>
+<big>Events</big>
+<pre>
+<campaign_events_begin>
+int  GetDifficultyLevel()
+int  GetSaveGameNameOld(mission, stringW&)
+int  GetSaveGameName(mission, int, stringW&)
+<campaign_events_end>
+</pre>
+<hr>
+<small><i>EarthC documentation generated automatically [2007-07-19]</i></small>
+</body>
+</html>

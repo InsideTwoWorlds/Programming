@@ -1,0 +1,28 @@
+editor.SetCreateRect 0 0 127 127
+editor.DeleteObjectsOnArea NULL -1
+editor.AddCreateObjectsLockedTexture 07 1
+editor.AddCreateObjectsLockedTexture 09 1
+editor.AddCreateObjectsLockedTexture 10 1
+editor.AddCreateObjectsLockedTexture 12 1
+editor.AddCreateObjectsLockedTexture 13 1
+editor.AddCreateObjectsLockedTexture 15 1
+editor.CreateObjectsOnArea EN_TREE_09 10 6 0x100
+editor.CreateObjectsOnArea EN_STONE_02_gen 90 7 0x7 
+editor.CreateObjectsNearObjectsOnArea EN_STONE_02s_gen EN_STONE_02_gen 50 1 3 0x7
+editor.CreateObjectsNearObjectsOnArea EN_TREE_09 EN_TREE_09 40 1 4 0x100
+editor.CreateObjectsNearObjectsOnArea EN_TREE_10 EN_TREE_09 70 2 4 0x100
+editor.CreateObjectsNearObjectsOnArea EN_TRUNK_02_gen EN_TREE_10 100 1 3 0x100
+editor.CreateObjectsNearObjectsOnArea EN_STONE_02s_gen EN_TRUNK_02_gen 80 1 2 0x100
+editor.CreateObjectsNearObjectsOnArea EN_PLANT_01_gen EN_TREE_10 200 1 3 0x7
+editor.CreateObjectsNearObjectsOnArea EN_BUSH_03 EN_STONE_02_gen 150 3 4 0x7
+editor.CreateObjectsNearObjectsOnArea EN_PLANT_01_gen EN_BUSH_03 100 1 3 0x7
+editor.CreateObjectsNearObjectsOnArea EN_TREE_07 EN_STONE_02_gen 100 2 3 0x100
+editor.CreateObjectsOnArea EN_PLANT_01b_gen 50 7 0x7
+editor.CreateObjectsOnArea EN_BUSH_07 30 6 0x7
+editor.CreateObjectsNearObjectsOnArea EN_BUSH_02 EN_TREE_07 100 1 3 0x7
+editor.CreateObjectsNearObjectsOnArea EN_PLANT_01b_gen EN_PLANT_01b_gen 100 1 2 0x7
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_01 EN_PLANT_01b_gen 50 0 1 0x100 
+editor.CreateObjectsNearObjectsOnArea MUSHROOM_05 EN_TREE_07 20 2 2 0x100
+editor.SetTextureOnObjects EN_TREE_10 5 200 128 300 
+editor.SetTextureOnObjects EN_TREE_7 5 200 128 300
+editor.AddGrassOnTexture 5 1 8 0.1 1

@@ -1,0 +1,13 @@
+#ifndef UNITS_MOVEATTACK_ECH
+#define UNITS_MOVEATTACK_ECH
+
+command MoveAttack(int nX, int nY, int nZ) hidden
+{
+#ifdef UNITS_ATTACK_ECH
+    return MakeCommandMoveAttack(nX, nY, nZ);
+#else
+    return MakeCommandMove(nX, nY, nZ);
+#endif //UNITS_ATTACK_ECH
+}//————————————————————————————————————————————————————————————————————————————————————————————————————|
+
+#endif //UNITS_MOVEATTACK_ECH

@@ -1,0 +1,25 @@
+editor.SetCreateRect 0 0 128 128
+
+editor.AddCreateObjectsLockedTexture 4 1 
+editor.AddCreateObjectsLockedTexture 5 1 
+editor.AddCreateObjectsLockedTexture 6 1 
+editor.AddCreateObjectsLockedTexture 7 1 
+editor.AddCreateObjectsLockedTexture 8 1 
+editor.AddCreateObjectsLockedTexture 9 1 
+editor.AddCreateObjectsLockedTexture 10 1 
+editor.AddCreateObjectsLockedTexture 11 1 
+editor.AddCreateObjectsLockedTexture 12 1 
+editor.AddCreateObjectsLockedTexture 13 1 
+editor.AddCreateObjectsLockedTexture 14 1 
+editor.AddCreateObjectsLockedTexture 15 1 
+
+
+
+
+editor.CreateObjectsOnArea DEER_01 5 9
+editor.CreateObjectsOnArea FOX_01 10 5
+
+
+editor.AddCreateObjectsLockedTexture clear
+
+

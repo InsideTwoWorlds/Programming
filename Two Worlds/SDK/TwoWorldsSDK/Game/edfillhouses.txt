@@ -1,0 +1,6 @@
+// plik z domami musi miec  flage underground
+// wczytac go i wywolac ten plik
+
+editor.LoadLevel interior.lnd
+editor.BuildInsideHouseObjectsDef
+//Editor.ForEachSurfaceLevel @edfillhouse.txt

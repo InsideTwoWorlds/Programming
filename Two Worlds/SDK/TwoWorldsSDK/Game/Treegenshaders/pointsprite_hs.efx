@@ -1,0 +1,240 @@
+#include "config.efh"
+
+//
+// Effect file
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Configuration
+//
+
+bool CF_Solid					 = true;
+bool CF_SkinSupport				 = true;
+bool CF_PointSprite              = false;
+int  CF_DrawPriority             = 2;
+
+int  CF_TextureRequest_0		 = TEXTURE_REQUEST_NORMAL;
+int  CF_TextureRequest_1 		 = TEXTURE_REQUEST_NORMAL;
+int  CF_TextureRequest_2 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_3 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_4 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_5 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_6 		 = TEXTURE_REQUEST_NONE;
+int  CF_TextureRequest_7 		 = TEXTURE_REQUEST_NONE;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Vars
+//
+texture IN_TextureSlots_0;
+texture IN_TextureSlots_1;
+texture IN_TextureSlots_2;
+texture IN_TextureSlots_3;
+texture IN_TextureSlots_4;
+texture IN_TextureSlots_5;
+texture IN_TextureSlots_6;
+texture IN_TextureSlots_7;
+ 
+matrix IN_CameraMatrix;
+matrix IN_ProjectionMatrix;
+matrix IN_WorldMatrix;
+
+matrix IN_WorldViewProjectionMatrix;
+matrix IN_CameraProjectionMatrix;
+matrix IN_InversedCameraMatrix;
+
+float4 IN_SpecularColor;
+float  IN_Time;
+float4 IN_ObserverPosition;
+float4 IN_AmbientColor;
+float4 IN_DiffuseColor;
+float4 IN_LightPosition;
+float4 IN_FurFactor;
+
+matrix  IN_HWSkinMatrixArray[MAX_BONES];
+
+float  IN_LeafsCount;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// App vertex format
+//
+struct appdata 
+{
+    float3 Position		  : POSITION;
+	float4 NormalDS       : COLOR0;
+	float4 TangentDS	  : COLOR1;
+    float2 UV			  : TEXCOORD0;
+	float2 UVLM			  : TEXCOORD1;
+
+	//
+	// Skin support addition
+	//
+	float3 BlendWeights   : BLENDWEIGHT;
+    int4   BlendIndices   : BLENDINDICES;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct vertexOutput_Main
+{
+    float4 HPosition	: POSITION;
+	float4 Color        : COLOR0;
+	float2 UV			: TEXCOORD0;
+	float3 LVec         : TEXCOORD1;
+	float3 HVec         : TEXCOORD2;
+	float  fog          : FOG;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+struct pixelOutput
+{
+    float4 Color : COLOR;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+vertexOutput_Main VertexShaderMain(appdata IN)
+{
+ vertexOutput_Main OUT;
+
+ float LastWeight = 1.0 - dot(IN.BlendWeights.xyz, 1);
+
+ matrix m = IN_HWSkinMatrixArray[IN.BlendIndices.x] * IN.BlendWeights.x;
+        m+= IN_HWSkinMatrixArray[IN.BlendIndices.y] * IN.BlendWeights.y;
+        m+= IN_HWSkinMatrixArray[IN.BlendIndices.z] * IN.BlendWeights.z;
+        m+= IN_HWSkinMatrixArray[IN.BlendIndices.w] * LastWeight;
+
+ float3 Position = mul(float4(IN.Position.xyz, 1), m);
+ 
+ float d   = floor(IN.TangentDS.x * 8.0) * 0.25;
+ OUT.UV	   = (IN.UV.yx * float2(0.25, -1)) + float2(d, 0);
+ float3 Pw = mul(float4(Position.xyz, 1), IN_WorldMatrix);
+
+ float3 UpVec   = float3(0, 1, 0);
+ float3 LeftVec = float3(1, 0, 0);
+
+ float PSSize = ((IN.UVLM.y - 1.0) * -1.0);
+ if (IN.TangentDS.y > IN_LeafsCount)
+	 PSSize = 0;
+ 
+ UpVec   = mul(UpVec,   IN_InversedCameraMatrix);
+ LeftVec = mul(LeftVec, IN_InversedCameraMatrix);
+ UpVec  *= (IN.UV.x - 0.5) * PSSize;
+ LeftVec*= (IN.UV.y - 0.5) * PSSize;
+ Pw     += UpVec + LeftVec;
+
+ //
+ // Calculate bump's
+ //
+ float3 Tn = float3(1, 0, 0);
+ float3 Bn = float3(0, 1, 0);
+ float3 Nn = float3(0, 0, 1);
+ 
+ Nn = mul(Nn, IN_InversedCameraMatrix);
+ Tn = mul(Tn, IN_InversedCameraMatrix);
+ Bn = mul(Bn, IN_InversedCameraMatrix);
+
+ Nn = normalize(Nn);
+ Tn = normalize(Tn);
+ Bn = normalize(Bn);
+
+ //
+ // Calculate L & H vectors
+ //
+ float3 Ln = normalize(IN_LightPosition.xyz  - Pw);
+ float3 Vn = normalize(IN_ObserverPosition.xyz - Pw);
+ float3 Hn = normalize(Vn + Ln);
+
+ //
+ // Transform to tangent space
+ //
+ OUT.LVec.xyz = float3(dot(Ln.xyz, Tn.xyz), dot(Ln.xyz, Bn.xyz), dot(Ln.xyz, Nn.xyz)).xyz;
+ OUT.HVec.xyz = float3(dot(Hn.xyz, Tn.xyz), dot(Hn.xyz, Bn.xyz), dot(Hn.xyz, Nn.xyz)).xyz;
+
+ OUT.Color     = IN.NormalDS; 
+ OUT.HPosition = mul(float4(Pw.xyz, 1), IN_CameraProjectionMatrix);
+
+ OUT.fog = 1.0;
+
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+sampler2D gBaseTexture = sampler_state
+{
+	Texture   = <IN_TextureSlots_0>;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU  = Wrap;
+	AddressV  = Wrap;
+};
+
+
+sampler2D gBumpTexture = sampler_state
+{
+	Texture   = <IN_TextureSlots_1>;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU  = Wrap;
+	AddressV  = Wrap;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////
+pixelOutput PixelShaderMain(vertexOutput_Main IN)
+{
+ pixelOutput OUT;
+ 
+ float4 BaseTex = tex2D(gBaseTexture, IN.UV);
+ float4 BumpTex = tex2D(gBumpTexture, IN.UV);
+ 
+ float3 Normal  = CalcNormal(BumpTex);
+
+ float Diffuse  = saturate(dot(Normal.xyz, IN.LVec.xyz));
+ float Specular = saturate(dot(Normal.xyz, IN.HVec.xyz));
+
+ float3 SpecColor = IN_SpecularColor.xyz * (pow(Specular, IN_SpecularColor.w) * GetSpecularMap(BumpTex));
+
+ float3 DMap    = BaseTex.rgb * IN.Color.rgb;
+
+ float3 Result = saturate(IN_AmbientColor.xyz + (IN_DiffuseColor.xyz * Diffuse)) * DMap.rgb;
+        Result+= SpecColor;
+ 
+ OUT.Color.rgb = Result;
+ OUT.Color.a   = BaseTex.a;
+ 
+ return OUT;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+technique MainTechnique
+{	
+	pass p0
+	{
+		VertexShader	 = compile vs_2_0 VertexShaderMain();
+		PixelShader		 = compile ps_2_0 PixelShaderMain();
+
+		AlphaBlendEnable = True;
+		SrcBlend		 = SrcAlpha;
+        DestBlend		 = InvSrcAlpha;
+
+		ZEnable          = True;
+		ZWriteEnable     = True;
+		ZFunc			 = Less;
+
+		AlphaTestEnable	 = True;
+		AlphaRef		 = 160;
+		AlphaFunc		 = Greater;
+
+		CullMode         = None;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+technique MainTechniqueRestore
+{	
+	pass p0
+	{
+		AlphaTestEnable  = False;
+		ZWriteEnable     = True;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
