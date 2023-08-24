@@ -1,5 +1,5 @@
 # Two Worlds II SDK
-By [HeliX666](https://github.com/Helix666)
+By [HeliX666](https://github.com/HeliX696)
 
 ## [Parameters Editor](https://github.com/InsideTwoWorlds/Programming/raw/main/Two%20Worlds%20II/TW2ParamReader.zip)
 
