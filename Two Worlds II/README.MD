@@ -1,7 +1,7 @@
 # Two worlds 2 SDK
 By [HeliX666](https://github.com/Helix666)
 
-## [Parameters Editor](TW2ParamReader.zip)
+## [Parameters Editor](https://github.com/InsideTwoWorlds/Programming/raw/main/Two%20Worlds%20II/TW2ParamReader.zip)
 
 Now what this tool allows you to do:
 - edit any parameters in file;
@@ -53,7 +53,7 @@ Some columns have the same meaning as in the TW1 , so it’s possible them by co
 
 I hope that my small instruction was readable and understandable. 
 
-## [WD files Tool](TW2WDTool.zip)
+## [WD files Tool](https://github.com/InsideTwoWorlds/Programming/raw/main/Two%20Worlds%20II/TW2WDTool.zip)
 
 -To unpack just select WD file and select destination folder for unpacking files.
 -To build a new package just select folder with source files(with original dir tree inside this folder) and write name for new package.
