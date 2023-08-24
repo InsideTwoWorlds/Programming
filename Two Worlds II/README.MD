@@ -1,5 +1,5 @@
 # Two worlds 2 SDK
-By HeliX666
+By [HeliX666](https://github.com/Helix666)
 
 ## Parameters Editor
 
