@@ -53,9 +53,12 @@ Some columns have the same meaning as in the TW1 , so it’s possible them by co
 
 I hope that my small instruction was readable and understandable. 
 
+## [Sound Util](https://github.com/InsideTwoWorlds/Programming/raw/main/Two%20Worlds%20II/TW2SoundUtil.zip)
+- It can open/edit/save sound storages.
+
 ## [WD files Tool](https://github.com/InsideTwoWorlds/Programming/raw/main/Two%20Worlds%20II/TW2WDTool.zip)
 
--To unpack just select WD file and select destination folder for unpacking files.
--To build a new package just select folder with source files(with original dir tree inside this folder) and write name for new package.
+- To unpack just select WD file and select destination folder for unpacking files.
+- To build a new package just select folder with source files(with original dir tree inside this folder) and write name for new package.
 
 It also can unpack protected files from Startup.wd file (some games parameters/configs/scripts and ect was crypted not only packed).
