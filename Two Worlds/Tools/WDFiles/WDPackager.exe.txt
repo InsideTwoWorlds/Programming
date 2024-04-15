@@ -1,0 +1,8 @@
+The Two Worlds Engine is using a zLib-compressed Archive for their gamedata (files with the extension .wd). With this tool, you can modify (add and extract files) this archives with a GUI.
+
+WDPackager 0.8.1 works also on x64
+
+Submitted by CABAListic
+14. January 2005
+
+https://web.archive.org/web/20140405010632/http://insidetwoworlds.com/local_links.php?linkid=28&catid=6
